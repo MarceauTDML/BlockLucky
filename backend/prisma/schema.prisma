@@ -4,43 +4,30 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-// ==========================================
-// UTILISATEURS, SÉCURITÉ & RGPD
-// ==========================================
-
 model User {
-  id               String             @id @default(uuid())
-  walletAddress    String             @unique
-  email            String?            @unique
-  role             Role               @default(USER)
-  
-  // Sécurité & 2FA Optionnelle
-  isTwoFactorEnabled Boolean          @default(false)
-  twoFactorMethod    TwoFactorMethod? // Choix de l'utilisateur
-  twoFactorSecret    String?          // Clé TOTP (App) ou hash OTP (Email)
-  isEmailVerified    Boolean          @default(false)
-  
-  // Fidélité & Parrainage
-  pointsBalance    Int                @default(0)
-  referralCode     String             @unique @default(uuid())
-  referredById     String?     
-  referredBy       User?              @relation("Referrals", fields: [referredById], references: [id])
-  referrals        User[]             @relation("Referrals")
-  
-  // Relations
-  tickets          Ticket[]
-  pointLedger      PointTransaction[] 
-  claimedRewards   ClaimedReward[]
-  tokens           Token[]            
-  analytics        Analytics[]
-  
-  // Audit & RGPD
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  deletedAt        DateTime?          // Soft delete pour anonymisation RGPD
+  id                 String             @id @default(uuid())
+  walletAddress      String             @unique
+  email              String?            @unique
+  role               Role               @default(USER)
+  isTwoFactorEnabled Boolean            @default(false)
+  twoFactorMethod    TwoFactorMethod?
+  twoFactorSecret    String?
+  isEmailVerified    Boolean            @default(false)
+  pointsBalance      Int                @default(0)
+  referralCode       String             @unique @default(uuid())
+  referredById       String?
+  referredBy         User?              @relation("Referrals", fields: [referredById], references: [id])
+  referrals          User[]             @relation("Referrals")
+  tickets            Ticket[]
+  pointLedger        PointTransaction[]
+  claimedRewards     ClaimedReward[]
+  tokens             Token[]
+  analytics          Analytics[]
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  deletedAt          DateTime?
 }
 
 enum Role {
@@ -50,8 +37,8 @@ enum Role {
 }
 
 enum TwoFactorMethod {
-  APP      // Google Authenticator / Authy
-  EMAIL    // OTP 6 chiffres envoyé par email
+  APP
+  EMAIL
 }
 
 model Token {
@@ -70,20 +57,16 @@ enum TokenType {
   PASSWORD_RESET
 }
 
-// ==========================================
-// CŒUR WEB3 : LOTERIE & TICKETS
-// ==========================================
-
 model LotteryRound {
-  id                  String    @id @default(uuid())
-  contractRoundId     Int       @unique
-  status              Status    @default(OPEN)
-  prizePool           Float     @default(0.0)
-  winnerWallet        String?
-  chainlinkRequestId  String?
-  startedAt           DateTime  @default(now())
-  drawnAt             DateTime?
-  tickets             Ticket[]
+  id                 String    @id @default(uuid())
+  contractRoundId    Int       @unique
+  status             Status    @default(OPEN)
+  prizePool          Float     @default(0.0)
+  winnerWallet       String?
+  chainlinkRequestId String?
+  startedAt          DateTime  @default(now())
+  drawnAt            DateTime?
+  tickets            Ticket[]
 }
 
 enum Status {
@@ -96,7 +79,7 @@ enum Status {
 model Ticket {
   id              String       @id @default(uuid())
   transactionHash String       @unique
-  blockNumber     Int          
+  blockNumber     Int
   userId          String
   user            User         @relation(fields: [userId], references: [id])
   lotteryId       String
@@ -104,63 +87,55 @@ model Ticket {
   purchasedAt     DateTime     @default(now())
 }
 
-// ==========================================
-// MARKETPLACE & PROGRAMME DE FIDÉLITÉ
-// ==========================================
-
 model PointTransaction {
   id          String   @id @default(uuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
-  amount      Int      // Positif ou négatif
-  actionType  String   // 'TICKET_PURCHASE', 'REFERRAL', 'REWARD_CLAIM'
+  amount      Int
+  actionType  String
   description String?
   createdAt   DateTime @default(now())
 }
 
 model Partner {
-  id          String          @id @default(uuid())
-  name        String
-  logoUrl     String
-  isActive    Boolean         @default(true)
-  rewards     RewardCatalog[]
-  createdAt   DateTime        @default(now())
+  id        String          @id @default(uuid())
+  name      String
+  logoUrl   String
+  isActive  Boolean         @default(true)
+  rewards   RewardCatalog[]
+  createdAt DateTime        @default(now())
 }
 
 model RewardCatalog {
   id             String          @id @default(uuid())
   partnerId      String
   partner        Partner         @relation(fields: [partnerId], references: [id])
-  title          String          
-  costInPoints   Int             
-  totalStock     Int             
-  remainingStock Int             
+  title          String
+  costInPoints   Int
+  totalStock     Int
+  remainingStock Int
   claimedRewards ClaimedReward[]
   isActive       Boolean         @default(true)
   createdAt      DateTime        @default(now())
 }
 
 model ClaimedReward {
-  id             String        @id @default(uuid())
-  userId         String
-  user           User          @relation(fields: [userId], references: [id])
-  rewardId       String
-  rewardCatalog  RewardCatalog @relation(fields: [rewardId], references: [id])
-  uniqueCode     String        @unique 
-  isUsed         Boolean       @default(false)
-  claimedAt      DateTime      @default(now())
+  id            String        @id @default(uuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  rewardId      String
+  rewardCatalog RewardCatalog @relation(fields: [rewardId], references: [id])
+  uniqueCode    String        @unique
+  isUsed        Boolean       @default(false)
+  claimedAt     DateTime      @default(now())
 }
 
-// ==========================================
-// ANALYTICS & MONITORING
-// ==========================================
-
 model Analytics {
-  id          String   @id @default(uuid())
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
-  eventType   String   
-  utmSource   String?  
-  metadata    Json?    
-  timestamp   DateTime @default(now())
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  eventType String
+  utmSource String?
+  metadata  Json?
+  timestamp DateTime @default(now())
 }
