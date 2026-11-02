@@ -10,6 +10,7 @@ import authRoutes from './api/auth/auth.routes';
 import lotteryRoutes from './api/lottery/lottery.routes';
 import marketplaceRoutes from './api/marketplace/marketplace.routes';
 import partnersRoutes from './api/partners/partners.routes';
+import userRoutes from './api/user/user.routes';
 
 const app: Application = express();
 
@@ -41,6 +42,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/lottery', lotteryRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/partners', partnersRoutes);
+app.use('/api/user', userRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
