@@ -1,8 +1,12 @@
-const app = require("./app");
-require("dotenv").config();
+﻿import http from 'http';
+import app from './app';
+import { env } from './config/env.config';
+import logger from './utils/logger.util';
 
-const PORT = process.env.PORT || 2053;
+const httpServer = http.createServer(app);
 
-app.listen(PORT, () => {
-  console.log(`Serveur BlockLucky démarré sur le port http://localhost:${PORT}/health`);
+httpServer.listen(env.PORT, () => {
+  logger.info(Serveur BlockLucky dÃ©marrÃ© sur http://localhost: + env.PORT);
 });
+
+export default httpServer;
