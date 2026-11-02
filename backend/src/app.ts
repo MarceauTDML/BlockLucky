@@ -12,6 +12,7 @@ import marketplaceRoutes from './api/marketplace/marketplace.routes';
 import partnersRoutes from './api/partners/partners.routes';
 import userRoutes from './api/user/user.routes';
 import analyticsRoutes from './api/analytics/analytics.routes';
+import adminRoutes from './api/admin/admin.routes';
 
 const app: Application = express();
 
@@ -45,6 +46,7 @@ app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/partners', partnersRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
