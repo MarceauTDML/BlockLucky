@@ -7,6 +7,7 @@ import { globalRateLimiter } from './middlewares/rateLimiter.middleware';
 import { notFoundHandler, errorHandler } from './middlewares/error.middleware';
 import blockchainService from './services/blockchain.service';
 import authRoutes from './api/auth/auth.routes';
+import lotteryRoutes from './api/lottery/lottery.routes';
 
 const app: Application = express();
 
@@ -35,6 +36,7 @@ app.get('/health', async (_req, res) => {
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', authRoutes);
+app.use('/api/lottery', lotteryRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
