@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "BlockLucky EtherBay",
+    "slug": "blocklucky-etherbay",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1A0B2E"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "fr.etherbay.blocklucky"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#1A0B2E"
+      },
+      "package": "fr.etherbay.blocklucky"
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-font",
+      "expo-status-bar"
+    ]
+  }
+}
