@@ -29,7 +29,11 @@ export class AuthService {
     }
 
     const walletLower = input.walletAddress.toLowerCase();
+    const emailLower = input.email?.trim().toLowerCase();
     let user = await authRepository.findByWallet(walletLower);
+    if (!user && emailLower) {
+      user = await authRepository.findByEmail(emailLower);
+    }
     let isNewUser = false;
 
     if (!user) {
