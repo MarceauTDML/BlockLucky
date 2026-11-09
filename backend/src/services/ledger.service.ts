@@ -1,6 +1,7 @@
 import prisma from '../config/prisma.config';
 import { AppError } from '../utils/response.util';
 import logger from '../utils/logger.util';
+import { businessEventsTotal } from '../observability/metrics';
 
 export type LedgerActionType =
   | 'TICKET_PURCHASE'
@@ -38,6 +39,7 @@ export class LedgerService {
       }),
     ]);
 
+    businessEventsTotal.inc({ event: `points_credited_${actionType.toLowerCase()}` });
     logger.info(`+${amount} EtherPoints crédités à ${userId} (${actionType})`);
     return {
       balance: updatedUser.pointsBalance,
@@ -84,6 +86,7 @@ export class LedgerService {
       }),
     ]);
 
+    businessEventsTotal.inc({ event: `points_debited_${actionType.toLowerCase()}` });
     logger.info(`-${amount} EtherPoints débités à ${userId} (${actionType})`);
     return {
       balance: updatedUser.pointsBalance,

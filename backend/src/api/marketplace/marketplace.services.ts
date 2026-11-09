@@ -6,6 +6,7 @@ import redis from '../../config/redis.config';
 import { enqueueEmail } from '../../queues/emails.queue';
 import { generatePromoCode } from '../../utils/crypto.util';
 import { AppError } from '../../utils/response.util';
+import { businessEventsTotal } from '../../observability/metrics';
 
 export class MarketplaceService {
   public async getCatalog() {
@@ -110,6 +111,8 @@ export class MarketplaceService {
         },
       });
     }
+
+    businessEventsTotal.inc({ event: 'reward_claimed' });
 
     return {
       claim: {

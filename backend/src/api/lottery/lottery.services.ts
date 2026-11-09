@@ -8,6 +8,7 @@ import { getSocketIo } from '../../socket/socket.handler';
 import { broadcastWinnerEvent } from '../../socket/events/live-draw.events';
 import { anonymizeWallet } from '../../utils/crypto.util';
 import { AppError } from '../../utils/response.util';
+import { businessEventsTotal } from '../../observability/metrics';
 import { Milestone } from '../../types/api.types';
 
 const TARGET_PARTICIPANTS = 10000;
@@ -155,6 +156,7 @@ export class LotteryService {
     );
 
     const poapBadge = await blockchainService.mintPoapBadge(user.walletAddress, round.contractRoundId);
+    businessEventsTotal.inc({ event: 'ticket_purchased' }, quantity);
 
     const io = getSocketIo();
     if (io) {
