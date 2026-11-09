@@ -1,4 +1,4 @@
-import express, { Application } from 'express';
+import express, { Application, Router } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
@@ -55,14 +55,18 @@ app.use(globalRateLimiter);
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/lottery', lotteryRoutes);
-app.use('/api/marketplace', marketplaceRoutes);
-app.use('/api/partners', partnersRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/analytics', analyticsRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/webhooks', webhooksRoutes);
+const apiRouter = Router();
+apiRouter.use('/auth', authRoutes);
+apiRouter.use('/lottery', lotteryRoutes);
+apiRouter.use('/marketplace', marketplaceRoutes);
+apiRouter.use('/partners', partnersRoutes);
+apiRouter.use('/user', userRoutes);
+apiRouter.use('/analytics', analyticsRoutes);
+apiRouter.use('/admin', adminRoutes);
+apiRouter.use('/webhooks', webhooksRoutes);
+
+app.use('/api/v1', apiRouter);
+app.use('/api', apiRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
