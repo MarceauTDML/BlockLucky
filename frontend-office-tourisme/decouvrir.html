@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Découvrir EtherBay - Destination EtherBay</title>
+    <meta name="description" content="Culture, gastronomie, histoire, nature, innovation : toutes nos idées pour découvrir EtherBay." />
+    <meta name="theme-color" content="#253D2C" />
+    <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <script type="module" src="assets/js/main.js"></script>
+  </head>
+  <body data-page="decouvrir">
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div id="preheader"></div>
+    <header id="site-header"></header>
+
+    <main id="contenu">
+      <div class="container"><nav class="breadcrumb" aria-label="Fil d'Ariane"><a href="index.html">Accueil</a><span aria-hidden="true">»</span>Découvrir EtherBay</nav></div>
+      <section class="page-hero">
+        <div class="container">
+          <h1 class="page-hero__title">Découvrir EtherBay</h1>
+          <p class="page-hero__intro">À EtherBay, on aime la mer, la culture et l'innovation sous toutes leurs formes : festivals, chants de marins, art contemporain, gastronomie de la criée… Laissez-vous surprendre par une ville où le patrimoine maritime rencontre la culture numérique.</p>
+        </div>
+      </section>
+      <section class="section" style="padding-top: 0" aria-label="Thématiques">
+        <div class="container">
+          <div class="grid grid--3" data-themes></div>
+        </div>
+      </section>
+
+      <section class="section section--map" aria-labelledby="lieux-title">
+        <div class="container">
+          <div class="slider" data-slider>
+            <div class="slider__head">
+              <h2 class="section__title" id="lieux-title" style="margin: 0">Les lieux emblématiques</h2>
+              <div class="slider__nav"><button class="slider__btn" type="button" data-slider-prev aria-label="Précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><button class="slider__btn" type="button" data-slider-next aria-label="Suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>
+            </div>
+            <div class="slider__track" data-lieux></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+  </body>
+</html>

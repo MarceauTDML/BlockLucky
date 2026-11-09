@@ -7,6 +7,7 @@ import { $$ } from './modules/utils.js';
 
 const PAGES = {
   home: () => import('./pages/home.js'),
+  decouvrir: () => import('./pages/decouvrir.js'),
 };
 
 const initReveal = () => {
