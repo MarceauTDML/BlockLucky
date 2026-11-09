@@ -2,6 +2,7 @@ import { Queue } from 'bullmq';
 import redis from '../config/redis.config';
 import ledgerService, { LedgerActionType } from '../services/ledger.service';
 import logger from '../utils/logger.util';
+import { defaultJobOptions } from './queue.options';
 
 export interface LedgerJobData {
   userId: string;
@@ -18,6 +19,7 @@ try {
   if (rawRedis) {
     bullLedgerQueue = new Queue<LedgerJobData>('ledger-queue', {
       connection: rawRedis as any,
+      defaultJobOptions,
     });
   }
 } catch {
@@ -26,13 +28,11 @@ try {
 
 export const enqueueLedgerTransaction = async (
   data: LedgerJobData
-): Promise<{ queued: boolean; jobId?: string; queuePosition?: number }> => {
+): Promise<{ queued: boolean; jobId?: string | undefined; queuePosition?: number }> => {
   if (bullLedgerQueue) {
     try {
       const waitingCount = await bullLedgerQueue.getWaitingCount();
-      const job = await bullLedgerQueue.add('ledger-op', data, {
-        attempts: 3,
-      });
+      const job = await bullLedgerQueue.add('ledger-op', data);
       return {
         queued: true,
         jobId: job.id,
