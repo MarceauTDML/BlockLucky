@@ -1,0 +1,11 @@
+node_modules
+dist
+coverage
+.env
+.env.*
+!.env.example
+__tests__
+*.log
+.git
+Dockerfile
+.dockerignore
