@@ -1,0 +1,109 @@
+import { BackendNetworkStatus } from './api.types';
+
+export type AgeBucket = '18-25' | '26-35' | '36-50' | '50+';
+
+export interface AdminLotteryRound {
+  id: string;
+  contractRoundId: number;
+  status: 'OPEN' | 'LOCKED' | 'COMPLETED' | 'CANCELLED';
+  prizePool: number;
+  winnerWallet: string | null;
+  chainlinkRequestId: string | null;
+  startedAt: string;
+  drawnAt: string | null;
+}
+
+export interface UtmAcquisitionRow {
+  source: string;
+  conversions: number;
+}
+
+export interface AdminDashboardResponse {
+  kpis: {
+    totalPrizePoolEth: number;
+    ticketsSold: number;
+    municipalityRevenueEth: number;
+    registeredCitizens: number;
+    activePartners: number;
+    claimedRewards: number;
+  };
+  demographics: {
+    target18_35Validated: boolean;
+    ageBreakdown: Record<AgeBucket, number>;
+  };
+  utmAcquisition: UtmAcquisitionRow[];
+  network: BackendNetworkStatus;
+  rounds: AdminLotteryRound[];
+}
+
+export interface AnalyticsDashboardResponse {
+  kpis: {
+    totalUsers: number;
+    targetParticipants: number;
+    completionRatePercent: number;
+    totalTicketsSold: number;
+    totalPrizePoolEth: number;
+    municipalityRevenueShareEth: number;
+    totalClaimedRewards: number;
+  };
+  demographics: AdminDashboardResponse['demographics'];
+  utmAcquisition: UtmAcquisitionRow[];
+}
+
+export interface CircuitBreakerResponse {
+  paused: boolean;
+  txHash: string;
+  timestamp: string;
+  reason: string;
+}
+
+export interface TreasuryWithdrawResponse {
+  transactionHash: string;
+  multisigWallet: string;
+  amountEth: number;
+  timestamp: string;
+}
+
+export type AuditAction =
+  | 'CIRCUIT_BREAKER_PAUSE'
+  | 'CIRCUIT_BREAKER_RESUME'
+  | 'TREASURY_WITHDRAWAL_MULTISIG'
+  | 'PARTNER_APPROVED'
+  | 'PARTNER_SUSPENDED'
+  | 'EXPORT_REPORT_CSV'
+  | 'EXPORT_REPORT_PDF'
+  | string;
+
+export interface AuditLogEntry {
+  id: string;
+  action: AuditAction;
+  adminId: string | null;
+  adminWallet: string;
+  metadata: Record<string, unknown>;
+  timestamp: string;
+}
+
+export interface ReportExportResponse {
+  format: 'CSV' | 'PDF';
+  generatedAt: string;
+  downloadUrl: string;
+  content?: string;
+  summary?: AdminDashboardResponse['kpis'];
+}
+
+export interface DrawResponse {
+  round: AdminLotteryRound;
+  vrfProof: {
+    chainlinkRequestId: string;
+    vrfProofHash: string;
+    transactionHash: string;
+    verifiedFair: boolean;
+  };
+}
+
+export interface RefundResponse {
+  round: AdminLotteryRound;
+  autoRefundExecuted: boolean;
+  refundedAmountEth: number;
+  message: string;
+}
