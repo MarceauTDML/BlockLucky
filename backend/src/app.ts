@@ -7,6 +7,7 @@ import { corsOrigins, env, trustProxy } from './config/env.config';
 import { globalRateLimiter } from './middlewares/rateLimiter.middleware';
 import { notFoundHandler, errorHandler } from './middlewares/error.middleware';
 import { requestContextMiddleware } from './middlewares/request-context.middleware';
+import { httpMetricsMiddleware, metricsHandler } from './observability/metrics';
 import { sendError } from './utils/response.util';
 
 import systemRoutes from './api/system/system.routes';
@@ -24,6 +25,7 @@ const app: Application = express();
 app.set('trust proxy', trustProxy);
 
 app.use(requestContextMiddleware);
+app.use(httpMetricsMiddleware);
 app.use(helmet());
 app.use(
   cors({
@@ -38,6 +40,7 @@ app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 app.use(systemRoutes);
+app.get('/metrics', metricsHandler);
 
 app.use((req, res, next) => {
   if (env.MAINTENANCE_MODE && req.path.startsWith('/api/') && !req.path.startsWith('/api/admin')) {
