@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Article - Destination EtherBay</title>
+    <meta name="description" content="Le magazine de Destination EtherBay : idées de sorties, histoire et bons plans." />
+    <meta name="theme-color" content="#253D2C" />
+    <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <script type="module" src="assets/js/main.js"></script>
+  </head>
+  <body data-page="article" data-nav="decouvrir">
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div id="preheader"></div>
+    <header id="site-header"></header>
+
+    <main id="contenu">
+      <div class="container"><nav class="breadcrumb" aria-label="Fil d'Ariane" data-crumb><a href="index.html">Accueil</a></nav></div>
+      <article class="container article" data-article style="padding-top: 30px"></article>
+      <section class="section section--alt" aria-labelledby="more-title">
+        <div class="container">
+          <div class="slider slider--3" data-slider>
+            <div class="slider__head">
+              <h2 class="section__title" id="more-title" style="margin: 0">À lire aussi</h2>
+              <div class="slider__nav"><button class="slider__btn" type="button" data-slider-prev aria-label="Précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><button class="slider__btn" type="button" data-slider-next aria-label="Suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>
+            </div>
+            <div class="slider__track" data-posts></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+  </body>
+</html>
