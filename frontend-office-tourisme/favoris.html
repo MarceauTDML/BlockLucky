@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mes favoris - Destination EtherBay</title>
+    <meta name="description" content="Retrouvez vos sorties, restaurants et hébergements favoris à EtherBay." />
+    <meta name="theme-color" content="#253D2C" />
+    <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <script type="module" src="assets/js/main.js"></script>
+  </head>
+  <body data-page="favoris">
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div id="preheader"></div>
+    <header id="site-header"></header>
+
+    <main id="contenu">
+      <div class="container"><nav class="breadcrumb" aria-label="Fil d'Ariane"><a href="index.html">Accueil</a><span aria-hidden="true">»</span>Mes favoris</nav></div>
+      <section class="page-hero">
+        <div class="container">
+          <h1 class="page-hero__title">Mes favoris</h1>
+          <p class="page-hero__intro">Retrouvez ici toutes les sorties et bonnes adresses que vous avez mises de côté pendant votre visite. Vos favoris sont enregistrés sur cet appareil.</p>
+        </div>
+      </section>
+      <section class="section" style="padding-top: 0">
+        <div class="container">
+          <h2 class="results__count" data-favorites-count aria-live="polite"></h2>
+          <div data-favorites></div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+  </body>
+</html>
