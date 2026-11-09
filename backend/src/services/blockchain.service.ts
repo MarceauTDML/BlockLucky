@@ -6,6 +6,13 @@ import logger from '../utils/logger.util';
 
 const CIRCUIT_BREAKER_KEY = 'blockchain:circuit_breaker';
 const FALLBACK_STATE_KEY = 'blockchain:fallback_active';
+const RPC_TIMEOUT_MS = 10000;
+
+const createRpcRequest = (url: string): ethers.FetchRequest => {
+  const request = new ethers.FetchRequest(url);
+  request.timeout = RPC_TIMEOUT_MS;
+  return request;
+};
 
 export class BlockchainService {
   private primaryProvider: ethers.JsonRpcProvider;
@@ -14,8 +21,8 @@ export class BlockchainService {
   private isPausedMemory = false;
 
   constructor() {
-    this.primaryProvider = new ethers.JsonRpcProvider(env.RPC_URL);
-    this.fallbackProvider = new ethers.JsonRpcProvider(env.FALLBACK_RPC_URL);
+    this.primaryProvider = new ethers.JsonRpcProvider(createRpcRequest(env.RPC_URL));
+    this.fallbackProvider = new ethers.JsonRpcProvider(createRpcRequest(env.FALLBACK_RPC_URL));
   }
 
   public async getNetworkStatus(): Promise<{

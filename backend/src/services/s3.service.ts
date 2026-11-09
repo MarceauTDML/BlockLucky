@@ -11,6 +11,8 @@ export class S3Service {
       region: env.AWS_REGION,
       endpoint: env.AWS_S3_ENDPOINT,
       forcePathStyle: true,
+      maxAttempts: 3,
+      requestHandler: { connectionTimeout: 3000, requestTimeout: 10000 },
       credentials: {
         accessKeyId: env.AWS_ACCESS_KEY_ID,
         secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
