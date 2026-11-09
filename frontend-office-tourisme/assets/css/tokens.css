@@ -1,0 +1,48 @@
+:root {
+  --eb-green: #253d2c;
+  --eb-green-light: #3b5e46;
+  --eb-green-soft: #6b9b79;
+  --eb-terracotta: #c86d51;
+  --eb-terracotta-text: #a9553c;
+  --eb-sand: #f7f6f2;
+  --eb-stone: #efece6;
+  --eb-border: #e4e2dd;
+  --eb-ink: #18181b;
+  --eb-ink-soft: #52525b;
+  --eb-muted: #6e6d68;
+  --eb-white: #ffffff;
+
+  --color-bg: var(--eb-white);
+  --color-bg-alt: var(--eb-stone);
+  --color-text: var(--eb-ink);
+  --color-text-soft: var(--eb-ink-soft);
+  --color-accent: var(--eb-terracotta);
+  --color-accent-text: var(--eb-terracotta-text);
+  --color-cta: var(--eb-green);
+  --color-cta-hover: var(--eb-green-light);
+  --color-bar: var(--eb-ink);
+
+  --font-display: 'Jost', 'Futura', 'Century Gothic', 'Trebuchet MS', sans-serif;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --fs-hero: clamp(2.6rem, 6vw, 5.4rem);
+  --fs-h1: clamp(2.2rem, 4.6vw, 4.05rem);
+  --fs-h2: clamp(1.9rem, 3.6vw, 3.1rem);
+  --fs-h3: clamp(1.15rem, 1.6vw, 1.4rem);
+  --fs-body: 1.125rem;
+  --fs-small: 0.9375rem;
+  --fs-xs: 0.8125rem;
+
+  --container: 1180px;
+  --container-wide: 1320px;
+  --gutter: clamp(20px, 4vw, 40px);
+  --section-space: clamp(64px, 9vw, 120px);
+
+  --radius-pill: 999px;
+  --radius-card: 0;
+  --shadow-soft: 0 10px 30px rgba(24, 24, 27, 0.08);
+
+  --header-h: 88px;
+  --preheader-h: 44px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
