@@ -3,6 +3,7 @@ import marketplaceController from './marketplace.controllers';
 import { authenticate } from '../../middlewares/auth.middleware';
 import { requireRoles } from '../../middlewares/rbac.middleware';
 import { validate } from '../../middlewares/validate.middleware';
+import { idempotency } from '../../middlewares/idempotency.middleware';
 import { claimRewardSchema, usePromoCodeSchema } from './marketplace.validators';
 
 const router = Router();
@@ -48,6 +49,7 @@ router.get('/points', authenticate, (req, res, next) =>
 router.post(
   '/claim',
   authenticate,
+  idempotency,
   validate(claimRewardSchema),
   (req, res, next) => marketplaceController.claimReward(req, res, next)
 );

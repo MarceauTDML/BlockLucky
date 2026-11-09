@@ -3,6 +3,7 @@ import lotteryController from './lottery.controllers';
 import { authenticate } from '../../middlewares/auth.middleware';
 import { requireRoles } from '../../middlewares/rbac.middleware';
 import { validate } from '../../middlewares/validate.middleware';
+import { idempotency } from '../../middlewares/idempotency.middleware';
 import { buyTicketSchema, giftTicketSchema, triggerDrawSchema } from './lottery.validators';
 
 const router = Router();
@@ -46,6 +47,7 @@ router.get('/leaderboard', (req, res, next) => lotteryController.getLeaderboard(
 router.post(
   '/buy',
   authenticate,
+  idempotency,
   validate(buyTicketSchema),
   (req, res, next) => lotteryController.buyTicket(req, res, next)
 );
@@ -60,6 +62,7 @@ router.post(
 router.post(
   '/gift',
   authenticate,
+  idempotency,
   validate(giftTicketSchema),
   (req, res, next) => lotteryController.giftTicket(req, res, next)
 );
