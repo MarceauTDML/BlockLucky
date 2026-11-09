@@ -13,6 +13,7 @@ const PAGES = {
   dormir: () => import('./pages/listing.js'),
   fiche: () => import('./pages/fiche.js'),
   article: () => import('./pages/article.js'),
+  favoris: () => import('./pages/favoris.js'),
 };
 
 const initReveal = () => {
