@@ -1,6 +1,7 @@
 import { addToCart, cartLines, cartTotals, clearCart, createOrderNumber, euro, findOrder, saveOrder, setDate, setQuantity, ticketDateRange } from '../modules/cart.js';
 import { ICONS } from '../modules/icons.js';
 import { $, $$, escapeHtml, formatLongDate, params, storage, visualSrc } from '../modules/utils.js';
+import qrcode from '../vendor/qrcode.mjs';
 
 const STEPS = [
   { id: 'panier', label: 'Panier' },
@@ -187,6 +188,13 @@ const renderPayment = (lines) => {
     </div>`;
 };
 
+const qrSvg = (payload) => {
+  const qr = qrcode(0, 'M');
+  qr.addData(payload);
+  qr.make();
+  return qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+};
+
 const renderConfirmation = (order) => `
   ${stepper('confirmation')}
   <section class="confirmation" aria-labelledby="step-title">
@@ -213,6 +221,7 @@ const renderConfirmation = (order) => `
               <div><dt>N° de billet</dt><dd>${t.code}</dd></div>
             </dl>
           </div>
+          <div class="e-ticket__qr"><div class="e-ticket__code" role="img" aria-label="QR code du billet ${t.code}">${qrSvg(`ETHERBAY|${t.code}|${t.ticketId}|${t.date}`)}</div><small>Présentez ce QR code à l'entrée</small></div>
         </li>`).join('')}
     </ul>
   </section>`;
