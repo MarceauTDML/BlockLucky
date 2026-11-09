@@ -8,6 +8,7 @@ import ThemeProvider from '@/theme/ThemeProvider';
 import storage, { KEYS } from '@/lib/storage';
 import { captureUtmSource } from '@/lib/analytics';
 import { UserProfile } from '@/types/user.types';
+import GlobalOverlays from '@/components/layout/GlobalOverlays';
 
 const SessionBootstrap: React.FC<{ store: AppStore }> = ({ store }) => {
   useEffect(() => {
@@ -29,6 +30,7 @@ export const Providers: React.FC<{ children: React.ReactNode }> = ({ children })
       <ThemeProvider>
         <SessionBootstrap store={store} />
         {children}
+        <GlobalOverlays />
       </ThemeProvider>
     </Provider>
   );
