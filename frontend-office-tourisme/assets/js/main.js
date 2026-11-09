@@ -10,6 +10,7 @@ const PAGES = {
   decouvrir: () => import('./pages/decouvrir.js'),
   sortir: () => import('./pages/sortir.js'),
   manger: () => import('./pages/listing.js'),
+  dormir: () => import('./pages/listing.js'),
 };
 
 const initReveal = () => {

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Les hébergements à EtherBay - Destination EtherBay</title>
+    <meta name="description" content="Hôtels, chambres d'hôtes, auberge, camping et résidences : trouvez où dormir à EtherBay." />
+    <meta name="theme-color" content="#253D2C" />
+    <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <script type="module" src="assets/js/main.js"></script>
+  </head>
+  <body data-page="dormir">
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div id="preheader"></div>
+    <header id="site-header"></header>
+
+    <main id="contenu">
+      <div class="container"><nav class="breadcrumb" aria-label="Fil d'Ariane"><a href="index.html">Accueil</a><span aria-hidden="true">»</span>Dormir à EtherBay</nav></div>
+      <section class="page-hero">
+        <div class="container">
+          <h1 class="page-hero__title">Dormir à EtherBay</h1>
+          <p class="page-hero__intro">Hôtel face à la mer, chambre d'hôtes dans une maison d'armateur, auberge de jeunesse sur le port ou camping au bord de la plage des Sternes : trouvez l'hébergement qui vous ressemble.</p>
+        </div>
+      </section>
+      <section class="section--map" aria-labelledby="bons-plans-title" style="padding-block: 56px">
+        <div class="container">
+          <div class="slider slider--6" data-slider>
+            <div class="slider__head">
+              <h2 class="section__title" id="bons-plans-title" style="margin: 0">Nos idées séjour</h2>
+              <div class="slider__nav"><button class="slider__btn" type="button" data-slider-prev aria-label="Précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><button class="slider__btn" type="button" data-slider-next aria-label="Suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>
+            </div>
+            <div class="slider__track" data-bons-plans></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section anchor-section" id="resultats" aria-labelledby="results-title">
+        <div class="container">
+          <div class="pills" data-quick-filters role="group" aria-label="Sélections" style="justify-content: center; margin-bottom: 44px"></div>
+          <div class="listing">
+            <button class="btn btn--outline btn--sm filters-toggle" type="button" data-filters-toggle aria-expanded="false" aria-controls="filters"></button>
+            <aside class="filters" id="filters" data-filters aria-label="Filtres">
+              <div class="filters__search">
+                <label class="filters__label" for="search">Rechercher</label>
+                <div class="filters__input">
+                  <input id="search" type="search" placeholder="Offres" data-search autocomplete="off" />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                </div>
+              </div>
+              <div class="filters__head">
+                <span class="filters__label" style="margin: 0">Filtrer par :</span>
+                <button class="filters__clear" type="button" data-reset>Effacer les filtres</button>
+              </div>
+              <div data-filter-groups></div>
+            </aside>
+            <div>
+              <h2 class="results__count" id="results-title" data-results-count aria-live="polite"></h2>
+              <div class="results__grid" data-results></div>
+              <nav class="pagination" data-pagination aria-label="Pagination"></nav>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+  </body>
+</html>
