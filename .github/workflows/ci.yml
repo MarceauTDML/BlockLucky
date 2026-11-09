@@ -1,0 +1,217 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    name: Détection des projets modifiés
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      web: ${{ steps.filter.outputs.web }}
+      mobile: ${{ steps.filter.outputs.mobile }}
+      tourisme: ${{ steps.filter.outputs.tourisme }}
+      infra: ${{ steps.filter.outputs.infra }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - '.github/workflows/ci.yml'
+            web:
+              - 'frontend-web/**'
+              - '.github/workflows/ci.yml'
+            mobile:
+              - 'mobile-app/**'
+              - '.github/workflows/ci.yml'
+            tourisme:
+              - 'frontend-office-tourisme/**'
+              - '.github/workflows/ci.yml'
+            infra:
+              - 'docker-compose.yml'
+              - 'docker/**'
+              - '**/Dockerfile'
+              - '.github/workflows/ci.yml'
+
+  backend:
+    name: Backend (typecheck, lint, tests, migrations)
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: blocklucky_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci -d blocklucky_ci"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/blocklucky_ci?schema=public
+      REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - name: Synchronisation de .env.example avec le schéma de configuration
+        run: npm run env:check
+      - run: npm run typecheck
+      - run: npm run lint
+      - name: Migrations appliquées sur une base vierge
+        run: npx prisma migrate deploy
+      - name: Absence de dérive entre le schéma Prisma et les migrations
+        run: npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
+      - run: npm test -- --ci
+      - run: npm run compile
+
+  web:
+    name: Frontend web (lint, typecheck, tests, build)
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend-web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend-web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - uses: actions/cache@v4
+        with:
+          path: frontend-web/.next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('frontend-web/package-lock.json') }}-${{ hashFiles('frontend-web/src/**') }}
+          restore-keys: next-${{ runner.os }}-${{ hashFiles('frontend-web/package-lock.json') }}-
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+  mobile:
+    name: Application mobile (typecheck, lint)
+    needs: changes
+    if: needs.changes.outputs.mobile == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: mobile-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: mobile-app/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - name: Vérification de la configuration Expo
+        run: npx expo config --type public > /dev/null
+
+  tourisme:
+    name: Site Office de Tourisme (syntaxe et liens)
+    needs: changes
+    if: needs.changes.outputs.tourisme == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: frontend-office-tourisme
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Syntaxe des modules JavaScript
+        run: find assets/js \( -name '*.js' -o -name '*.mjs' \) -exec node --check {} \;
+      - name: Ressources locales référencées par les pages HTML
+        run: node ../.github/scripts/check-static-links.mjs .
+
+  docker:
+    name: Images Docker et Compose
+    needs: [changes, backend, web, tourisme]
+    if: >-
+      always() && !failure() && !cancelled() &&
+      (needs.changes.outputs.infra == 'true' || needs.changes.outputs.backend == 'true' ||
+       needs.changes.outputs.web == 'true' || needs.changes.outputs.tourisme == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validation de docker-compose.yml
+        run: docker compose --profile app config -q
+      - uses: docker/setup-buildx-action@v3
+      - name: Image backend
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          target: runtime
+          push: false
+          tags: blocklucky-backend:${{ github.sha }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+      - name: Image frontend web
+        uses: docker/build-push-action@v6
+        with:
+          context: frontend-web
+          push: false
+          tags: blocklucky-web:${{ github.sha }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+      - name: Image Office de Tourisme
+        uses: docker/build-push-action@v6
+        with:
+          context: frontend-office-tourisme
+          push: false
+          tags: blocklucky-tourisme:${{ github.sha }}
+          cache-from: type=gha,scope=tourisme
+          cache-to: type=gha,mode=max,scope=tourisme
