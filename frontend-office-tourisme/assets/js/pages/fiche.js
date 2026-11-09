@@ -1,6 +1,8 @@
 import { SITE } from '../data/site.js';
 import { findEvent, EVENTS } from '../data/events.js';
 import { ALL_PLACES, findPlace } from '../data/places.js';
+import { findTicketForEvent } from '../data/content.js';
+import { euro } from '../modules/cart.js';
 import { eventCard, placeCard } from '../modules/cards.js';
 import { ICONS } from '../modules/icons.js';
 import { $, escapeHtml, formatRange, params, visualSrc } from '../modules/utils.js';
@@ -38,10 +40,46 @@ const renderPlace = (p) => {
   };
 };
 
-const eventAction = (e) =>
-  e.lottery
-    ? `<a class="btn" href="${SITE.lotteryAppUrl}" target="_blank" rel="noopener">Accéder à la loterie ${ICONS.arrow}</a>`
-    : `<a class="btn" href="billetterie.html">Réserver ${ICONS.arrow}</a>`;
+const eventAction = (e) => {
+  if (e.lottery) return `<a class="btn" href="${SITE.lotteryAppUrl}" target="_blank" rel="noopener">Accéder à la loterie ${ICONS.arrow}</a>`;
+  const ticket = findTicketForEvent(e.id);
+  if (ticket) return `<a class="btn" href="commande.html?ajout=${ticket.id}">Réserver · ${euro(ticket.amount)} ${ICONS.arrow}</a>`;
+  return `<button class="btn" type="button" data-ics="${e.id}">Ajouter à mon agenda ${ICONS.arrow}</button>`;
+};
+
+const icsDate = (iso, addDays = 0) => {
+  const d = new Date(`${iso}T00:00:00`);
+  d.setDate(d.getDate() + addDays);
+  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const icsText = (value) => String(value).replace(/[\\;,]/g, (c) => `\\${c}`).replace(/\n/g, '\\n');
+
+const downloadIcs = (e) => {
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Destination EtherBay//Office de Tourisme//FR',
+    'BEGIN:VEVENT',
+    `UID:${e.id}@tourisme-etherbay.fr`,
+    `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+    `DTSTART;VALUE=DATE:${icsDate(e.start)}`,
+    `DTEND;VALUE=DATE:${icsDate(e.end, 1)}`,
+    `SUMMARY:${icsText(e.title)}`,
+    `LOCATION:${icsText(`${e.place}, EtherBay`)}`,
+    `DESCRIPTION:${icsText(e.description)}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ];
+  const url = URL.createObjectURL(new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${e.id}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
 
 const renderEvent = (e) => ({
   title: e.title,
@@ -57,7 +95,7 @@ const renderEvent = (e) => ({
         <dl class="fiche-info">
           ${row('Dates', formatRange(e.start, e.end))}
           ${row('Lieu', escapeHtml(e.place))}
-          ${row('Tarif', escapeHtml(e.price || 'Voir le site de l’organisateur'))}
+          ${row('Tarif', escapeHtml(findTicketForEvent(e.id) ? `${euro(findTicketForEvent(e.id).amount)} en billetterie en ligne` : e.price || 'Voir le site de l’organisateur'))}
         </dl>
         <div class="fiche-hero__actions">
           ${eventAction(e)}
@@ -87,5 +125,9 @@ export default function initFiche() {
   $('[data-map-label]').textContent = view.map;
   $('[data-related]').innerHTML = view.related.map((c) => `<div>${c}</div>`).join('');
   $('[data-map-pin]').innerHTML = ICONS.pin;
-
+  if (event) {
+    root.addEventListener('click', (ev) => {
+      if (ev.target.closest('[data-ics]')) downloadIcs(event);
+    });
+  }
 }
