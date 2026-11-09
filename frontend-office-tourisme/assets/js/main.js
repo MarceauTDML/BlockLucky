@@ -11,6 +11,7 @@ const PAGES = {
   sortir: () => import('./pages/sortir.js'),
   manger: () => import('./pages/listing.js'),
   dormir: () => import('./pages/listing.js'),
+  fiche: () => import('./pages/fiche.js'),
 };
 
 const initReveal = () => {
