@@ -1,6 +1,6 @@
 import { FOOTER_BOTTOM, FOOTER_LINKS, FOOTER_TOP, LABELS, MAIN_NAV, OPENING_HOURS, PRE_HEADER, SITE, SOCIALS } from '../data/site.js';
 import { BRAND_WAVE, ICONS } from './icons.js';
-import { $, escapeHtml } from './utils.js';
+import { $, escapeHtml, toast } from './utils.js';
 
 const brand = (extraClass = '') => `
   <a class="brand ${extraClass}" href="index.html" aria-label="${escapeHtml(SITE.fullName)}, retour à l'accueil">
@@ -108,12 +108,13 @@ const footer = () => `
         </ul>
         <div class="lang-select">
           <label class="sr-only" for="lang">Langue</label>
-          <select id="lang" data-lang-select>
+          <select id="lang" data-lang-select aria-describedby="lang-note">
             <option value="fr" selected>Français</option>
             <option value="en">English</option>
             <option value="br">Brezhoneg</option>
           </select>
         </div>
+        <p class="lang-note" id="lang-note" data-lang-note hidden></p>
       </div>
     </div>
   </div>
@@ -172,6 +173,25 @@ const initMobileMenu = () => {
   });
 };
 
+const LANGUAGE_NOTES = {
+  en: 'English translation coming soon. The site is currently available in French only.',
+  br: 'Troidigezh e brezhoneg a-benn nebeut. Traduction en breton à venir.',
+};
+
+const initLanguageSelect = () => {
+  const select = $('[data-lang-select]');
+  const note = $('[data-lang-note]');
+  if (!select || !note) return;
+  select.addEventListener('change', () => {
+    const message = LANGUAGE_NOTES[select.value];
+    if (!message) return;
+    note.textContent = message;
+    note.hidden = false;
+    toast('Traduction à venir');
+    select.value = 'fr';
+  });
+};
+
 const initBackToTop = () => {
   const btn = document.createElement('button');
   btn.className = 'back-to-top';
@@ -199,7 +219,10 @@ export const renderLayout = ({ current, overlay }) => {
   }
 
   const footerEl = $('#site-footer');
-  if (footerEl) footerEl.innerHTML = footer();
+  if (footerEl) {
+    footerEl.innerHTML = footer();
+    initLanguageSelect();
+  }
 
   initBackToTop();
 };
