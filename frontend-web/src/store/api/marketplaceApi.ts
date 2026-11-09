@@ -5,6 +5,7 @@ import {
   ClaimedRewardCode,
   PointsBalanceResponse,
 } from '@/types/api.types';
+import { RedeemCodeResponse } from '@/types/partner.types';
 
 export const marketplaceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -38,6 +39,10 @@ export const marketplaceApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Marketplace', 'Points', 'User'],
     }),
+    redeemCode: builder.mutation<ApiResponse<RedeemCodeResponse>, { uniqueCode: string }>({
+      query: (body) => ({ url: '/marketplace/redeem', method: 'POST', body }),
+      invalidatesTags: ['Partners', 'Marketplace'],
+    }),
     getMyCodes: builder.query<ApiResponse<{ codes: ClaimedRewardCode[] }>, void>({
       query: () => '/marketplace/my-codes',
       providesTags: ['Marketplace'],
@@ -51,4 +56,5 @@ export const {
   useGetPointsBalanceQuery,
   useClaimRewardMutation,
   useGetMyCodesQuery,
+  useRedeemCodeMutation,
 } = marketplaceApi;
