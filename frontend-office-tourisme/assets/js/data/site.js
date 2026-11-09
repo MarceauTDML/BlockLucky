@@ -69,11 +69,11 @@ export const OPENING_HOURS = [
 ];
 
 export const SOCIALS = [
-  { label: 'YouTube', key: 'youtube', href: '#' },
-  { label: 'Instagram', key: 'instagram', href: '#' },
-  { label: 'Facebook', key: 'facebook', href: '#' },
-  { label: 'LinkedIn', key: 'linkedin', href: '#' },
-  { label: 'TikTok', key: 'tiktok', href: '#' },
+  { label: 'YouTube', key: 'youtube', href: 'bientot.html?reseau=youtube' },
+  { label: 'Instagram', key: 'instagram', href: 'bientot.html?reseau=instagram' },
+  { label: 'Facebook', key: 'facebook', href: 'bientot.html?reseau=facebook' },
+  { label: 'LinkedIn', key: 'linkedin', href: 'bientot.html?reseau=linkedin' },
+  { label: 'TikTok', key: 'tiktok', href: 'bientot.html?reseau=tiktok' },
 ];
 
 export const LABELS = [
