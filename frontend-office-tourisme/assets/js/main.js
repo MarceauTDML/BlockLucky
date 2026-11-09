@@ -3,6 +3,7 @@ import { initFavorites, syncHearts } from './modules/favorites.js';
 import { initSliders } from './modules/slider.js';
 import { initCookies } from './modules/cookies.js';
 import { initNewsletter } from './modules/newsletter.js';
+import { updateCartCount } from './modules/cart.js';
 import { $$ } from './modules/utils.js';
 
 const PAGES = {
@@ -14,6 +15,7 @@ const PAGES = {
   fiche: () => import('./pages/fiche.js'),
   article: () => import('./pages/article.js'),
   favoris: () => import('./pages/favoris.js'),
+  billetterie: () => import('./pages/billetterie.js'),
 };
 
 const initReveal = () => {
@@ -49,6 +51,7 @@ const boot = async () => {
   initSliders();
   initFavorites();
   syncHearts();
+  updateCartCount();
   initNewsletter();
   initCookies();
   initReveal();

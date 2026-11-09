@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Billetterie - Destination EtherBay</title>
+    <meta name="description" content="Visites guidées, Pass EtherBay, croisières et Lumières du Port : réservez vos billets en ligne." />
+    <meta name="theme-color" content="#253D2C" />
+    <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <script type="module" src="assets/js/main.js"></script>
+  </head>
+  <body data-page="billetterie">
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div id="preheader"></div>
+    <header id="site-header"></header>
+
+    <main id="contenu">
+      <div class="container"><nav class="breadcrumb" aria-label="Fil d'Ariane"><a href="index.html">Accueil</a><span aria-hidden="true">»</span>Billetterie</nav></div>
+      <section class="page-hero">
+        <div class="container">
+          <h1 class="page-hero__title">Billetterie</h1>
+          <p class="page-hero__intro">Visites guidées, Pass EtherBay, croisières dans la baie et parcours des Lumières du Port : réservez vos billets en ligne et évitez l'attente à l'Office de Tourisme.</p>
+        </div>
+      </section>
+      <section class="section" style="padding-top: 0" aria-label="Offres">
+        <div class="container">
+          <div class="stack" data-tickets></div>
+          <div class="cart-summary" data-cart-summary hidden>
+            <div><span>Votre panier</span><br /><strong data-cart-total aria-live="polite"></strong></div>
+            <a class="btn btn--accent" href="commande.html" data-checkout></a>
+          </div>
+          <p class="demo-note">Site de démonstration : aucun paiement n'est demandé ni encaissé.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+  </body>
+</html>
