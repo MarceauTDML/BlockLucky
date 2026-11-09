@@ -6,6 +6,7 @@ import { initNewsletter } from './modules/newsletter.js';
 import { $$ } from './modules/utils.js';
 
 const PAGES = {
+  home: () => import('./pages/home.js'),
 };
 
 const initReveal = () => {

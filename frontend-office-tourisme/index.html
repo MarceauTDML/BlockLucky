@@ -16,15 +16,58 @@
     <link rel="stylesheet" href="assets/css/main.css" />
     <script type="module" src="assets/js/main.js"></script>
   </head>
-  <body data-page="home">
+  <body data-page="home" data-overlay="true">
     <a class="skip-link" href="#contenu">Aller au contenu</a>
     <div id="preheader"></div>
     <header id="site-header"></header>
 
-    <main id="contenu" class="container section">
-      <p class="eyebrow">Office de Tourisme</p>
-      <h1 class="section__title">Destination EtherBay</h1>
-      <p>Le site de l'Office de Tourisme de la Ville d'EtherBay arrive bientôt.</p>
+    <main id="contenu">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__media"><img src="assets/img/photos/hero-port.jpg" alt="" fetchpriority="high" /></div>
+        <div class="container container--wide hero__content">
+          <h1 class="hero__title" id="hero-title">Que faire à EtherBay en novembre ?</h1>
+          <a class="btn btn--accent" href="article.html?id=novembre-etherbay">Idées de sorties
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </a>
+        </div>
+      </section>
+
+      <section class="home-feature" aria-labelledby="nouveaute-title">
+        <div class="container">
+          <div class="feature-banner reveal">
+            <div class="feature-banner__media"><img src="assets/img/photos/bandeau-loterie.jpg" alt="" loading="lazy" /></div>
+            <div class="feature-banner__content">
+              <p class="eyebrow">Nouveauté</p>
+              <h2 class="feature-banner__title" id="nouveaute-title">La Grande Loterie citoyenne</h2>
+              <div class="feature-banner__text">
+                <p>Pour les fêtes de fin d'année, la Ville d'EtherBay lance sa première loterie pédagogique sur blockchain : chaque habitant majeur peut participer avec des ethers fictifs et suivre son ticket en toute transparence.</p>
+                <p>Tirage public certifié le 19 décembre place de la Mairie, et des EtherPoints à échanger chez les commerçants partenaires de la ville.</p>
+              </div>
+              <a class="btn" href="fiche.html?event=loterie-citoyenne">Je participe
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="incontournables-title">
+        <div class="container">
+          <div class="section__head section__head--center reveal">
+            <h2 class="section__title" id="incontournables-title">Les incontournables</h2>
+            <p class="section__intro">Découvrez nos guides et bons plans pour réussir votre séjour dans la perle de la baie : tous les lieux, monuments et expériences à ne pas rater.</p>
+          </div>
+          <div class="slider slider--3" data-slider>
+            <div class="slider__track" data-incontournables></div>
+            <div class="slider__head" style="justify-content: center; margin: 34px 0 0">
+              <a class="btn" href="decouvrir.html">Tous les incontournables
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <footer id="site-footer"></footer>
