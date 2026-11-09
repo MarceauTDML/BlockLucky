@@ -1,5 +1,203 @@
 @import 'tailwindcss';
 
-body {
-  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root {
+  --bg: #f7f6f2;
+  --surface: #ffffff;
+  --surface-elevated: #efece6;
+  --primary: #253d2c;
+  --primary-light: #3b5e46;
+  --secondary: #c86d51;
+  --text: #18181b;
+  --text-secondary: #52525b;
+  --text-muted: #8e8e93;
+  --border: #e4e2dd;
+  --success: #2e6f40;
+  --warning: #b45309;
+  --error: #b91c1c;
+  --on-primary: #f7f6f2;
+  --overlay: rgba(20, 20, 19, 0.48);
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: #141413;
+  --surface: #1e1e1c;
+  --surface-elevated: #282826;
+  --primary: #4e7a5b;
+  --primary-light: #6b9b79;
+  --secondary: #c86d51;
+  --text: #f5f4f0;
+  --text-secondary: #a1a09a;
+  --text-muted: #6e6d68;
+  --border: #2e2e2b;
+  --success: #4e7a5b;
+  --warning: #d97706;
+  --error: #dc2626;
+  --on-primary: #f7f6f2;
+  --overlay: rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-secondary: var(--secondary);
+  --color-fg: var(--text);
+  --color-fg-secondary: var(--text-secondary);
+  --color-fg-muted: var(--text-muted);
+  --color-line: var(--border);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-on-primary: var(--on-primary);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-small: 13px;
+  --text-small--line-height: 18px;
+  --text-body: 15px;
+  --text-body--line-height: 22px;
+  --text-subtitle: 17px;
+  --text-subtitle--line-height: 24px;
+  --text-heading: 20px;
+  --text-heading--line-height: 28px;
+  --text-title: 24px;
+  --text-title--line-height: 32px;
+  --text-hero: 30px;
+  --text-hero--line-height: 38px;
+  --text-display: 44px;
+  --text-display--line-height: 52px;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 22px;
+    letter-spacing: -0.15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+  :focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+}
+
+@utility eyebrow-caps {
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+@utility card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes bl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes bl-shimmer {
+  0% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.55;
+  }
+}
+@keyframes bl-slide-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes bl-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes bl-drop-in {
+  from {
+    transform: translateY(-16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-bl-spin {
+  animation: bl-spin 1.6s linear infinite;
+}
+.animate-bl-shimmer {
+  animation: bl-shimmer 1.4s ease-in-out infinite;
+}
+.animate-bl-slide-up {
+  animation: bl-slide-up 0.22s ease-out;
+}
+.animate-bl-fade-in {
+  animation: bl-fade-in 0.18s ease-out;
+}
+.animate-bl-drop-in {
+  animation: bl-drop-in 0.25s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
 }
