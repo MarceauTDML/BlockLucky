@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client';
 import secureStorage from './secureStorage';
 
 export const WS_BASE_URL =
-  process.env.EXPO_PUBLIC_WS_URL || 'http://localhost:4000';
+  process.env.EXPO_PUBLIC_WS_URL || 'http://localhost:2053';
 
 class SocketClientService {
   private socket: Socket | null = null;
