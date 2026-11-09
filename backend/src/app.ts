@@ -6,6 +6,7 @@ import swaggerSpec from './config/swagger.config';
 import { globalRateLimiter } from './middlewares/rateLimiter.middleware';
 import { notFoundHandler, errorHandler } from './middlewares/error.middleware';
 import blockchainService from './services/blockchain.service';
+import { requestContextMiddleware } from './middlewares/request-context.middleware';
 
 import authRoutes from './api/auth/auth.routes';
 import lotteryRoutes from './api/lottery/lottery.routes';
@@ -18,6 +19,7 @@ import webhooksRoutes from './api/webhooks/webhooks.routes';
 
 const app: Application = express();
 
+app.use(requestContextMiddleware);
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
