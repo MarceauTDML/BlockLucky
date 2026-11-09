@@ -12,6 +12,7 @@ const PAGES = {
   manger: () => import('./pages/listing.js'),
   dormir: () => import('./pages/listing.js'),
   fiche: () => import('./pages/fiche.js'),
+  article: () => import('./pages/article.js'),
 };
 
 const initReveal = () => {
