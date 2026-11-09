@@ -16,6 +16,7 @@ const PAGES = {
   article: () => import('./pages/article.js'),
   favoris: () => import('./pages/favoris.js'),
   billetterie: () => import('./pages/billetterie.js'),
+  commande: () => import('./pages/commande.js'),
 };
 
 const initReveal = () => {

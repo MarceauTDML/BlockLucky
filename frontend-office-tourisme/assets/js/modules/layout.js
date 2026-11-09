@@ -23,7 +23,7 @@ const header = (current) => `
     </nav>
     <div class="header-actions">
       <a class="btn btn--sm" href="billetterie.html"${current === 'billetterie' ? ' aria-current="page"' : ''}>Billetterie ${ICONS.arrow}</a>
-      <a class="icon-btn" href="billetterie.html" aria-label="Panier">
+      <a class="icon-btn" href="commande.html" aria-label="Panier">
         ${ICONS.bag}
         <span class="icon-btn__count" data-cart-count hidden>0</span>
       </a>
