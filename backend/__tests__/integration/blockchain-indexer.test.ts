@@ -15,6 +15,7 @@ jest.mock('../../src/config/redis.config', () => ({
 }));
 
 import app from '../../src/app';
+import { env } from '../../src/config/env.config';
 
 describe('Blockchain Indexer Integration (/api/webhooks/blockchain)', () => {
   beforeEach(() => {
@@ -34,12 +35,31 @@ describe('Blockchain Indexer Integration (/api/webhooks/blockchain)', () => {
       },
     };
 
-    const firstRes = await request(app).post('/api/webhooks/blockchain').send(payload);
+    const firstRes = await request(app)
+      .post('/api/webhooks/blockchain')
+      .set('x-webhook-secret', env.WEBHOOK_SECRET)
+      .send(payload);
     expect(firstRes.status).toBe(200);
     expect(firstRes.body.data.alreadyIndexed).toBe(false);
 
-    const secondRes = await request(app).post('/api/webhooks/blockchain').send(payload);
+    const secondRes = await request(app)
+      .post('/api/webhooks/blockchain')
+      .set('x-webhook-secret', env.WEBHOOK_SECRET)
+      .send(payload);
     expect(secondRes.status).toBe(200);
     expect(secondRes.body.data.alreadyIndexed).toBe(true);
+  });
+
+  it('should reject a webhook without a valid secret', async () => {
+    const payload = { eventType: 'RPC_FALLBACK_SWITCH', payload: { active: true } };
+
+    const missing = await request(app).post('/api/webhooks/blockchain').send(payload);
+    expect(missing.status).toBe(401);
+
+    const wrong = await request(app)
+      .post('/api/webhooks/blockchain')
+      .set('x-webhook-secret', 'mauvais-secret')
+      .send(payload);
+    expect(wrong.status).toBe(401);
   });
 });
