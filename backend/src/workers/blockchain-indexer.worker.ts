@@ -1,6 +1,7 @@
 import prisma from '../config/prisma.config';
 import ledgerService from '../services/ledger.service';
 import logger from '../utils/logger.util';
+import { businessEventsTotal } from '../observability/metrics';
 
 export interface IndexedTicketEvent {
   transactionHash: string;
@@ -74,6 +75,7 @@ export class BlockchainIndexerWorker {
       `Achat de ticket sur le Round #${event.contractRoundId} (${event.transactionHash.slice(0, 10)}...)`
     );
 
+    businessEventsTotal.inc({ event: 'ticket_indexed' });
     logger.info(`Événement Blockchain TicketPurchased indexé: ${event.transactionHash}`);
     return { ticket, alreadyIndexed: false };
   }
