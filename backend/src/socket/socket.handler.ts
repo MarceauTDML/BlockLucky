@@ -5,6 +5,7 @@ import { registerLiveDrawEvents } from './events/live-draw.events';
 import { registerChatEvents } from './events/chat.events';
 import { ClientToServerEvents, ServerToClientEvents } from '../types/socket.types';
 import logger from '../utils/logger.util';
+import { corsOrigins } from '../config/env.config';
 
 let ioInstance: Server<ClientToServerEvents, ServerToClientEvents> | null = null;
 
@@ -13,7 +14,8 @@ export const initSocketServer = (
 ): Server<ClientToServerEvents, ServerToClientEvents> => {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
     cors: {
-      origin: '*',
+      origin: corsOrigins,
+      credentials: true,
       methods: ['GET', 'POST'],
     },
   });
