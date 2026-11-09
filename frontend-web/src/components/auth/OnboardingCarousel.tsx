@@ -1,0 +1,96 @@
+'use client';
+
+import React, { useState } from 'react';
+import Button from '@/components/ui/Button';
+import { cn } from '@/lib/cn';
+import { useGetOnboardingQuery } from '@/store/api/authApi';
+import { useAppTheme } from '@/theme/ThemeProvider';
+
+export const OnboardingCarousel: React.FC<{ onDone?: () => void; className?: string }> = ({ onDone, className }) => {
+  const { t, language } = useAppTheme();
+  const { data } = useGetOnboardingQuery();
+  const rawSlides = data?.data?.slides;
+  const [index, setIndex] = useState(0);
+
+  const fallback = [
+    {
+      step: 1,
+      title: t("Loterie citoyenne d'EtherBay", 'EtherBay Community Lottery'),
+      description: t(
+        "Participez au tirage municipal de fin d'année. Chaque participation est vérifiable et transparente sur la blockchain.",
+        'Take part in the year-end city draw. Every entry is verifiable and transparent on the blockchain.'
+      ),
+    },
+    {
+      step: 2,
+      title: t('Participation en un clic sans frais', 'One-click Gasless Entry'),
+      description: t(
+        "Les frais techniques du réseau sont pris en charge par la ville. En cas d'annulation, le remboursement est automatique.",
+        'Network gas fees are sponsored by the city. If the draw is cancelled, a full refund is automatic.'
+      ),
+    },
+    {
+      step: 3,
+      title: t('EtherPoints et économie locale', 'EtherPoints & Local Rewards'),
+      description: t(
+        "Cumulez des points à chaque participation et échangez-les contre des réductions chez les commerçants d'EtherBay.",
+        'Earn points with every entry and redeem them for discounts at local EtherBay merchants.'
+      ),
+    },
+    {
+      step: 4,
+      title: t('Tirage en direct certifié', 'Certified Live Draw'),
+      description: t(
+        "Rejoignez la salle d'attente 10 minutes avant l'échéance et recevez votre badge commémoratif POAP.",
+        'Join the waiting room 10 minutes before the draw and collect your commemorative POAP badge.'
+      ),
+    },
+  ];
+
+  const slides = language === 'FR' && Array.isArray(rawSlides) && rawSlides.length > 0 ? rawSlides : fallback;
+  const current = slides[Math.min(index, slides.length - 1)];
+  const isLast = index >= slides.length - 1;
+
+  return (
+    <section className={cn('flex flex-col gap-[18px]', className)} aria-roledescription="carousel" aria-label="Onboarding">
+      <div className="card p-7" aria-live="polite">
+        <span className="mb-3.5 inline-block rounded-sm bg-surface-elevated px-2.5 py-1 text-caption font-bold text-secondary">
+          {t(`Étape ${current.step} / ${slides.length}`, `Step ${current.step} / ${slides.length}`)}
+        </span>
+        <h2 className="mb-2.5 text-title font-bold">{current.title}</h2>
+        <p className="text-body text-fg-secondary">{current.description}</p>
+      </div>
+
+      <div className="flex justify-center gap-1.5" role="tablist" aria-label={t('Étapes', 'Steps')}>
+        {slides.map((s, idx) => (
+          <button
+            key={s.step}
+            type="button"
+            role="tab"
+            aria-selected={idx === index}
+            aria-label={t(`Aller à l'étape ${idx + 1}`, `Go to step ${idx + 1}`)}
+            onClick={() => setIndex(idx)}
+            className={cn('h-1.5 rounded-full transition-all', idx === index ? 'w-[22px] bg-primary' : 'w-2 bg-line')}
+          />
+        ))}
+      </div>
+
+      <div className="flex gap-2.5">
+        {index > 0 ? (
+          <Button variant="outline" onClick={() => setIndex((i) => i - 1)} className="flex-1">
+            {t('Précédent', 'Previous')}
+          </Button>
+        ) : null}
+        <Button
+          className="flex-1"
+          onClick={() => (isLast ? onDone?.() : setIndex((i) => i + 1))}
+          disabled={isLast && !onDone}
+        >
+          {isLast ? t('Accéder à la connexion', 'Proceed to Sign In') : t('Suivant', 'Next')}
+        </Button>
+      </div>
+    </section>
+  );
+};
+
+export default OnboardingCarousel;
