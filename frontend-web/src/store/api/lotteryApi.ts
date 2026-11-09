@@ -9,6 +9,7 @@ import {
   TicketItem,
   PoapBadge,
 } from '@/types/api.types';
+import { DrawResponse, RefundResponse } from '@/types/admin.types';
 
 export const lotteryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -60,6 +61,14 @@ export const lotteryApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Lottery', 'User', 'Points'],
     }),
+    triggerDraw: builder.mutation<ApiResponse<DrawResponse>, { roundId?: string } | void>({
+      query: (body) => ({ url: '/lottery/draw', method: 'POST', body: body || {} }),
+      invalidatesTags: ['Lottery', 'Admin'],
+    }),
+    refundRound: builder.mutation<ApiResponse<RefundResponse>, { roundId?: string } | void>({
+      query: (body) => ({ url: '/lottery/refund', method: 'POST', body: body || {} }),
+      invalidatesTags: ['Lottery', 'Admin'],
+    }),
   }),
 });
 
@@ -70,4 +79,6 @@ export const {
   useGetMyTransactionsQuery,
   useBuyTicketMutation,
   useGiftTicketMutation,
+  useTriggerDrawMutation,
+  useRefundRoundMutation,
 } = lotteryApi;
