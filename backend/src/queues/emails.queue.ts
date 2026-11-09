@@ -2,6 +2,7 @@ import { Queue } from 'bullmq';
 import redis from '../config/redis.config';
 import emailService, { EmailTemplateName } from '../services/email.service';
 import logger from '../utils/logger.util';
+import { defaultJobOptions } from './queue.options';
 
 export interface EmailJobData {
   to: string;
@@ -17,19 +18,17 @@ try {
   if (rawRedis) {
     bullEmailsQueue = new Queue<EmailJobData>('emails-queue', {
       connection: rawRedis as any,
+      defaultJobOptions,
     });
   }
 } catch {
   bullEmailsQueue = null;
 }
 
-export const enqueueEmail = async (data: EmailJobData): Promise<{ queued: boolean; jobId?: string }> => {
+export const enqueueEmail = async (data: EmailJobData): Promise<{ queued: boolean; jobId?: string | undefined }> => {
   if (bullEmailsQueue) {
     try {
-      const job = await bullEmailsQueue.add('send-email', data, {
-        attempts: 3,
-        backoff: { type: 'exponential', delay: 1000 },
-      });
+      const job = await bullEmailsQueue.add('send-email', data);
       return { queued: true, jobId: job.id };
     } catch {}
   }
