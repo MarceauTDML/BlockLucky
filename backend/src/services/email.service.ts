@@ -46,7 +46,9 @@ export class EmailService {
       logger.info(`Email [${templateName}] envoyé à ${to}`);
       return true;
     } catch (error) {
-      logger.warn(`Mode simulation d'envoi d'email [${templateName}] à ${to} (SMTP non disponible en local)`);
+      logger.warn(`Mode simulation d'envoi d'email [${templateName}] à ${to} (SMTP non disponible en local)`, {
+        reason: (error as Error).message,
+      });
       return false;
     }
   }

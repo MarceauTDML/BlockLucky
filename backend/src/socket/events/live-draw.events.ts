@@ -12,7 +12,7 @@ export const registerLiveDrawEvents = (
 ) => {
   socket.on('draw:join', (roundId: string) => {
     const roomName = `draw:${roundId}`;
-    socket.join(roomName);
+    void socket.join(roomName);
     const roomSize = io.sockets.adapter.rooms.get(roomName)?.size || 1;
     io.to(roomName).emit('draw:waiting-room', {
       active: true,
@@ -22,7 +22,7 @@ export const registerLiveDrawEvents = (
 
   socket.on('draw:leave', (roundId: string) => {
     const roomName = `draw:${roundId}`;
-    socket.leave(roomName);
+    void socket.leave(roomName);
     const roomSize = io.sockets.adapter.rooms.get(roomName)?.size || 0;
     io.to(roomName).emit('draw:waiting-room', {
       active: true,
