@@ -1,0 +1,42 @@
+import { renderLayout } from './modules/layout.js';
+import { initNewsletter } from './modules/newsletter.js';
+import { $$ } from './modules/utils.js';
+
+const PAGES = {
+};
+
+const initReveal = () => {
+  const items = $$('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    items.forEach((el) => el.classList.add('is-visible'));
+    return;
+  }
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    },
+    { rootMargin: '0px 0px -10% 0px' }
+  );
+  items.forEach((el) => io.observe(el));
+};
+
+const boot = async () => {
+  const { page = '', nav = '', overlay } = document.body.dataset;
+  renderLayout({ current: nav || page, overlay: overlay === 'true' });
+
+  const loader = PAGES[page];
+  if (loader) {
+    const mod = await loader();
+    await mod.default?.(page);
+  }
+
+  initNewsletter();
+  initReveal();
+};
+
+boot();
