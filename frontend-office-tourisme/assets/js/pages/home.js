@@ -1,6 +1,6 @@
 import { EVENTS } from '../data/events.js';
-import { INCONTOURNABLES } from '../data/content.js';
-import { eventCard, tileCard } from '../modules/cards.js';
+import { ARTICLES, INCONTOURNABLES } from '../data/content.js';
+import { eventCard, postCard, tileCard } from '../modules/cards.js';
 import { syncHearts } from '../modules/favorites.js';
 import { $, $$, isOnDay } from '../modules/utils.js';
 
@@ -36,6 +36,9 @@ const renderAgenda = (filter) => {
 export default function initHome() {
   const incontournables = $('[data-incontournables]');
   if (incontournables) incontournables.innerHTML = INCONTOURNABLES.map((i) => `<div>${tileCard(i)}</div>`).join('');
+
+  const posts = $('[data-posts]');
+  if (posts) posts.innerHTML = ARTICLES.map((a) => `<div>${postCard(a)}</div>`).join('');
 
   renderAgenda('today');
   $$('[data-agenda-filter]').forEach((btn) => {
