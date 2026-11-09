@@ -1,6 +1,7 @@
 import { renderLayout } from './modules/layout.js';
 import { initFavorites, syncHearts } from './modules/favorites.js';
 import { initSliders } from './modules/slider.js';
+import { initCookies } from './modules/cookies.js';
 import { initNewsletter } from './modules/newsletter.js';
 import { $$ } from './modules/utils.js';
 
@@ -41,6 +42,7 @@ const boot = async () => {
   initFavorites();
   syncHearts();
   initNewsletter();
+  initCookies();
   initReveal();
 };
 
