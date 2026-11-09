@@ -7,7 +7,7 @@ datasource db {
 }
 
 model User {
-  id                 String             @id @default(uuid())
+  id                 String             @id @default(uuid(7))
   walletAddress      String             @unique
   email              String?            @unique
   role               Role               @default(USER)
@@ -25,9 +25,11 @@ model User {
   claimedRewards     ClaimedReward[]
   tokens             Token[]
   analytics          Analytics[]
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-  deletedAt          DateTime?
+  createdAt          DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime           @updatedAt @db.Timestamptz(3)
+  deletedAt          DateTime?          @db.Timestamptz(3)
+
+  @@index([referredById])
 }
 
 enum Role {
@@ -42,13 +44,15 @@ enum TwoFactorMethod {
 }
 
 model Token {
-  id        String    @id @default(uuid())
+  id        String    @id @default(uuid(7))
   token     String    @unique
   type      TokenType
   userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime  @default(now())
+  expiresAt DateTime  @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([userId])
 }
 
 enum TokenType {
@@ -58,15 +62,17 @@ enum TokenType {
 }
 
 model LotteryRound {
-  id                 String    @id @default(uuid())
+  id                 String    @id @default(uuid(7))
   contractRoundId    Int       @unique
   status             Status    @default(OPEN)
   prizePool          Float     @default(0.0)
   winnerWallet       String?
   chainlinkRequestId String?
-  startedAt          DateTime  @default(now())
-  drawnAt            DateTime?
+  startedAt          DateTime  @default(now()) @db.Timestamptz(3)
+  drawnAt            DateTime? @db.Timestamptz(3)
   tickets            Ticket[]
+
+  @@index([status])
 }
 
 enum Status {
@@ -77,37 +83,42 @@ enum Status {
 }
 
 model Ticket {
-  id              String       @id @default(uuid())
+  id              String       @id @default(uuid(7))
   transactionHash String       @unique
   blockNumber     Int
   userId          String
   user            User         @relation(fields: [userId], references: [id])
   lotteryId       String
   lottery         LotteryRound @relation(fields: [lotteryId], references: [id])
-  purchasedAt     DateTime     @default(now())
+  purchasedAt     DateTime     @default(now()) @db.Timestamptz(3)
+
+  @@index([userId, purchasedAt])
+  @@index([lotteryId])
 }
 
 model PointTransaction {
-  id          String   @id @default(uuid())
+  id          String   @id @default(uuid(7))
   userId      String
   user        User     @relation(fields: [userId], references: [id])
   amount      Int
   actionType  String
   description String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([userId, createdAt])
 }
 
 model Partner {
-  id        String          @id @default(uuid())
+  id        String          @id @default(uuid(7))
   name      String
   logoUrl   String
   isActive  Boolean         @default(true)
   rewards   RewardCatalog[]
-  createdAt DateTime        @default(now())
+  createdAt DateTime        @default(now()) @db.Timestamptz(3)
 }
 
 model RewardCatalog {
-  id             String          @id @default(uuid())
+  id             String          @id @default(uuid(7))
   partnerId      String
   partner        Partner         @relation(fields: [partnerId], references: [id])
   title          String
@@ -116,26 +127,34 @@ model RewardCatalog {
   remainingStock Int
   claimedRewards ClaimedReward[]
   isActive       Boolean         @default(true)
-  createdAt      DateTime        @default(now())
+  createdAt      DateTime        @default(now()) @db.Timestamptz(3)
+
+  @@index([partnerId])
 }
 
 model ClaimedReward {
-  id            String        @id @default(uuid())
+  id            String        @id @default(uuid(7))
   userId        String
   user          User          @relation(fields: [userId], references: [id])
   rewardId      String
   rewardCatalog RewardCatalog @relation(fields: [rewardId], references: [id])
   uniqueCode    String        @unique
   isUsed        Boolean       @default(false)
-  claimedAt     DateTime      @default(now())
+  claimedAt     DateTime      @default(now()) @db.Timestamptz(3)
+
+  @@index([userId, claimedAt])
+  @@index([rewardId])
 }
 
 model Analytics {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid(7))
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
   eventType String
   utmSource String?
   metadata  Json?
-  timestamp DateTime @default(now())
+  timestamp DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([eventType, timestamp])
+  @@index([userId])
 }
