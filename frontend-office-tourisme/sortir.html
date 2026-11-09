@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Que faire à EtherBay ? Agenda des sorties - Destination EtherBay</title>
+    <meta name="description" content="Concerts, festivals, expositions, visites guidées : l'agenda complet des sorties à EtherBay." />
+    <meta name="theme-color" content="#253D2C" />
+    <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <script type="module" src="assets/js/main.js"></script>
+  </head>
+  <body data-page="sortir">
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div id="preheader"></div>
+    <header id="site-header"></header>
+
+    <main id="contenu">
+      <div class="container"><nav class="breadcrumb" aria-label="Fil d'Ariane"><a href="index.html">Accueil</a><span aria-hidden="true">»</span>Sortir</nav></div>
+      <section class="page-hero">
+        <div class="container">
+          <h1 class="page-hero__title">Sortir à EtherBay</h1>
+          <p class="page-hero__intro">Concerts sur le port, festivals, expositions, visites guidées et ateliers : choisissez et réservez toutes vos sorties du moment à EtherBay et dans la baie.</p>
+        </div>
+      </section>
+      <section class="section section--map" aria-labelledby="agenda-title" style="padding-top: 56px">
+        <div class="container">
+          <div class="slider__head" style="flex-wrap: wrap">
+            <div class="pills" role="group" aria-label="Période">
+              <button class="pill" type="button" data-when="all" aria-pressed="true">Toutes les dates</button>
+              <button class="pill" type="button" data-when="today" aria-pressed="false">Aujourd'hui</button>
+              <button class="pill" type="button" data-when="tomorrow" aria-pressed="false">Demain</button>
+              <button class="pill" type="button" data-when="weekend" aria-pressed="false">Ce week-end</button>
+            </div>
+            <div class="filters__input" style="min-width: 260px; background: #fff">
+              <label class="sr-only" for="event-search">Rechercher une sortie</label>
+              <input id="event-search" type="search" placeholder="Rechercher une sortie" data-event-search autocomplete="off" />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            </div>
+          </div>
+          <div class="pills" data-categories role="group" aria-label="Catégories" style="margin-bottom: 36px"></div>
+          <h2 class="results__count" id="agenda-title" data-events-count aria-live="polite"></h2>
+          <div class="results__grid results__grid--auto" data-events></div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="salles-title">
+        <div class="container">
+          <div class="slider slider--3" data-slider>
+            <div class="slider__head">
+              <h2 class="section__title" id="salles-title" style="margin: 0">Les salles et lieux de sortie</h2>
+              <div class="slider__nav"><button class="slider__btn" type="button" data-slider-prev aria-label="Précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><button class="slider__btn" type="button" data-slider-next aria-label="Suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>
+            </div>
+            <div class="slider__track" data-venues></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+  </body>
+</html>

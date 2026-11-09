@@ -8,6 +8,7 @@ import { $$ } from './modules/utils.js';
 const PAGES = {
   home: () => import('./pages/home.js'),
   decouvrir: () => import('./pages/decouvrir.js'),
+  sortir: () => import('./pages/sortir.js'),
 };
 
 const initReveal = () => {
