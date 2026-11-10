@@ -1,0 +1,62 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend : API (tsx)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["tsx", "src/server.ts"],
+      "envFile": "${workspaceFolder}/backend/.env",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Backend : worker BullMQ (tsx)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["tsx", "src/worker.ts"],
+      "envFile": "${workspaceFolder}/backend/.env",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Backend : tests Jest du fichier courant",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "program": "${workspaceFolder}/backend/node_modules/jest/bin/jest.js",
+      "args": ["--runInBand", "${relativeFile}"],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Backend : attacher au process (9229)",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Frontend web : Next.js (serveur)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/frontend-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Frontend web : navigateur",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/frontend-web"
+    }
+  ]
+}
