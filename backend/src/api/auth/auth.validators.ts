@@ -35,3 +35,11 @@ export const disable2FASchema = z.object({
     code: z.string().min(6).max(10).optional(),
   }),
 });
+
+export const logoutSchema = z.object({
+  body: z
+    .object({
+      allDevices: z.boolean().default(false),
+    })
+    .default({ allDevices: false }),
+});

@@ -47,6 +47,17 @@ export class AuthController {
     }
   }
 
+  public async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if (!req.session) throw new AppError('Non authentifié', 401);
+      const result = await authService.logout(req.session, Boolean(req.body?.allDevices));
+      res.setHeader('Clear-Site-Data', '"cache", "cookies", "storage"');
+      sendSuccess(res, result, 'Déconnexion effectuée', 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async getOnboarding(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const slides = authService.getOnboardingSlides();

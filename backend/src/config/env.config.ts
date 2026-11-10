@@ -47,7 +47,7 @@ const envSchema = z
     REDIS_URL: z.string().url().default('redis://localhost:6380'),
     REDIS_KEY_PREFIX: z.string().default('blocklucky'),
     JWT_SECRET: z.string().min(16).default(DEV_DEFAULTS.JWT_SECRET),
-    JWT_EXPIRES_IN: z.string().default('7d'),
+    JWT_EXPIRES_IN: z.string().regex(/^\d+[smhd]$/).default('12h'),
     ENCRYPTION_KEY: z
       .string()
       .regex(/^[0-9a-fA-F]{64}$/, 'ENCRYPTION_KEY doit contenir 64 caractères hexadécimaux')

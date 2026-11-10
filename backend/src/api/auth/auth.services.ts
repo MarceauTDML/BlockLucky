@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken';
 import { env } from '../../config/env.config';
 import authRepository from './auth.repo';
 import totpService from '../../services/totp.service';
+import sessionService, { VerifiedToken } from '../../services/session.service';
 import ledgerService from '../../services/ledger.service';
 import { enqueueEmail } from '../../queues/emails.queue';
 import { generateOtpCode, hashValue, compareHash } from '../../utils/crypto.util';
@@ -10,9 +10,7 @@ import { JwtPayload } from '../../types/api.types';
 
 export class AuthService {
   private signToken(payload: JwtPayload): string {
-    return jwt.sign(payload, env.JWT_SECRET, {
-      expiresIn: env.JWT_EXPIRES_IN as any,
-    });
+    return sessionService.sign(payload);
   }
 
   public async socialLogin(input: {
@@ -272,6 +270,15 @@ export class AuthService {
     });
 
     return { isTwoFactorEnabled: false };
+  }
+
+  public async logout(session: VerifiedToken, allDevices: boolean) {
+    if (allDevices) {
+      await sessionService.revokeAllForUser(session.userId);
+    } else {
+      await sessionService.revoke(session);
+    }
+    return { loggedOut: true, allDevices };
   }
 
   public getOnboardingSlides() {

@@ -1,8 +1,6 @@
 import request from 'supertest';
-import jwt from 'jsonwebtoken';
 import prismaMock, { resetPrismaMockStore } from '../__mocks__/prisma.mock';
 import redisMock, { resetRedisMockStore } from '../__mocks__/redis.mock';
-import { env } from '../../src/config/env.config';
 
 jest.mock('../../src/config/prisma.config', () => ({
   __esModule: true,
@@ -17,6 +15,7 @@ jest.mock('../../src/config/redis.config', () => ({
 }));
 
 import app from '../../src/app';
+import sessionService from '../../src/services/session.service';
 
 describe('Full Lottery Draw Flow Integration', () => {
   beforeEach(() => {
@@ -44,10 +43,7 @@ describe('Full Lottery Draw Flow Integration', () => {
         role: 'ADMIN',
       },
     });
-    const adminToken = jwt.sign(
-      { userId: adminUser.id, walletAddress: adminUser.walletAddress, role: 'ADMIN' },
-      env.JWT_SECRET
-    );
+    const adminToken = sessionService.sign({ userId: adminUser.id, walletAddress: adminUser.walletAddress, role: 'ADMIN' });
 
     const drawRes = await request(app)
       .post('/api/lottery/draw')
