@@ -36,7 +36,7 @@
     "@babel/core": "^7.26.0",
     "@types/react": "~19.3.0",
     "eslint": "^8.57.1",
-    "eslint-config-universe": "^12.1.0",
+    "eslint-config-universe": "^16.1.2",
     "typescript": "~6.0.3"
   },
   "private": true,
