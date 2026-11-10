@@ -7,7 +7,6 @@ import { maskEmail } from '../utils/crypto.util';
 
 export type EmailTemplateName =
   | 'otp-code'
-  | '2fa-backup-codes'
   | 'gdpr-deletion'
   | 'reward-claim'
   | 'welcome'
@@ -64,12 +63,6 @@ export class EmailService {
     return this.sendTemplateEmail(to, 'Votre code de sécurité 2FA BlockLucky', 'otp-code', {
       CODE: code,
       EXPIRES_MINUTES: String(expiresMinutes),
-    });
-  }
-
-  public async sendBackupCodesEmail(to: string, codes: string[]): Promise<boolean> {
-    return this.sendTemplateEmail(to, 'Vos codes de secours 2FA BlockLucky', '2fa-backup-codes', {
-      BACKUP_CODES: codes.join('<br/>'),
     });
   }
 

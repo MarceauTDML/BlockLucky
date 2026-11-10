@@ -33,6 +33,9 @@
     ],
     "modulePathIgnorePatterns": [
       "<rootDir>/dist/"
+    ],
+    "setupFiles": [
+      "<rootDir>/__tests__/setup-env.ts"
     ]
   },
   "keywords": [

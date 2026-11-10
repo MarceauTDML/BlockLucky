@@ -1,16 +1,115 @@
 import { env } from '../../config/env.config';
 import authRepository from './auth.repo';
 import totpService from '../../services/totp.service';
-import sessionService, { VerifiedToken } from '../../services/session.service';
 import ledgerService from '../../services/ledger.service';
+import sessionService, { VerifiedToken } from '../../services/session.service';
+import otpChallengeService, { PendingSignup } from '../../services/otp-challenge.service';
 import { enqueueEmail } from '../../queues/emails.queue';
-import { generateOtpCode, hashValue, compareHash } from '../../utils/crypto.util';
+import {
+  decryptText,
+  encryptText,
+  isEncrypted,
+  normalizeBackupCode,
+  safeEqual,
+  sha256,
+} from '../../utils/crypto.util';
 import { AppError } from '../../utils/response.util';
-import { JwtPayload } from '../../types/api.types';
+
+type AuthUser = NonNullable<Awaited<ReturnType<typeof authRepository.findById>>>;
+
+const INVALID_CODE_MESSAGE = 'Code de vérification invalide ou expiré';
+
+const publicUser = (user: AuthUser) => ({
+  id: user.id,
+  walletAddress: user.walletAddress,
+  email: user.email,
+  role: user.role,
+  pointsBalance: user.pointsBalance,
+  referralCode: user.referralCode,
+  isTwoFactorEnabled: user.isTwoFactorEnabled,
+  twoFactorMethod: user.twoFactorMethod,
+});
+
+const hashBackupCode = (code: string) => sha256(`backup:${normalizeBackupCode(code)}`);
+
+const devPreview = (code: string) =>
+  env.NODE_ENV === 'development' ? { devOtpPreview: code } : {};
 
 export class AuthService {
-  private signToken(payload: JwtPayload): string {
-    return sessionService.sign(payload);
+  private notify(email: string | null, event: string) {
+    if (!email) return Promise.resolve();
+    return enqueueEmail({
+      to: email,
+      subject: 'Alerte de sécurité sur votre compte - BlockLucky',
+      templateName: 'security-alert',
+      variables: { EVENT: event, DATE: new Date().toISOString().replace('T', ' ').slice(0, 16) },
+    }).then(() => undefined);
+  }
+
+  private async sendCodeEmail(email: string, code: string, subject: string) {
+    await enqueueEmail({
+      to: email,
+      subject,
+      templateName: 'otp-code',
+      variables: { CODE: code, EXPIRES_MINUTES: '10' },
+    });
+  }
+
+  private readTotpSecret(user: AuthUser): string | null {
+    if (!user.twoFactorSecret) return null;
+    return isEncrypted(user.twoFactorSecret) ? decryptText(user.twoFactorSecret) : user.twoFactorSecret;
+  }
+
+  private async issueSession(user: AuthUser) {
+    const token = sessionService.sign({
+      userId: user.id,
+      walletAddress: user.walletAddress,
+      role: user.role,
+      twoFactorVerified: true,
+    });
+    const refreshed = (await authRepository.findById(user.id)) ?? user;
+    return { token, user: publicUser(refreshed) };
+  }
+
+  private async createVerifiedUser(signup: PendingSignup) {
+    const existing =
+      (await authRepository.findByWallet(signup.walletAddress)) ??
+      (await authRepository.findByEmail(signup.email));
+    if (existing) return { user: existing, isNewUser: false };
+
+    const user = await authRepository.createUser({
+      walletAddress: signup.walletAddress,
+      email: signup.email,
+      isEmailVerified: true,
+      ...(signup.referrerId ? { referredById: signup.referrerId } : {}),
+    });
+
+    await ledgerService.creditPoints(user.id, 25, 'SOCIAL_QUEST', 'Bonus de bienvenue Onboarding EtherBay');
+
+    if (signup.referrerId) {
+      await ledgerService.creditPoints(
+        signup.referrerId,
+        100,
+        'REFERRAL',
+        `Parrainage d'un nouveau citoyen (${signup.walletAddress.slice(0, 8)}...)`
+      );
+      await ledgerService.creditPoints(user.id, 50, 'REFERRAL', 'Bonus filleul inscription parrainée');
+    }
+
+    await enqueueEmail({
+      to: signup.email,
+      subject: "Bienvenue à la Grande Loterie d'EtherBay !",
+      templateName: 'welcome',
+      variables: { WALLET_ADDRESS: user.walletAddress, REFERRAL_CODE: user.referralCode },
+    });
+
+    await authRepository.recordAuthAnalytics(user.id, 'USER_SIGNUP', signup.utmSource, {
+      provider: signup.provider,
+      ageGroup: signup.ageGroup ?? '18-35',
+      isAdultConfirmed: true,
+    });
+
+    return { user, isNewUser: true };
   }
 
   public async socialLogin(input: {
@@ -28,129 +127,91 @@ export class AuthService {
 
     const walletLower = input.walletAddress.toLowerCase();
     const emailLower = input.email?.trim().toLowerCase();
+    const provider = input.provider ?? 'GOOGLE';
+
     let user = await authRepository.findByWallet(walletLower);
-    if (!user && emailLower) {
-      user = await authRepository.findByEmail(emailLower);
-    }
-    let isNewUser = false;
+    if (!user && emailLower) user = await authRepository.findByEmail(emailLower);
 
-    if (!user) {
-      isNewUser = true;
-      let referrerId: string | undefined;
-
-      if (input.referralCode) {
-        const referrer = await authRepository.findByReferralCode(input.referralCode);
-        if (referrer) {
-          referrerId = referrer.id;
-        }
-      }
-
-      user = await authRepository.createUser({
-        walletAddress: walletLower,
-        ...(input.email ? { email: input.email } : {}),
-        ...(referrerId ? { referredById: referrerId } : {}),
-      });
-
-      await ledgerService.creditPoints(
-        user.id,
-        25,
-        'SOCIAL_QUEST',
-        'Bonus de bienvenue Onboarding EtherBay'
-      );
-
-      if (referrerId) {
-        await ledgerService.creditPoints(
-          referrerId,
-          100,
-          'REFERRAL',
-          `Parrainage d'un nouveau citoyen (${walletLower.slice(0, 8)}...)`
-        );
-        await ledgerService.creditPoints(
-          user.id,
-          50,
-          'REFERRAL',
-          'Bonus filleul inscription parrainée'
-        );
-      }
-
-      if (user.email) {
-        await enqueueEmail({
-          to: user.email,
-          subject: "Bienvenue à la Grande Loterie d'EtherBay !",
-          templateName: 'welcome',
-          variables: {
-            WALLET_ADDRESS: user.walletAddress,
-            REFERRAL_CODE: user.referralCode,
-          },
-        });
-      }
-    }
-
-    await authRepository.recordAuthAnalytics(user.id, isNewUser ? 'USER_SIGNUP' : 'USER_LOGIN', input.utmSource, {
-      provider: input.provider ?? 'GOOGLE',
-      ageGroup: input.ageGroup ?? '18-35',
-      isAdultConfirmed: true,
-    });
-
-    if (user.isTwoFactorEnabled) {
-      if (user.twoFactorMethod === 'EMAIL' && user.email) {
-        const otp = generateOtpCode(6);
-        const hashedOtp = await hashValue(otp);
-        await authRepository.updateTwoFactor(user.id, {
-          isTwoFactorEnabled: true,
-          twoFactorMethod: 'EMAIL',
-          twoFactorSecret: hashedOtp,
-        });
-        await enqueueEmail({
-          to: user.email,
-          subject: 'Votre code de connexion 2FA - BlockLucky',
-          templateName: 'otp-code',
-          variables: { CODE: otp, EXPIRES_MINUTES: '10' },
-        });
-      }
-
+    if (user && user.isTwoFactorEnabled && user.twoFactorMethod === 'APP') {
       return {
         requiresTwoFactor: true,
-        twoFactorMethod: user.twoFactorMethod,
+        twoFactorMethod: 'APP' as const,
         userId: user.id,
-        user: {
-          id: user.id,
-          walletAddress: user.walletAddress,
-          email: user.email,
-          role: user.role,
-        },
       };
     }
 
-    const token = this.signToken({
-      userId: user.id,
-      walletAddress: user.walletAddress,
-      role: user.role,
-      twoFactorVerified: true,
-    });
+    if (env.LOGIN_EMAIL_CODE_REQUIRED || (user?.isTwoFactorEnabled && user.twoFactorMethod === 'EMAIL')) {
+      const email = user?.email ?? emailLower;
+      if (!email) {
+        throw new AppError('Une adresse email est requise pour recevoir le code de connexion', 400);
+      }
 
-    const refreshedUser = await authRepository.findById(user.id);
+      let subjectId: string;
+      let code: string;
+      if (user) {
+        subjectId = user.id;
+        await otpChallengeService.assertNotLocked(subjectId);
+        code = await otpChallengeService.issue(subjectId, 'LOGIN');
+      } else {
+        const referrer = input.referralCode
+          ? await authRepository.findByReferralCode(input.referralCode)
+          : null;
+        subjectId = otpChallengeService.newSubjectId();
+        code = await otpChallengeService.issue(subjectId, 'SIGNUP', {
+          walletAddress: walletLower,
+          email,
+          provider,
+          referrerId: referrer?.id,
+          ageGroup: input.ageGroup,
+          utmSource: input.utmSource,
+        });
+      }
 
-    return {
-      requiresTwoFactor: false,
-      token,
-      isNewUser,
-      user: {
-        id: refreshedUser!.id,
-        walletAddress: refreshedUser!.walletAddress,
-        email: refreshedUser!.email,
-        role: refreshedUser!.role,
-        pointsBalance: refreshedUser!.pointsBalance,
-        referralCode: refreshedUser!.referralCode,
-        isTwoFactorEnabled: refreshedUser!.isTwoFactorEnabled,
-      },
-    };
+      await this.sendCodeEmail(email, code, 'Votre code de connexion - BlockLucky');
+
+      return {
+        requiresTwoFactor: true,
+        twoFactorMethod: 'EMAIL' as const,
+        userId: subjectId,
+        ...devPreview(code),
+      };
+    }
+
+    let isNewUser = false;
+    if (!user) {
+      if (!emailLower) {
+        throw new AppError('Une adresse email est requise pour créer un compte', 400);
+      }
+      const referrer = input.referralCode
+        ? await authRepository.findByReferralCode(input.referralCode)
+        : null;
+      const created = await this.createVerifiedUser({
+        walletAddress: walletLower,
+        email: emailLower,
+        provider,
+        referrerId: referrer?.id,
+        ageGroup: input.ageGroup,
+        utmSource: input.utmSource,
+      });
+      user = created.user;
+      isNewUser = created.isNewUser;
+    } else {
+      await authRepository.recordAuthAnalytics(user.id, 'USER_LOGIN', input.utmSource, {
+        provider,
+        ageGroup: input.ageGroup ?? '18-35',
+        isAdultConfirmed: true,
+      });
+    }
+
+    const session = await this.issueSession(user);
+    return { requiresTwoFactor: false, isNewUser, ...session };
   }
 
   public async setup2FA(userId: string, method: 'APP' | 'EMAIL') {
     const user = await authRepository.findById(userId);
-    if (!user) {
-      throw new AppError('Utilisateur introuvable', 404);
+    if (!user) throw new AppError('Utilisateur introuvable', 404);
+    if (user.isTwoFactorEnabled) {
+      throw new AppError('La double authentification est déjà active. Désactivez-la avant de la reconfigurer.', 409);
     }
 
     if (method === 'APP') {
@@ -158,116 +219,149 @@ export class AuthService {
       const accountName = user.email || user.walletAddress;
       const otpAuthUrl = totpService.generateOtpAuthUrl(accountName, secret);
       const qrCodeDataUrl = await totpService.generateQrCodeDataUrl(otpAuthUrl);
-      const backupCodes = totpService.generateBackupCodes(5);
+      const backupCodes = totpService.generateBackupCodes();
 
       await authRepository.updateTwoFactor(user.id, {
         isTwoFactorEnabled: false,
         twoFactorMethod: 'APP',
-        twoFactorSecret: secret,
+        twoFactorSecret: encryptText(secret),
+        twoFactorBackupCodes: backupCodes.map(hashBackupCode),
       });
 
-      if (user.email) {
-        await enqueueEmail({
-          to: user.email,
-          subject: 'Vos codes de secours 2FA - BlockLucky',
-          templateName: '2fa-backup-codes',
-          variables: { BACKUP_CODES: backupCodes.join('<br/>') },
-        });
-      }
-
-      return {
-        method: 'APP',
-        secret,
-        otpAuthUrl,
-        qrCodeDataUrl,
-        backupCodes,
-      };
+      return { method: 'APP', secret, otpAuthUrl, qrCodeDataUrl, backupCodes };
     }
 
     if (!user.email) {
       throw new AppError('Une adresse email est requise pour activer la 2FA par Email', 400);
     }
 
-    const otp = generateOtpCode(6);
-    const hashedOtp = await hashValue(otp);
-
     await authRepository.updateTwoFactor(user.id, {
       isTwoFactorEnabled: false,
       twoFactorMethod: 'EMAIL',
-      twoFactorSecret: hashedOtp,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
     });
-
-    await enqueueEmail({
-      to: user.email,
-      subject: 'Activation 2FA - Votre code OTP BlockLucky',
-      templateName: 'otp-code',
-      variables: { CODE: otp, EXPIRES_MINUTES: '10' },
-    });
+    const code = await otpChallengeService.issue(user.id, 'SETUP');
+    await this.sendCodeEmail(user.email, code, 'Activation 2FA - Votre code OTP BlockLucky');
 
     return {
       method: 'EMAIL',
       message: `Un code à 6 chiffres a été envoyé à ${user.email}`,
-      ...(env.NODE_ENV !== 'production' && { devOtpPreview: otp }),
+      ...devPreview(code),
     };
   }
 
-  public async verify2FA(userId: string, code: string) {
-    const user = await authRepository.findById(userId);
-    if (!user || !user.twoFactorSecret || !user.twoFactorMethod) {
-      throw new AppError("La double authentification n'est pas configurée pour cet utilisateur", 400);
+  private async verifyTotpOrBackup(user: AuthUser, code: string): Promise<boolean> {
+    const secret = this.readTotpSecret(user);
+    if (!secret) return false;
+
+    const counter = totpService.matchCounter(code, secret);
+    if (counter !== null) {
+      return otpChallengeService.markTotpUsed(user.id, counter);
     }
 
-    let isValid = false;
-    if (user.twoFactorMethod === 'APP') {
-      isValid = totpService.verifyToken(code, user.twoFactorSecret);
-    } else if (user.twoFactorMethod === 'EMAIL') {
-      isValid = await compareHash(code, user.twoFactorSecret);
+    const candidate = hashBackupCode(code);
+    const remaining = user.twoFactorBackupCodes.filter((stored) => !safeEqual(stored, candidate));
+    if (remaining.length === user.twoFactorBackupCodes.length) return false;
+
+    await authRepository.updateBackupCodes(user.id, remaining);
+    await this.notify(
+      user.email,
+      `Un code de secours 2FA a été utilisé (${remaining.length} restant${remaining.length > 1 ? 's' : ''})`
+    );
+    return true;
+  }
+
+  public async verify2FA(subjectId: string, code: string) {
+    await otpChallengeService.assertNotLocked(subjectId);
+
+    if (await otpChallengeService.hasPending(subjectId)) {
+      const challenge = await otpChallengeService.consume(subjectId, code);
+      if (!challenge) {
+        await otpChallengeService.recordFailure(subjectId);
+        throw new AppError(INVALID_CODE_MESSAGE, 401);
+      }
+      await otpChallengeService.clearFailures(subjectId);
+
+      if (challenge.purpose === 'SIGNUP' && challenge.signup) {
+        const { user, isNewUser } = await this.createVerifiedUser(challenge.signup);
+        const session = await this.issueSession(user);
+        return { verified: true, isNewUser, ...session };
+      }
+
+      const user = await authRepository.findById(subjectId);
+      if (!user) throw new AppError(INVALID_CODE_MESSAGE, 401);
+
+      if (!user.isEmailVerified) await authRepository.markEmailVerified(user.id);
+
+      if (challenge.purpose === 'SETUP') {
+        await authRepository.updateTwoFactor(user.id, {
+          isTwoFactorEnabled: true,
+          twoFactorMethod: 'EMAIL',
+          twoFactorSecret: null,
+          twoFactorBackupCodes: [],
+        });
+        await sessionService.revokeAllForUser(user.id);
+        await this.notify(user.email, 'Double authentification par email activée');
+      } else {
+        await authRepository.recordAuthAnalytics(user.id, 'USER_LOGIN', undefined, { provider: 'EMAIL_CODE' });
+      }
+
+      const session = await this.issueSession(user);
+      return { verified: true, isNewUser: false, ...session };
     }
 
-    if (!isValid) {
-      throw new AppError('Code 2FA invalide ou expiré', 401);
+    const user = await authRepository.findById(subjectId);
+    if (!user || user.twoFactorMethod !== 'APP' || !(await this.verifyTotpOrBackup(user, code))) {
+      await otpChallengeService.recordFailure(subjectId);
+      throw new AppError(INVALID_CODE_MESSAGE, 401);
     }
+    await otpChallengeService.clearFailures(subjectId);
 
     if (!user.isTwoFactorEnabled) {
       await authRepository.updateTwoFactor(user.id, {
         isTwoFactorEnabled: true,
-        twoFactorMethod: user.twoFactorMethod,
+        twoFactorMethod: 'APP',
         twoFactorSecret: user.twoFactorSecret,
+        twoFactorBackupCodes: user.twoFactorBackupCodes,
       });
+      await sessionService.revokeAllForUser(user.id);
+      await this.notify(user.email, 'Double authentification par application activée');
+    } else {
+      await authRepository.recordAuthAnalytics(user.id, 'USER_LOGIN', undefined, { provider: 'TOTP' });
     }
 
-    const token = this.signToken({
-      userId: user.id,
-      walletAddress: user.walletAddress,
-      role: user.role,
-      twoFactorVerified: true,
-    });
-
-    return {
-      verified: true,
-      token,
-      user: {
-        id: user.id,
-        walletAddress: user.walletAddress,
-        email: user.email,
-        role: user.role,
-        isTwoFactorEnabled: true,
-        twoFactorMethod: user.twoFactorMethod,
-      },
-    };
+    const session = await this.issueSession(user);
+    return { verified: true, isNewUser: false, ...session };
   }
 
-  public async disable2FA(userId: string) {
-    const user = await authRepository.findById(userId);
-    if (!user) {
-      throw new AppError('Utilisateur introuvable', 404);
+  public async disable2FA(session: VerifiedToken, code?: string) {
+    const user = await authRepository.findById(session.userId);
+    if (!user) throw new AppError('Utilisateur introuvable', 404);
+
+    if (user.isTwoFactorEnabled) {
+      await otpChallengeService.assertNotLocked(user.id);
+      const proven =
+        (code ? await this.verifyTotpOrBackup(user, code) : false) || sessionService.isRecent(session);
+      if (!proven) {
+        await otpChallengeService.recordFailure(user.id);
+        throw new AppError(
+          'Pour désactiver la double authentification, saisissez un code 2FA valide ou reconnectez-vous (connexion de moins de 15 minutes).',
+          401
+        );
+      }
     }
 
     await authRepository.updateTwoFactor(user.id, {
       isTwoFactorEnabled: false,
       twoFactorMethod: null,
       twoFactorSecret: null,
+      twoFactorBackupCodes: [],
     });
+
+    if (user.isTwoFactorEnabled) {
+      await this.notify(user.email, 'Double authentification désactivée');
+    }
 
     return { isTwoFactorEnabled: false };
   }

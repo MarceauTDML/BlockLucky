@@ -89,9 +89,16 @@ const envSchema = z
     METRICS_TOKEN: z.string().default(''),
     MOBILE_MIN_VERSION: z.string().default('1.0.0'),
     MAINTENANCE_MODE: booleanFromEnv(false),
+    LOGIN_EMAIL_CODE_REQUIRED: booleanFromEnv(true),
+    ADMIN_MFA_REQUIRED: booleanFromEnv(true),
   })
   .superRefine((values, ctx) => {
     if (values.NODE_ENV !== 'production') return;
+    (['LOGIN_EMAIL_CODE_REQUIRED', 'ADMIN_MFA_REQUIRED'] as const).forEach((key) => {
+      if (!values[key]) {
+        ctx.addIssue({ code: 'custom', path: [key], message: `${key} ne peut pas être désactivé en production` });
+      }
+    });
     (Object.keys(DEV_DEFAULTS) as Array<keyof typeof DEV_DEFAULTS>).forEach((key) => {
       if (values[key] === DEV_DEFAULTS[key]) {
         ctx.addIssue({
