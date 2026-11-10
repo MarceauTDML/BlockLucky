@@ -23,8 +23,8 @@ describe('TotpService (2FA Google Authenticator & Backup Codes)', () => {
   });
 
   it('should generate formatted backup codes', () => {
-    const backupCodes = totpService.generateBackupCodes(5);
-    expect(backupCodes).toHaveLength(5);
-    expect(backupCodes[0]).toMatch(/^\d{4}-\d{4}$/);
+    const backupCodes = totpService.generateBackupCodes();
+    expect(backupCodes).toHaveLength(10);
+    expect(backupCodes[0]).toMatch(/^[A-Z2-9]{5}-[A-Z2-9]{5}$/);
   });
 });
