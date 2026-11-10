@@ -1,5 +1,6 @@
 import prisma from '../../config/prisma.config';
 import { TokenType } from '@prisma/client';
+import { sha256 } from '../../utils/crypto.util';
 
 export class UserRepository {
   public async getUserFullProfile(userId: string) {
@@ -41,7 +42,7 @@ export class UserRepository {
     return prisma.token.create({
       data: {
         userId,
-        token,
+        token: sha256(token),
         type: TokenType.ACCOUNT_DELETION,
         expiresAt,
       },
@@ -51,7 +52,7 @@ export class UserRepository {
   public async findValidDeletionToken(token: string) {
     return prisma.token.findFirst({
       where: {
-        token,
+        token: sha256(token),
         type: TokenType.ACCOUNT_DELETION,
         expiresAt: { gt: new Date() },
       },
@@ -68,6 +69,8 @@ export class UserRepository {
           walletAddress: `0xdeleted_gdpr_${anonymizedSuffix}`,
           email: null,
           twoFactorSecret: null,
+          twoFactorMethod: null,
+          twoFactorBackupCodes: [],
           isTwoFactorEnabled: false,
           deletedAt: new Date(),
         },
