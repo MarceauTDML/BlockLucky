@@ -56,6 +56,7 @@ async function main() {
       name: "La Boulangerie du Port d'EtherBay",
       logoUrl: 'https://assets.etherbay.fr/partners/boulangerie.png',
       isActive: true,
+      ownerId: partnerUser.id,
       rewards: {
         create: [
           {
@@ -82,6 +83,7 @@ async function main() {
       name: 'Cinéma Le Phare EtherBay',
       logoUrl: 'https://assets.etherbay.fr/partners/cinema.png',
       isActive: true,
+      ownerId: partnerUser.id,
       rewards: {
         create: [
           {
