@@ -2,6 +2,7 @@ import adminRepository from './admin.repo';
 import analyticsService from '../analytics/analytics.services';
 import blockchainService from '../../services/blockchain.service';
 import s3Service from '../../services/s3.service';
+import { neutralizeSpreadsheetCell } from '../../utils/crypto.util';
 
 export class AdminService {
   public async getCentralDashboard() {
@@ -116,15 +117,15 @@ export class AdminService {
 
     if (format === 'CSV') {
       const csvRows = [
-        'Metric,Value',
-        `Date,${timestamp}`,
-        `Total_Prize_Pool_ETH,${dashboard.kpis.totalPrizePoolEth}`,
-        `Municipality_Revenue_ETH,${dashboard.kpis.municipalityRevenueEth}`,
-        `Tickets_Sold,${dashboard.kpis.ticketsSold}`,
-        `Registered_Citizens,${dashboard.kpis.registeredCitizens}`,
-        `Active_Partners,${dashboard.kpis.activePartners}`,
-        `Claimed_Rewards,${dashboard.kpis.claimedRewards}`,
-      ];
+        ['Metric', 'Value'],
+        ['Date', timestamp],
+        ['Total_Prize_Pool_ETH', dashboard.kpis.totalPrizePoolEth],
+        ['Municipality_Revenue_ETH', dashboard.kpis.municipalityRevenueEth],
+        ['Tickets_Sold', dashboard.kpis.ticketsSold],
+        ['Registered_Citizens', dashboard.kpis.registeredCitizens],
+        ['Active_Partners', dashboard.kpis.activePartners],
+        ['Claimed_Rewards', dashboard.kpis.claimedRewards],
+      ].map((cells) => cells.map(neutralizeSpreadsheetCell).join(','));
       const csvContent = csvRows.join('\n');
       const upload = await s3Service.uploadFile(
         `reports/etherbay-report-${Date.now()}.csv`,
