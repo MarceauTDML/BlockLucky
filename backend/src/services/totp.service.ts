@@ -1,11 +1,11 @@
 import crypto from 'crypto';
 import QRCode from 'qrcode';
-import { generateOtpCode } from '../utils/crypto.util';
+import { generateBackupCode, safeEqual } from '../utils/crypto.util';
 
 const BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
 export class TotpService {
-  public generateSecret(length = 20): string {
+  public generateSecret(length = 32): string {
     const bytes = crypto.randomBytes(length);
     let secret = '';
     for (let i = 0; i < bytes.length; i++) {
@@ -70,24 +70,25 @@ export class TotpService {
     return this.computeHotp(secret, counter);
   }
 
-  public verifyToken(token: string, secret: string, window = 1): boolean {
-    if (!token || !secret) return false;
+  public matchCounter(token: string, secret: string, window = 1): number | null {
+    if (!token || !secret) return null;
+    const candidate = token.trim();
+    if (!/^\d{6}$/.test(candidate)) return null;
     const currentCounter = Math.floor(Date.now() / 1000 / 30);
+    let matched: number | null = null;
     for (let errorWindow = -window; errorWindow <= window; errorWindow++) {
-      const expected = this.computeHotp(secret, currentCounter + errorWindow);
-      if (expected === token.trim()) {
-        return true;
-      }
+      const counter = currentCounter + errorWindow;
+      if (safeEqual(this.computeHotp(secret, counter), candidate)) matched = counter;
     }
-    return false;
+    return matched;
   }
 
-  public generateBackupCodes(count = 5): string[] {
-    const codes: string[] = [];
-    for (let i = 0; i < count; i++) {
-      codes.push(`${generateOtpCode(4)}-${generateOtpCode(4)}`);
-    }
-    return codes;
+  public verifyToken(token: string, secret: string, window = 1): boolean {
+    return this.matchCounter(token, secret, window) !== null;
+  }
+
+  public generateBackupCodes(count = 10): string[] {
+    return Array.from({ length: count }, () => generateBackupCode());
   }
 }
 
