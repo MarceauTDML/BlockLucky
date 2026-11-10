@@ -3,13 +3,20 @@ import path from 'path';
 import transporter from '../config/mailer.config';
 import { env } from '../config/env.config';
 import logger from '../utils/logger.util';
+import { maskEmail } from '../utils/crypto.util';
 
 export type EmailTemplateName =
   | 'otp-code'
   | '2fa-backup-codes'
   | 'gdpr-deletion'
   | 'reward-claim'
-  | 'welcome';
+  | 'welcome'
+  | 'security-alert';
+
+const escapeHtml = (value: string): string =>
+  value.replace(/[&<>"']/g, (char) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char] ?? char
+  );
 
 export class EmailService {
   private loadTemplate(templateName: EmailTemplateName, variables: Record<string, string>): string {
@@ -17,7 +24,7 @@ export class EmailService {
       const templatePath = path.join(__dirname, '..', 'templates', 'emails', `${templateName}.html`);
       let content = fs.readFileSync(templatePath, 'utf8');
       for (const [key, value] of Object.entries(variables)) {
-        content = content.replace(new RegExp(`{{${key}}}`, 'g'), value);
+        content = content.split(`{{${key}}}`).join(escapeHtml(value));
       }
       return content;
     } catch (error) {
@@ -43,10 +50,10 @@ export class EmailService {
         subject,
         html,
       });
-      logger.info(`Email [${templateName}] envoyé à ${to}`);
+      logger.info(`Email [${templateName}] envoyé à ${maskEmail(to)}`);
       return true;
     } catch (error) {
-      logger.warn(`Mode simulation d'envoi d'email [${templateName}] à ${to} (SMTP non disponible en local)`, {
+      logger.warn(`Mode simulation d'envoi d.email [${templateName}] à ${maskEmail(to)} (SMTP non disponible en local)`, {
         reason: (error as Error).message,
       });
       return false;
@@ -63,6 +70,13 @@ export class EmailService {
   public async sendBackupCodesEmail(to: string, codes: string[]): Promise<boolean> {
     return this.sendTemplateEmail(to, 'Vos codes de secours 2FA BlockLucky', '2fa-backup-codes', {
       BACKUP_CODES: codes.join('<br/>'),
+    });
+  }
+
+  public async sendSecurityAlertEmail(to: string, event: string): Promise<boolean> {
+    return this.sendTemplateEmail(to, 'Alerte de sécurité sur votre compte - BlockLucky', 'security-alert', {
+      EVENT: event,
+      DATE: new Date().toISOString().replace('T', ' ').slice(0, 16),
     });
   }
 
