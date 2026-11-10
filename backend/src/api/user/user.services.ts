@@ -4,6 +4,7 @@ import redis from '../../config/redis.config';
 import { enqueueEmail } from '../../queues/emails.queue';
 import { env } from '../../config/env.config';
 import { generateRandomToken, anonymizeWallet } from '../../utils/crypto.util';
+import sessionService from '../../services/session.service';
 import { AppError } from '../../utils/response.util';
 
 const QUESTS_CATALOG = [
@@ -216,7 +217,7 @@ export class UserService {
       throw new AppError('Utilisateur introuvable', 404);
     }
 
-    const tokenStr = generateRandomToken(24);
+    const tokenStr = generateRandomToken(32);
     await userRepository.createDeletionToken(user.id, tokenStr);
 
     if (user.email) {
@@ -247,6 +248,7 @@ export class UserService {
     }
 
     await userRepository.anonymizeUserAccount(validToken.userId, validToken.id);
+    await sessionService.revokeAllForUser(validToken.userId);
 
     return {
       deleted: true,
