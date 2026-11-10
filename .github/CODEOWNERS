@@ -1,0 +1,8 @@
+* @MarceauTDML
+/backend/ @MarceauTDML
+/backend/prisma/migrations/ @MarceauTDML
+/frontend-web/ @MarceauTDML
+/mobile-app/ @MarceauTDML
+/frontend-office-tourisme/ @MarceauTDML
+/docker-compose.yml @MarceauTDML
+/.github/ @MarceauTDML
