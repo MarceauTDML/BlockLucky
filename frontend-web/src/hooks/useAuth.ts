@@ -10,6 +10,7 @@ import {
 import {
   authApi,
   useDisable2FAMutation,
+  useLogoutMutation,
   useSetup2FAMutation,
   useSocialLoginMutation,
   useVerify2FAMutation,
@@ -38,6 +39,7 @@ export const useAuth = () => {
   const [verify2FATrigger, { isLoading: isVerifying2FA }] = useVerify2FAMutation();
   const [setup2FATrigger, { isLoading: isSettingUp2FA }] = useSetup2FAMutation();
   const [disable2FATrigger, { isLoading: isDisabling2FA }] = useDisable2FAMutation();
+  const [logoutTrigger] = useLogoutMutation();
 
   const refreshProfile = useCallback(
     async (token: string, baseUser: UserProfile) => {
@@ -99,14 +101,25 @@ export const useAuth = () => {
     [authState.user, dispatch, refreshProfile, verify2FATrigger]
   );
 
-  const signOut = useCallback(() => {
-    storage.remove(KEYS.token);
-    storage.remove(KEYS.user);
-    storage.remove(KEYS.lastClaim);
-    socketClient.disconnect();
-    dispatch(logoutAction());
-    dispatch(baseApi.util.resetApiState());
-  }, [dispatch]);
+  const endSession = useCallback(
+    (allDevices: boolean) => {
+      if (authState.token) {
+        logoutTrigger({ token: authState.token, allDevices })
+          .unwrap()
+          .catch(() => undefined);
+      }
+      storage.remove(KEYS.token);
+      storage.remove(KEYS.user);
+      storage.remove(KEYS.lastClaim);
+      socketClient.disconnect();
+      dispatch(logoutAction());
+      dispatch(baseApi.util.resetApiState());
+    },
+    [authState.token, dispatch, logoutTrigger]
+  );
+
+  const signOut = useCallback(() => endSession(false), [endSession]);
+  const signOutEverywhere = useCallback(() => endSession(true), [endSession]);
 
   return {
     ...authState,
@@ -119,6 +132,7 @@ export const useAuth = () => {
     setup2FA: setup2FATrigger,
     disable2FA: disable2FATrigger,
     signOut,
+    signOutEverywhere,
   };
 };
 

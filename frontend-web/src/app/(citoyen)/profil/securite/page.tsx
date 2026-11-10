@@ -9,6 +9,7 @@ import Sheet from '@/components/ui/Sheet';
 import useAuth from '@/hooks/useAuth';
 import { useAppDispatch } from '@/store';
 import { useSetResponsibleLimitMutation } from '@/store/api/authApi';
+import { getErrorMessage } from '@/store/api/baseApi';
 import { updateUserProfile } from '@/store/slices/authSlice';
 import storage, { KEYS } from '@/lib/storage';
 import { useAppTheme } from '@/theme/ThemeProvider';
@@ -19,7 +20,7 @@ type Limit = (typeof LIMIT_PRESETS)[number];
 export default function SecurityPage() {
   const { t } = useAppTheme();
   const dispatch = useAppDispatch();
-  const { user, disable2FA, isDisabling2FA } = useAuth();
+  const { user, disable2FA, isDisabling2FA, signOutEverywhere } = useAuth();
   const [setResponsibleLimit, { isLoading: isSavingLimit }] = useSetResponsibleLimitMutation();
 
   const current = user?.responsibleGaming?.maxTicketsPerRound ?? 25;
@@ -64,8 +65,11 @@ export default function SecurityPage() {
         tone: 'success',
         text: t('La double authentification 2FA a été désactivée.', 'Two-factor authentication has been disabled.'),
       });
-    } catch {
-      setFeedback({ tone: 'error', text: t('Impossible de désactiver la 2FA.', 'Unable to disable 2FA.') });
+    } catch (err) {
+      setFeedback({
+        tone: 'error',
+        text: getErrorMessage(err, t('Impossible de désactiver la 2FA.', 'Unable to disable 2FA.')),
+      });
     }
   };
 
@@ -118,6 +122,19 @@ export default function SecurityPage() {
               {t('Désactiver la 2FA', 'Disable 2FA')}
             </Button>
           ) : null}
+        </section>
+
+        <section className="card flex flex-col gap-3 p-[18px]">
+          <h2 className="text-subtitle font-semibold">{t('Sessions actives', 'Active sessions')}</h2>
+          <p className="text-caption text-fg-secondary">
+            {t(
+              'Un appareil perdu ou partagé ? Déconnectez immédiatement toutes les sessions ouvertes sur votre compte, y compris celle-ci.',
+              'Lost or shared device? Immediately sign out every session opened on your account, including this one.'
+            )}
+          </p>
+          <Button variant="outline" onClick={() => signOutEverywhere()}>
+            {t('Déconnecter tous mes appareils', 'Sign out of all devices')}
+          </Button>
         </section>
 
         <section className="card flex flex-col gap-3 p-[18px]">
