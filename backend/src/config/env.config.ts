@@ -99,6 +99,13 @@ const envSchema = z
         ctx.addIssue({ code: 'custom', path: [key], message: `${key} ne peut pas être désactivé en production` });
       }
     });
+    if (values.METRICS_ENABLED && !values.METRICS_TOKEN) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['METRICS_TOKEN'],
+        message: 'METRICS_TOKEN est obligatoire en production pour protéger /metrics',
+      });
+    }
     (Object.keys(DEV_DEFAULTS) as Array<keyof typeof DEV_DEFAULTS>).forEach((key) => {
       if (values[key] === DEV_DEFAULTS[key]) {
         ctx.addIssue({
