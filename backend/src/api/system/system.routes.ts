@@ -4,6 +4,7 @@ import redis from '../../config/redis.config';
 import { env } from '../../config/env.config';
 import blockchainService from '../../services/blockchain.service';
 import { isShuttingDown } from '../../observability/lifecycle';
+import { safeEqual } from '../../utils/crypto.util';
 
 const router = Router();
 
@@ -43,10 +44,16 @@ router.get('/health', async (_req, res) => {
     status: 'ok',
     message: 'BlockLucky API is running',
     timestamp: new Date().toISOString(),
-    version: env.APP_VERSION,
-    network,
+    network: { isFallback: network.isFallback, isPaused: network.isPaused },
   });
 });
+
+const canSeeDiagnostics = (authorization: string | undefined): boolean => {
+  if (env.METRICS_TOKEN) {
+    return Boolean(authorization) && safeEqual(authorization ?? '', `Bearer ${env.METRICS_TOKEN}`);
+  }
+  return env.NODE_ENV !== 'production';
+};
 
 /**
  * @openapi
@@ -83,7 +90,8 @@ router.get('/health/ready', async (_req, res) => {
  *     tags: [System]
  *     summary: Diagnostic détaillé de chaque dépendance avec latence (mis en cache 5 secondes)
  */
-router.get('/health/deep', async (_req, res) => {
+router.get('/health/deep', async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
   if (!deepCheckCache || deepCheckCache.expiresAt < Date.now()) {
     const [database, cache] = await Promise.all([checkDatabase(), checkRedis()]);
     const network = await blockchainService.getNetworkStatus();
@@ -99,7 +107,10 @@ router.get('/health/deep', async (_req, res) => {
       },
     };
   }
-  res.status(deepCheckCache.healthy ? 200 : 503).json(deepCheckCache.body);
+  const body = canSeeDiagnostics(req.header('authorization'))
+    ? deepCheckCache.body
+    : { status: deepCheckCache.body.status };
+  res.status(deepCheckCache.healthy ? 200 : 503).json(body);
 });
 
 /**

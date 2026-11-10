@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import client from 'prom-client';
 import { env } from '../config/env.config';
+import { safeEqual } from '../utils/crypto.util';
 
 export const metricsRegistry = new client.Registry();
 
@@ -59,7 +60,7 @@ export const httpMetricsMiddleware = (req: Request, res: Response, next: NextFun
 };
 
 export const metricsHandler = async (req: Request, res: Response): Promise<void> => {
-  if (env.METRICS_TOKEN && req.headers.authorization !== `Bearer ${env.METRICS_TOKEN}`) {
+  if (env.METRICS_TOKEN && !safeEqual(req.headers.authorization ?? '', `Bearer ${env.METRICS_TOKEN}`)) {
     res.status(401).end();
     return;
   }
