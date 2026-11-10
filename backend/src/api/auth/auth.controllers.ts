@@ -25,7 +25,7 @@ export class AuthController {
 
   public async verify2FA(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const targetUserId = req.body.userId || req.user?.userId;
+      const targetUserId = req.user?.userId || req.body.userId;
       if (!targetUserId) {
         throw new AppError('Identifiant utilisateur requis pour vérifier le code 2FA', 400);
       }
@@ -38,9 +38,8 @@ export class AuthController {
 
   public async disable2FA(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user?.userId;
-      if (!userId) throw new AppError('Non authentifié', 401);
-      const result = await authService.disable2FA(userId);
+      if (!req.session) throw new AppError('Non authentifié', 401);
+      const result = await authService.disable2FA(req.session, req.body.code);
       sendSuccess(res, result, 'Double authentification (2FA) désactivée', 200);
     } catch (error) {
       next(error);

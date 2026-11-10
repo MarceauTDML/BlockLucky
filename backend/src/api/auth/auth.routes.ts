@@ -88,6 +88,7 @@ router.post(
 
 router.post(
   '/2fa/disable',
+  authRateLimiter,
   authenticate,
   validate(disable2FASchema),
   (req, res, next) => authController.disable2FA(req, res, next)

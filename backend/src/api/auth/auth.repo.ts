@@ -1,5 +1,6 @@
 import prisma from '../../config/prisma.config';
 import { Role, TwoFactorMethod, TokenType } from '@prisma/client';
+import { sha256 } from '../../utils/crypto.util';
 
 export class AuthRepository {
   public async findByWallet(walletAddress: string) {
@@ -31,12 +32,14 @@ export class AuthRepository {
     email?: string;
     role?: Role;
     referredById?: string;
+    isEmailVerified?: boolean;
   }) {
     return prisma.user.create({
       data: {
         walletAddress: data.walletAddress.toLowerCase(),
         ...(data.email ? { email: data.email.toLowerCase() } : {}),
         role: data.role ?? 'USER',
+        isEmailVerified: data.isEmailVerified ?? false,
         ...(data.referredById ? { referredById: data.referredById } : {}),
       },
     });
@@ -48,6 +51,7 @@ export class AuthRepository {
       isTwoFactorEnabled: boolean;
       twoFactorMethod: TwoFactorMethod | null;
       twoFactorSecret: string | null;
+      twoFactorBackupCodes?: string[];
     }
   ) {
     return prisma.user.update({
@@ -56,12 +60,26 @@ export class AuthRepository {
     });
   }
 
+  public async updateBackupCodes(userId: string, twoFactorBackupCodes: string[]) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { twoFactorBackupCodes },
+    });
+  }
+
+  public async markEmailVerified(userId: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { isEmailVerified: true },
+    });
+  }
+
   public async createToken(userId: string, token: string, type: TokenType, expiresInMinutes = 15) {
     const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
     return prisma.token.create({
       data: {
         userId,
-        token,
+        token: sha256(token),
         type,
         expiresAt,
       },
@@ -71,7 +89,7 @@ export class AuthRepository {
   public async findValidToken(token: string, type: TokenType) {
     return prisma.token.findFirst({
       where: {
-        token,
+        token: sha256(token),
         type,
         expiresAt: { gt: new Date() },
       },
