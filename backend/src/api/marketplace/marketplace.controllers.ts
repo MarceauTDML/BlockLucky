@@ -58,7 +58,10 @@ export class MarketplaceController {
 
   public async redeemCodeInStore(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const result = await marketplaceService.validateAndRedeemStoreCode(req.body.uniqueCode);
+      const result = await marketplaceService.validateAndRedeemStoreCode(req.body.uniqueCode, {
+        userId: req.user!.userId,
+        role: req.user!.role,
+      });
       sendSuccess(res, result, 'Code promo validé en magasin avec succès');
     } catch (error) {
       next(error);

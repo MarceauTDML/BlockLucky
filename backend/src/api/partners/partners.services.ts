@@ -2,13 +2,34 @@ import partnersRepository from './partners.repo';
 import redis from '../../config/redis.config';
 import { AppError } from '../../utils/response.util';
 
+export interface PartnerActor {
+  userId: string;
+  role: 'USER' | 'PARTNER' | 'ADMIN';
+}
+
+export const assertPartnerAccess = (
+  partner: { ownerId?: string | null } | null | undefined,
+  actor: PartnerActor
+): void => {
+  if (!partner) throw new AppError('Entreprise partenaire introuvable', 404);
+  if (actor.role === 'ADMIN') return;
+  if (!partner.ownerId || partner.ownerId !== actor.userId) {
+    throw new AppError("Accès refusé : cette entreprise partenaire n'est pas rattachée à votre compte", 403);
+  }
+};
+
 export class PartnersService {
   public async listPartners() {
     return partnersRepository.findAllPartners();
   }
 
-  public async createPartner(data: { name: string; logoUrl: string }) {
-    return partnersRepository.createPartner(data);
+  public async createPartner(data: { name: string; logoUrl: string; ownerId?: string }, actor: PartnerActor) {
+    const ownerId = actor.role === 'ADMIN' ? data.ownerId : actor.userId;
+    return partnersRepository.createPartner({
+      name: data.name,
+      logoUrl: data.logoUrl,
+      ...(ownerId ? { ownerId } : {}),
+    });
   }
 
   public async createOffer(input: {
@@ -17,11 +38,9 @@ export class PartnersService {
     costInPoints: number;
     totalStock: number;
     expiresAt?: string;
-  }) {
+  }, actor: PartnerActor) {
     const partner = await partnersRepository.findPartnerById(input.partnerId);
-    if (!partner) {
-      throw new AppError('Entreprise partenaire introuvable', 404);
-    }
+    assertPartnerAccess(partner, actor);
 
     const offer = await partnersRepository.createRewardOffer({
       partnerId: input.partnerId,
@@ -44,11 +63,12 @@ export class PartnersService {
     rewardId: string;
     codes?: string[];
     csvContent?: string;
-  }) {
+  }, actor: PartnerActor) {
     const reward = await partnersRepository.findRewardById(input.rewardId);
     if (!reward) {
       throw new AppError('Offre partenaire introuvable', 404);
     }
+    assertPartnerAccess(reward.partner, actor);
 
     let extractedCodes: string[] = [];
     if (Array.isArray(input.codes) && input.codes.length > 0) {
@@ -86,11 +106,10 @@ export class PartnersService {
     };
   }
 
-  public async getPartnerConsumptionStats(partnerId: string) {
+  public async getPartnerConsumptionStats(partnerId: string, actor: PartnerActor) {
     const partner = await partnersRepository.findPartnerById(partnerId);
-    if (!partner) {
-      throw new AppError('Partenaire introuvable', 404);
-    }
+    assertPartnerAccess(partner, actor);
+    if (!partner) throw new AppError('Partenaire introuvable', 404);
 
     let totalStock = 0;
     let remainingStock = 0;

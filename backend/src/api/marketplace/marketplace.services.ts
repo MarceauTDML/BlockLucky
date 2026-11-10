@@ -7,6 +7,7 @@ import { enqueueEmail } from '../../queues/emails.queue';
 import { generatePromoCode } from '../../utils/crypto.util';
 import { AppError } from '../../utils/response.util';
 import { businessEventsTotal } from '../../observability/metrics';
+import { assertPartnerAccess, PartnerActor } from '../partners/partners.services';
 
 export class MarketplaceService {
   public async getCatalog() {
@@ -155,9 +156,14 @@ export class MarketplaceService {
     return enriched;
   }
 
-  public async validateAndRedeemStoreCode(uniqueCode: string) {
+  public async validateAndRedeemStoreCode(uniqueCode: string, actor: PartnerActor) {
     const claim = await marketplaceRepository.findClaimByCode(uniqueCode);
     if (!claim) {
+      throw new AppError('Code promo introuvable', 404);
+    }
+    try {
+      assertPartnerAccess(claim.rewardCatalog.partner, actor);
+    } catch {
       throw new AppError('Code promo introuvable', 404);
     }
 
