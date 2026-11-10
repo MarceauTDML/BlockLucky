@@ -312,6 +312,7 @@ export const prismaMock: any = {
         name: data.name,
         logoUrl: data.logoUrl,
         isActive: data.isActive ?? true,
+        ownerId: data.ownerId ?? null,
         createdAt: new Date(),
       };
       store.partners.set(id, record);

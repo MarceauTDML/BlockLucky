@@ -7,27 +7,29 @@ datasource db {
 }
 
 model User {
-  id                 String             @id @default(uuid(7))
-  walletAddress      String             @unique
-  email              String?            @unique
-  role               Role               @default(USER)
-  isTwoFactorEnabled Boolean            @default(false)
-  twoFactorMethod    TwoFactorMethod?
-  twoFactorSecret    String?
-  isEmailVerified    Boolean            @default(false)
-  pointsBalance      Int                @default(0)
-  referralCode       String             @unique @default(uuid())
-  referredById       String?
-  referredBy         User?              @relation("Referrals", fields: [referredById], references: [id])
-  referrals          User[]             @relation("Referrals")
-  tickets            Ticket[]
-  pointLedger        PointTransaction[]
-  claimedRewards     ClaimedReward[]
-  tokens             Token[]
-  analytics          Analytics[]
-  createdAt          DateTime           @default(now()) @db.Timestamptz(3)
-  updatedAt          DateTime           @updatedAt @db.Timestamptz(3)
-  deletedAt          DateTime?          @db.Timestamptz(3)
+  id                   String             @id @default(uuid(7))
+  walletAddress        String             @unique
+  email                String?            @unique
+  role                 Role               @default(USER)
+  isTwoFactorEnabled   Boolean            @default(false)
+  twoFactorMethod      TwoFactorMethod?
+  twoFactorSecret      String?
+  twoFactorBackupCodes String[]           @default([])
+  isEmailVerified      Boolean            @default(false)
+  pointsBalance        Int                @default(0)
+  referralCode         String             @unique @default(uuid())
+  referredById         String?
+  referredBy           User?              @relation("Referrals", fields: [referredById], references: [id])
+  referrals            User[]             @relation("Referrals")
+  tickets              Ticket[]
+  pointLedger          PointTransaction[]
+  claimedRewards       ClaimedReward[]
+  tokens               Token[]
+  analytics            Analytics[]
+  ownedPartners        Partner[]          @relation("PartnerOwner")
+  createdAt            DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime           @updatedAt @db.Timestamptz(3)
+  deletedAt            DateTime?          @db.Timestamptz(3)
 
   @@index([referredById])
 }
@@ -113,8 +115,12 @@ model Partner {
   name      String
   logoUrl   String
   isActive  Boolean         @default(true)
+  ownerId   String?
+  owner     User?           @relation("PartnerOwner", fields: [ownerId], references: [id], onDelete: SetNull)
   rewards   RewardCatalog[]
   createdAt DateTime        @default(now()) @db.Timestamptz(3)
+
+  @@index([ownerId])
 }
 
 model RewardCatalog {
