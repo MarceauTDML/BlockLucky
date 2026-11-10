@@ -8,6 +8,6 @@ export const claimRewardSchema = z.object({
 
 export const usePromoCodeSchema = z.object({
   body: z.object({
-    uniqueCode: z.string().min(4, 'Code promo requis'),
+    uniqueCode: z.string().trim().min(4, 'Code promo requis').max(64),
   }),
 });
