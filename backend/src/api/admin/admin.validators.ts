@@ -11,9 +11,12 @@ export const treasuryWithdrawalSchema = z.object({
   body: z.object({
     multisigWallet: z
       .string()
-      .min(10, 'Adresse du portefeuille multi-signatures de la Mairie invalide'),
-    amountEth: z.coerce.number().positive('Le montant à retirer doit être supérieur à 0'),
-    note: z.string().optional(),
+      .regex(/^0x[0-9a-fA-F]{40}$/, 'Adresse du portefeuille multi-signatures de la Mairie invalide'),
+    amountEth: z.coerce
+      .number()
+      .positive('Le montant à retirer doit être supérieur à 0')
+      .max(1000, 'Montant supérieur au plafond de retrait (1000 ETH), validation manuelle requise'),
+    note: z.string().trim().max(500).optional(),
   }),
 });
 

@@ -85,7 +85,7 @@ describe('Admin Mairie API & RBAC (/api/admin)', () => {
       .post('/api/admin/treasury/withdraw')
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
-        multisigWallet: '0xMultiSigMairieEtherBay000000000000000001',
+        multisigWallet: '0x4d756c7469536967456e7468657242617900a001',
         amountEth: 1.5,
       });
     expect(withdrawRes.status).toBe(200);

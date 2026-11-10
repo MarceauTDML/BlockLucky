@@ -31,6 +31,6 @@ export const completeSocialQuestSchema = z.object({
 
 export const confirmGdprDeletionSchema = z.object({
   body: z.object({
-    token: z.string().min(10, 'Jeton de confirmation RGPD requis'),
+    token: z.string().min(10, 'Jeton de confirmation RGPD requis').max(128),
   }),
 });
