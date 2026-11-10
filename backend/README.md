@@ -23,17 +23,20 @@ Ce serveur est developpe en **Node.js**, **Express 5** et **TypeScript 6**, prop
 ```text
 backend/
 ├── .env.example
-├── .eslintrc.js
+├── Dockerfile
+├── eslint.config.mjs
 ├── nodemon.json
 ├── package.json
 ├── prisma.config.ts
 ├── tsconfig.json
+├── tsconfig.build.json
 ├── prisma/
 │   ├── schema.prisma
 │   ├── seed.ts
 │   └── migrations/
 ├── src/
 │   ├── server.ts
+│   ├── worker.ts
 │   ├── app.ts
 │   ├── config/
 │   │   ├── env.config.ts
@@ -124,7 +127,7 @@ Placez-vous dans le dossier `backend` :
 ```bash
 cd backend
 cp .env.example .env
-npm install --legacy-peer-deps
+npm ci
 ```
 
 ### Etape 3 : Generer le client Prisma, appliquer les migrations et peupler la base (Seed)
@@ -157,7 +160,19 @@ npm run compile
 npm start
 ```
 
+Les workers BullMQ (emails, ledger) tournent par défaut dans le process de l'API. Pour les séparer, démarrer l'API avec `RUN_WORKERS=false` puis le process dédié :
+
+```bash
+npm run start:worker
+```
+
+Le process worker expose ses sondes sur le port `PORT + 1` (`/health/live`, `/metrics`).
+
+Toute la configuration est validée au démarrage (`src/config/env.config.ts`). Une variable invalide arrête le serveur avec un message explicite. En `NODE_ENV=production`, les secrets de développement (`JWT_SECRET`, `ENCRYPTION_KEY`, `RELAYER_PRIVATE_KEY`, `WEBHOOK_SECRET`) sont refusés.
+
 - **Healthcheck API** : `http://localhost:2053/health`
+- **Sondes** : `/health/live` (process), `/health/ready` (PostgreSQL joignable), `/health/deep` (diagnostic détaillé)
+- **Métriques Prometheus** : `http://localhost:2053/metrics` (protégées par `METRICS_TOKEN` si défini)
 - **Documentation Swagger UI** : `http://localhost:2053/api/docs`
 - **Interface Web Mailpit (Emails recus)** : `http://localhost:8025`
 
@@ -165,11 +180,15 @@ npm start
 
 ## 4. Verification, Qualite et Tests
 
-Verifier le typage TypeScript :
+Verifier le typage TypeScript et le lint (dont `no-floating-promises`) :
 
 ```bash
-npm run build
+npm run typecheck
+npm run lint
+npm run env:check
 ```
+
+`env:check` vérifie que `.env.example` contient exactement les variables du schéma de configuration.
 
 Lancer la suite complete de tests unitaires et d'integration (Jest + Supertest) :
 
@@ -184,6 +203,9 @@ npm test
 | Module | Methode | Route | Description |
 | :--- | :--- | :--- | :--- |
 | **System** | `GET` | `/health` | Etat du serveur et indicateur de reseau RPC Fallback |
+| **System** | `GET` | `/health/live`, `/health/ready`, `/health/deep` | Sondes de vivacite, de disponibilite et diagnostic detaille |
+| **System** | `GET` | `/api/config` | Configuration runtime des clients (version mobile minimale, maintenance) |
+| **System** | `GET` | `/metrics` | Metriques Prometheus (latence par route, event loop, files BullMQ) |
 | **Auth** | `GET` | `/api/auth/onboarding` | Ecrans illustres de l'onboarding interactif |
 | **Auth** | `POST` | `/api/auth/login` | Social Login Web3Auth + Verification legale 18+ |
 | **Auth** | `POST` | `/api/auth/2fa/setup` | Configuration 2FA (QR Code TOTP ou Email OTP) |
@@ -217,4 +239,8 @@ npm test
 | **Admin Mairie** | `POST` | `/api/admin/treasury/withdraw` | Retrait de tresorerie vers portefeuille Multi-Sig (`ADMIN`) |
 | **Admin Mairie** | `GET` | `/api/admin/reports/export` | Export des rapports comptables en CSV ou PDF (`ADMIN`) |
 | **Admin Mairie** | `GET` | `/api/admin/audit-logs` | Journal chronologique des actions d'administration (`ADMIN`) |
-| **Webhooks** | `POST` | `/api/webhooks/blockchain` | Indexation temps reel des evenements Smart Contract |
+| **Webhooks** | `POST` | `/api/webhooks/blockchain` | Indexation temps reel des evenements Smart Contract (en-tete `x-webhook-secret` obligatoire) |
+
+Toutes les routes `/api/*` sont aussi servies sous le préfixe versionné `/api/v1/*`. Les nouveaux clients doivent utiliser `/api/v1`.
+
+Les endpoints `POST /api/lottery/buy`, `POST /api/lottery/gift` et `POST /api/marketplace/claim` acceptent un en-tête `Idempotency-Key` (8 à 128 caractères `[A-Za-z0-9_-]`) : une requête rejouée avec la même clé renvoie la réponse initiale (en-tête `Idempotent-Replayed: true`) au lieu de créer un doublon.
