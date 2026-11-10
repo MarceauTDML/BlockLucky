@@ -36,7 +36,15 @@ app.use(
     exposedHeaders: ['X-Request-Id', 'RateLimit', 'RateLimit-Policy', 'Retry-After'],
   })
 );
-app.use(express.json({ limit: '5mb' }));
+app.use(
+  express.json({
+    limit: '1mb',
+    verify: (req, _res, buf) => {
+      const url = (req as express.Request).originalUrl ?? '';
+      if (/^\/api\/(v1\/)?webhooks\//.test(url)) (req as express.Request).rawBody = Buffer.from(buf);
+    },
+  })
+);
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 app.use(systemRoutes);
