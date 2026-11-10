@@ -27,12 +27,13 @@ export class PartnersRepository {
     });
   }
 
-  public async createPartner(data: { name: string; logoUrl: string }) {
+  public async createPartner(data: { name: string; logoUrl: string; ownerId?: string }) {
     return prisma.partner.create({
       data: {
         name: data.name,
         logoUrl: data.logoUrl,
         isActive: true,
+        ...(data.ownerId ? { ownerId: data.ownerId } : {}),
       },
     });
   }
