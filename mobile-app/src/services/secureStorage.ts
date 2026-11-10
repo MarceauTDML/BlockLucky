@@ -3,6 +3,9 @@ import { Platform } from 'react-native';
 
 const TOKEN_KEY = 'blocklucky_jwt_token';
 const USER_KEY = 'blocklucky_user_profile';
+const SECURE_OPTIONS: SecureStore.SecureStoreOptions = {
+  keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+};
 
 const memoryCache: Record<string, string> = {};
 
@@ -12,7 +15,7 @@ export const secureStorage = {
     if (Platform.OS !== 'web') {
       try {
         if (typeof SecureStore?.setItemAsync === 'function') {
-          await SecureStore.setItemAsync(TOKEN_KEY, token);
+          await SecureStore.setItemAsync(TOKEN_KEY, token, SECURE_OPTIONS);
         }
       } catch {}
     } else if (typeof window !== 'undefined' && window.localStorage) {
@@ -54,12 +57,26 @@ export const secureStorage = {
     }
   },
 
+  async clearSession(): Promise<void> {
+    await this.clearToken();
+    delete memoryCache[USER_KEY];
+    if (Platform.OS !== 'web') {
+      try {
+        if (typeof SecureStore?.deleteItemAsync === 'function') {
+          await SecureStore.deleteItemAsync(USER_KEY);
+        }
+      } catch {}
+    } else if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.removeItem(USER_KEY);
+    }
+  },
+
   async setUserJson(userJson: string): Promise<void> {
     memoryCache[USER_KEY] = userJson;
     if (Platform.OS !== 'web') {
       try {
         if (typeof SecureStore?.setItemAsync === 'function') {
-          await SecureStore.setItemAsync(USER_KEY, userJson);
+          await SecureStore.setItemAsync(USER_KEY, userJson, SECURE_OPTIONS);
         }
       } catch {}
     } else if (typeof window !== 'undefined' && window.localStorage) {

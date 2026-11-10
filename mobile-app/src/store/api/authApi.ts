@@ -49,6 +49,13 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['User'],
     }),
+    logout: builder.mutation<ApiResponse<{ loggedOut: boolean }>, { allDevices?: boolean } | void>({
+      query: (body) => ({
+        url: '/auth/logout',
+        method: 'POST',
+        body: body ?? {},
+      }),
+    }),
     getProfile: builder.query<ApiResponse<{ profile: UserProfile }>, void>({
       query: () => '/user/profile',
       providesTags: ['User'],
@@ -132,6 +139,7 @@ export const {
   useSetup2FAMutation,
   useVerify2FAMutation,
   useDisable2FAMutation,
+  useLogoutMutation,
   useGetProfileQuery,
   useGetReferralsQuery,
   useGetQuestsQuery,

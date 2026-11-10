@@ -13,14 +13,18 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "fr.etherbay.blocklucky"
+      "bundleIdentifier": "fr.etherbay.blocklucky",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#1A0B2E"
       },
-      "package": "fr.etherbay.blocklucky"
+      "package": "fr.etherbay.blocklucky",
+      "allowBackup": false
     },
     "web": {
       "favicon": "./assets/images/favicon.png",

@@ -11,7 +11,9 @@ import {
   useVerify2FAMutation,
   useSetup2FAMutation,
   useDisable2FAMutation,
+  useLogoutMutation,
 } from '../store/api/authApi';
+import { baseApi } from '../store/api/baseApi';
 import secureStorage from '../services/secureStorage';
 import { SocialLoginPayload } from '../types/api.types';
 
@@ -22,6 +24,7 @@ export const useAuth = () => {
   const [verify2FATrigger, { isLoading: isVerifying2FA }] = useVerify2FAMutation();
   const [setup2FATrigger, { isLoading: isSettingUp2FA }] = useSetup2FAMutation();
   const [disable2FATrigger, { isLoading: isDisabling2FA }] = useDisable2FAMutation();
+  const [logoutTrigger] = useLogoutMutation();
 
   const loginWithSocial = useCallback(
     async (payload: SocialLoginPayload) => {
@@ -73,10 +76,20 @@ export const useAuth = () => {
     [dispatch, verify2FATrigger]
   );
 
-  const signOut = useCallback(async () => {
-    await secureStorage.clearToken();
-    dispatch(logoutAction());
-  }, [dispatch]);
+  const endSession = useCallback(
+    async (allDevices: boolean) => {
+      try {
+        await logoutTrigger({ allDevices }).unwrap();
+      } catch {}
+      await secureStorage.clearSession();
+      dispatch(logoutAction());
+      dispatch(baseApi.util.resetApiState());
+    },
+    [dispatch, logoutTrigger]
+  );
+
+  const signOut = useCallback(() => endSession(false), [endSession]);
+  const signOutEverywhere = useCallback(() => endSession(true), [endSession]);
 
   const markOnboardingComplete = useCallback(() => {
     dispatch(completeOnboardingAction());
@@ -93,6 +106,7 @@ export const useAuth = () => {
     setup2FA: setup2FATrigger,
     disable2FA: disable2FATrigger,
     signOut,
+    signOutEverywhere,
     markOnboardingComplete,
   };
 };
