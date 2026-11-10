@@ -1,25 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import blockchainIndexerWorker from '../../workers/blockchain-indexer.worker';
 import blockchainService from '../../services/blockchain.service';
-import { env } from '../../config/env.config';
 import { sendSuccess, AppError } from '../../utils/response.util';
-import { timingSafeEqual } from 'crypto';
-
-const isValidSecret = (received: string | string[] | undefined): boolean => {
-  if (typeof received !== 'string') return false;
-  const expected = Buffer.from(env.WEBHOOK_SECRET);
-  const provided = Buffer.from(received);
-  return provided.length === expected.length && timingSafeEqual(provided, expected);
-};
 
 export class BlockchainWebhookController {
   public async handleWebhookEvent(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const secretHeader = req.headers['x-webhook-secret'];
-      if (!isValidSecret(secretHeader)) {
-        throw new AppError('Signature de webhook blockchain invalide', 401);
-      }
-
       const { eventType, payload } = req.body;
 
       if (eventType === 'TICKET_PURCHASED') {
