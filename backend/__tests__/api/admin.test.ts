@@ -1,8 +1,6 @@
 import request from 'supertest';
-import jwt from 'jsonwebtoken';
 import prismaMock, { resetPrismaMockStore } from '../__mocks__/prisma.mock';
 import redisMock, { resetRedisMockStore } from '../__mocks__/redis.mock';
-import { env } from '../../src/config/env.config';
 
 jest.mock('../../src/config/prisma.config', () => ({
   __esModule: true,
@@ -17,6 +15,7 @@ jest.mock('../../src/config/redis.config', () => ({
 }));
 
 import app from '../../src/app';
+import sessionService from '../../src/services/session.service';
 
 describe('Admin Mairie API & RBAC (/api/admin)', () => {
   let adminToken: string;
@@ -34,14 +33,11 @@ describe('Admin Mairie API & RBAC (/api/admin)', () => {
       },
     });
 
-    adminToken = jwt.sign(
-      {
+    adminToken = sessionService.sign({
         userId: adminUser.id,
         walletAddress: adminUser.walletAddress,
         role: 'ADMIN',
-      },
-      env.JWT_SECRET
-    );
+      });
 
     const playerUser = await prismaMock.user.create({
       data: {
@@ -51,14 +47,11 @@ describe('Admin Mairie API & RBAC (/api/admin)', () => {
       },
     });
 
-    playerToken = jwt.sign(
-      {
+    playerToken = sessionService.sign({
         userId: playerUser.id,
         walletAddress: playerUser.walletAddress,
         role: 'USER',
-      },
-      env.JWT_SECRET
-    );
+      });
   });
 
   it('should enforce strict RBAC (403 Forbidden) if a USER tries to access Mairie Admin dashboard', async () => {

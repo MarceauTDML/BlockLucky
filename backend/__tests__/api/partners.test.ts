@@ -1,8 +1,6 @@
 import request from 'supertest';
-import jwt from 'jsonwebtoken';
 import prismaMock, { resetPrismaMockStore } from '../__mocks__/prisma.mock';
 import redisMock, { resetRedisMockStore } from '../__mocks__/redis.mock';
-import { env } from '../../src/config/env.config';
 
 jest.mock('../../src/config/prisma.config', () => ({
   __esModule: true,
@@ -17,6 +15,7 @@ jest.mock('../../src/config/redis.config', () => ({
 }));
 
 import app from '../../src/app';
+import sessionService from '../../src/services/session.service';
 
 describe('Partners API (/api/partners)', () => {
   let partnerToken: string;
@@ -33,14 +32,11 @@ describe('Partners API (/api/partners)', () => {
       },
     });
 
-    partnerToken = jwt.sign(
-      {
+    partnerToken = sessionService.sign({
         userId: partnerUser.id,
         walletAddress: partnerUser.walletAddress,
         role: 'PARTNER',
-      },
-      env.JWT_SECRET
-    );
+      });
   });
 
   it('should create a partner, create an offer, upload promo codes CSV batch, and return consumption stats', async () => {

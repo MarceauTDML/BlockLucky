@@ -1,6 +1,5 @@
 import { Socket } from 'socket.io';
-import jwt from 'jsonwebtoken';
-import { env } from '../config/env.config';
+import sessionService from '../services/session.service';
 import { JwtPayload } from '../types/api.types';
 
 export interface AuthenticatedSocket extends Socket {
@@ -24,11 +23,16 @@ export const socketAuthMiddleware = (
     return next();
   }
 
-  try {
-    const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
-    socket.user = decoded;
-    return next();
-  } catch {
-    return next(new Error('Invalid authentication token for Socket.IO'));
-  }
+  sessionService
+    .verify(token)
+    .then((session) => {
+      socket.user = {
+        userId: session.userId,
+        walletAddress: session.walletAddress,
+        role: session.role,
+        twoFactorVerified: session.twoFactorVerified ?? false,
+      };
+      next();
+    })
+    .catch(() => next(new Error('Invalid authentication token for Socket.IO')));
 };

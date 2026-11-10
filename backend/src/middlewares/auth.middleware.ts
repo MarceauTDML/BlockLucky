@@ -1,43 +1,51 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { env } from '../config/env.config';
-import { JwtPayload } from '../types/api.types';
+import sessionService from '../services/session.service';
 import { sendError } from '../utils/response.util';
 import { setContextUserId } from '../observability/request-context';
 
-export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+const extractBearer = (req: Request): string | null => {
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith('Bearer ')) return null;
+  const token = header.slice(7).trim();
+  return token.length > 0 ? token : null;
+};
+
+const attach = (req: Request, session: Awaited<ReturnType<typeof sessionService.verify>>) => {
+  req.session = session;
+  req.user = {
+    userId: session.userId,
+    walletAddress: session.walletAddress,
+    role: session.role,
+    twoFactorVerified: session.twoFactorVerified ?? false,
+  };
+  setContextUserId(session.userId);
+};
+
+export const authenticate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const token = extractBearer(req);
+  if (!token) {
     sendError(res, 'Authentification requise (Token JWT manquant)', 401);
     return;
   }
 
-  const token = authHeader.split(' ')[1];
-  if (!token) {
-    sendError(res, 'Format de token invalide', 401);
-    return;
-  }
-
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
-    req.user = decoded;
-    setContextUserId(decoded.userId);
+    attach(req, await sessionService.verify(token));
     next();
   } catch {
     sendError(res, 'Session expirée ou token JWT invalide', 401);
   }
 };
 
-export const optionalAuthenticate = (req: Request, _res: Response, next: NextFunction): void => {
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.split(' ')[1];
-    if (token) {
-      try {
-        req.user = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
-        setContextUserId(req.user.userId);
-      } catch {}
-    }
+export const optionalAuthenticate = async (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const token = extractBearer(req);
+  if (token) {
+    try {
+      attach(req, await sessionService.verify(token));
+    } catch {}
   }
   next();
 };

@@ -8,6 +8,7 @@ import {
   setup2FASchema,
   verify2FASchema,
   disable2FASchema,
+  logoutSchema,
 } from './auth.validators';
 
 const router = Router();
@@ -71,6 +72,20 @@ router.post(
  *     tags: [Auth]
  *     summary: Désactiver la double authentification 2FA
  */
+/**
+ * @openapi
+ * /api/auth/logout:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Révoquer la session courante, ou toutes les sessions du compte avec allDevices=true
+ */
+router.post(
+  '/logout',
+  authenticate,
+  validate(logoutSchema),
+  (req, res, next) => authController.logout(req, res, next)
+);
+
 router.post(
   '/2fa/disable',
   authenticate,
