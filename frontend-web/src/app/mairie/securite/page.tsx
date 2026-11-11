@@ -6,7 +6,9 @@ import Input, { Textarea } from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
 import { Alert, Badge, PageHeader, StatusDot } from '@/components/ui/Misc';
 import Sheet from '@/components/ui/Sheet';
+import useSocket from '@/hooks/useSocket';
 import { shortenHash } from '@/lib/formatters';
+import { useAppSelector } from '@/store';
 import {
   useGetAdminDashboardQuery,
   useToggleCircuitBreakerMutation,
@@ -17,6 +19,7 @@ import { useGetLotteryStatusQuery, useRefundRoundMutation, useTriggerDrawMutatio
 import { useAppTheme } from '@/theme/ThemeProvider';
 
 type Feedback = { tone: 'success' | 'error'; text: string } | null;
+type DrawRequest = { contractRoundId: number; etherscanUrl: string | null; simulated: boolean } | null;
 const CONFIRM_WORD = 'PAUSE';
 
 export default function SecurityAdminPage() {
@@ -32,6 +35,9 @@ export default function SecurityAdminPage() {
   const isPaused = Boolean(network?.isPaused);
   const revenue = data?.data?.kpis.municipalityRevenueEth ?? 0;
   const round = statusRes?.data?.round;
+  const simulatedMode = Boolean(statusRes?.data?.guarantees?.simulated);
+  useSocket();
+  const lastWinnerAnnouncement = useAppSelector((s) => s.lottery.lastWinnerAnnouncement);
 
   const [breakerOpen, setBreakerOpen] = useState(false);
   const [reason, setReason] = useState('');
@@ -47,6 +53,11 @@ export default function SecurityAdminPage() {
 
   const [drawAction, setDrawAction] = useState<'draw' | 'refund' | null>(null);
   const [drawFb, setDrawFb] = useState<Feedback>(null);
+  const [drawRequest, setDrawRequest] = useState<DrawRequest>(null);
+  const announcedWinner =
+    drawRequest && lastWinnerAnnouncement?.contractRoundId === drawRequest.contractRoundId
+      ? lastWinnerAnnouncement
+      : null;
 
   const submitBreaker = async () => {
     try {
@@ -112,17 +123,17 @@ export default function SecurityAdminPage() {
   const submitDrawAction = async () => {
     const action = drawAction;
     setDrawAction(null);
+    setDrawFb(null);
     try {
       if (action === 'draw') {
         const res = await triggerDraw({ roundId: round?.id }).unwrap();
-        setDrawFb({
-          tone: 'success',
-          text: t(
-            `Tirage #${res.data.round.contractRoundId} effectué. Gagnant : ${shortenHash(res.data.round.winnerWallet, 4)} — preuve VRF ${shortenHash(res.data.vrfProof.vrfProofHash)}.`,
-            `Draw #${res.data.round.contractRoundId} completed. Winner: ${shortenHash(res.data.round.winnerWallet, 4)} — VRF proof ${shortenHash(res.data.vrfProof.vrfProofHash)}.`
-          ),
+        setDrawRequest({
+          contractRoundId: res.data.round.contractRoundId,
+          etherscanUrl: res.data.vrfProof?.etherscanUrl ?? null,
+          simulated: Boolean(res.data.vrfProof?.simulated),
         });
       } else if (action === 'refund') {
+        setDrawRequest(null);
         const res = await refundRound({ roundId: round?.id }).unwrap();
         setDrawFb({
           tone: 'success',
@@ -198,9 +209,47 @@ export default function SecurityAdminPage() {
               : t('Aucun tirage ouvert.', 'No open draw.')}
           </p>
           {drawFb ? <Alert tone={drawFb.tone}>{drawFb.text}</Alert> : null}
+          {drawRequest ? (
+            announcedWinner ? (
+              <Alert>
+                {t(
+                  `Tirage #${announcedWinner.contractRoundId} : gagnant désigné ${shortenHash(announcedWinner.winnerWallet, 4)}.`,
+                  `Draw #${announcedWinner.contractRoundId}: winner picked ${shortenHash(announcedWinner.winnerWallet, 4)}.`
+                )}
+                {!drawRequest.simulated && announcedWinner.vrfProofHash
+                  ? t(
+                      ` Preuve VRF ${shortenHash(announcedWinner.vrfProofHash)}.`,
+                      ` VRF proof ${shortenHash(announcedWinner.vrfProofHash)}.`
+                    )
+                  : null}
+              </Alert>
+            ) : (
+              <Alert tone="info">
+                {drawRequest.simulated
+                  ? t(
+                      `Tirage #${drawRequest.contractRoundId} demandé en mode démonstration, le gagnant sera annoncé en direct.`,
+                      `Draw #${drawRequest.contractRoundId} requested in demo mode, the winner will be announced live.`
+                    )
+                  : t(
+                      `Tirage #${drawRequest.contractRoundId} demandé à Chainlink VRF, le gagnant sera annoncé en direct.`,
+                      `Draw #${drawRequest.contractRoundId} requested from Chainlink VRF, the winner will be announced live.`
+                    )}
+                {drawRequest.etherscanUrl ? (
+                  <a
+                    href={drawRequest.etherscanUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 block font-medium text-primary underline-offset-2 hover:underline"
+                  >
+                    {t('Voir la demande sur Etherscan →', 'View the request on Etherscan →')}
+                  </a>
+                ) : null}
+              </Alert>
+            )
+          ) : null}
           <div className="grid gap-2.5 sm:grid-cols-2">
             <Button onClick={() => setDrawAction('draw')} loading={drawing} disabled={!round || round.status !== 'OPEN'}>
-              {t('Lancer le tirage VRF', 'Run VRF draw')}
+              {simulatedMode ? t('Lancer le tirage de démonstration', 'Run demo draw') : t('Lancer le tirage VRF', 'Run VRF draw')}
             </Button>
             <Button
               variant="outline"
@@ -357,10 +406,15 @@ export default function SecurityAdminPage() {
         <div className="flex flex-col gap-3 pb-2">
           <p className="text-body text-fg-secondary">
             {drawAction === 'draw'
-              ? t(
-                  'Chainlink VRF désignera un gagnant parmi les tickets. Le résultat est définitif et diffusé en direct.',
-                  'Chainlink VRF will pick a winner among tickets. The result is final and broadcast live.'
-                )
+              ? simulatedMode
+                ? t(
+                    'Mode démonstration : le serveur désignera un gagnant parmi les tickets, sans Chainlink VRF. Le résultat est diffusé en direct.',
+                    'Demo mode: the server will pick a winner among tickets, without Chainlink VRF. The result is broadcast live.'
+                  )
+                : t(
+                    "Le tirage est demandé à Chainlink VRF. L'oracle désignera le gagnant quelques blocs plus tard ; le résultat est définitif et diffusé en direct.",
+                    'The draw is requested from Chainlink VRF. The oracle picks the winner a few blocks later; the result is final and broadcast live.'
+                  )
               : t(
                   'Toutes les participations de ce tirage seront remboursées automatiquement. Action irréversible.',
                   'All entries for this draw will be refunded automatically. Irreversible.'

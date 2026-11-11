@@ -94,11 +94,14 @@ export interface ReportExportResponse {
 export interface DrawResponse {
   round: AdminLotteryRound;
   vrfProof: {
-    chainlinkRequestId: string;
-    vrfProofHash: string;
-    transactionHash: string;
+    chainlinkRequestId: string | null;
+    transactionHash: string | null;
+    etherscanUrl: string | null;
+    status: 'PENDING';
     verifiedFair: boolean;
+    simulated: boolean;
   };
+  message?: string;
 }
 
 export interface RefundResponse {
