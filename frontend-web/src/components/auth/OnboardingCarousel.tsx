@@ -23,10 +23,10 @@ export const OnboardingCarousel: React.FC<{ onDone?: () => void; className?: str
     },
     {
       step: 2,
-      title: t('Participation en un clic sans frais', 'One-click Gasless Entry'),
+      title: t('Participation en un clic', 'One-click Entry'),
       description: t(
-        "Les frais techniques du réseau sont pris en charge par la ville. En cas d'annulation, le remboursement est automatique.",
-        'Network gas fees are sponsored by the city. If the draw is cancelled, a full refund is automatic.'
+        "Votre portefeuille BlockLucky intégré signe chaque achat. Les frais réseau sont prélevés sur la dotation de bienvenue en ethers fictifs offerte par la ville. En cas d'annulation, le remboursement est automatique.",
+        'Your integrated BlockLucky wallet signs every purchase. Network fees are taken from the test-ether welcome grant offered by the city. If the draw is cancelled, a full refund is automatic.'
       ),
     },
     {

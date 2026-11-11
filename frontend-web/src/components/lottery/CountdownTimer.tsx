@@ -11,6 +11,7 @@ export interface CountdownTimerProps {
   initialSeconds: number;
   prizePoolEth: number;
   roundNumber: number;
+  simulated?: boolean;
   className?: string;
 }
 
@@ -25,6 +26,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   initialSeconds,
   prizePoolEth,
   roundNumber,
+  simulated = false,
   className,
 }) => {
   const { t } = useAppTheme();
@@ -45,7 +47,11 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
         <p className="text-caption font-medium text-fg-secondary">
           {t(`Tirage municipal #${roundNumber}`, `City Draw #${roundNumber}`)}
         </p>
-        <Badge tone="primary">Chainlink VRF</Badge>
+        {simulated ? (
+          <Badge tone="warning">{t('Mode démonstration', 'Demo mode')}</Badge>
+        ) : (
+          <Badge tone="primary">Chainlink VRF</Badge>
+        )}
       </div>
 
       <div className="flex flex-wrap items-end justify-between gap-3">

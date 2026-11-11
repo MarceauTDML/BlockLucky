@@ -47,6 +47,7 @@ export const baseApi = createApi({
   tagTypes: [
     'User',
     'Lottery',
+    'Wallet',
     'Marketplace',
     'Points',
     'Quests',

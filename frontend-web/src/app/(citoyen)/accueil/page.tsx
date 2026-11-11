@@ -2,22 +2,24 @@
 
 import React from 'react';
 import CountdownTimer from '@/components/lottery/CountdownTimer';
+import DemoModeBadge from '@/components/lottery/DemoModeBadge';
 import LeaderboardList from '@/components/lottery/LeaderboardList';
 import NetworkPill from '@/components/lottery/NetworkPill';
+import WinnerClaimCard from '@/components/lottery/WinnerClaimCard';
 import Button, { LinkButton } from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { Loader } from '@/components/ui/Loader';
 import { Alert } from '@/components/ui/Misc';
 import ProgressBar from '@/components/ui/ProgressBar';
 import useAuth from '@/hooks/useAuth';
-import useGaslessWeb3 from '@/hooks/useGaslessWeb3';
+import useBlockLuckyWallet from '@/hooks/useBlockLuckyWallet';
 import { useGetLeaderboardQuery, useGetLotteryStatusQuery } from '@/store/api/lotteryApi';
 import { useAppTheme } from '@/theme/ThemeProvider';
 
 export default function HomePage() {
   const { t } = useAppTheme();
   const { user } = useAuth();
-  const { purchaseGaslessTicket, isBuying } = useGaslessWeb3();
+  const { purchaseTicket, isBuying } = useBlockLuckyWallet();
   const { data: statusRes, isLoading, isError, refetch } = useGetLotteryStatusQuery(undefined, {
     pollingInterval: 30000,
   });
@@ -27,9 +29,10 @@ export default function HomePage() {
   const leaderboard = Array.isArray(leaderboardRes?.data?.leaderboard) ? leaderboardRes.data.leaderboard : [];
   const isOpen = !status || status.round.status === 'OPEN';
   const isPaused = Boolean(status?.network?.isPaused);
+  const simulated = Boolean(status?.guarantees?.simulated);
 
   const handleQuickBuy = async () => {
-    await purchaseGaslessTicket(1, 0);
+    await purchaseTicket(1, 0);
     refetch();
   };
 
@@ -60,12 +63,17 @@ export default function HomePage() {
       ) : (
         <div className="grid gap-3.5 lg:grid-cols-[1.25fr_1fr] lg:gap-5">
           <div className="flex flex-col gap-3.5">
-            <NetworkPill network={status?.network} />
+            <WinnerClaimCard status={status} />
+            <div className="flex flex-wrap items-center gap-2">
+              <NetworkPill network={status?.network} />
+              <DemoModeBadge simulated={simulated} />
+            </div>
             <CountdownTimer
               targetTime={status?.round.drawTargetTime}
               initialSeconds={status?.round.remainingSeconds ?? 86400}
               prizePoolEth={status?.round.prizePool ?? 0}
               roundNumber={status?.round.contractRoundId ?? 1}
+              simulated={simulated}
             />
 
             <Card padding="sm" className="flex flex-col gap-1">
@@ -97,7 +105,7 @@ export default function HomePage() {
 
             <div className="flex flex-col gap-2.5">
               <Button onClick={handleQuickBuy} loading={isBuying} disabled={!isOpen || isPaused}>
-                {t('Acheter 1 ticket (sans frais réseau)', 'Buy 1 ticket (zero gas fees)')}
+                {t('Acheter 1 ticket', 'Buy 1 ticket')}
               </Button>
               <div className="flex gap-2.5">
                 <LinkButton href="/billetterie?mode=cadeau" variant="secondary" className="flex-1">
@@ -109,8 +117,8 @@ export default function HomePage() {
               </div>
               <p className="text-center text-caption text-fg-muted">
                 {t(
-                  '1 ticket = 0,01 ETH fictif · aucune somme réelle engagée',
-                  '1 ticket = 0.01 test ETH · no real money involved'
+                  '1 ticket = 0,01 ETH fictif + frais réseau, payés par votre portefeuille BlockLucky intégré · aucune somme réelle engagée',
+                  '1 ticket = 0.01 test ETH + network fees, paid by your integrated BlockLucky wallet · no real money involved'
                 )}
               </p>
             </div>

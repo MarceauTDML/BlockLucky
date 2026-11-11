@@ -81,6 +81,15 @@ export interface LotteryRoundInfo {
   drawTargetTime: string;
   remainingSeconds: number;
   inWaitingRoom: boolean;
+  maxTicketsPerPlayer?: number;
+}
+
+export interface BlockchainInfo {
+  mode: 'onchain' | 'simulated';
+  chainId: number | null;
+  lotteryContract: string | null;
+  poapContract: string | null;
+  lotteryExplorerUrl: string | null;
 }
 
 export interface LotteryStatusResponse {
@@ -97,8 +106,11 @@ export interface LotteryStatusResponse {
     autoRefundPolicy: string;
     gaslessSponsored: boolean;
     vrfCertified: boolean;
+    simulated: boolean;
+    paused?: boolean;
   };
   network: NetworkStatus & Partial<BackendNetworkStatus>;
+  blockchain?: BlockchainInfo;
 }
 
 export interface BackendNetworkStatus {
@@ -117,7 +129,7 @@ export interface TicketItem {
   roundId?: string;
   contractRoundId?: number;
   roundStatus?: string;
-  etherscanUrl: string;
+  etherscanUrl: string | null;
 }
 
 export interface PoapBadge {
@@ -125,9 +137,14 @@ export interface PoapBadge {
   title: string;
   edition: string;
   tokenId: number;
-  transactionHash: string;
-  image3dUrl: string;
-  mintedAt: string;
+  roundId?: number;
+  contractAddress?: string | null;
+  metadataUrl?: string | null;
+  imageUrl?: string | null;
+  image3dUrl?: string | null;
+  explorerUrl?: string | null;
+  transactionHash?: string;
+  mintedAt: string | null;
 }
 
 export interface BuyTicketResponse {
@@ -135,17 +152,52 @@ export interface BuyTicketResponse {
   pointsAwarded: number;
   newPointsBalance: number;
   poapBadge: {
-    tokenId: number;
-    transactionHash: string;
-    metadataUri: string;
+    status?: 'MINT_PENDING';
+    contractAddress?: string | null;
+    roundId?: number;
+    tokenId?: number;
+    transactionHash?: string;
+    metadataUri?: string;
   };
   gaslessSponsored: boolean;
+  transactionHash?: string;
+  etherscanUrl?: string | null;
+  walletAddress?: string;
+  walletBalanceEth?: number | null;
+}
+
+export interface WalletInfo {
+  mode: 'onchain' | 'simulated';
+  walletAddress: string;
+  custodial: boolean;
+  balanceEth: number | null;
+  welcomeGrantTxHash: string | null;
+  explorerUrl: string | null;
+}
+
+export interface ClaimPrizeResponse {
+  contractRoundId: number;
+  transactionHash: string;
+  etherscanUrl: string | null;
+  walletBalanceEth: number | null;
+}
+
+export interface ApiErrorPayload {
+  status?: number | string;
+  data?: {
+    message?: string;
+    errors?: {
+      canRetry?: boolean;
+      circuitBreaker?: boolean;
+      contractError?: string;
+    };
+  };
 }
 
 export interface GiftTicketResponse {
   ticket: TicketItem & {
     recipientEmail: string;
-    recipientWallet: string;
+    recipientWallet: string | null;
   };
   senderPointsAwarded: number;
   senderNewBalance: number;

@@ -20,7 +20,7 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
+  `img-src 'self' data: blob: https: ${apiOrigin}`,
   "font-src 'self' data:",
   `connect-src ${connectSources}`,
   "object-src 'none'",
