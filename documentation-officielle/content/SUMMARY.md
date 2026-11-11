@@ -126,3 +126,16 @@
 - [Accessibilité et responsive](web/accessibilite.md)
 - [Sécurité du navigateur](web/securite-navigateur.md)
 - [Tests et build](web/tests-build.md)
+
+## 9. Application mobile
+
+- [Stack et structure](mobile/structure.md)
+- [Navigation et écrans](mobile/navigation-ecrans.md)
+- [Authentification et stockage sécurisé](mobile/authentification.md)
+- [État et appels API](mobile/etat-api.md)
+- [Portefeuille et loterie](mobile/portefeuille-loterie.md)
+- [Temps réel et notifications](mobile/temps-reel-notifications.md)
+- [Thème et composants](mobile/theme-composants.md)
+- [Résilience réseau](mobile/resilience.md)
+- [Builds et publication](mobile/builds-publication.md)
+- [Tester sur un téléphone](mobile/telephone-physique.md)
