@@ -15,6 +15,7 @@
     "start:worker": "node dist/src/worker.js",
     "test": "jest --runInBand",
     "test:coverage": "jest --runInBand --coverage",
+    "test:chain": "jest --runInBand --config jest.chain.config.json",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
