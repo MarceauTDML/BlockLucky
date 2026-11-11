@@ -217,3 +217,12 @@
 - [Indexer un nouvel événement](guides/indexer-evenement.md)
 - [Redéployer sur Sepolia](guides/redeployer-sepolia.md)
 - [Préparer la soutenance](guides/soutenance.md)
+
+## 16. Annexes
+
+- [Glossaire](annexes/glossaire.md)
+- [FAQ](annexes/faq.md)
+- [Dette technique et limites](annexes/dette-technique.md)
+- [Index des fichiers clés](annexes/fichiers-cles.md)
+- [Scripts npm](annexes/scripts-npm.md)
+- [Journal des versions](annexes/journal.md)
