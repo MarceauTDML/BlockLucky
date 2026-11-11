@@ -193,3 +193,12 @@
 - [Sauvegardes et reprise](infrastructure/sauvegardes.md)
 - [Réponse aux incidents](infrastructure/incidents.md)
 - [Tests de charge](infrastructure/tests-charge.md)
+
+## 14. Contribuer
+
+- [Workflow Git](contribuer/workflow-git.md)
+- [Standards de code](contribuer/standards.md)
+- [Tests et qualité](contribuer/tests-qualite.md)
+- [Dépendances](contribuer/dependances.md)
+- [Écrire la documentation](contribuer/documentation.md)
+- [Avant une mise en production](contribuer/mise-en-production.md)
