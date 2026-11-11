@@ -150,3 +150,18 @@
 - [Charte graphique et médias](office-tourisme/charte.md)
 - [Accessibilité et vie privée](office-tourisme/accessibilite.md)
 - [Servir et déployer](office-tourisme/deploiement.md)
+
+## 11. Sécurité
+
+- [Modèle de menaces](securite/menaces.md)
+- [Authentification et 2FA](securite/authentification.md)
+- [Sessions](securite/sessions.md)
+- [Autorisations et matrice des droits](securite/autorisations.md)
+- [Validation des entrées](securite/validation.md)
+- [Cryptographie et secrets](securite/cryptographie-secrets.md)
+- [Clés et garde des portefeuilles](securite/cles-portefeuilles.md)
+- [Protection des API](securite/protection-api.md)
+- [Navigateur et mobile](securite/navigateur-mobile.md)
+- [Chaîne logicielle](securite/chaine-logicielle.md)
+- [Audits et checklists](securite/audits.md)
+- [Signaler une vulnérabilité](securite/signalement.md)
