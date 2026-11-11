@@ -8,6 +8,7 @@ import {
   LiveWinnerAnnouncement,
 } from '../store/slices/lotterySlice';
 import { showPointsPopup } from '../store/slices/uiSlice';
+import { baseApi } from '../store/api/baseApi';
 import socketClient from '../services/socket.client';
 
 export const useSocket = (roundId?: string) => {
@@ -38,6 +39,7 @@ export const useSocket = (roundId?: string) => {
 
       socket.on('draw:winner', (winner: LiveWinnerAnnouncement) => {
         dispatch(setWinnerAnnouncement(winner));
+        dispatch(baseApi.util.invalidateTags(['Lottery', 'Wallet']));
       });
 
       socket.on(
