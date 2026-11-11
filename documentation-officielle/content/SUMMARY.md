@@ -64,3 +64,17 @@
 - [Utiliser Remix](smart-contracts/remix.md)
 - [Exploitation du contrat](smart-contracts/exploitation.md)
 - [Limites connues](smart-contracts/limites.md)
+
+## 5. Intégration blockchain du backend
+
+- [Vue d'ensemble](integration-blockchain/index.md)
+- [Mode onchain ou simulé](integration-blockchain/modes.md)
+- [Portefeuilles intégrés](integration-blockchain/portefeuilles.md)
+- [Client RPC et compte opérateur](integration-blockchain/client-rpc.md)
+- [Passerelle du contrat et erreurs](integration-blockchain/passerelle.md)
+- [Indexeur d'événements](integration-blockchain/indexeur.md)
+- [Keeper du tirage](integration-blockchain/keeper.md)
+- [File d'actions on-chain](integration-blockchain/actions.md)
+- [Relais temps réel](integration-blockchain/relais-temps-reel.md)
+- [Métadonnées POAP](integration-blockchain/metadonnees-poap.md)
+- [Tests sur une vraie chaîne](integration-blockchain/tests.md)
