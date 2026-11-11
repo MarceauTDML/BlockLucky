@@ -11,6 +11,7 @@ import {
   setWinnerAnnouncement,
 } from '@/store/slices/lotterySlice';
 import { showPointsPopup } from '@/store/slices/uiSlice';
+import { baseApi } from '@/store/api/baseApi';
 import socketClient from '@/lib/socket';
 
 export const useSocket = (roundId?: string) => {
@@ -29,7 +30,10 @@ export const useSocket = (roundId?: string) => {
     const onWaitingRoom = (payload: { active: boolean; onlineUsers: number }) =>
       dispatch(setWaitingRoomOnlineCount(payload.onlineUsers));
     const onChat = (msg: LiveChatMessage) => dispatch(addLiveChatMessage(msg));
-    const onWinner = (winner: LiveWinnerAnnouncement) => dispatch(setWinnerAnnouncement(winner));
+    const onWinner = (winner: LiveWinnerAnnouncement) => {
+      dispatch(setWinnerAnnouncement(winner));
+      dispatch(baseApi.util.invalidateTags(['Lottery', 'Wallet', 'Admin']));
+    };
     const onPoints = (event: { userId: string; amount: number }) => {
       if (currentUserId && event.userId === currentUserId) {
         dispatch(
