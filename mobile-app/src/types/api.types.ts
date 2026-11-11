@@ -34,7 +34,7 @@ export interface SocialLoginResponse {
   userId?: string;
   token?: string;
   isNewUser?: boolean;
-  user: UserProfile;
+  user?: UserProfile;
 }
 
 export interface Setup2FAResponse {

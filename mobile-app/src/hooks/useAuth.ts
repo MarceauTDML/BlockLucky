@@ -42,7 +42,7 @@ export const useAuth = () => {
           requiresTwoFactor: true,
           userId: result.userId,
           method: result.twoFactorMethod,
-          email: result.user.email,
+          email: result.user?.email ?? payload.email,
         };
       }
 
