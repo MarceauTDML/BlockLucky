@@ -1,0 +1,8 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "testMatch": ["**/__tests__/chain/**/*.chain.ts"],
+  "setupFiles": ["<rootDir>/__tests__/chain/setup-chain-env.ts"],
+  "modulePathIgnorePatterns": ["<rootDir>/dist/"],
+  "testTimeout": 120000
+}
