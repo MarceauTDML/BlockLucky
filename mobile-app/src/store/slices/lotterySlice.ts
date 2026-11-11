@@ -36,7 +36,7 @@ const initialState: LotterySliceState = {
     {
       id: 'welcome-msg-2',
       senderWallet: '0x91Ce...10a4',
-      message: 'Chainlink VRF activé, bonne chance à tous les citoyens !',
+      message: 'Bonne chance à tous les citoyens pour le tirage !',
       timestamp: new Date().toISOString(),
     },
   ],

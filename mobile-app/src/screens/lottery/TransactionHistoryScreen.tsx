@@ -136,8 +136,8 @@ export const TransactionHistoryScreen: React.FC<{ navigation: any }> = ({
                 style={styles.emptyDesc}
               >
                 {t(
-                  'Participez sans frais de réseau pour obtenir votre premier ticket vérifiable sur Etherscan.',
-                  'Enter with zero gas fees to get your first ticket verifiable on Etherscan.'
+                  'Achetez un ticket avec votre portefeuille BlockLucky intégré pour obtenir votre premier ticket vérifiable sur la blockchain.',
+                  'Buy a ticket with your integrated BlockLucky wallet to get your first ticket verifiable on the blockchain.'
                 )}
               </AppText>
               <AppButton

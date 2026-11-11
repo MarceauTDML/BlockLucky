@@ -8,6 +8,8 @@ import {
   TransparencyCharter,
   TicketItem,
   PoapBadge,
+  WalletInfo,
+  ClaimPrizeResponse,
 } from '../../types/api.types';
 
 export const lotteryApi = baseApi.injectEndpoints({
@@ -38,6 +40,10 @@ export const lotteryApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Lottery'],
     }),
+    getWallet: builder.query<ApiResponse<WalletInfo>, void>({
+      query: () => '/lottery/wallet',
+      providesTags: ['Wallet'],
+    }),
     buyTicket: builder.mutation<
       ApiResponse<BuyTicketResponse>,
       { roundId?: string; quantity?: number; retryAttempt?: number }
@@ -47,7 +53,7 @@ export const lotteryApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['Lottery', 'User', 'Points'],
+      invalidatesTags: ['Lottery', 'User', 'Points', 'Wallet'],
     }),
     giftTicket: builder.mutation<
       ApiResponse<GiftTicketResponse>,
@@ -58,7 +64,18 @@ export const lotteryApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['Lottery', 'User', 'Points'],
+      invalidatesTags: ['Lottery', 'User', 'Points', 'Wallet'],
+    }),
+    claimPrize: builder.mutation<
+      ApiResponse<ClaimPrizeResponse>,
+      { contractRoundId: number }
+    >({
+      query: (body) => ({
+        url: '/lottery/claim-prize',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Lottery', 'Wallet'],
     }),
   }),
 });
@@ -70,4 +87,6 @@ export const {
   useGetMyTransactionsQuery,
   useBuyTicketMutation,
   useGiftTicketMutation,
+  useGetWalletQuery,
+  useClaimPrizeMutation,
 } = lotteryApi;

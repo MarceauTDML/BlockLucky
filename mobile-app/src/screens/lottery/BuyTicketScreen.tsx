@@ -9,11 +9,16 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useAppTheme from '../../hooks/useAppTheme';
-import useGaslessWeb3 from '../../hooks/useGaslessWeb3';
+import useAuth from '../../hooks/useAuth';
+import useCitizenWallet from '../../hooks/useCitizenWallet';
+import { useGetLotteryStatusQuery } from '../../store/api/lotteryApi';
 import AppText from '../../components/ui/AppText';
 import AppInput from '../../components/ui/AppInput';
 import AppButton from '../../components/ui/AppButton';
 import BackButton from '../../components/ui/BackButton';
+import IntegratedWalletCard from '../../components/web3/IntegratedWalletCard';
+import ExplorerLink from '../../components/web3/ExplorerLink';
+import { formatEthBalance } from '../../utils/formatters.util';
 import { isValidEmail } from '../../utils/validators.util';
 
 export const BuyTicketScreen: React.FC<{ route?: any; navigation: any }> = ({
@@ -21,8 +26,15 @@ export const BuyTicketScreen: React.FC<{ route?: any; navigation: any }> = ({
   navigation,
 }) => {
   const { colors, borderRadius, spacing, t } = useAppTheme();
-  const { purchaseGaslessTicket, sendGiftTicket, isBuying, isGifting } =
-    useGaslessWeb3();
+  const { user } = useAuth();
+  const { purchaseTickets, sendGiftTicket, isBuying, isGifting } =
+    useCitizenWallet();
+  const { data: statusRes } = useGetLotteryStatusQuery();
+  const statusData = statusRes?.data;
+  const ticketPrice = statusData?.round.ticketPriceEth ?? 0.01;
+  const isPaused = Boolean(statusData?.guarantees?.paused);
+  const isDemo = Boolean(statusData?.guarantees?.simulated);
+  const formatPrice = (amount: number) => String(Number(amount.toFixed(6)));
 
   const initialGiftMode = Boolean(route?.params?.giftMode);
   const [mode, setMode] = useState<'SELF' | 'GIFT'>(
@@ -38,24 +50,35 @@ export const BuyTicketScreen: React.FC<{ route?: any; navigation: any }> = ({
   );
   const [feedback, setFeedback] = useState('');
   const [errorText, setErrorText] = useState('');
+  const [feedbackTxUrl, setFeedbackTxUrl] = useState<string | null>(null);
 
   const handleBuyForSelf = async () => {
     setErrorText('');
     setFeedback('');
-    const result = await purchaseGaslessTicket(quantity, 0);
+    setFeedbackTxUrl(null);
+    const result = await purchaseTickets(quantity, 0);
     if (result) {
+      const balanceText =
+        result.walletBalanceEth !== null && result.walletBalanceEth !== undefined
+          ? t(
+              ` Solde restant : ${formatEthBalance(result.walletBalanceEth)} ethers fictifs.`,
+              ` Remaining balance: ${formatEthBalance(result.walletBalanceEth)} fictitious ETH.`
+            )
+          : '';
       setFeedback(
         t(
-          `${result.tickets.length} ticket(s) enregistré(s) sur la blockchain (+${result.pointsAwarded} pts).`,
-          `${result.tickets.length} ticket(s) recorded on-chain (+${result.pointsAwarded} pts).`
+          `${result.tickets.length} ticket(s) enregistré(s) sur la blockchain (+${result.pointsAwarded} pts).${balanceText}`,
+          `${result.tickets.length} ticket(s) recorded on-chain (+${result.pointsAwarded} pts).${balanceText}`
         )
       );
+      setFeedbackTxUrl(result.etherscanUrl ?? null);
     }
   };
 
   const handleSendGift = async () => {
     setErrorText('');
     setFeedback('');
+    setFeedbackTxUrl(null);
     if (!isValidEmail(recipientEmail)) {
       setErrorText(
         t('Veuillez saisir une adresse email valide.', 'Please enter a valid email address.')
@@ -71,6 +94,7 @@ export const BuyTicketScreen: React.FC<{ route?: any; navigation: any }> = ({
           `Gift ticket sent to ${result.ticket.recipientEmail}. You earned +${result.senderPointsAwarded} pts.`
         )
       );
+      setFeedbackTxUrl(result.ticket.etherscanUrl ?? null);
       setRecipientEmail('');
     }
   };
@@ -103,10 +127,40 @@ export const BuyTicketScreen: React.FC<{ route?: any; navigation: any }> = ({
           </AppText>
           <AppText variant="body" color={colors.textSecondary} style={styles.subtitle}>
             {t(
-              'Les frais de réseau Ethereum sont pris en charge par le relais municipal d EtherBay.',
-              'Ethereum network gas fees are fully sponsored by the EtherBay city relayer.'
+              'Chaque achat est signé par votre portefeuille BlockLucky intégré. Le prix du ticket et les frais de réseau sont réglés avec votre dotation de bienvenue en ethers fictifs.',
+              'Each purchase is signed by your integrated BlockLucky wallet. The ticket price and network fees are paid with your welcome grant of fictitious ETH.'
             )}
           </AppText>
+          {isDemo ? (
+            <AppText variant="caption" color={colors.textMuted} style={styles.demoNotice}>
+              {t(
+                'Mode démonstration : tirage simulé, sans certification Chainlink VRF.',
+                'Demo mode: simulated draw, without Chainlink VRF certification.'
+              )}
+            </AppText>
+          ) : null}
+
+          <IntegratedWalletCard fallbackAddress={user?.walletAddress} />
+
+          {isPaused ? (
+            <View
+              style={[
+                styles.pauseBox,
+                {
+                  backgroundColor: colors.surfaceElevated,
+                  borderColor: colors.warning,
+                  borderRadius: borderRadius.md,
+                },
+              ]}
+            >
+              <AppText variant="caption" weight="medium" color={colors.warning}>
+                {t(
+                  'Le Smart Contract est en pause de sécurité par la Mairie. Les achats reprendront dès sa réactivation.',
+                  'The Smart Contract has been paused by the City Hall for safety. Purchases will resume once it is reactivated.'
+                )}
+              </AppText>
+            </View>
+          ) : null}
 
           <View
             style={[
@@ -174,8 +228,8 @@ export const BuyTicketScreen: React.FC<{ route?: any; navigation: any }> = ({
               </AppText>
               <AppText variant="caption" color={colors.textSecondary}>
                 {t(
-                  '0.01 ETH par ticket • +50 pts de fidélité par ticket',
-                  '0.01 ETH per ticket • +50 loyalty pts per ticket'
+                  `${formatPrice(ticketPrice)} ETH fictif par ticket • +50 pts de fidélité par ticket`,
+                  `${formatPrice(ticketPrice)} fictitious ETH per ticket • +50 loyalty pts per ticket`
                 )}
               </AppText>
 
@@ -219,8 +273,8 @@ export const BuyTicketScreen: React.FC<{ route?: any; navigation: any }> = ({
               >
                 <AppText variant="caption" color={colors.textSecondary}>
                   {t(
-                    `Total : ${(quantity * 0.01).toFixed(2)} ETH • Frais réseau : 0.00 ETH`,
-                    `Total: ${(quantity * 0.01).toFixed(2)} ETH • Gas fee: 0.00 ETH`
+                    `Total : ${formatPrice(quantity * ticketPrice)} ETH fictifs + frais de réseau, débités de votre portefeuille`,
+                    `Total: ${formatPrice(quantity * ticketPrice)} fictitious ETH + network fees, charged to your wallet`
                   )}
                 </AppText>
                 <AppText variant="caption" weight="semibold" color={colors.secondary}>
@@ -238,6 +292,7 @@ export const BuyTicketScreen: React.FC<{ route?: any; navigation: any }> = ({
                 )}
                 onPress={handleBuyForSelf}
                 loading={isBuying}
+                disabled={isPaused}
               />
             </View>
           ) : (
@@ -286,6 +341,7 @@ export const BuyTicketScreen: React.FC<{ route?: any; navigation: any }> = ({
                 variant="secondary"
                 onPress={handleSendGift}
                 loading={isGifting}
+                disabled={isPaused}
               />
             </View>
           )}
@@ -304,6 +360,10 @@ export const BuyTicketScreen: React.FC<{ route?: any; navigation: any }> = ({
               <AppText variant="caption" weight="medium" color={colors.primary}>
                 {feedback}
               </AppText>
+              <ExplorerLink
+                url={feedbackTxUrl}
+                label={t('Voir la transaction sur l explorateur', 'View the transaction on the explorer')}
+              />
             </View>
           ) : null}
 
@@ -346,6 +406,15 @@ const styles = StyleSheet.create({
   subtitle: {
     marginBottom: 20,
     lineHeight: 22,
+  },
+  demoNotice: {
+    marginTop: -12,
+    marginBottom: 16,
+  },
+  pauseBox: {
+    padding: 12,
+    borderWidth: 1,
+    marginBottom: 14,
   },
   tabsRow: {
     flexDirection: 'row',

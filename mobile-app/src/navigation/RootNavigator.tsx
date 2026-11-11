@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../types/navigation.types';
 import useAppTheme from '../hooks/useAppTheme';
 import useAuth from '../hooks/useAuth';
-import useGaslessWeb3 from '../hooks/useGaslessWeb3';
+import useCitizenWallet from '../hooks/useCitizenWallet';
 import usePushNotifications from '../hooks/usePushNotifications';
 import { useAppDispatch, useAppSelector } from '../store';
 import {
@@ -36,7 +36,7 @@ export const RootNavigator: React.FC = () => {
   const { colors, borderRadius, t } = useAppTheme();
   const insets = useSafeAreaInsets();
   const { isAuthenticated } = useAuth();
-  const { purchaseGaslessTicket } = useGaslessWeb3();
+  const { purchaseTickets } = useCitizenWallet();
   const { notifications, drawerOpen, closeDrawer, osPushBanner } =
     usePushNotifications();
   const dispatch = useAppDispatch();
@@ -132,10 +132,10 @@ export const RootNavigator: React.FC = () => {
             {retryModal.message}
           </AppText>
           <AppButton
-            title={t('Réessayer sans frais', 'Retry Gasless Purchase')}
+            title={t("Réessayer l'achat", 'Retry Purchase')}
             onPress={async () => {
               dispatch(hideRetryModal());
-              await purchaseGaslessTicket(1, retryModal.retryAttempt);
+              await purchaseTickets(1, retryModal.retryAttempt);
             }}
           />
         </View>

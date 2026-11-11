@@ -81,6 +81,24 @@ export interface LotteryRoundInfo {
   drawTargetTime: string;
   remainingSeconds: number;
   inWaitingRoom: boolean;
+  maxTicketsPerPlayer?: number;
+}
+
+export interface LotteryGuarantees {
+  autoRefundEnabled: boolean;
+  autoRefundPolicy: string;
+  gaslessSponsored: boolean;
+  vrfCertified: boolean;
+  simulated: boolean;
+  paused?: boolean;
+}
+
+export interface BlockchainInfo {
+  mode: string;
+  chainId: number;
+  lotteryContract: string;
+  poapContract: string;
+  lotteryExplorerUrl: string | null;
 }
 
 export interface LotteryStatusResponse {
@@ -92,13 +110,9 @@ export interface LotteryStatusResponse {
     percentage: number;
     milestones: Milestone[];
   };
-  guarantees: {
-    autoRefundEnabled: boolean;
-    autoRefundPolicy: string;
-    gaslessSponsored: boolean;
-    vrfCertified: boolean;
-  };
-  network: NetworkStatus;
+  guarantees: LotteryGuarantees;
+  network?: NetworkStatus;
+  blockchain?: BlockchainInfo;
 }
 
 export interface TicketItem {
@@ -109,7 +123,7 @@ export interface TicketItem {
   roundId?: string;
   contractRoundId?: number;
   roundStatus?: string;
-  etherscanUrl: string;
+  etherscanUrl: string | null;
 }
 
 export interface PoapBadge {
@@ -117,9 +131,13 @@ export interface PoapBadge {
   title: string;
   edition: string;
   tokenId: number;
-  transactionHash: string;
+  roundId?: number | string;
+  contractAddress?: string;
+  metadataUrl?: string | null;
+  imageUrl?: string | null;
   image3dUrl: string;
-  mintedAt: string;
+  explorerUrl?: string | null;
+  mintedAt: string | null;
 }
 
 export interface BuyTicketResponse {
@@ -127,11 +145,15 @@ export interface BuyTicketResponse {
   pointsAwarded: number;
   newPointsBalance: number;
   poapBadge: {
-    tokenId: number;
-    transactionHash: string;
-    metadataUri: string;
+    status: 'MINT_PENDING';
+    contractAddress: string;
+    roundId: number;
   };
   gaslessSponsored: boolean;
+  transactionHash: string;
+  etherscanUrl: string | null;
+  walletAddress: string;
+  walletBalanceEth: number | null;
 }
 
 export interface GiftTicketResponse {
@@ -141,6 +163,28 @@ export interface GiftTicketResponse {
   };
   senderPointsAwarded: number;
   senderNewBalance: number;
+}
+
+export interface WalletInfo {
+  mode: string;
+  walletAddress: string;
+  custodial: boolean;
+  balanceEth: number | null;
+  welcomeGrantTxHash: string | null;
+  explorerUrl: string | null;
+}
+
+export interface ClaimPrizeResponse {
+  contractRoundId: number;
+  transactionHash: string;
+  etherscanUrl: string | null;
+  walletBalanceEth: number | null;
+}
+
+export interface ApiErrorDetails {
+  contractError?: string;
+  circuitBreaker?: boolean;
+  canRetry?: boolean;
 }
 
 export interface LeaderboardEntry {

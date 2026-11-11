@@ -5,7 +5,6 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../types/navigation.types';
 import useAppTheme from '../../hooks/useAppTheme';
 import useAuth from '../../hooks/useAuth';
-import { useGetOnboardingQuery } from '../../store/api/authApi';
 import AppText from '../../components/ui/AppText';
 import AppButton from '../../components/ui/AppButton';
 
@@ -15,10 +14,8 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
   const { colors, borderRadius, spacing, language, setLanguage, t } =
     useAppTheme();
   const { markOnboardingComplete } = useAuth();
-  const { data } = useGetOnboardingQuery();
-  const rawSlides = data?.data?.slides;
 
-  const fallbackSlides = [
+  const slides = [
     {
       step: 1,
       title: t('Loterie citoyenne d EtherBay', 'EtherBay Community Lottery'),
@@ -29,10 +26,10 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
     },
     {
       step: 2,
-      title: t('Participation en un clic sans frais', 'One-click Gasless Entry'),
+      title: t('Votre portefeuille BlockLucky intégré', 'Your integrated BlockLucky wallet'),
       description: t(
-        'Les frais techniques du réseau sont pris en charge par la ville. En cas d annulation, le remboursement est automatique.',
-        'Network gas fees are sponsored by the city. If the draw is cancelled, a full refund is automatic.'
+        'Un portefeuille est créé pour vous et crédité d ethers fictifs par la Mairie. Il signe vos achats et règle le prix des tickets ainsi que les frais de réseau. En cas d annulation, le remboursement est automatique.',
+        'A wallet is created for you and credited with fictitious ETH by the City Hall. It signs your purchases and pays ticket prices and network fees. If the draw is cancelled, the refund is automatic.'
       ),
     },
     {
@@ -45,18 +42,13 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
     },
     {
       step: 4,
-      title: t('Tirage en direct certifié', 'Certified Live Draw'),
+      title: t('Tirage en direct', 'Live Draw'),
       description: t(
         'Rejoignez la salle d attente 10 minutes avant l échéance et recevez votre badge commémoratif POAP.',
         'Join the waiting room 10 minutes before the draw and collect your commemorative POAP badge.'
       ),
     },
   ];
-
-  const slides =
-    language === 'FR' && Array.isArray(rawSlides) && rawSlides.length > 0
-      ? rawSlides
-      : fallbackSlides;
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentSlide = slides[currentIndex] || slides[0];
