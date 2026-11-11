@@ -68,5 +68,10 @@ describe('User & GDPR API (/api/user)', () => {
 
     expect(confirmRes.status).toBe(200);
     expect(confirmRes.body.data.anonymized).toBe(true);
+
+    const anonymizedUser = prismaMock.user.update.mock.calls.at(-1)?.[0]?.data;
+    expect(anonymizedUser.email).toBeNull();
+    expect(anonymizedUser.walletEncryptedKey).toBeNull();
+    expect(anonymizedUser.welcomeGrantTxHash).toBeNull();
   });
 });

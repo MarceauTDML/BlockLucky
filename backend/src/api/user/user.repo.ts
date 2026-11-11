@@ -67,6 +67,8 @@ export class UserRepository {
         where: { id: userId },
         data: {
           walletAddress: `0xdeleted_gdpr_${anonymizedSuffix}`,
+          walletEncryptedKey: null,
+          welcomeGrantTxHash: null,
           email: null,
           twoFactorSecret: null,
           twoFactorMethod: null,
