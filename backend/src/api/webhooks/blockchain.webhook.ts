@@ -2,10 +2,17 @@ import { Request, Response, NextFunction } from 'express';
 import blockchainIndexerWorker from '../../workers/blockchain-indexer.worker';
 import blockchainService from '../../services/blockchain.service';
 import { sendSuccess, AppError } from '../../utils/response.util';
+import chainClient from '../../blockchain/chain.client';
 
 export class BlockchainWebhookController {
   public async handleWebhookEvent(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      if (chainClient.isOnchain) {
+        throw new AppError(
+          "En mode blockchain réel, les événements sont lus directement dans le Smart Contract : ce webhook de simulation est désactivé.",
+          409
+        );
+      }
       const { eventType, payload } = req.body;
 
       if (eventType === 'TICKET_PURCHASED') {
