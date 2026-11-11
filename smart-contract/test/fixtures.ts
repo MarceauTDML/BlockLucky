@@ -70,3 +70,9 @@ export async function deployLotteryFixture() {
 
   return { lottery, coordinator, subscriptionId, deployer, admin, treasury, alice, bob, carol, outsider };
 }
+
+export async function deployPoapFixture() {
+  const [admin, alice, bob, outsider] = await ethers.getSigners();
+  const poap = await ethers.deployContract("BlockLuckyPOAP", [admin.address, "https://poap.etherbay.fr/rounds/"]);
+  return { poap, admin, alice, bob, outsider };
+}
