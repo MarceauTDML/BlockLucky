@@ -165,3 +165,16 @@
 - [Chaîne logicielle](securite/chaine-logicielle.md)
 - [Audits et checklists](securite/audits.md)
 - [Signaler une vulnérabilité](securite/signalement.md)
+
+## 12. Juridique et conformité
+
+- [Veille juridique](juridique/veille-juridique.md)
+- [Crypto-actifs et MiCA](juridique/crypto-actifs.md)
+- [RGPD](juridique/rgpd.md)
+- [Registre des traitements](juridique/registre-traitements.md)
+- [Blockchain et données personnelles](juridique/blockchain-donnees.md)
+- [Cookies, mentions et CGU](juridique/cookies-mentions.md)
+- [Accessibilité numérique](juridique/accessibilite.md)
+- [Licences](juridique/licences.md)
+- [Registre des risques](juridique/registre-risques.md)
+- [Points à valider](juridique/points-a-valider.md)
