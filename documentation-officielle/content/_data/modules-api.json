@@ -1,0 +1,11 @@
+{
+  "system": "Système",
+  "auth": "Authentification",
+  "lottery": "Loterie",
+  "marketplace": "Boutique et récompenses",
+  "partners": "Partenaires",
+  "user": "Utilisateur et RGPD",
+  "analytics": "Analytique",
+  "admin": "Administration Mairie",
+  "webhooks": "Webhooks"
+}

@@ -1,0 +1,15 @@
+{
+  "draw:countdown": "Déclaré mais jamais émis par le serveur ni écouté par les clients. Le compte à rebours est calculé par les clients à partir de `GET /lottery/status`.",
+  "draw:started": "Déclaré mais jamais émis ni écouté. La demande de tirage n'est pas diffusée en temps réel.",
+  "draw:winner": "Diffusé à tous les sockets connectés quand le gagnant est connu : par l'indexeur à l'événement `WinnerPicked` (mode onchain, relayé depuis le worker par Redis) ou par `POST /lottery/draw` (mode simulé). Le web et le mobile affichent l'annonce et rechargent loterie et portefeuille.",
+  "draw:waiting-room": "Envoyé aux membres de la salle `draw:<roundId>` à chaque entrée ou sortie, avec le nombre de sockets présents. `active` vaut toujours `true`.",
+  "chat:message": "Diffusé à tous les sockets connectés, salle ou non, à chaque `chat:send` valide. L'adresse de l'expéditeur est tronquée.",
+  "chat:reaction": "Diffusé à tous les sockets à chaque `chat:react`. Émis par le serveur mais écouté par aucun client.",
+  "points:awarded": "Diffusé à tous les sockets après un crédit de points d'achat de tickets (indexeur en onchain, service loterie en simulé). Chaque client filtre sur son propre `userId`.",
+  "queue:position": "Déclaré mais jamais émis ni écouté.",
+  "network:fallback": "Déclaré mais jamais émis ni écouté. La bascule RPC n'est visible que par `/health` et `/lottery/status`.",
+  "draw:join": "Fait entrer le socket dans la salle `draw:<roundId>` et déclenche `draw:waiting-room`. Envoyé par le web et le mobile à la connexion sur la page du tirage. Aucune validation de `roundId`.",
+  "draw:leave": "Fait sortir le socket de la salle `draw:<roundId>` et met à jour le compteur des membres restants.",
+  "chat:send": "Message du chat du tirage : ignoré s'il est vide, tronqué à 280 caractères, puis rediffusé en `chat:message`. Accepté aussi des visiteurs non connectés.",
+  "chat:react": "Réaction emoji tronquée à 8 caractères et rediffusée en `chat:reaction`. Envoyée seulement par l'application mobile."
+}
