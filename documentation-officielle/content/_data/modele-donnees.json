@@ -1,0 +1,188 @@
+{
+  "modeles": {
+    "User": {
+      "description": "Compte d'un citoyen, d'un commerçant partenaire ou d'un agent de la Mairie. Porte le portefeuille Ethereum intégré, le solde d'EtherPoints, la double authentification et le parrainage. Un compte peut aussi être créé sans email par l'indexeur pour une adresse inconnue qui a acheté sur le contrat. La suppression RGPD anonymise la ligne au lieu de la supprimer.",
+      "champs": {
+        "id": "Identifiant interne UUID v7, ordonné dans le temps.",
+        "walletAddress": "Adresse Ethereum du compte, en minuscules. Adresse du portefeuille intégré pour un compte custodial ; valeur `0xdeleted_gdpr_…` après effacement RGPD ; adresses non valides pour les comptes du seed.",
+        "walletEncryptedKey": "Clé privée du portefeuille intégré chiffrée en AES-256-GCM au format `v2:iv:étiquette:données`. `NULL` pour un compte sans portefeuille intégré ou effacé.",
+        "welcomeGrantTxHash": "Hachage de la transaction de dotation de bienvenue en ethers fictifs. `NULL` tant que la dotation n'est pas versée ; sert de garde contre une seconde dotation.",
+        "email": "Adresse email en minuscules, identifiant de connexion. `NULL` pour un compte créé par l'indexeur ou effacé.",
+        "role": "Rôle d'autorisation : citoyen, commerçant partenaire ou administrateur de la Mairie.",
+        "isTwoFactorEnabled": "Vrai quand la double authentification est activée et vérifiée.",
+        "twoFactorMethod": "Méthode de double authentification choisie : application TOTP ou code par email.",
+        "twoFactorSecret": "Secret TOTP chiffré par `encryptText`. `NULL` sans méthode TOTP.",
+        "twoFactorBackupCodes": "Empreintes SHA-256 des codes de secours de la double authentification. Un code utilisé est retiré du tableau.",
+        "isEmailVerified": "Vrai quand l'adresse email a été confirmée par un code reçu.",
+        "pointsBalance": "Solde courant d'EtherPoints, tenu à jour avec chaque ligne de `PointTransaction`. Ne peut pas devenir négatif (contrainte CHECK).",
+        "referralCode": "Code de parrainage unique du compte, partagé dans le lien d'invitation.",
+        "referredById": "Identifiant du parrain, `NULL` sans parrain.",
+        "referredBy": "Relation vers le compte parrain.",
+        "referrals": "Comptes parrainés par ce compte (relation inverse de `referredBy`).",
+        "tickets": "Tickets dont ce compte est le bénéficiaire.",
+        "pointLedger": "Mouvements d'EtherPoints du compte.",
+        "claimedRewards": "Récompenses obtenues chez les partenaires.",
+        "tokens": "Jetons à usage unique émis pour ce compte (suppression de compte).",
+        "analytics": "Événements d'analytique et entrées du journal d'audit de ce compte.",
+        "ownedPartners": "Commerces partenaires gérés par ce compte.",
+        "createdAt": "Date de création du compte.",
+        "updatedAt": "Date de dernière modification, mise à jour par Prisma.",
+        "deletedAt": "Date d'anonymisation RGPD. `NULL` pour un compte actif ; les statistiques ne comptent que les comptes où elle est `NULL`."
+      }
+    },
+    "Token": {
+      "description": "Jeton à usage unique et à durée limitée envoyé par email. Seule l'empreinte SHA-256 du jeton est stockée. Utilisé aujourd'hui pour confirmer une suppression de compte (validité 24 h).",
+      "champs": {
+        "id": "Identifiant interne UUID v7.",
+        "token": "Empreinte SHA-256 du jeton transmis à l'utilisateur, jamais le jeton en clair.",
+        "type": "Usage du jeton.",
+        "userId": "Compte auquel le jeton est rattaché.",
+        "user": "Relation vers le compte ; les jetons sont supprimés avec le compte.",
+        "expiresAt": "Date au-delà de laquelle le jeton est refusé.",
+        "createdAt": "Date d'émission."
+      }
+    },
+    "LotteryRound": {
+      "description": "Tour de loterie. En mode onchain, projection d'un tour du contrat `BlockLucky`, identifié par `contractRoundId` et alimenté par l'indexeur et la lecture du contrat. En mode simulé, tour créé et piloté par le backend.",
+      "champs": {
+        "id": "Identifiant interne UUID v7.",
+        "contractRoundId": "Numéro du tour dans le contrat (`roundId`), unique. Clé de rapprochement entre la base et la chaîne.",
+        "status": "Statut du tour, aligné sur l'énumération Solidity `RoundStatus`.",
+        "prizePool": "Total collecté en ETH (nombre flottant), somme des achats indexés. Valeur d'affichage : le montant exact est sur la chaîne.",
+        "winnerWallet": "Adresse du gagnant en minuscules, renseignée au tirage.",
+        "chainlinkRequestId": "Identifiant décimal de la requête Chainlink VRF ; identifiant fictif `vrf-req-…` en mode simulé.",
+        "ticketPriceWei": "Prix d'un ticket en wei, en chaîne décimale pour éviter toute perte de précision.",
+        "endsAt": "Date de fin du tour (`endTime` du contrat).",
+        "drawRequestedAt": "Date du bloc où le tirage a été demandé (`DrawRequested`).",
+        "winningTicket": "Numéro du ticket gagnant dans le tour (`winningTicket` de `WinnerPicked`).",
+        "prizeWei": "Cagnotte nette versée au gagnant, après commission de la Mairie, en wei sous forme de chaîne.",
+        "prizeClaimedAt": "Date du bloc où la cagnotte a été versée (`PrizeClaimed`).",
+        "startedAt": "Date d'ouverture du tour : heure du bloc `RoundOpened` ou `startTime` du contrat.",
+        "drawnAt": "Date du bloc où le gagnant a été désigné.",
+        "tickets": "Tickets vendus dans ce tour."
+      }
+    },
+    "Ticket": {
+      "description": "Ticket de loterie. En mode onchain, une ligne par ticket émis par l'événement `TicketsPurchased`, identifiée par le couple tour et numéro de ticket. Un achat de plusieurs tickets produit plusieurs lignes partageant le même hachage de transaction.",
+      "champs": {
+        "id": "Identifiant interne UUID v7.",
+        "transactionHash": "Hachage de la transaction d'achat. Non unique : une transaction peut émettre plusieurs tickets. Valeur aléatoire en mode simulé.",
+        "blockNumber": "Numéro du bloc de la transaction d'achat. Valeur aléatoire en mode simulé.",
+        "ticketIndex": "Numéro du ticket dans le tour, à partir de 0, tel que stocké par le contrat. `NULL` en mode simulé.",
+        "payerWallet": "Adresse qui a payé le ticket (`payer`), différente du bénéficiaire pour un ticket offert. Sert à réclamer les remboursements. `NULL` en mode simulé.",
+        "userId": "Compte bénéficiaire du ticket (`player`).",
+        "user": "Relation vers le compte bénéficiaire.",
+        "lotteryId": "Tour auquel appartient le ticket.",
+        "lottery": "Relation vers le tour.",
+        "purchasedAt": "Date d'achat : heure du bloc en mode onchain."
+      }
+    },
+    "ChainCursor": {
+      "description": "Curseur de l'indexeur blockchain. Une seule ligne, d'identifiant `BlockLucky`, contient le dernier bloc entièrement indexé. La remettre à zéro ou la supprimer fait relire la chaîne depuis `CHAIN_START_BLOCK`.",
+      "champs": {
+        "id": "Nom du flux indexé ; seule la valeur `BlockLucky` est utilisée.",
+        "lastBlock": "Dernier bloc traité ; la passe suivante commence à `lastBlock + 1`.",
+        "updatedAt": "Date de la dernière avance du curseur."
+      }
+    },
+    "PointTransaction": {
+      "description": "Journal des mouvements d'EtherPoints. Chaque crédit ou débit écrit une ligne et met à jour `User.pointsBalance` dans la même transaction. Les montants sont positifs pour un crédit et négatifs pour un débit.",
+      "champs": {
+        "id": "Identifiant interne UUID v7.",
+        "userId": "Compte concerné.",
+        "user": "Relation vers le compte.",
+        "amount": "Nombre de points, positif pour un crédit, négatif pour un débit.",
+        "actionType": "Cause du mouvement : `TICKET_PURCHASE`, `GIFT_TICKET`, `REFERRAL`, `SOCIAL_QUEST`, `REWARD_CLAIM` ou `ADMIN_BONUS` (type `LedgerActionType` du code, texte libre en base).",
+        "description": "Libellé lisible du mouvement, affiché dans l'historique.",
+        "createdAt": "Date du mouvement."
+      }
+    },
+    "Partner": {
+      "description": "Commerce partenaire d'EtherBay qui propose des récompenses en échange d'EtherPoints.",
+      "champs": {
+        "id": "Identifiant interne UUID v7.",
+        "name": "Nom du commerce affiché dans le catalogue.",
+        "logoUrl": "URL du logo du commerce.",
+        "isActive": "Faux pour retirer le commerce et toutes ses offres du catalogue.",
+        "ownerId": "Compte de rôle `PARTNER` qui gère ce commerce. `NULL` si aucun ou si le compte est supprimé.",
+        "owner": "Relation vers le compte gestionnaire.",
+        "rewards": "Offres de récompenses du commerce.",
+        "createdAt": "Date de création."
+      }
+    },
+    "RewardCatalog": {
+      "description": "Offre de récompense d'un partenaire, échangeable contre des EtherPoints, avec un stock limité.",
+      "champs": {
+        "id": "Identifiant interne UUID v7.",
+        "partnerId": "Commerce qui propose l'offre.",
+        "partner": "Relation vers le commerce.",
+        "title": "Intitulé de l'offre.",
+        "costInPoints": "Prix en EtherPoints, strictement positif (contrainte CHECK).",
+        "totalStock": "Stock initial de l'offre, positif ou nul (contrainte CHECK).",
+        "remainingStock": "Stock restant, décrémenté à chaque échange ; ne peut pas devenir négatif (contrainte CHECK).",
+        "claimedRewards": "Échanges réalisés sur cette offre.",
+        "isActive": "Faux pour retirer l'offre du catalogue.",
+        "createdAt": "Date de création."
+      }
+    },
+    "ClaimedReward": {
+      "description": "Récompense obtenue par un citoyen : un code promo unique à présenter chez le partenaire, qui le valide une seule fois.",
+      "champs": {
+        "id": "Identifiant interne UUID v7.",
+        "userId": "Citoyen qui a échangé ses points.",
+        "user": "Relation vers le citoyen.",
+        "rewardId": "Offre échangée.",
+        "rewardCatalog": "Relation vers l'offre.",
+        "uniqueCode": "Code promo unique, tiré du lot importé par le partenaire ou généré par le backend.",
+        "isUsed": "Vrai une fois le code validé en magasin.",
+        "claimedAt": "Date de l'échange."
+      }
+    },
+    "Analytics": {
+      "description": "Événement d'analytique (parcours, sources UTM) ou entrée du journal d'audit d'administration. Les entrées d'audit ont un `eventType` préfixé `ADMIN_AUDIT:`.",
+      "champs": {
+        "id": "Identifiant interne UUID v7.",
+        "userId": "Compte à l'origine de l'événement, `NULL` pour un visiteur anonyme ou un compte supprimé.",
+        "user": "Relation vers le compte.",
+        "eventType": "Type d'événement, par exemple un événement de suivi ou `ADMIN_AUDIT:TREASURY_WITHDRAWAL_MULTISIG`.",
+        "utmSource": "Source de trafic UTM, ou `admin-dashboard` pour l'audit.",
+        "metadata": "Données complémentaires au format JSON.",
+        "timestamp": "Date de l'événement."
+      }
+    }
+  },
+  "enumerations": {
+    "Role": {
+      "description": "Rôle d'autorisation d'un compte, vérifié par le middleware RBAC.",
+      "valeurs": {
+        "USER": "Citoyen : achète des tickets, gagne et échange des EtherPoints.",
+        "PARTNER": "Commerçant partenaire : gère ses offres et valide les codes promo en magasin.",
+        "ADMIN": "Agent de la Mairie : tableau de bord, tirage, annulation, disjoncteur, trésorerie."
+      }
+    },
+    "TwoFactorMethod": {
+      "description": "Méthode de double authentification d'un compte.",
+      "valeurs": {
+        "APP": "Code TOTP produit par une application d'authentification.",
+        "EMAIL": "Code à usage unique envoyé par email."
+      }
+    },
+    "TokenType": {
+      "description": "Usage d'un jeton à usage unique de la table `Token`.",
+      "valeurs": {
+        "EMAIL_VERIFICATION": "Vérification d'adresse email. Déclaré mais non utilisé par le code actuel : la vérification passe par un code stocké dans Redis.",
+        "ACCOUNT_DELETION": "Confirmation d'une demande de suppression de compte RGPD, valable 24 h.",
+        "PASSWORD_RESET": "Réinitialisation de mot de passe. Déclaré mais non utilisé : la connexion est sans mot de passe."
+      }
+    },
+    "Status": {
+      "description": "Statut d'un tour de loterie, aligné sur l'énumération Solidity `RoundStatus` du contrat.",
+      "valeurs": {
+        "OPEN": "Tour ouvert aux achats (`Open`).",
+        "LOCKED": "Tirage demandé, en attente de la réponse de Chainlink VRF (`Drawing`) ; plus aucun achat possible.",
+        "COMPLETED": "Gagnant désigné, cagnotte disponible pour le gagnant (`Completed`).",
+        "CANCELLED": "Tour annulé ; chaque payeur peut récupérer sa mise (`Cancelled`)."
+      }
+    }
+  }
+}
