@@ -17,7 +17,8 @@ Le contact est aussi publié dans `/.well-known/security.txt` (RFC 9116) sur le 
 
 | Inclus | Exclus |
 |---|---|
-| API `backend/` (authentification, autorisations, webhooks, EtherPoints) | Attaques par déni de service volumétrique |
+| Smart contracts `smart-contract/` (fonds des joueurs, tirage, rôles) | Attaques par déni de service volumétrique |
+| API `backend/` (authentification, autorisations, webhooks, EtherPoints, portefeuilles intégrés) | |
 | Frontend web `frontend-web/` | Ingénierie sociale des équipes de la Ville d'EtherBay |
 | Application mobile `mobile-app/` | Valeurs de développement documentées dans `.env.example` (refusées en production) |
 | Site `frontend-office-tourisme/` | Paiement de démonstration du site de l'Office de Tourisme (aucune donnée bancaire n'est collectée) |
@@ -28,4 +29,4 @@ Seule la dernière version de la branche `main` reçoit des correctifs de sécur
 
 ## Mesures en place
 
-Le détail des protections (authentification, sessions, autorisations, en-têtes, chaîne logicielle) et la matrice des droits sont décrits dans [docs/securite.md](docs/securite.md). La procédure à suivre en cas d'incident est dans [docs/incident-securite.md](docs/incident-securite.md).
+Le détail des protections (authentification, sessions, autorisations, en-têtes, chaîne logicielle, smart contracts) et la matrice des droits sont décrits dans la partie [Sécurité](https://docs.etherbay.tech/securite/menaces.html) de la documentation officielle. La procédure à suivre en cas d'incident est dans [Réponse aux incidents](https://docs.etherbay.tech/infrastructure/incidents.html).
