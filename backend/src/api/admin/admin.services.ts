@@ -2,6 +2,8 @@ import adminRepository from './admin.repo';
 import analyticsService from '../analytics/analytics.services';
 import blockchainService from '../../services/blockchain.service';
 import s3Service from '../../services/s3.service';
+import chainClient from '../../blockchain/chain.client';
+import lotteryGateway from '../../blockchain/lottery.gateway';
 import { neutralizeSpreadsheetCell } from '../../utils/crypto.util';
 
 export class AdminService {
@@ -58,17 +60,17 @@ export class AdminService {
     adminId: string,
     input: { multisigWallet: string; amountEth: number; note?: string }
   ) {
-    const txResult = await blockchainService.withdrawTreasuryToMultisig(
-      input.multisigWallet,
-      input.amountEth
-    );
+    const txResult = chainClient.isOnchain
+      ? await lotteryGateway.withdrawFees(input.multisigWallet)
+      : await blockchainService.withdrawTreasuryToMultisig(input.multisigWallet, input.amountEth);
 
     await adminRepository.recordAdminAuditLog({
       adminId,
       action: 'TREASURY_WITHDRAWAL_MULTISIG',
       metadata: {
         multisigWallet: input.multisigWallet,
-        amountEth: input.amountEth,
+        amountEth: txResult.amountEth,
+        requestedAmountEth: input.amountEth,
         note: input.note ?? 'Retrait comptabilité Mairie EtherBay',
         transactionHash: txResult.transactionHash,
       },
