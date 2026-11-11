@@ -1,0 +1,7 @@
+{
+  "solc_remaps": ["@openzeppelin/=node_modules/@openzeppelin/", "@chainlink/=node_modules/@chainlink/"],
+  "solc_args": "--evm-version prague --optimize",
+  "filter_paths": "node_modules|contracts/test",
+  "exclude_informational": true,
+  "exclude_optimization": true
+}

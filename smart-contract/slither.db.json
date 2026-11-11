@@ -1,0 +1,50 @@
+[
+  {
+    "id": "07ab053f3e82c2de8b18d0b76e532f2af83bea8d6c39fee0952c5d9add31c737",
+    "check": "reentrancy-no-eth",
+    "impact": "Medium",
+    "description": "Reentrancy in BlockLucky._requestRandomness(uint256) (contracts/BlockLucky.sol#343-366):"
+  },
+  {
+    "id": "689db316effa29f626f28a0b558e651f592468114fa675a6b70782db101a3e83",
+    "check": "reentrancy-benign",
+    "impact": "Low",
+    "description": "Reentrancy in BlockLucky._requestRandomness(uint256) (contracts/BlockLucky.sol#343-366):"
+  },
+  {
+    "id": "42df4dcabdb30ce52b9e5fdf8bf33d93a1152295a41e805ab7c65e61a36e8648",
+    "check": "reentrancy-events",
+    "impact": "Low",
+    "description": "Reentrancy in BlockLucky._requestRandomness(uint256) (contracts/BlockLucky.sol#343-366):"
+  },
+  {
+    "id": "255a20f0f8878bd643f0f47562de6905c2c0707c76e723bc2741d954b007ea81",
+    "check": "timestamp",
+    "impact": "Low",
+    "description": "BlockLucky.isExpiredWithoutDraw() (contracts/BlockLucky.sol#260-266) uses timestamp for comparisons"
+  },
+  {
+    "id": "68ae9ffcd082078cf6392b69573eebc18abcd59760b3caf3d5433569ffc7fcb0",
+    "check": "timestamp",
+    "impact": "Low",
+    "description": "BlockLucky.isDrawReady() (contracts/BlockLucky.sol#253-258) uses timestamp for comparisons"
+  },
+  {
+    "id": "a71fee69d4c8d3f3af5c80f489efcc6d704813be85e4d52341b843ffd1fcc0f6",
+    "check": "timestamp",
+    "impact": "Low",
+    "description": "BlockLucky.performUpkeep(bytes) (contracts/BlockLucky.sol#243-251) uses timestamp for comparisons"
+  },
+  {
+    "id": "e86891184e091f3ff1ff331a75a4a805c4c2e830f44a49306964e2c91c61755b",
+    "check": "timestamp",
+    "impact": "Low",
+    "description": "BlockLucky._buyTickets(address,uint32) (contracts/BlockLucky.sol#311-341) uses timestamp for comparisons"
+  },
+  {
+    "id": "f601462e47ef8e01c91423d16d186139836374374347562d27889d2674397bad",
+    "check": "timestamp",
+    "impact": "Low",
+    "description": "BlockLucky.retryDraw() (contracts/BlockLucky.sol#157-164) uses timestamp for comparisons"
+  }
+]
