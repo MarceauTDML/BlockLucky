@@ -32,6 +32,37 @@ export class LotteryRepository {
     return round;
   }
 
+  public async upsertRoundFromChain(data: {
+    contractRoundId: number;
+    status: Status;
+    prizePool: number;
+    ticketPriceWei: string;
+    startedAt: Date;
+    endsAt: Date;
+    winnerWallet: string | null;
+  }) {
+    return prisma.lotteryRound.upsert({
+      where: { contractRoundId: data.contractRoundId },
+      update: {
+        status: data.status,
+        prizePool: data.prizePool,
+        ticketPriceWei: data.ticketPriceWei,
+        endsAt: data.endsAt,
+        winnerWallet: data.winnerWallet,
+      },
+      create: data,
+      include: { _count: { select: { tickets: true } } },
+    });
+  }
+
+  public async findTicketsByIds(ids: string[]) {
+    return prisma.ticket.findMany({ where: { id: { in: ids } }, orderBy: { ticketIndex: 'asc' } });
+  }
+
+  public async findRoundByContractId(contractRoundId: number) {
+    return prisma.lotteryRound.findUnique({ where: { contractRoundId } });
+  }
+
   public async findRoundById(id: string) {
     return prisma.lotteryRound.findUnique({
       where: { id },

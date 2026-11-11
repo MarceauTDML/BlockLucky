@@ -24,3 +24,9 @@ export const triggerDrawSchema = z.object({
     roundId: z.string().uuid().optional(),
   }),
 });
+
+export const claimPrizeSchema = z.object({
+  body: z.object({
+    contractRoundId: z.coerce.number().int().min(1).max(1000000),
+  }),
+});

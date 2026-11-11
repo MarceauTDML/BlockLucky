@@ -3,6 +3,8 @@ import crypto from 'crypto';
 import { env } from '../config/env.config';
 import redis from '../config/redis.config';
 import logger from '../utils/logger.util';
+import chainClient from '../blockchain/chain.client';
+import lotteryGateway from '../blockchain/lottery.gateway';
 
 const CIRCUIT_BREAKER_KEY = 'blockchain:circuit_breaker';
 const FALLBACK_STATE_KEY = 'blockchain:fallback_active';
@@ -26,15 +28,18 @@ export class BlockchainService {
   }
 
   public async getNetworkStatus(): Promise<{
+    mode: 'onchain' | 'simulated';
+    chainId: number;
     isFallback: boolean;
     rpcUrl: string;
     isPaused: boolean;
     contractAddress: string;
     poapContractAddress: string;
   }> {
-    const pausedStr = await redis.get(CIRCUIT_BREAKER_KEY);
-    const isPaused = pausedStr === 'true' || this.isPausedMemory;
+    const isPaused = await this.isCircuitBreakerPaused();
     return {
+      mode: env.BLOCKCHAIN_MODE,
+      chainId: env.CHAIN_ID,
       isFallback: this.isUsingFallback,
       rpcUrl: this.isUsingFallback ? env.FALLBACK_RPC_URL : env.RPC_URL,
       isPaused,
@@ -48,6 +53,11 @@ export class BlockchainService {
     txHash: string;
     timestamp: string;
   }> {
+    if (chainClient.isOnchain) {
+      const { receipt } = await lotteryGateway.setPaused(paused);
+      logger.warn(`Smart Contract ${paused ? 'mis en pause' : 'réactivé'} par la Mairie`, { txHash: receipt.hash });
+      return { paused, txHash: receipt.hash, timestamp: new Date().toISOString() };
+    }
     this.isPausedMemory = paused;
     await redis.set(CIRCUIT_BREAKER_KEY, paused ? 'true' : 'false');
     const txHash = `0x${crypto.randomBytes(32).toString('hex')}`;
@@ -60,16 +70,24 @@ export class BlockchainService {
   }
 
   public async isCircuitBreakerPaused(): Promise<boolean> {
+    if (chainClient.isOnchain) {
+      try {
+        return await lotteryGateway.isPaused();
+      } catch {
+        return false;
+      }
+    }
     const pausedStr = await redis.get(CIRCUIT_BREAKER_KEY);
     return pausedStr === 'true' || this.isPausedMemory;
   }
 
   public async switchToFallback(active: boolean): Promise<void> {
     this.isUsingFallback = active;
+    chainClient.setFallback(active);
     await redis.set(FALLBACK_STATE_KEY, active ? 'true' : 'false');
   }
 
-  public async relayGaslessTicketPurchase(
+  public async relayTicketPurchase(
     buyerWallet: string,
     contractRoundId: number
   ): Promise<{ transactionHash: string; blockNumber: number; gasSponsored: boolean }> {
@@ -81,7 +99,7 @@ export class BlockchainService {
     const txHash = `0x${crypto.randomBytes(32).toString('hex')}`;
     const blockNumber = 19500000 + Math.floor(Math.random() * 50000);
 
-    logger.info(`Transaction Gasless relayée pour ${buyerWallet} (Round #${contractRoundId}) -> ${txHash}`);
+    logger.info(`Transaction simulée relayée pour ${buyerWallet} (Round #${contractRoundId}) -> ${txHash}`);
     return {
       transactionHash: txHash,
       blockNumber,

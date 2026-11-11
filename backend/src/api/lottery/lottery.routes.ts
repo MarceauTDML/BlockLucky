@@ -4,7 +4,7 @@ import { authenticate } from '../../middlewares/auth.middleware';
 import { requireRoles } from '../../middlewares/rbac.middleware';
 import { validate } from '../../middlewares/validate.middleware';
 import { idempotency } from '../../middlewares/idempotency.middleware';
-import { buyTicketSchema, giftTicketSchema, triggerDrawSchema } from './lottery.validators';
+import { buyTicketSchema, claimPrizeSchema, giftTicketSchema, triggerDrawSchema } from './lottery.validators';
 
 const router = Router();
 
@@ -39,10 +39,19 @@ router.get('/leaderboard', (req, res, next) => lotteryController.getLeaderboard(
 
 /**
  * @openapi
+ * /api/lottery/poap/{file}:
+ *   get:
+ *     tags: [Lottery]
+ *     summary: Métadonnées ERC-721 (roundId.json) et visuel (roundId.svg) du badge POAP d'un tour
+ */
+router.get('/poap/:file', (req, res, next) => lotteryController.getPoapMetadata(req, res, next));
+
+/**
+ * @openapi
  * /api/lottery/buy:
  *   post:
  *     tags: [Lottery]
- *     summary: Acheter un ou plusieurs tickets en 1 clic (Gasless) et gagner +50 EtherPoints
+ *     summary: Acheter un ou plusieurs tickets en 1 clic, transaction signée par le portefeuille intégré du citoyen, et gagner +50 EtherPoints
  */
 router.post(
   '/buy',
@@ -76,6 +85,30 @@ router.post(
  */
 router.get('/my-tickets', authenticate, (req, res, next) =>
   lotteryController.getMyTransactions(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/lottery/wallet:
+ *   get:
+ *     tags: [Lottery]
+ *     summary: Portefeuille Ethereum intégré du citoyen (adresse, solde en ethers fictifs, dotation de bienvenue)
+ */
+router.get('/wallet', authenticate, (req, res, next) => lotteryController.getWallet(req, res, next));
+
+/**
+ * @openapi
+ * /api/lottery/claim-prize:
+ *   post:
+ *     tags: [Lottery]
+ *     summary: Retirer la cagnotte gagnée depuis le Smart Contract vers le portefeuille du gagnant
+ */
+router.post(
+  '/claim-prize',
+  authenticate,
+  idempotency,
+  validate(claimPrizeSchema),
+  (req, res, next) => lotteryController.claimPrize(req, res, next)
 );
 
 /**

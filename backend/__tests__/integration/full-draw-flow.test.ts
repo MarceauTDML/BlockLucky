@@ -56,7 +56,8 @@ describe('Full Lottery Draw Flow Integration', () => {
     expect(custodialWallet).toMatch(/^0x[0-9a-f]{40}$/);
     expect(custodialWallet).not.toBe('0x8888999900001111222233334444555566667777');
     expect(drawRes.body.data.round.winnerWallet).toBe(custodialWallet);
-    expect(drawRes.body.data.vrfProof.verifiedFair).toBe(true);
+    expect(drawRes.body.data.vrfProof.verifiedFair).toBe(false);
+    expect(drawRes.body.data.vrfProof.simulated).toBe(true);
 
     const stored = await prismaMock.user.findUnique({ where: { email: 'gagnant@etherbay.fr' } });
     expect(stored.walletEncryptedKey).toMatch(/^v2:/);
