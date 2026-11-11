@@ -13,7 +13,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../types/navigation.types';
 import useAppTheme from '../../hooks/useAppTheme';
 import useAuth from '../../hooks/useAuth';
-import useGaslessWeb3 from '../../hooks/useGaslessWeb3';
+import useCitizenWallet from '../../hooks/useCitizenWallet';
 import AppText from '../../components/ui/AppText';
 import AppInput from '../../components/ui/AppInput';
 import AppButton from '../../components/ui/AppButton';
@@ -25,7 +25,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const { colors, borderRadius, spacing, language, setLanguage, t } =
     useAppTheme();
   const { loginWithSocial, isLoggingIn } = useAuth();
-  const { generateDeterministicWallet } = useGaslessWeb3();
+  const { generateDeterministicWallet } = useCitizenWallet();
 
   const [email, setEmail] = useState('citoyen@etherbay.fr');
   const [referralCode, setReferralCode] = useState('');
@@ -123,8 +123,8 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
             </AppText>
             <AppText variant="body" color={colors.textSecondary}>
               {t(
-                'Accédez à la loterie municipale avec votre compte habituel. Votre portefeuille est généré automatiquement.',
-                'Access the municipal lottery with your account. Your wallet is generated automatically.'
+                'Accédez à la loterie municipale avec votre compte habituel. Un portefeuille BlockLucky intégré est créé pour vous et crédité d une dotation de bienvenue en ethers fictifs par la Mairie.',
+                'Access the municipal lottery with your account. An integrated BlockLucky wallet is created for you and credited with a welcome grant of fictitious ETH by the City Hall.'
               )}
             </AppText>
           </View>

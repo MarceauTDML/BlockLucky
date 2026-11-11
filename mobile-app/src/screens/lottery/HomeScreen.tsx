@@ -9,11 +9,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import useAppTheme from '../../hooks/useAppTheme';
 import useAuth from '../../hooks/useAuth';
 import usePoints from '../../hooks/usePoints';
-import useGaslessWeb3 from '../../hooks/useGaslessWeb3';
+import useCitizenWallet from '../../hooks/useCitizenWallet';
 import usePushNotifications from '../../hooks/usePushNotifications';
 import {
   useGetLotteryStatusQuery,
   useGetLeaderboardQuery,
+  useGetWalletQuery,
 } from '../../store/api/lotteryApi';
 import AppText from '../../components/ui/AppText';
 import AppButton from '../../components/ui/AppButton';
@@ -21,24 +22,28 @@ import Loader from '../../components/ui/Loader';
 import ProgressBar from '../../components/ui/ProgressBar';
 import CountdownTimer from '../../components/lottery/CountdownTimer';
 import LeaderboardList from '../../components/lottery/LeaderboardList';
-import WalletConnectButton from '../../components/web3/WalletConnectButton';
+import IntegratedWalletButton from '../../components/web3/IntegratedWalletButton';
+import ExplorerLink from '../../components/web3/ExplorerLink';
 
 export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { colors, borderRadius, spacing, t } = useAppTheme();
   const { user } = useAuth();
   const { pointsBalance } = usePoints();
-  const { purchaseGaslessTicket, isBuying } = useGaslessWeb3();
+  const { purchaseTickets, isBuying } = useCitizenWallet();
   const { unreadCount, openDrawer } = usePushNotifications();
 
   const { data: statusRes, isLoading, refetch } = useGetLotteryStatusQuery();
   const { data: leaderboardRes } = useGetLeaderboardQuery();
+  const { data: walletRes } = useGetWalletQuery();
 
   const statusData = statusRes?.data;
+  const wallet = walletRes?.data;
+  const isDemo = Boolean(statusData?.guarantees?.simulated);
   const rawLeaderboard = leaderboardRes?.data?.leaderboard;
   const leaderboard = Array.isArray(rawLeaderboard) ? rawLeaderboard : [];
 
-  const handleQuickGaslessBuy = async () => {
-    await purchaseGaslessTicket(1, 0);
+  const handleQuickBuy = async () => {
+    await purchaseTickets(1, 0);
     refetch();
   };
 
@@ -56,9 +61,10 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.topHeader}>
-          <WalletConnectButton
-            walletAddress={user?.walletAddress}
-            providerLabel={t('Portefeuille', 'Wallet')}
+          <IntegratedWalletButton
+            walletAddress={wallet?.walletAddress || user?.walletAddress}
+            balanceEth={wallet?.balanceEth}
+            providerLabel={t('Portefeuille BlockLucky', 'BlockLucky wallet')}
             onPress={() => navigation.navigate('TransactionHistory')}
           />
 
@@ -129,6 +135,19 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           </View>
         ) : null}
 
+        {isDemo ? (
+          <AppText
+            variant="caption"
+            color={colors.textMuted}
+            style={styles.demoNotice}
+          >
+            {t(
+              'Mode démonstration : tirage simulé, sans certification Chainlink VRF.',
+              'Demo mode: simulated draw, without Chainlink VRF certification.'
+            )}
+          </AppText>
+        ) : null}
+
         {isLoading && !statusData ? (
           <Loader
             message={t(
@@ -142,6 +161,10 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               initialSeconds={statusData?.round.remainingSeconds ?? 86400}
               prizePoolEth={statusData?.round.prizePool ?? 1.25}
               roundNumber={statusData?.round.contractRoundId ?? 1}
+              vrfCertified={
+                Boolean(statusData?.guarantees?.vrfCertified) && !isDemo
+              }
+              simulated={isDemo}
             />
 
             <View
@@ -164,15 +187,22 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                   'Automatic 100% refund guaranteed if the draw is cancelled.'
                 )}
               </AppText>
+              <ExplorerLink
+                url={statusData?.blockchain?.lotteryExplorerUrl}
+                label={t(
+                  'Consulter le Smart Contract sur l explorateur',
+                  'View the Smart Contract on the explorer'
+                )}
+              />
             </View>
 
             <View style={styles.ctaGroup}>
               <AppButton
                 title={t(
-                  'Acheter 1 ticket (Sans frais réseau)',
-                  'Buy 1 ticket (Zero gas fees)'
+                  'Acheter 1 ticket avec mon portefeuille',
+                  'Buy 1 ticket with my wallet'
                 )}
-                onPress={handleQuickGaslessBuy}
+                onPress={handleQuickBuy}
                 loading={isBuying}
               />
               <View style={styles.secondaryCtaRow}>
@@ -247,6 +277,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 16,
     alignSelf: 'flex-start',
+  },
+  demoNotice: {
+    marginBottom: 12,
   },
   statusDot: {
     width: 6,

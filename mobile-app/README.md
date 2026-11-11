@@ -7,16 +7,16 @@ Application mobile citoyenne multiplateforme (iOS & Android) propulsée par **Re
 ## Fonctionnalités Clés
 
 1. **Authentification Web3 Social Login & Majorité 18+ (`src/screens/auth/`)**
-   - Connexion sans friction via **Google** ou **Email Passwordless** avec génération déterministe de portefeuille Ethereum citoyen.
+   - Connexion sans friction via **Google** ou **Email Passwordless** avec création par le backend d'un portefeuille Ethereum citoyen intégré (custodial), crédité d'une dotation de bienvenue en ethers fictifs par la Mairie.
    - Vérification réglementaire obligatoire de majorité (18 ans révolus) et sélection de la tranche d'âge.
    - Double authentification (**2FA**) complète par application d'authentification (**TOTP**) ou par code **Email**, avec codes de secours.
    - Carrousel d'introduction (**Onboarding**) bilingue en 4 étapes.
 
-2. **Loterie Municipale Gasless & Tirage Temps Réel (`src/screens/lottery/`)**
+2. **Loterie Municipale On-Chain & Tirage Temps Réel (`src/screens/lottery/`)**
    - **Tableau de bord temps réel (`HomeScreen`)** : Compte à rebours connecté au Smart Contract, cagnotte en ETH, jauge de participation communautaire avec paliers déblocables, classement des ambassadeurs (**Leaderboard**) et indicateur de haute disponibilité du nœud Ethereum.
-   - **Billetterie 1-Clic Sans Frais (`BuyTicketScreen`)** : Achat de tickets avec prise en charge intégrale des frais de réseau (**Gasless Relayer**) et envoi de **Tickets Cadeaux** par email à ses proches.
-   - **Salle de Tirage en Direct (`LiveDrawScreen`)** : Salle d'attente temps réel (**Socket.IO**), roue de tirage certifiée **Chainlink VRF v2.5** et discussion en direct entre citoyens avec réactions rapides.
-   - **Historique & Galerie POAP (`TransactionHistoryScreen`)** : Liste des tickets avec liens directs **Etherscan** et galerie des certificats commémoratifs **POAP** débloqués.
+   - **Billetterie 1-Clic (`BuyTicketScreen`)** : Achat de tickets signé par le portefeuille BlockLucky intégré du citoyen, qui règle le prix du ticket et les frais de réseau en ethers fictifs, affichage du solde et envoi de **Tickets Cadeaux** par email à ses proches.
+   - **Salle de Tirage en Direct (`LiveDrawScreen`)** : Salle d'attente temps réel (**Socket.IO**), roue de tirage certifiée **Chainlink VRF v2.5** (indication « Mode démonstration » en mode simulé), retrait de la cagnotte en secours pour le gagnant et discussion en direct entre citoyens avec réactions rapides.
+   - **Historique & Galerie POAP (`TransactionHistoryScreen`)** : Liste des tickets avec liens vers l'explorateur blockchain (quand le réseau en fournit un) et galerie des certificats commémoratifs **POAP** débloqués.
 
 3. **Boutique Partenaires & Cartes à Gratter (`src/screens/marketplace/`)**
    - **Catalogue des commerçants (`RewardsCatalogScreen` & `RewardDetailScreen`)** : Consultation des offres locales d'EtherBay, jauge de stock en temps réel et vérification d'intégrité du registre **SHA-256**.
@@ -44,7 +44,7 @@ mobile-app/
 │   ├── utils/               # Formatage d'adresses Web3, dates et validateurs
 │   ├── services/            # Client HTTP, Socket.IO temps réel, stockage sécurisé et Sentry
 │   ├── store/               # Redux Toolkit + RTK Query (authApi, lotteryApi, marketplaceApi)
-│   ├── hooks/               # Hooks métier (useAuth, useGaslessWeb3, usePoints, useSocket, useAppTheme)
+│   ├── hooks/               # Hooks métier (useAuth, useCitizenWallet, usePoints, useSocket, useAppTheme)
 │   ├── components/          # Composants UI réutilisables, Loterie, Boutique et Web3
 │   ├── screens/             # 16 écrans répartis en 4 domaines (auth, lottery, marketplace, settings)
 │   └── navigation/          # Navigation React Navigation (RootNavigator, AuthStack, MainTabs, SettingsStack)
@@ -71,7 +71,6 @@ npm install
 EXPO_PUBLIC_API_URL=http://<VOTRE_IP_LOCALE>:2053/api
 EXPO_PUBLIC_WS_URL=http://<VOTRE_IP_LOCALE>:2053
 EXPO_PUBLIC_CHAIN_ID=11155111
-EXPO_PUBLIC_ETHERSCAN_BASE_URL=https://sepolia.etherscan.io
 ```
 
 ---

@@ -8,12 +8,16 @@ export interface CountdownTimerProps {
   initialSeconds: number;
   prizePoolEth: number;
   roundNumber: number;
+  vrfCertified?: boolean;
+  simulated?: boolean;
 }
 
 export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   initialSeconds,
   prizePoolEth,
   roundNumber,
+  vrfCertified = false,
+  simulated = false,
 }) => {
   const { colors, borderRadius, t } = useAppTheme();
   const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
@@ -55,8 +59,16 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
             },
           ]}
         >
-          <AppText variant="caption" weight="medium" color={colors.primary}>
-            Chainlink VRF
+          <AppText
+            variant="caption"
+            weight="medium"
+            color={simulated ? colors.textMuted : colors.primary}
+          >
+            {simulated
+              ? t('Mode démonstration', 'Demo mode')
+              : vrfCertified
+                ? 'Chainlink VRF'
+                : 'Smart Contract'}
           </AppText>
         </View>
       </View>

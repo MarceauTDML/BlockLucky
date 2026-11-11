@@ -22,6 +22,7 @@ import {
 } from '../../store/api/authApi';
 import AppText from '../../components/ui/AppText';
 import AppButton from '../../components/ui/AppButton';
+import IntegratedWalletCard from '../../components/web3/IntegratedWalletCard';
 import { shortenWallet } from '../../utils/formatters.util';
 
 export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -124,7 +125,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
             {shortenWallet(user?.walletAddress, 6)}
           </AppText>
           <AppText variant="caption" color={colors.textSecondary}>
-            {user?.email || t('Portefeuille Web3', 'Web3 Wallet')} • {pointsBalance} pts
+            {user?.email || t('Portefeuille BlockLucky', 'BlockLucky wallet')} • {pointsBalance} pts
           </AppText>
 
           <View style={styles.prefsRow}>
@@ -164,6 +165,8 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
             </TouchableOpacity>
           </View>
         </View>
+
+        <IntegratedWalletCard fallbackAddress={user?.walletAddress} />
 
         <View
           style={[

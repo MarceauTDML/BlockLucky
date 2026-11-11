@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, TouchableOpacity, Linking, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import useAppTheme from '../../hooks/useAppTheme';
 import AppText from '../ui/AppText';
+import ExplorerLink from '../web3/ExplorerLink';
 import { TicketItem } from '../../types/api.types';
 import { shortenWallet } from '../../utils/formatters.util';
 import { formatDateShort } from '../../utils/date.util';
@@ -12,12 +13,6 @@ export interface TicketCardProps {
 
 export const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
   const { colors, borderRadius, t } = useAppTheme();
-
-  const openEtherscan = () => {
-    if (ticket.etherscanUrl) {
-      Linking.openURL(ticket.etherscanUrl).catch(() => {});
-    }
-  };
 
   return (
     <View
@@ -46,20 +41,10 @@ export const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
         {formatDateShort(ticket.purchasedAt)}
       </AppText>
 
-      <TouchableOpacity
-        onPress={openEtherscan}
-        style={[
-          styles.etherscanBtn,
-          {
-            backgroundColor: colors.surfaceElevated,
-            borderRadius: borderRadius.sm,
-          },
-        ]}
-      >
-        <AppText variant="caption" weight="medium" color={colors.primary} align="center">
-          {t('Consulter sur Etherscan →', 'View on Etherscan →')}
-        </AppText>
-      </TouchableOpacity>
+      <ExplorerLink
+        url={ticket.etherscanUrl}
+        label={t('Consulter la transaction sur l explorateur', 'View the transaction on the explorer')}
+      />
     </View>
   );
 };
@@ -75,11 +60,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 2,
-  },
-  etherscanBtn: {
-    marginTop: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
   },
 });
 
