@@ -178,3 +178,18 @@
 - [Licences](juridique/licences.md)
 - [Registre des risques](juridique/registre-risques.md)
 - [Points à valider](juridique/points-a-valider.md)
+
+## 13. Infrastructure et exploitation
+
+- [Docker Compose](infrastructure/docker-compose.md)
+- [Images Docker](infrastructure/images.md)
+- [Environnements](infrastructure/environnements.md)
+- [Intégration continue](infrastructure/ci.md)
+- [Déploiement sur etherbay.tech](infrastructure/deploiement-etherbay.md)
+- [Publier la documentation](infrastructure/publier-documentation.md)
+- [Objectifs de service et métriques](infrastructure/slo-metriques.md)
+- [Runbooks](infrastructure/runbooks.md)
+- [Runbooks blockchain](infrastructure/runbooks-blockchain.md)
+- [Sauvegardes et reprise](infrastructure/sauvegardes.md)
+- [Réponse aux incidents](infrastructure/incidents.md)
+- [Tests de charge](infrastructure/tests-charge.md)
