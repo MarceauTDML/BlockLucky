@@ -45,3 +45,22 @@
   - [Échange de récompense](architecture/flux/recompense.md)
   - [Suppression RGPD](architecture/flux/suppression-rgpd.md)
 - [Conventions de code](architecture/conventions.md)
+
+## 4. Smart contracts
+
+- [Vue d'ensemble](smart-contracts/index.md)
+- [Pourquoi Ethereum, Hardhat et Chainlink](smart-contracts/choix.md)
+- [Contrat BlockLucky](smart-contracts/blocklucky.md)
+- [Cycle de vie d'un tour](smart-contracts/cycle-tour.md)
+- [Référence de BlockLucky](smart-contracts/reference-blocklucky.md)
+- [Tirage Chainlink VRF](smart-contracts/chainlink-vrf.md)
+- [Chainlink Automation](smart-contracts/automation.md)
+- [Badge POAP](smart-contracts/poap.md)
+- [Référence de BlockLuckyPOAP](smart-contracts/reference-poap.md)
+- [Sécurité du contrat](smart-contracts/securite.md)
+- [Tests, fuzzing et couverture](smart-contracts/tests.md)
+- [Blockchain locale](smart-contracts/blockchain-locale.md)
+- [Déploiement sur Sepolia](smart-contracts/sepolia.md)
+- [Utiliser Remix](smart-contracts/remix.md)
+- [Exploitation du contrat](smart-contracts/exploitation.md)
+- [Limites connues](smart-contracts/limites.md)
