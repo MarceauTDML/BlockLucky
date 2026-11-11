@@ -1,0 +1,20 @@
+{
+  "name": "blocklucky-documentation-officielle",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Documentation officielle du code source BlockLucky de la Ville d'EtherBay",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "serve": "node scripts/serve.mjs"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "devDependencies": {
+    "highlight.js": "11.12.0",
+    "marked": "18.2.0",
+    "mermaid": "12.3.0",
+    "yaml": "2.8.1"
+  }
+}

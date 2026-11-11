@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="{{root}}assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="{{root}}assets/css/doc.css">
+<script src="{{root}}assets/js/theme.js"></script>
+{{mermaid}}
+<script src="{{root}}assets/js/app.js" defer></script>
+<script src="{{root}}assets/js/search.js" defer></script>
+</head>
+<body data-root="{{root}}">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="{{home}}">
+    <img src="{{root}}assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation">{{nav}}</nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb">{{breadcrumb}}</div>
+    <article class="markdown">
+{{content}}
+    </article>
+    <nav class="pager" aria-label="Pages voisines">{{pager}}</nav>
+    <footer class="page-footer">
+      <a href="{{source}}" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page">{{toc}}</aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>
