@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import WalletCard from '@/components/lottery/WalletCard';
 import Button, { LinkButton } from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
 import { shortenWallet } from '@/lib/formatters';
@@ -126,6 +127,8 @@ export default function ProfilePage() {
             </button>
           </div>
         </section>
+
+        <WalletCard />
 
         <nav className="flex flex-col gap-2.5" aria-label={t('Paramètres du compte', 'Account settings')}>
           <LinkButton href="/profil/securite" variant="secondary">

@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button';
 import Sheet from '@/components/ui/Sheet';
 import { cn } from '@/lib/cn';
 import { formatDateShort } from '@/lib/date';
-import useGaslessWeb3 from '@/hooks/useGaslessWeb3';
+import useBlockLuckyWallet from '@/hooks/useBlockLuckyWallet';
 import usePushNotifications from '@/hooks/usePushNotifications';
 import { useAppDispatch, useAppSelector } from '@/store';
 import {
@@ -19,7 +19,7 @@ import { useAppTheme } from '@/theme/ThemeProvider';
 export const GlobalOverlays: React.FC = () => {
   const { t } = useAppTheme();
   const dispatch = useAppDispatch();
-  const { purchaseGaslessTicket } = useGaslessWeb3();
+  const { purchaseTicket } = useBlockLuckyWallet();
   const { notifications, drawerOpen, closeDrawer, osPushBanner } = usePushNotifications();
   const { pointsPopup, retryModal, queueModal, sentryModal } = useAppSelector((s) => s.ui);
 
@@ -66,10 +66,10 @@ export const GlobalOverlays: React.FC = () => {
           <Button
             onClick={async () => {
               dispatch(hideRetryModal());
-              await purchaseGaslessTicket(retryModal.quantity, retryModal.retryAttempt);
+              await purchaseTicket(retryModal.quantity, retryModal.retryAttempt);
             }}
           >
-            {t('Réessayer sans frais', 'Retry Gasless Purchase')}
+            {t("Réessayer l'achat", 'Retry purchase')}
           </Button>
         </div>
       </Sheet>

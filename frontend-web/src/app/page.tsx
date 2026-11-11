@@ -57,8 +57,8 @@ export default function LandingPage() {
       key: 'Participer',
       title: t('Participer', 'Take part'),
       body: t(
-        'Une seule action pour valider un ticket. Les frais réseau sont pris en charge par la ville.',
-        'One action to confirm a ticket. Network fees are covered by the city.'
+        'Une seule action pour valider un ticket, signée par votre portefeuille BlockLucky intégré. Les frais réseau sont prélevés sur la dotation de bienvenue en ethers fictifs.',
+        'One action to confirm a ticket, signed by your integrated BlockLucky wallet. Network fees are taken from the test-ether welcome grant.'
       ),
     },
     {
@@ -169,8 +169,8 @@ export default function LandingPage() {
             </div>
             <p className="mt-4 text-caption text-fg-muted">
               {t(
-                'Réservé aux personnes majeures · Sans frais réseau · Remboursement automatique en cas d annulation',
-                'Adults only · No network fees · Automatic refund if cancelled'
+                'Réservé aux personnes majeures · Ethers fictifs offerts par la Mairie · Remboursement automatique en cas d annulation',
+                'Adults only · Test ethers granted by City Hall · Automatic refund if cancelled'
               )}
             </p>
           </div>
@@ -199,6 +199,7 @@ export default function LandingPage() {
                   initialSeconds={status.round.remainingSeconds}
                   prizePoolEth={status.round.prizePool}
                   roundNumber={status.round.contractRoundId}
+                  simulated={Boolean(status.guarantees?.simulated)}
                 />
                 <ProgressBar
                   percentage={status.progression.percentage}
@@ -274,10 +275,15 @@ export default function LandingPage() {
             </h2>
             <p className="mt-1 max-w-xl text-body text-fg-secondary">
               {winner
-                ? t(
-                    'La preuve Chainlink VRF associée permet à chacun de vérifier le résultat.',
-                    'The associated Chainlink VRF proof lets anyone verify the result.'
-                  )
+                ? status?.guarantees?.simulated
+                  ? t(
+                      'Mode démonstration : ce résultat a été tiré par le serveur, sans certification Chainlink VRF.',
+                      'Demo mode: this result was drawn by the server, without Chainlink VRF certification.'
+                    )
+                  : t(
+                      'La preuve Chainlink VRF associée permet à chacun de vérifier le résultat.',
+                      'The associated Chainlink VRF proof lets anyone verify the result.'
+                    )
                 : t(
                     'Le tirage public est diffusé en direct. Le portefeuille gagnant et sa preuve seront affichés ici.',
                     'The public draw is streamed live. The winning wallet and its proof will appear here.'

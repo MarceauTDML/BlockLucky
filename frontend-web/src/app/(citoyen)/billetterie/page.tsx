@@ -8,8 +8,10 @@ import Input, { Textarea } from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
 import { Alert, CheckboxCard, PageHeader } from '@/components/ui/Misc';
 import { ChoicePills, SegmentedTabs } from '@/components/ui/SegmentedTabs';
+import DemoModeBadge from '@/components/lottery/DemoModeBadge';
+import WalletCard from '@/components/lottery/WalletCard';
 import useAuth from '@/hooks/useAuth';
-import useGaslessWeb3 from '@/hooks/useGaslessWeb3';
+import useBlockLuckyWallet from '@/hooks/useBlockLuckyWallet';
 import { GIFT_BONUS_POINTS, POINTS_PER_TICKET, TICKET_PRICE_ETH } from '@/lib/config';
 import { formatDateShort } from '@/lib/date';
 import { shortenHash } from '@/lib/formatters';
@@ -26,11 +28,13 @@ function TicketOfficeContent() {
   const { t } = useAppTheme();
   const params = useSearchParams();
   const { user } = useAuth();
-  const { purchaseGaslessTicket, sendGiftTicket, isBuying, isGifting } = useGaslessWeb3();
+  const { purchaseTicket, sendGiftTicket, isBuying, isGifting } = useBlockLuckyWallet();
   const { data: statusRes } = useGetLotteryStatusQuery();
   const round = statusRes?.data?.round;
   const isPaused = Boolean(statusRes?.data?.network?.isPaused);
   const isOpen = !round || round.status === 'OPEN';
+  const simulated = Boolean(statusRes?.data?.guarantees?.simulated);
+  const ticketPrice = round?.ticketPriceEth ?? TICKET_PRICE_ETH;
 
   const [mode, setMode] = useState<Mode>(params.get('mode') === 'cadeau' ? 'GIFT' : 'SELF');
   const [quantity, setQuantity] = useState<(typeof QUANTITIES)[number]>(1);
@@ -49,7 +53,7 @@ function TicketOfficeContent() {
     if (isBuying || !understood) return;
     setFeedback('');
     setReceipt({ state: 'pending', quantity });
-    const result = await purchaseGaslessTicket(quantity, 0);
+    const result = await purchaseTicket(quantity, 0);
     setReceipt(result ? { state: 'confirmed', data: result } : null);
   };
 
@@ -73,16 +77,17 @@ function TicketOfficeContent() {
     }
   };
 
-  const total = (quantity * TICKET_PRICE_ETH).toFixed(2);
+  const total = String(Number((quantity * ticketPrice).toFixed(4)));
 
   return (
     <div className="mx-auto max-w-5xl">
       <PageHeader
         title={t('Billetterie', 'Ticket Office')}
         subtitle={t(
-          "Les frais de réseau Ethereum sont pris en charge par le relais municipal d'EtherBay.",
-          'Ethereum network gas fees are fully sponsored by the EtherBay city relayer.'
+          'Chaque achat est signé par votre portefeuille BlockLucky intégré. Les frais réseau sont prélevés sur votre dotation de bienvenue en ethers fictifs.',
+          'Each purchase is signed by your integrated BlockLucky wallet. Network fees are taken from your test-ether welcome grant.'
         )}
+        actions={<DemoModeBadge simulated={simulated} />}
       />
 
       <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
@@ -113,8 +118,8 @@ function TicketOfficeContent() {
                 </h2>
                 <p className="text-caption text-fg-secondary">
                   {t(
-                    `${TICKET_PRICE_ETH} ETH fictif par ticket • +${POINTS_PER_TICKET} pts de fidélité par ticket`,
-                    `${TICKET_PRICE_ETH} test ETH per ticket • +${POINTS_PER_TICKET} loyalty pts per ticket`
+                    `${ticketPrice} ETH fictif par ticket • +${POINTS_PER_TICKET} pts de fidélité par ticket`,
+                    `${ticketPrice} test ETH per ticket • +${POINTS_PER_TICKET} loyalty pts per ticket`
                   )}
                 </p>
               </div>
@@ -129,7 +134,10 @@ function TicketOfficeContent() {
 
               <div className="flex flex-col gap-1 rounded-md bg-surface-elevated p-3">
                 <p className="text-caption text-fg-secondary tabular">
-                  {t(`Total : ${total} ETH fictif • Frais réseau : 0.00 ETH`, `Total: ${total} test ETH • Gas fee: 0.00 ETH`)}
+                  {t(
+                    `Total : ${total} ETH fictif + frais réseau, prélevés sur votre portefeuille BlockLucky`,
+                    `Total: ${total} test ETH + network fees, taken from your BlockLucky wallet`
+                  )}
                 </p>
                 <p className="text-caption font-semibold text-secondary">
                   {t(
@@ -208,6 +216,7 @@ function TicketOfficeContent() {
 
         {}
         <aside aria-live="polite" className="flex flex-col gap-3.5">
+          <WalletCard />
           <section className="card p-[18px]">
             <p className="text-caption font-medium text-secondary">{t('Reçu de participation', 'Entry receipt')}</p>
             {receipt?.state === 'pending' ? (
@@ -239,20 +248,30 @@ function TicketOfficeContent() {
                       <p className="text-fg-muted">
                         {t('Bloc', 'Block')} {tk.blockNumber} · {formatDateShort(tk.purchasedAt)}
                       </p>
-                      <a
-                        href={tk.etherscanUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-medium text-primary underline-offset-2 hover:underline"
-                      >
-                        {t('Vérifier sur Etherscan →', 'Verify on Etherscan →')}
-                      </a>
+                      {tk.etherscanUrl ? (
+                        <a
+                          href={tk.etherscanUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-primary underline-offset-2 hover:underline"
+                        >
+                          {t('Vérifier sur Etherscan →', 'Verify on Etherscan →')}
+                        </a>
+                      ) : null}
                     </li>
                   ))}
                 </ul>
                 <p className="text-caption text-secondary">
                   +{receipt.data.pointsAwarded} pts · {t('nouveau solde', 'new balance')} {receipt.data.newPointsBalance} pts
                 </p>
+                {receipt.data.poapBadge?.status === 'MINT_PENDING' ? (
+                  <p className="text-caption text-fg-muted">
+                    {t(
+                      "Certificat POAP en cours d'émission sur la blockchain.",
+                      'POAP certificate being minted on-chain.'
+                    )}
+                  </p>
+                ) : null}
               </div>
             ) : (
               <p className="mt-2 text-caption text-fg-muted">

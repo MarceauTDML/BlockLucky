@@ -17,8 +17,8 @@ export default function TransparencePage() {
   const rules = [
     t('Participation réservée aux personnes majeures (18 ans et plus).', 'Adults only (18 and over).'),
     t(
-      'Un ticket coûte 0,01 ether fictif. Les frais réseau sont pris en charge par la ville.',
-      'A ticket costs 0.01 test ether. Network fees are covered by the city.'
+      'Un ticket coûte 0,01 ether fictif. Il est payé, frais réseau compris, par votre portefeuille BlockLucky intégré, alimenté par une dotation de bienvenue de la Mairie.',
+      'A ticket costs 0.01 test ether. It is paid, network fees included, by your integrated BlockLucky wallet, funded by a City Hall welcome grant.'
     ),
     t(
       'Chaque ticket rapporte 50 EtherPoints et un certificat commémoratif POAP.',

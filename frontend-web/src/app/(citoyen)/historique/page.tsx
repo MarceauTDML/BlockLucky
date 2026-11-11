@@ -53,8 +53,8 @@ export default function HistoryPage() {
           <EmptyState
             title={t('Aucun ticket enregistré', 'No tickets recorded')}
             description={t(
-              'Participez sans frais de réseau pour obtenir votre premier ticket vérifiable sur Etherscan.',
-              'Enter with zero gas fees to get your first ticket verifiable on Etherscan.'
+              'Participez depuis la billetterie pour obtenir votre premier ticket, inscrit et vérifiable sur la blockchain.',
+              'Enter from the ticket office to get your first ticket, recorded and verifiable on the blockchain.'
             )}
             action={<LinkButton href="/billetterie">{t('Acheter un ticket', 'Buy a ticket')}</LinkButton>}
           />
