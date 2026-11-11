@@ -8,8 +8,10 @@
     "build": "hardhat build",
     "typecheck": "hardhat build && tsc --noEmit",
     "lint": "solhint --max-warnings 0 \"contracts/*.sol\"",
+    "slither": "sh scripts/slither.sh",
     "test": "hardhat test",
     "test:coverage": "hardhat test --coverage",
+    "coverage:check": "node scripts/check-coverage.mjs",
     "test:gas": "hardhat test mocha --gas-stats",
     "node": "hardhat node"
   },
