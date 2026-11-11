@@ -8,12 +8,14 @@ export interface RouletteAnimationProps {
   spinning: boolean;
   winnerWallet?: string | null;
   vrfRequestId?: string | null;
+  simulated?: boolean;
 }
 
 export const RouletteAnimation: React.FC<RouletteAnimationProps> = ({
   spinning,
   winnerWallet,
   vrfRequestId,
+  simulated = false,
 }) => {
   const { colors, borderRadius, t } = useAppTheme();
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -84,6 +86,8 @@ export const RouletteAnimation: React.FC<RouletteAnimationProps> = ({
               )
             : spinning
             ? t('Sélection aléatoire en cours...', 'Random selection in progress...')
+            : simulated
+            ? t('Tirage de démonstration en attente', 'Demo draw pending')
             : t('Tirage certifié en attente', 'Certified draw pending')}
         </AppText>
         <AppText
@@ -92,10 +96,13 @@ export const RouletteAnimation: React.FC<RouletteAnimationProps> = ({
           align="center"
           style={styles.vrfBadge}
         >
-          {t('Preuve Chainlink : ', 'Chainlink Proof: ')}
-          {vrfRequestId
-            ? shortenWallet(vrfRequestId, 6)
-            : t('Vérifiable sur contrat', 'Verifiable on-chain')}
+          {simulated
+            ? t('Mode démonstration : tirage simulé', 'Demo mode: simulated draw')
+            : `${t('Preuve Chainlink : ', 'Chainlink Proof: ')}${
+                vrfRequestId
+                  ? shortenWallet(vrfRequestId, 6)
+                  : t('Vérifiable sur contrat', 'Verifiable on-chain')
+              }`}
         </AppText>
       </View>
     </View>
