@@ -15,7 +15,8 @@
     "test:gas": "hardhat test mocha --gas-stats",
     "node": "hardhat node",
     "deploy:local": "hardhat run scripts/deploy-local.ts --network localhost",
-    "deploy:sepolia": "hardhat run scripts/deploy-sepolia.ts --network sepolia"
+    "deploy:sepolia": "hardhat run scripts/deploy-sepolia.ts --network sepolia",
+    "export:abi": "hardhat build && node scripts/export-abi.mjs"
   },
   "engines": {
     "node": ">=22.12.0"
