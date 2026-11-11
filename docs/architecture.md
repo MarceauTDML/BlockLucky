@@ -23,7 +23,9 @@ flowchart LR
   mairie -->|pilote le tirage, la trésorerie et les rapports| blocklucky
   visiteur -->|découvre la ville, réserve| tourisme
   tourisme -->|lien vers la loterie| blocklucky
-  blocklucky -->|relayer, indexation, Chainlink VRF| blockchain
+  blocklucky -->|transactions des portefeuilles intégrés, indexation des événements| blockchain
+  vrf[(Chainlink VRF)]
+  blockchain <-->|demande et preuve d'aléa| vrf
   blocklucky -->|emails transactionnels| smtp
   blocklucky -->|exports, visuels| s3
 ```
@@ -40,13 +42,14 @@ flowchart TB
 
   subgraph backend[backend]
     api[API Express 5<br/>REST /api/v1 + Socket.IO]
-    worker[Worker BullMQ<br/>emails, ledger]
+    worker[Worker<br/>BullMQ emails, ledger, actions on-chain<br/>indexeur et keeper de la loterie]
   end
 
   pg[(PostgreSQL 15<br/>données métier)]
   redis[(Redis 7<br/>files BullMQ, état, rate limit)]
   mail[(Mailpit / SMTP)]
-  chain[(Ethereum RPC<br/>principal + fallback)]
+  chain[(Nœud Ethereum RPC<br/>principal + fallback)]
+  contracts[[Smart contracts<br/>BlockLucky, BlockLuckyPOAP]]
 
   web -->|HTTPS JSON, WebSocket| api
   mobile -->|HTTPS JSON, WebSocket| api
@@ -56,8 +59,10 @@ flowchart TB
   worker -->|consomme les jobs| redis
   worker -->|Prisma| pg
   worker -->|SMTP| mail
-  api -->|ethers.js| chain
-  chain -.->|webhook signé /api/webhooks/blockchain| api
+  api -->|ethers.js : achats signés, disjoncteur| chain
+  worker -->|ethers.js : lecture des événements, tirage, POAP, cagnotte| chain
+  chain --- contracts
+  worker -.->|événements temps réel via Redis pub/sub| api
 ```
 
 ## Organisation du backend
@@ -71,6 +76,7 @@ Le backend est un monolithe modulaire : un dossier par domaine dans `backend/src
 | Contexte de requête, logs, métriques, arrêt propre | `src/observability/` |
 | Middlewares transverses (auth, RBAC, validation, rate limit, idempotence, erreurs) | `src/middlewares/` |
 | Files et workers asynchrones | `src/queues/`, `src/workers/`, `src/worker.ts` |
+| Blockchain : portefeuilles intégrés, appels au contrat, indexeur, keeper, actions on-chain | `src/blockchain/` (voir l'[ADR 0004](adr/0004-smart-contract-ethereum-portefeuille-integre.md)) |
 
 ## Flux d'une requête
 
