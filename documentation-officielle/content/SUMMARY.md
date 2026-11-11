@@ -78,3 +78,14 @@
 - [Relais temps réel](integration-blockchain/relais-temps-reel.md)
 - [Métadonnées POAP](integration-blockchain/metadonnees-poap.md)
 - [Tests sur une vraie chaîne](integration-blockchain/tests.md)
+
+## 6. Base de données
+
+- [Modèle de données](base-de-donnees/modele.md)
+- [Dictionnaire de données](base-de-donnees/dictionnaire.md)
+- [Index et contraintes](base-de-donnees/index-contraintes.md)
+- [Données Redis](base-de-donnees/redis.md)
+- [Migrations](base-de-donnees/migrations.md)
+- [Seed](base-de-donnees/seed.md)
+- [Reconstruire depuis la chaîne](base-de-donnees/reconstruction.md)
+- [Performance et sauvegardes](base-de-donnees/performance-sauvegardes.md)
