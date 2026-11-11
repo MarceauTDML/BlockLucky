@@ -14,7 +14,8 @@
     "coverage:check": "node scripts/check-coverage.mjs",
     "test:gas": "hardhat test mocha --gas-stats",
     "node": "hardhat node",
-    "deploy:local": "hardhat run scripts/deploy-local.ts --network localhost"
+    "deploy:local": "hardhat run scripts/deploy-local.ts --network localhost",
+    "deploy:sepolia": "hardhat run scripts/deploy-sepolia.ts --network sepolia"
   },
   "engines": {
     "node": ">=22.12.0"
