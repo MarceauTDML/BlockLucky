@@ -6,6 +6,8 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 5
     groups:
       backend-minor-patch:
         update-types: [minor, patch]
@@ -15,6 +17,8 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 5
     groups:
       web-minor-patch:
         update-types: [minor, patch]
@@ -24,6 +28,8 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 5
     ignore:
       - dependency-name: expo*
         update-types: [version-update:semver-major]

@@ -28,8 +28,10 @@ jobs:
       tourisme: ${{ steps.filter.outputs.tourisme }}
       infra: ${{ steps.filter.outputs.infra }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad
         id: filter
         with:
           filters: |
@@ -50,6 +52,20 @@ jobs:
               - 'docker/**'
               - '**/Dockerfile'
               - '.github/workflows/ci.yml'
+
+  secrets:
+    name: Recherche de secrets (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Historique Git complet
+        run: >-
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.30.1
+          git /repo --no-banner --redact --config /repo/.gitleaks.toml
 
   backend:
     name: Backend (typecheck, lint, tests, migrations)
@@ -87,13 +103,17 @@ jobs:
       DATABASE_URL: postgresql://ci:ci@localhost:5432/blocklucky_ci?schema=public
       REDIS_URL: redis://localhost:6379
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: backend/package-lock.json
       - run: npm ci
+      - name: Vulnérabilités hautes et critiques des dépendances de production
+        run: npm audit --omit=dev --audit-level=high
       - run: npx prisma generate
       - name: Synchronisation de .env.example avec le schéma de configuration
         run: npm run env:check
@@ -116,17 +136,21 @@ jobs:
       run:
         working-directory: frontend-web
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: frontend-web/package-lock.json
       - run: npm ci
+      - name: Vulnérabilités hautes et critiques des dépendances de production
+        run: npm audit --omit=dev --audit-level=high
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
-      - uses: actions/cache@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: frontend-web/.next/cache
           key: next-${{ runner.os }}-${{ hashFiles('frontend-web/package-lock.json') }}-${{ hashFiles('frontend-web/src/**') }}
@@ -134,6 +158,14 @@ jobs:
       - run: npm run build
         env:
           NEXT_TELEMETRY_DISABLED: 1
+      - name: Aucun secret ni source map dans le bundle public
+        run: |
+          if grep -rElq "sk_live_|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY|0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" .next/static; then
+            echo "Secret détecté dans .next/static" && exit 1
+          fi
+          if find .next/static -name '*.map' | grep -q .; then
+            echo "Source map publique détectée" && exit 1
+          fi
 
   mobile:
     name: Application mobile (typecheck, lint)
@@ -145,13 +177,17 @@ jobs:
       run:
         working-directory: mobile-app
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: mobile-app/package-lock.json
       - run: npm ci
+      - name: Vulnérabilités hautes et critiques des dépendances de production
+        run: npm audit --omit=dev --audit-level=high
       - run: npm run typecheck
       - run: npm run lint
       - name: Vérification de la configuration Expo
@@ -167,8 +203,10 @@ jobs:
       run:
         working-directory: frontend-office-tourisme
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .nvmrc
       - name: Syntaxe des modules JavaScript
@@ -186,32 +224,43 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
       - name: Validation de docker-compose.yml
         run: docker compose --profile app config -q
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
       - name: Image backend
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
         with:
           context: backend
           target: runtime
           push: false
           tags: blocklucky-backend:${{ github.sha }}
+          load: true
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
       - name: Image frontend web
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
         with:
           context: frontend-web
           push: false
           tags: blocklucky-web:${{ github.sha }}
+          load: true
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
       - name: Image Office de Tourisme
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
         with:
           context: frontend-office-tourisme
           push: false
           tags: blocklucky-tourisme:${{ github.sha }}
+          load: true
           cache-from: type=gha,scope=tourisme
           cache-to: type=gha,mode=max,scope=tourisme
+      - name: Vulnérabilités des images (Trivy)
+        run: |
+          for image in blocklucky-backend blocklucky-web blocklucky-tourisme; do
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.76.2 image \
+              --quiet --exit-code 1 --ignore-unfixed --severity CRITICAL,HIGH "$image:${{ github.sha }}"
+          done
