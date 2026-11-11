@@ -77,7 +77,7 @@ router.put(
  * /api/user/preferences:
  *   put:
  *     tags: [User]
- *     summary: Modifier le thème (Sombre/Clair) et la langue (FR/EN)
+ *     summary: Modifier le thème (clair, sombre ou système), la langue (FR/EN) et les notifications
  */
 router.put(
   '/preferences',
@@ -91,7 +91,7 @@ router.put(
  * /api/user/notifications:
  *   get:
  *     tags: [User]
- *     summary: Consulter le centre de notifications push
+ *     summary: Consulter le centre de notifications (contenu de démonstration, aucun envoi push)
  */
 router.get('/notifications', authenticate, (req, res, next) =>
   userController.getNotifications(req, res, next)

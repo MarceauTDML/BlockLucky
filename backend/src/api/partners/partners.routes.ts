@@ -40,7 +40,7 @@ router.post(
  * /api/partners/offers:
  *   post:
  *     tags: [Partners]
- *     summary: Créer une offre de récompense (Titre, Coût en EtherPoints, Stock, Date d'expiration)
+ *     summary: Créer une offre de récompense (titre, coût en EtherPoints, stock, date d'expiration indicative)
  */
 router.post(
   '/offers',
@@ -55,7 +55,7 @@ router.post(
  * /api/partners/codes/upload:
  *   post:
  *     tags: [Partners]
- *     summary: Uploader un lot de 100 codes promos uniques (CSV ou tableau JSON)
+ *     summary: Importer un lot de codes promos uniques, jusqu'à 5 000 (CSV ou tableau JSON)
  */
 router.post(
   '/codes/upload',

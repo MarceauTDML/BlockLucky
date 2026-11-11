@@ -11,7 +11,7 @@ const router = Router();
  * /api/webhooks/blockchain:
  *   post:
  *     tags: [Webhooks]
- *     summary: Webhook temps réel pour indexer les événements Smart Contract (TicketPurchased, WinnerPicked, Fallback)
+ *     summary: Webhook signé d'indexation des événements, réservé au mode simulé (409 en mode onchain)
  */
 router.post(
   '/blockchain',
