@@ -36,7 +36,7 @@ const checkRedis = async (): Promise<{ status: 'up' | 'down' | 'disabled'; laten
  * /health:
  *   get:
  *     tags: [System]
- *     summary: Vérifier l'état de santé du serveur et l'indicateur de réseau Fallback
+ *     summary: Vérifier que l'API répond, avec l'état du disjoncteur du Smart Contract
  */
 router.get('/health', async (_req, res) => {
   const network = await blockchainService.getNetworkStatus();

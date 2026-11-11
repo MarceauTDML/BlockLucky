@@ -40,7 +40,7 @@ router.post(
  * /api/admin/treasury/withdraw:
  *   post:
  *     tags: [Admin]
- *     summary: Retirer la part de trésorerie de la Mairie vers un portefeuille multi-signatures
+ *     summary: Reverser toute la commission accumulée dans le Smart Contract vers l'adresse de trésorerie de la Mairie
  */
 router.post(
   '/treasury/withdraw',
@@ -66,7 +66,7 @@ router.patch(
  * /api/admin/reports/export:
  *   get:
  *     tags: [Admin]
- *     summary: Générateur de rapports analytiques et comptables (CSV ou PDF)
+ *     summary: Générer un rapport analytique et comptable (CSV, ou export JSON pour le format pdf)
  */
 router.get('/reports/export', (req, res, next) =>
   adminController.exportReport(req, res, next)

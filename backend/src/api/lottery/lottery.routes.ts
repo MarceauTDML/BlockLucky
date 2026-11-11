@@ -13,7 +13,7 @@ const router = Router();
  * /api/lottery/status:
  *   get:
  *     tags: [Lottery]
- *     summary: Obtenir le compte à rebours, la jauge de progression (10k), les paliers et la preuve Chainlink VRF
+ *     summary: Obtenir le compte à rebours, la jauge de progression vers le plafond du tour, les paliers et la preuve Chainlink VRF
  */
 router.get('/status', (req, res, next) => lotteryController.getStatus(req, res, next));
 
@@ -51,7 +51,7 @@ router.get('/poap/:file', (req, res, next) => lotteryController.getPoapMetadata(
  * /api/lottery/buy:
  *   post:
  *     tags: [Lottery]
- *     summary: Acheter un ou plusieurs tickets en 1 clic, transaction signée par le portefeuille intégré du citoyen, et gagner +50 EtherPoints
+ *     summary: Acheter un ou plusieurs tickets en 1 clic, transaction signée par le portefeuille intégré du citoyen, et gagner 50 EtherPoints par ticket
  */
 router.post(
   '/buy',
@@ -66,7 +66,7 @@ router.post(
  * /api/lottery/gift:
  *   post:
  *     tags: [Lottery]
- *     summary: Offrir un ticket de loterie à un proche par email (Cadeau viral)
+ *     summary: Offrir un ticket à un proche désigné par son email, acheté pour son portefeuille intégré (Cadeau viral)
  */
 router.post(
   '/gift',
@@ -81,7 +81,7 @@ router.post(
  * /api/lottery/my-tickets:
  *   get:
  *     tags: [Lottery]
- *     summary: Historique de transparence (liens Etherscan) et Galerie POAP (NFT)
+ *     summary: Historique des tickets (liens vers l'explorateur de blocs si EXPLORER_URL est défini) et galerie des badges POAP
  */
 router.get('/my-tickets', authenticate, (req, res, next) =>
   lotteryController.getMyTransactions(req, res, next)
@@ -131,7 +131,7 @@ router.post(
  * /api/lottery/refund:
  *   post:
  *     tags: [Lottery]
- *     summary: Annuler le round et déclencher le remboursement automatique (Auto-Refund)
+ *     summary: Annuler le tour en cours ; en mode onchain, chaque mise devient remboursable dans le Smart Contract et est réclamée automatiquement
  */
 router.post(
   '/refund',

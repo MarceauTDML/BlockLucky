@@ -26,7 +26,7 @@ router.post(
  * /api/analytics/dashboard:
  *   get:
  *     tags: [Analytics]
- *     summary: Obtenir les graphiques démographiques (18-35 ans) et courbes d'acquisition UTM (Mairie Admin)
+ *     summary: Obtenir la répartition par tranche d'âge et les courbes d'acquisition UTM (Mairie)
  */
 router.get(
   '/dashboard',

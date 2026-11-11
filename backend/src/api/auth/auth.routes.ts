@@ -27,7 +27,7 @@ router.get('/onboarding', (req, res, next) => authController.getOnboarding(req, 
  * /api/auth/login:
  *   post:
  *     tags: [Auth]
- *     summary: Connexion Social Login (Web3Auth) avec vérification légale 18+
+ *     summary: Connexion sans mot de passe avec déclaration de majorité (18+) : envoi d'un code à 6 chiffres par email
  */
 router.post(
   '/login',
@@ -67,13 +67,6 @@ router.post(
 
 /**
  * @openapi
- * /api/auth/2fa/disable:
- *   post:
- *     tags: [Auth]
- *     summary: Désactiver la double authentification 2FA
- */
-/**
- * @openapi
  * /api/auth/logout:
  *   post:
  *     tags: [Auth]
@@ -86,6 +79,13 @@ router.post(
   (req, res, next) => authController.logout(req, res, next)
 );
 
+/**
+ * @openapi
+ * /api/auth/2fa/disable:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Désactiver la double authentification 2FA
+ */
 router.post(
   '/2fa/disable',
   authRateLimiter,
