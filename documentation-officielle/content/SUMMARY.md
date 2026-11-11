@@ -15,3 +15,12 @@
 - [Réel, simulé ou à venir](presentation/reel-ou-simule.md)
 - [Grille de compétences](presentation/competences.md)
 - [Historique et feuille de route](presentation/historique.md)
+
+## 2. Démarrage rapide
+
+- [Prérequis](demarrage/prerequis.md)
+- [Infrastructure locale](demarrage/infrastructure-locale.md)
+- [Lancer les applications](demarrage/lancer-les-applications.md)
+- [Comptes de démonstration et connexion](demarrage/comptes-et-connexion.md)
+- [Stack complète en conteneurs](demarrage/stack-conteneurs.md)
+- [Dépannage](demarrage/depannage.md)
