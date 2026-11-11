@@ -11,6 +11,11 @@ x-backend-env: &backend-env
   NODE_ENV: production
   DATABASE_URL: postgresql://etherbay_admin:etherbay_password@postgres:5432/blocklucky_db?schema=public
   REDIS_URL: redis://redis:6379
+  BLOCKCHAIN_MODE: onchain
+  RPC_URL: http://blockchain:8545
+  CHAIN_ID: 31337
+  LOTTERY_CONTRACT_ADDRESS: 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9
+  POAP_CONTRACT_ADDRESS: 0x5FC8d32690cc91D4c39d9d3abcBD16989F875707
   SMTP_HOST: mailpit
   SMTP_PORT: 1025
   FRONTEND_URL: http://localhost:3000
@@ -95,6 +100,19 @@ services:
       retries: 5
     restart: unless-stopped
 
+  blockchain:
+    build:
+      context: ./smart-contract
+    container_name: blocklucky_blockchain
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      OPERATOR_PRIVATE_KEY: ${RELAYER_PRIVATE_KEY:-}
+      POAP_BASE_URI: http://localhost:2053/api/v1/lottery/poap/
+    ports:
+      - "127.0.0.1:8545:8545"
+    restart: unless-stopped
+
   migrate:
     profiles: ["app"]
     <<: *hardening
@@ -124,6 +142,8 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+      blockchain:
+        condition: service_healthy
     stop_grace_period: 30s
     restart: unless-stopped
 
@@ -145,6 +165,8 @@ services:
       migrate:
         condition: service_completed_successfully
       redis:
+        condition: service_healthy
+      blockchain:
         condition: service_healthy
     stop_grace_period: 30s
     restart: unless-stopped
