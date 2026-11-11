@@ -3,6 +3,8 @@ import redis from '../config/redis.config';
 import { env } from '../config/env.config';
 import bullEmailsQueue from '../queues/emails.queue';
 import bullLedgerQueue from '../queues/ledger.queue';
+import { closeChainActionsQueue } from '../blockchain/chain-actions';
+import chainClient from '../blockchain/chain.client';
 import logger from '../utils/logger.util';
 import { markShuttingDown } from './lifecycle';
 
@@ -30,8 +32,9 @@ export const registerShutdown = (steps: CloseStep[]): void => {
       ...steps,
       {
         name: 'queues',
-        close: () => Promise.all([bullEmailsQueue?.close(), bullLedgerQueue?.close()]),
+        close: () => Promise.all([bullEmailsQueue?.close(), bullLedgerQueue?.close(), closeChainActionsQueue()]),
       },
+      { name: 'blockchain', close: async () => chainClient.destroy() },
       { name: 'prisma', close: () => prisma.$disconnect() },
       { name: 'redis', close: () => redis.close() },
     ];

@@ -2,11 +2,13 @@ import http from 'http';
 import { env } from './config/env.config';
 import { startWorkers, closeWorkers } from './workers';
 import { registerShutdown } from './observability/shutdown';
+import { startChainServices } from './blockchain/lottery.keeper';
 import { metricsRegistry } from './observability/metrics';
 import { isShuttingDown } from './observability/lifecycle';
 import logger from './utils/logger.util';
 
 const workers = startWorkers();
+const chainServices = startChainServices();
 
 if (workers.length === 0) {
   logger.error('Aucun worker démarré : Redis est requis pour le process worker');
@@ -34,6 +36,7 @@ const probeServer = http.createServer((req, res) => {
 });
 
 registerShutdown([
+  { name: 'chain', close: async () => chainServices?.stop() },
   { name: 'workers', close: () => closeWorkers(workers) },
   {
     name: 'probe',
