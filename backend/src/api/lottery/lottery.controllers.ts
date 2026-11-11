@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import lotteryService from './lottery.services';
 import { sendSuccess, AppError } from '../../utils/response.util';
 import { getPaginationParams, buildPaginationMeta } from '../../utils/pagination.util';
+import { parsePoapFile, poapImage, poapMetadata } from '../../blockchain/poap.metadata';
 
 export class LotteryController {
   public async getStatus(_req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -17,8 +18,8 @@ export class LotteryController {
     try {
       const userId = req.user?.userId;
       if (!userId) throw new AppError('Authentification requise', 401);
-      const result = await lotteryService.buyGaslessTicket(userId, req.body);
-      sendSuccess(res, result, 'Ticket acheté avec succès (Transaction Gasless)', 201);
+      const result = await lotteryService.buyTickets(userId, req.body);
+      sendSuccess(res, result, 'Ticket acheté avec succès', 201);
     } catch (error) {
       next(error);
     }
@@ -38,7 +39,7 @@ export class LotteryController {
   public async triggerDraw(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const result = await lotteryService.executeChainlinkDraw(req.body?.roundId);
-      sendSuccess(res, result, 'Tirage au sort Chainlink VRF exécuté avec succès');
+      sendSuccess(res, result, 'Tirage au sort Chainlink VRF demandé');
     } catch (error) {
       next(error);
     }
@@ -48,6 +49,28 @@ export class LotteryController {
     try {
       const result = await lotteryService.CancelAndAutoRefundRound(req.body?.roundId);
       sendSuccess(res, result, 'Loterie annulée et remboursement automatique déclenché');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async claimPrize(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new AppError('Authentification requise', 401);
+      const result = await lotteryService.claimPrize(userId, req.body.contractRoundId);
+      sendSuccess(res, result, 'Cagnotte versée sur votre portefeuille BlockLucky');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getWallet(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new AppError('Authentification requise', 401);
+      const result = await lotteryService.getWallet(userId);
+      sendSuccess(res, result, 'Portefeuille BlockLucky récupéré');
     } catch (error) {
       next(error);
     }
@@ -81,6 +104,27 @@ export class LotteryController {
         200,
         meta
       );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public getPoapMetadata(req: Request, res: Response, next: NextFunction): void {
+    try {
+      const file = String(req.params.file ?? '');
+      const jsonRound = parsePoapFile(file, 'json');
+      const svgRound = jsonRound ? null : parsePoapFile(file, 'svg');
+      res.setHeader('Cache-Control', 'public, max-age=86400, immutable');
+      if (jsonRound) {
+        const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/poap`;
+        res.json(poapMetadata(jsonRound, baseUrl));
+        return;
+      }
+      if (svgRound) {
+        res.type('image/svg+xml').send(poapImage(svgRound));
+        return;
+      }
+      throw new AppError('Badge POAP introuvable', 404);
     } catch (error) {
       next(error);
     }

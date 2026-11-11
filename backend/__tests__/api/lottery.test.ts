@@ -65,4 +65,15 @@ describe('Lottery API (/api/lottery)', () => {
     expect(giftRes.body.data.ticket.recipientEmail).toBe('ami@etherbay.fr');
     expect(giftRes.body.data.senderPointsAwarded).toBe(75);
   });
+  it('GET /api/lottery/poap/:roundId.json should expose ERC-721 metadata pointing to the badge image', async () => {
+    const res = await request(app).get('/api/v1/lottery/poap/3.json');
+    expect(res.status).toBe(200);
+    expect(res.body.name).toContain('3');
+    expect(res.body.image).toMatch(/\/api\/v1\/lottery\/poap\/3\.svg$/);
+    const image = await request(app).get('/api/v1/lottery/poap/3.svg');
+    expect(image.status).toBe(200);
+    expect(image.headers['content-type']).toContain('image/svg+xml');
+    expect((await request(app).get('/api/v1/lottery/poap/0.json')).status).toBe(404);
+    expect((await request(app).get('/api/v1/lottery/poap/abc')).status).toBe(404);
+  });
 });
