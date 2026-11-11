@@ -1,5 +1,12 @@
 name: blocklucky
 
+x-hardening: &hardening
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs:
+    - /tmp:size=64m
+
 x-backend-env: &backend-env
   NODE_ENV: production
   DATABASE_URL: postgresql://etherbay_admin:etherbay_password@postgres:5432/blocklucky_db?schema=public
@@ -8,6 +15,7 @@ x-backend-env: &backend-env
   SMTP_PORT: 1025
   FRONTEND_URL: http://localhost:3000
   CORS_ORIGINS: http://localhost:3000,http://localhost:8081
+  METRICS_TOKEN: ${METRICS_TOKEN:-}
   JWT_SECRET: ${JWT_SECRET:-}
   ENCRYPTION_KEY: ${ENCRYPTION_KEY:-}
   RELAYER_PRIVATE_KEY: ${RELAYER_PRIVATE_KEY:-}
@@ -36,7 +44,7 @@ services:
       POSTGRES_PASSWORD: etherbay_password
       POSTGRES_DB: blocklucky_db
     ports:
-      - "5434:5432"
+      - "127.0.0.1:5434:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
@@ -64,7 +72,7 @@ services:
       - --slowlog-log-slower-than
       - "10000"
     ports:
-      - "6380:6379"
+      - "127.0.0.1:6380:6379"
     volumes:
       - redisdata:/data
     healthcheck:
@@ -78,8 +86,8 @@ services:
     image: axllent/mailpit:v1.31.4
     container_name: blocklucky_mailpit
     ports:
-      - "1025:1025"
-      - "8025:8025"
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
     healthcheck:
       test: ["CMD", "/mailpit", "readyz"]
       interval: 15s
@@ -89,6 +97,7 @@ services:
 
   migrate:
     profiles: ["app"]
+    <<: *hardening
     build:
       context: ./backend
       target: migrator
@@ -101,6 +110,7 @@ services:
 
   backend:
     profiles: ["app"]
+    <<: *hardening
     build:
       context: ./backend
       target: runtime
@@ -119,6 +129,7 @@ services:
 
   worker:
     profiles: ["app"]
+    <<: *hardening
     build:
       context: ./backend
       target: runtime
@@ -140,6 +151,10 @@ services:
 
   web:
     profiles: ["app"]
+    <<: *hardening
+    tmpfs:
+      - /tmp:size=64m
+      - /app/.next/cache:size=128m,uid=1000,gid=1000
     build:
       context: ./frontend-web
       args:
@@ -154,6 +169,7 @@ services:
 
   tourisme:
     profiles: ["app"]
+    <<: *hardening
     build:
       context: ./frontend-office-tourisme
     ports:
