@@ -11,7 +11,7 @@ Ce serveur est developpe en **Node.js**, **Express 5** et **TypeScript 6**, prop
 - **ORM & Base de donnees** : Prisma `7.10.x` avec adaptateur natif `@prisma/adapter-pg` sur PostgreSQL 15
 - **Cache & Files d'attente asynchrones** : Redis 7 (`ioredis` + `bullmq`) avec bascule memoire automatique de secours
 - **Temps Reel (WebSockets)** : Socket.IO `4.8.x` (Salle d'attente 10 minutes avant tirage, Roulette Live, Chat en direct avec reactions)
-- **Web3 & Smart Contracts** : Ethers.js `6.17.x` (Relayer d'achat Gasless 1-clic, Tirage certifie Chainlink VRF, Galerie NFT POAP, Circuit Breaker, Retrait Multi-Signatures)
+- **Web3 & Smart Contracts** : Ethers.js `6.17.x` branché sur les contrats Solidity de `../smart-contract` (portefeuille Ethereum intégré par citoyen, dotation de bienvenue en ethers fictifs, tirage Chainlink VRF, POAP ERC-721, disjoncteur `pause`). Voir l'[ADR 0004](../docs/adr/0004-smart-contract-ethereum-portefeuille-integre.md).
 - **Emails Transactionnels** : Nodemailer `10.3.x` + serveur SMTP local **Mailpit** sous Docker (5 templates HTML : OTP 2FA, Codes de secours, Suppression RGPD, Code Promo gagne, Bienvenue)
 - **Securite & Conformite RGPD** : Helmet, CORS, Rate Limiting, Validation stricte Zod v4, Authentification JWT, RBAC (`USER`, `PARTNER`, `ADMIN`), 2FA (`TOTP` Google Authenticator & `EMAIL`), Verification legale `18+`, Export JSON RGPD et Anonymisation de compte.
 - **Documentation API** : OpenAPI 3.0 / Swagger UI disponible sur `/api/docs`.
@@ -59,6 +59,15 @@ backend/
 │   │   ├── rateLimiter.middleware.ts
 │   │   ├── validate.middleware.ts
 │   │   └── error.middleware.ts
+│   ├── blockchain/
+│   │   ├── abi/                     (ABI exportées par smart-contract, npm run export:abi)
+│   │   ├── chain.client.ts          (fournisseur RPC, compte opérateur, repli RPC)
+│   │   ├── wallet.service.ts        (portefeuilles citoyens chiffrés, dotation de bienvenue)
+│   │   ├── lottery.gateway.ts       (appels au contrat et traduction des erreurs)
+│   │   ├── lottery.indexer.ts       (projection des événements du contrat en base)
+│   │   ├── lottery.keeper.ts        (tirage et clôture automatiques)
+│   │   ├── chain-actions.ts         (file BullMQ : POAP, cagnotte, remboursements)
+│   │   └── poap.metadata.ts         (métadonnées et visuel des badges)
 │   ├── services/
 │   │   ├── email.service.ts
 │   │   ├── totp.service.ts
@@ -85,6 +94,7 @@ backend/
 │   │   └── events/
 │   │       ├── live-draw.events.ts
 │   │       └── chat.events.ts
+│   │   └── event-bridge.ts          (relais Redis des événements émis par le worker)
 │   ├── types/
 │   │   ├── api.types.ts
 │   │   ├── express.d.ts
@@ -97,6 +107,7 @@ backend/
 └── __tests__/
     ├── __mocks__/
     ├── api/
+    ├── chain/                       (tests sur un vrai nœud Hardhat, npm run test:chain)
     ├── integration/
     └── services/
 ```
@@ -105,15 +116,16 @@ backend/
 
 ## 3. Installation et Initialisation de A a Z
 
-### Etape 1 : Demarrer l'infrastructure Docker (PostgreSQL, Redis, Mailpit)
+### Etape 1 : Demarrer l'infrastructure Docker (PostgreSQL, Redis, Mailpit, blockchain locale)
 
 Depuis la racine du depot (`BlockLucky/`) :
 
 ```bash
-docker compose up -d
+docker compose up -d --wait
 ```
 
 Services demarres :
+- **Blockchain locale (nœud Hardhat)** : `http://127.0.0.1:8545`, chain ID `31337`, avec `BlockLucky`, `BlockLuckyPOAP` et un oracle Chainlink VRF simulé déjà déployés aux adresses par défaut de `.env.example`
 - **PostgreSQL 15** : `localhost:5434` (Base : `blocklucky_db`)
 - **Redis 7** : `localhost:6380`
 - **Mailpit (Serveur SMTP + Interface Web d'emails)** :
@@ -190,6 +202,32 @@ npm run env:check
 
 `env:check` vérifie que `.env.example` contient exactement les variables du schéma de configuration.
 
+Les tests unitaires tournent en `BLOCKCHAIN_MODE=simulated`. Le test d'intégration sur une vraie blockchain enchaîne les étapes suivantes :
+
+1. achat et cadeau signés par les portefeuilles intégrés ;
+2. tirage Chainlink VRF ;
+3. versement de la cagnotte et frappe des POAP ;
+4. pause par le disjoncteur.
+
+Il demande PostgreSQL, Redis et la blockchain locale démarrés, sur une base migrée et vierge :
+
+```bash
+npm run test:chain
+```
+
+| Variable | Rôle |
+|---|---|
+| `BLOCKCHAIN_MODE` | `onchain` (défaut, obligatoire en production) ou `simulated` (tests unitaires, développement sans nœud) |
+| `RPC_URL`, `FALLBACK_RPC_URL`, `CHAIN_ID` | Nœud principal, nœud de secours et réseau attendu |
+| `CHAIN_START_BLOCK`, `CHAIN_CONFIRMATIONS` | Bloc de déploiement du contrat et nombre de confirmations attendues par l'indexeur |
+| `LOTTERY_CONTRACT_ADDRESS`, `POAP_CONTRACT_ADDRESS` | Adresses des contrats (`smart-contract/deployments/<réseau>.json`) |
+| `RELAYER_PRIVATE_KEY` | Compte opérateur : rôles opérateur, pause et frappe sur les contrats, dotations de bienvenue |
+| `WELCOME_GRANT_WEI` | Dotation versée une fois à chaque citoyen (0,1 ETH fictif par défaut) |
+| `EXPLORER_URL` | Explorateur des liens de transaction (`https://sepolia.etherscan.io` sur Sepolia, vide en local) |
+| `INDEXER_INTERVAL_MS`, `KEEPER_INTERVAL_MS` | Cadence de l'indexeur et du keeper |
+
+Après un redémarrage de la blockchain locale, l'état de la chaîne est perdu : réinitialiser aussi la base (`npx prisma migrate reset`). Sinon, l'indexeur signale que son curseur dépasse la tête de chaîne.
+
 Lancer la suite complete de tests unitaires et d'integration (Jest + Supertest) :
 
 ```bash
@@ -212,9 +250,12 @@ npm test
 | **Auth** | `POST` | `/api/auth/2fa/verify` | Validation du code email, TOTP ou de secours, delivre la session |
 | **Auth** | `POST` | `/api/auth/logout` | Revocation de la session courante, ou de toutes avec `allDevices: true` |
 | **Lottery** | `GET` | `/api/lottery/status` | Compte a rebours, jauge 10k FOMO, paliers et garanties |
-| **Lottery** | `POST` | `/api/lottery/buy` | Achat de ticket en 1 clic (Gasless) + 50 EtherPoints + POAP |
+| **Lottery** | `POST` | `/api/lottery/buy` | Achat de ticket en 1 clic signé par le portefeuille intégré + 50 EtherPoints + POAP |
+| **Lottery** | `GET` | `/api/lottery/wallet` | Adresse, solde en ethers fictifs et dotation de bienvenue du portefeuille intégré |
+| **Lottery** | `POST` | `/api/lottery/claim-prize` | Retrait de la cagnotte par le gagnant (normalement automatique) |
+| **Lottery** | `GET` | `/api/lottery/poap/{tour}.json` | Métadonnées ERC-721 du badge POAP d'un tour (et visuel `{tour}.svg`) |
 | **Lottery** | `POST` | `/api/lottery/gift` | Offrir un ticket a un proche par email (Cadeau viral) |
-| **Lottery** | `GET` | `/api/lottery/my-tickets` | Historique de transparence Etherscan & Galerie POAP |
+| **Lottery** | `GET` | `/api/lottery/my-tickets` | Historique des transactions (liens vers l'explorateur) et galerie POAP |
 | **Lottery** | `GET` | `/api/lottery/leaderboard` | Classement anonymise des meilleurs ambassadeurs |
 | **Lottery** | `POST` | `/api/lottery/draw` | Tirage au sort certifie Chainlink VRF (`ADMIN`) |
 | **Lottery** | `POST` | `/api/lottery/refund` | Annulation et remboursement automatique Auto-Refund (`ADMIN`) |
@@ -240,7 +281,7 @@ npm test
 | **Admin Mairie** | `POST` | `/api/admin/treasury/withdraw` | Retrait de tresorerie vers portefeuille Multi-Sig (`ADMIN`) |
 | **Admin Mairie** | `GET` | `/api/admin/reports/export` | Export des rapports comptables en CSV ou PDF (`ADMIN`) |
 | **Admin Mairie** | `GET` | `/api/admin/audit-logs` | Journal chronologique des actions d'administration (`ADMIN`) |
-| **Webhooks** | `POST` | `/api/webhooks/blockchain` | Indexation temps reel des evenements Smart Contract (signature HMAC `x-webhook-signature` obligatoire) |
+| **Webhooks** | `POST` | `/api/webhooks/blockchain` | Indexation des evenements en mode `simulated` uniquement (signature HMAC `x-webhook-signature` obligatoire) ; en mode `onchain`, l'indexeur lit directement la chaine et ce webhook repond 409 |
 
 Toutes les routes `/api/*` sont aussi servies sous le préfixe versionné `/api/v1/*`. Les nouveaux clients doivent utiliser `/api/v1`.
 
