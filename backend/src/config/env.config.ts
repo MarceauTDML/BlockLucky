@@ -57,16 +57,30 @@ const envSchema = z
     SMTP_USER: z.string().default(''),
     SMTP_PASS: z.string().default(''),
     SMTP_FROM: z.string().default('EtherBay Lottery <noreply@etherbay.fr>'),
+    BLOCKCHAIN_MODE: z.enum(['onchain', 'simulated']).default('onchain'),
     RPC_URL: z.string().url().default('http://127.0.0.1:8545'),
-    FALLBACK_RPC_URL: z.string().url().default('https://rpc.sepolia.org'),
+    FALLBACK_RPC_URL: z.string().url().default('https://ethereum-sepolia-rpc.publicnode.com'),
+    CHAIN_ID: z.coerce.number().int().positive().default(31337),
+    CHAIN_START_BLOCK: z.coerce.number().int().min(0).default(0),
+    CHAIN_CONFIRMATIONS: z.coerce.number().int().min(0).max(64).default(0),
+    EXPLORER_URL: z
+      .string()
+      .default('')
+      .refine((value) => value === '' || /^https:\/\/[^\s]+$/.test(value), 'URL HTTPS attendue'),
+    WELCOME_GRANT_WEI: z
+      .string()
+      .regex(/^\d+$/)
+      .default('100000000000000000'),
+    INDEXER_INTERVAL_MS: z.coerce.number().int().min(500).default(3000),
+    KEEPER_INTERVAL_MS: z.coerce.number().int().min(1000).default(10000),
     LOTTERY_CONTRACT_ADDRESS: z
       .string()
       .regex(/^0x[0-9a-fA-F]{40}$/)
-      .default('0x5FbDB2315678afecb367f032d93F642f64180aa3'),
+      .default('0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'),
     POAP_CONTRACT_ADDRESS: z
       .string()
       .regex(/^0x[0-9a-fA-F]{40}$/)
-      .default('0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'),
+      .default('0x5FC8d32690cc91D4c39d9d3abcBD16989F875707'),
     RELAYER_PRIVATE_KEY: z
       .string()
       .regex(/^0x[0-9a-fA-F]{64}$/)
@@ -99,6 +113,13 @@ const envSchema = z
         ctx.addIssue({ code: 'custom', path: [key], message: `${key} ne peut pas être désactivé en production` });
       }
     });
+    if (values.BLOCKCHAIN_MODE !== 'onchain') {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['BLOCKCHAIN_MODE'],
+        message: 'BLOCKCHAIN_MODE doit valoir onchain en production : la simulation est réservée au développement',
+      });
+    }
     if (values.METRICS_ENABLED && !values.METRICS_TOKEN) {
       ctx.addIssue({
         code: 'custom',
