@@ -1,0 +1,11 @@
+{
+  "postgres": "Base PostgreSQL 15 de l'application (comptes, tickets indexés, EtherPoints, récompenses). Charge `pg_stat_statements`, journalise les requêtes de plus de 500 ms et les attentes de verrou, coupe les transactions inactives après 60 s. Données dans le volume `pgdata`.",
+  "redis": "Redis 7.4 : files BullMQ, rate limiting partagé, verrous, idempotence et cache. Persistance AOF (`appendfsync everysec`) dans le volume `redisdata`, 256 Mo maximum avec la politique `noeviction` pour ne jamais perdre un job.",
+  "mailpit": "Serveur SMTP de capture : reçoit tous les emails du backend (codes de connexion, alertes, RGPD) sur le port 1025 et les affiche dans une interface web sur le port 8025. Aucun email ne sort vers Internet.",
+  "blockchain": "Nœud Hardhat (chain ID 31337) construit depuis `smart-contract/`. Au démarrage, déploie le coordinateur VRF simulé, `BlockLucky` et `BlockLuckyPOAP`, habilite et approvisionne le compte opérateur `OPERATOR_PRIVATE_KEY`, puis lance l'oracle VRF local. État en mémoire, perdu à chaque redémarrage.",
+  "migrate": "Tâche ponctuelle (cible `migrator` du Dockerfile backend) qui applique `prisma migrate deploy` puis s'arrête. Le backend et le worker attendent sa réussite.",
+  "backend": "API Express et serveur Socket.IO sur le port 2053, avec `RUN_WORKERS=false` : ni workers BullMQ, ni indexeur, ni keeper dans ce process.",
+  "worker": "Même image que le backend, lancée sur `dist/src/worker.js` : workers BullMQ (emails, EtherPoints, actions on-chain), indexeur des événements du contrat et keeper du tirage. Sonde de vivacité sur le port interne 2054.",
+  "web": "Frontend Next.js en sortie `standalone`, servi par `node server.js` sur le port 3000. Les URL de l'API sont figées au build par les arguments `NEXT_PUBLIC_API_URL` et `NEXT_PUBLIC_WS_URL`.",
+  "tourisme": "Site statique de l'Office de Tourisme servi par nginx non privilégié sur le port 8080 du conteneur, publié sur le port 4000 de l'hôte."
+}
