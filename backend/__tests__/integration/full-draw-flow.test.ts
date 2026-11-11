@@ -52,9 +52,13 @@ describe('Full Lottery Draw Flow Integration', () => {
 
     expect(drawRes.status).toBe(200);
     expect(drawRes.body.data.round.status).toBe('COMPLETED');
-    expect(drawRes.body.data.round.winnerWallet).toBe(
-      '0x8888999900001111222233334444555566667777'
-    );
+    const custodialWallet = loginRes.body.data.user.walletAddress;
+    expect(custodialWallet).toMatch(/^0x[0-9a-f]{40}$/);
+    expect(custodialWallet).not.toBe('0x8888999900001111222233334444555566667777');
+    expect(drawRes.body.data.round.winnerWallet).toBe(custodialWallet);
     expect(drawRes.body.data.vrfProof.verifiedFair).toBe(true);
+
+    const stored = await prismaMock.user.findUnique({ where: { email: 'gagnant@etherbay.fr' } });
+    expect(stored.walletEncryptedKey).toMatch(/^v2:/);
   });
 });

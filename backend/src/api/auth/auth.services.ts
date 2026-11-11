@@ -5,6 +5,8 @@ import ledgerService from '../../services/ledger.service';
 import sessionService, { VerifiedToken } from '../../services/session.service';
 import otpChallengeService, { PendingSignup } from '../../services/otp-challenge.service';
 import { enqueueEmail } from '../../queues/emails.queue';
+import walletService from '../../blockchain/wallet.service';
+import logger from '../../utils/logger.util';
 import {
   decryptText,
   encryptText,
@@ -77,12 +79,17 @@ export class AuthService {
       (await authRepository.findByEmail(signup.email));
     if (existing) return { user: existing, isNewUser: false };
 
+    const wallet = walletService.createCustodialWallet();
     const user = await authRepository.createUser({
-      walletAddress: signup.walletAddress,
+      walletAddress: wallet.address,
+      walletEncryptedKey: wallet.encryptedKey,
       email: signup.email,
       isEmailVerified: true,
       ...(signup.referrerId ? { referredById: signup.referrerId } : {}),
     });
+    walletService
+      .grantWelcomeEthers(user)
+      .catch((error: Error) => logger.warn(`Dotation de bienvenue différée : ${error.message}`));
 
     await ledgerService.creditPoints(user.id, 25, 'SOCIAL_QUEST', 'Bonus de bienvenue Onboarding EtherBay');
 
@@ -385,9 +392,9 @@ export class AuthService {
       },
       {
         step: 2,
-        title: 'Achat 1-Clic Sans Frais de Réseau (Gasless)',
+        title: 'Achat 1-Clic avec votre Portefeuille Intégré',
         description:
-          "Achetez votre ticket en un clic sans vous soucier des frais techniques de la blockchain. Si l'événement est annulé, vous êtes automatiquement remboursé.",
+          "La Mairie crée votre portefeuille Ethereum et vous offre une dotation d'ethers fictifs qui couvre vos tickets et les frais de réseau. Si l'événement est annulé, vous êtes automatiquement remboursé.",
       },
       {
         step: 3,

@@ -33,6 +33,7 @@ export class AuthRepository {
     role?: Role;
     referredById?: string;
     isEmailVerified?: boolean;
+    walletEncryptedKey?: string;
   }) {
     return prisma.user.create({
       data: {
@@ -40,6 +41,7 @@ export class AuthRepository {
         ...(data.email ? { email: data.email.toLowerCase() } : {}),
         role: data.role ?? 'USER',
         isEmailVerified: data.isEmailVerified ?? false,
+        ...(data.walletEncryptedKey ? { walletEncryptedKey: data.walletEncryptedKey } : {}),
         ...(data.referredById ? { referredById: data.referredById } : {}),
       },
     });
