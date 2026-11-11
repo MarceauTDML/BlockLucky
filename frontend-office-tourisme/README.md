@@ -77,7 +77,7 @@ Le pré-header, l'en-tête et le pied de page sont générés une seule fois par
 | Sable / pierre (fonds) | `#F7F6F2` / `#EFECE6` |
 | Encre (pré-header, barre de pied de page) | `#18181B` |
 
-Typographies : Jost (titres en capitales) et Inter (texte), chargées depuis Google Fonts avec repli sur les polices système.
+Typographies : Jost (titres en capitales) et Inter (texte), auto-hébergées en WOFF2 dans `assets/fonts/` (licence SIL Open Font License, fichiers `LICENSE-*.txt`) : aucune requête vers un service tiers, donc aucun transfert d'adresse IP hors de l'UE.
 
 ## Photos
 
