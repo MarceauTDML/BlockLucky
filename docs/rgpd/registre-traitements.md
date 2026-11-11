@@ -11,9 +11,9 @@ Document de travail à valider par le DPO avant la mise en production. Il décri
 | Finalité | Inscription, connexion, participation à la Grande Loterie citoyenne, historique des tickets |
 | Base légale | Exécution du contrat (conditions de participation) |
 | Personnes | Citoyens majeurs (18 ans et plus, auto-déclaration) |
-| Données | Email, adresse de portefeuille générée, tranche d'âge, rôle, tickets et transactions associées, code de parrainage et parrain, préférences (thème, langue, notifications), limite de jeu responsable |
+| Données | Email, adresse du portefeuille Ethereum intégré et sa clé privée chiffrée (AES-256-GCM), hash de la dotation de bienvenue, tranche d'âge, rôle, tickets et transactions associées, code de parrainage et parrain, préférences (thème, langue, notifications), limite de jeu responsable |
 | Destinataires | Services municipaux habilités (rôle ADMIN), sous-traitants techniques ci-dessous |
-| Conservation | Durée de la participation, puis anonymisation sur demande (`/api/user/gdpr/delete-request`). Une purge automatique des comptes inactifs reste à mettre en place |
+| Conservation | Durée de la participation, puis anonymisation sur demande (`/api/user/gdpr/delete-request`), qui supprime l'email, le lien avec l'adresse du portefeuille et sa clé chiffrée. Les transactions déjà inscrites sur la blockchain publique ne peuvent pas être effacées : elles ne contiennent qu'une adresse pseudonyme, qui n'est plus rattachable au citoyen. Une purge automatique des comptes inactifs reste à mettre en place |
 | Sécurité | Voir `docs/securite.md` |
 
 ## 2. Programme de fidélité EtherPoints et récompenses partenaires
