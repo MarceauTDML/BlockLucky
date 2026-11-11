@@ -111,3 +111,18 @@
 - [Files et workers](backend/files-workers.md)
 - [Observabilité](backend/observabilite.md)
 - [Tests](backend/tests.md)
+
+## 8. Frontend web
+
+- [Stack et structure](web/structure.md)
+- [Pages et espaces](web/pages.md)
+- [Authentification et routes protégées](web/authentification.md)
+- [État et appels API](web/etat-api.md)
+- [Portefeuille et loterie](web/portefeuille-loterie.md)
+- [Temps réel](web/temps-reel.md)
+- [Design system](web/design-system.md)
+- [Internationalisation](web/i18n.md)
+- [Analytique et consentement](web/analytique-consentement.md)
+- [Accessibilité et responsive](web/accessibilite.md)
+- [Sécurité du navigateur](web/securite-navigateur.md)
+- [Tests et build](web/tests-build.md)
