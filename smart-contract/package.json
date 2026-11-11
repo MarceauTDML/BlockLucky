@@ -13,7 +13,8 @@
     "test:coverage": "hardhat test --coverage",
     "coverage:check": "node scripts/check-coverage.mjs",
     "test:gas": "hardhat test mocha --gas-stats",
-    "node": "hardhat node"
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy-local.ts --network localhost"
   },
   "engines": {
     "node": ">=22.12.0"
