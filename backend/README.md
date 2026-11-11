@@ -207,9 +207,10 @@ npm test
 | **System** | `GET` | `/api/config` | Configuration runtime des clients (version mobile minimale, maintenance) |
 | **System** | `GET` | `/metrics` | Metriques Prometheus (latence par route, event loop, files BullMQ) |
 | **Auth** | `GET` | `/api/auth/onboarding` | Ecrans illustres de l'onboarding interactif |
-| **Auth** | `POST` | `/api/auth/login` | Social Login Web3Auth + Verification legale 18+ |
+| **Auth** | `POST` | `/api/auth/login` | Connexion sans mot de passe + verification legale 18+ : envoie un code a 6 chiffres par email |
 | **Auth** | `POST` | `/api/auth/2fa/setup` | Configuration 2FA (QR Code TOTP ou Email OTP) |
-| **Auth** | `POST` | `/api/auth/2fa/verify` | Validation du code OTP a 6 chiffres |
+| **Auth** | `POST` | `/api/auth/2fa/verify` | Validation du code email, TOTP ou de secours, delivre la session |
+| **Auth** | `POST` | `/api/auth/logout` | Revocation de la session courante, ou de toutes avec `allDevices: true` |
 | **Lottery** | `GET` | `/api/lottery/status` | Compte a rebours, jauge 10k FOMO, paliers et garanties |
 | **Lottery** | `POST` | `/api/lottery/buy` | Achat de ticket en 1 clic (Gasless) + 50 EtherPoints + POAP |
 | **Lottery** | `POST` | `/api/lottery/gift` | Offrir un ticket a un proche par email (Cadeau viral) |
@@ -239,8 +240,12 @@ npm test
 | **Admin Mairie** | `POST` | `/api/admin/treasury/withdraw` | Retrait de tresorerie vers portefeuille Multi-Sig (`ADMIN`) |
 | **Admin Mairie** | `GET` | `/api/admin/reports/export` | Export des rapports comptables en CSV ou PDF (`ADMIN`) |
 | **Admin Mairie** | `GET` | `/api/admin/audit-logs` | Journal chronologique des actions d'administration (`ADMIN`) |
-| **Webhooks** | `POST` | `/api/webhooks/blockchain` | Indexation temps reel des evenements Smart Contract (en-tete `x-webhook-secret` obligatoire) |
+| **Webhooks** | `POST` | `/api/webhooks/blockchain` | Indexation temps reel des evenements Smart Contract (signature HMAC `x-webhook-signature` obligatoire) |
 
 Toutes les routes `/api/*` sont aussi servies sous le préfixe versionné `/api/v1/*`. Les nouveaux clients doivent utiliser `/api/v1`.
+
+Le webhook blockchain doit être signé : `x-webhook-signature: t=<timestamp unix>,v1=<HMAC-SHA-256 hexadécimal de "t.corps brut" avec WEBHOOK_SECRET>`. Une signature de plus de 5 minutes est refusée et un même envoi rejoué est ignoré pendant 7 jours. La fonction `signWebhookPayload` de `src/api/webhooks/webhook-signature.ts` produit cet en-tête.
+
+La connexion exige un code envoyé par email (`LOGIN_EMAIL_CODE_REQUIRED`) et les routes d'administration exigent la double authentification (`ADMIN_MFA_REQUIRED`). Ces deux protections ne peuvent pas être désactivées en production ; la suite de tests les désactive dans `__tests__/setup-env.ts` et les vérifie dans `__tests__/api/auth-security.test.ts`. Les mesures de sécurité sont détaillées dans [docs/securite.md](../docs/securite.md).
 
 Les endpoints `POST /api/lottery/buy`, `POST /api/lottery/gift` et `POST /api/marketplace/claim` acceptent un en-tête `Idempotency-Key` (8 à 128 caractères `[A-Za-z0-9_-]`) : une requête rejouée avec la même clé renvoie la réponse initiale (en-tête `Idempotent-Replayed: true`) au lieu de créer un doublon.
