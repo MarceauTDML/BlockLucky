@@ -202,3 +202,18 @@
 - [Dépendances](contribuer/dependances.md)
 - [Écrire la documentation](contribuer/documentation.md)
 - [Avant une mise en production](contribuer/mise-en-production.md)
+
+## 15. Guides pratiques
+
+- [Ajouter un endpoint](guides/ajouter-endpoint.md)
+- [Ajouter une migration](guides/ajouter-migration.md)
+- [Ajouter une page web](guides/ajouter-page-web.md)
+- [Ajouter un écran mobile](guides/ajouter-ecran-mobile.md)
+- [Ajouter un événement temps réel](guides/ajouter-evenement-socket.md)
+- [Ajouter un email](guides/ajouter-email.md)
+- [Ajouter une variable d'environnement](guides/ajouter-variable.md)
+- [Ajouter un commerçant partenaire](guides/ajouter-partenaire.md)
+- [Modifier le contrat](guides/modifier-contrat.md)
+- [Indexer un nouvel événement](guides/indexer-evenement.md)
+- [Redéployer sur Sepolia](guides/redeployer-sepolia.md)
+- [Préparer la soutenance](guides/soutenance.md)
