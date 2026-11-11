@@ -23,7 +23,7 @@ Une alerte ne doit se déclencher que sur la consommation du budget (burn rate),
 |---|---|---|---|---|
 | Comptes, tickets, EtherPoints, récompenses | PostgreSQL | 24 h | 1 h | `pg_dump` manuel (voir `runbooks.md`) |
 | Files de jobs, préférences, quêtes | Redis | 1 s | 15 min | AOF `appendfsync everysec` sur le volume `redisdata` |
-| Tickets achetés | Blockchain | 0 | réindexation | Webhook d'indexation idempotent par `transactionHash` |
+| Tickets, tirages, cagnottes | Smart contract BlockLucky | 0 | réindexation | Indexeur idempotent sur `(tour, numéro de ticket)` : remettre le curseur `ChainCursor` au bloc de déploiement pour reconstruire la base depuis la chaîne |
 
 La restauration est testée en restaurant un dump dans une base temporaire (procédure dans `runbooks.md`).
 
