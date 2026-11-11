@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ajouter un email | Documentation BlockLucky</title>
+<meta name="description" content="Le backend envoie cinq emails transactionnels : code de connexion ou de 2FA (otp-code), alerte de sécurité (security-alert), bienvenue (welcome), code promo d&#39;u">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="ajouter-email.html" aria-current="page">Ajouter un email</a></div></li><li><div class="nav-row"><a href="ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>15. Guides pratiques</span></div>
+    <article class="markdown">
+<h1>Ajouter un email</h1>
+<p>Le backend envoie cinq emails transactionnels : code de connexion ou de 2FA (<code>otp-code</code>), alerte de sécurité (<code>security-alert</code>), bienvenue (<code>welcome</code>), code promo d&#39;une récompense (<code>reward-claim</code>) et confirmation de suppression RGPD (<code>gdpr-deletion</code>). Ce guide en ajoute un sixième, <code>ticket-gift</code>, qui prévient le destinataire d&#39;un ticket offert. Aujourd&#39;hui, <code>POST /api/v1/lottery/gift</code> crée si besoin le compte du destinataire et achète le ticket pour lui, mais ne lui écrit pas.</p>
+<h2 id="fichiers-a-toucher"><a class="anchor" href="#fichiers-a-toucher" aria-hidden="true" tabindex="-1">#</a>Fichiers à toucher</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Modification</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>backend/src/templates/emails/ticket-gift.html</code></td>
+<td>Gabarit HTML</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/email.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/email.service.ts</code></a></td>
+<td>Nom du gabarit dans le type <code>EmailTemplateName</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.services.ts</code></a></td>
+<td>Mise en file de l&#39;envoi après l&#39;achat</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/api/lottery.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/api/lottery.test.ts</code></a></td>
+<td>Test</td>
+</tr>
+<tr>
+<td><a href="../juridique/registre-traitements.html">Registre des traitements</a></td>
+<td>Nouvelle finalité d&#39;usage de l&#39;email, si c&#39;est le cas</td>
+</tr>
+</tbody></table></div>
+<h2 id="chemin-d-un-email"><a class="anchor" href="#chemin-d-un-email" aria-hidden="true" tabindex="-1">#</a>Chemin d&#39;un email</h2>
+<div class="diagram"><pre class="mermaid">sequenceDiagram
+    participant S as Service métier
+    participant Q as enqueueEmail
+    participant R as Redis, file emails-queue
+    participant W as Worker email
+    participant E as EmailService
+    participant M as Serveur SMTP
+    S-&gt;&gt;Q: to, subject, templateName, variables
+    alt Redis disponible
+        Q-&gt;&gt;R: job send-email
+        R-&gt;&gt;W: job
+        W-&gt;&gt;E: sendTemplateEmail
+    else Redis indisponible
+        Q-&gt;&gt;E: envoi direct, dans la requête
+    end
+    E-&gt;&gt;E: lit le gabarit, remplace et échappe les variables
+    E-&gt;&gt;M: sendMail</pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Fichier</th>
+<th>Comportement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mise en file</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/queues/emails.queue.ts" class="external" target="_blank" rel="noopener noreferrer"><code>queues/emails.queue.ts</code></a></td>
+<td>Job <code>send-email</code> dans la file BullMQ <code>emails-queue</code>. Sans Redis, envoi immédiat dans le processus appelant</td>
+</tr>
+<tr>
+<td>Options des jobs</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/queues/queue.options.ts" class="external" target="_blank" rel="noopener noreferrer"><code>queues/queue.options.ts</code></a></td>
+<td>5 tentatives, attente exponentielle à partir d&#39;1 s avec gigue, jobs terminés gardés 24 h, jobs en échec 14 jours</td>
+</tr>
+<tr>
+<td>Worker</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/workers/email.worker.ts" class="external" target="_blank" rel="noopener noreferrer"><code>workers/email.worker.ts</code></a></td>
+<td>Concurrence <code>WORKER_CONCURRENCY</code> (5). Un job sans destinataire ou sans gabarit échoue définitivement (<code>UnrecoverableError</code>)</td>
+</tr>
+<tr>
+<td>Rendu et envoi</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/email.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>services/email.service.ts</code></a></td>
+<td>Lit <code>templates/emails/&lt;nom&gt;.html</code>, remplace chaque <code>{{CLE}}</code>, envoie avec <code>SMTP_FROM</code></td>
+</tr>
+<tr>
+<td>Transport</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/mailer.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>config/mailer.config.ts</code></a></td>
+<td><code>SMTP_HOST</code>, <code>SMTP_PORT</code> (TLS direct si 465), authentification si <code>SMTP_USER</code> est renseigné</td>
+</tr>
+</tbody></table></div>
+<p>En développement, Mailpit reçoit tous les emails sur le port 1025 et les affiche sur <code>http://localhost:8025</code>. En <code>NODE_ENV=test</code>, <code>sendTemplateEmail</code> renvoie <code>true</code> sans rien envoyer.</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<code>sendTemplateEmail</code> intercepte une erreur SMTP, la journalise en avertissement et renvoie <code>false</code> au lieu de lever une exception. Le worker ne regarde pas cette valeur : un job dont l&#39;envoi a échoué est marqué terminé, et les 5 tentatives prévues par <code>queue.options.ts</code> ne servent jamais. Pour qu&#39;un email important soit réessayé, le worker doit lever une erreur quand <code>sendTemplateEmail</code> renvoie <code>false</code>.</p>
+</div>
+<h2 id="1-ecrire-le-gabarit"><a class="anchor" href="#1-ecrire-le-gabarit" aria-hidden="true" tabindex="-1">#</a>1. Écrire le gabarit</h2>
+<p>Créer <code>backend/src/templates/emails/ticket-gift.html</code>, sur le modèle de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/templates/emails/welcome.html" class="external" target="_blank" rel="noopener noreferrer"><code>welcome.html</code></a> :</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;title&gt;Un ticket vous a été offert - BlockLucky&lt;/title&gt;
+&lt;/head&gt;
+&lt;body style=&quot;font-family: &#x27;Inter&#x27;, Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 24px;&quot;&gt;
+  &lt;div style=&quot;max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 32px;&quot;&gt;
+    &lt;h2 style=&quot;color: #4a154b; margin-top: 0;&quot;&gt;Un ticket de la Grande Loterie vous attend&lt;/h2&gt;
+    &lt;p style=&quot;color: #555555; font-size: 15px;&quot;&gt;Un habitant d&#x27;EtherBay vous a offert un ticket pour le tour n°{{ROUND_ID}}.&lt;/p&gt;
+    &lt;p style=&quot;color: #555555; font-size: 15px;&quot;&gt;Il est déjà inscrit sur votre portefeuille BlockLucky &lt;code&gt;{{WALLET_ADDRESS}}&lt;/code&gt;.&lt;/p&gt;
+    &lt;p style=&quot;margin: 24px 0;&quot;&gt;
+      &lt;a href=&quot;{{LOGIN_URL}}&quot; style=&quot;background-color: #253d2c; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px;&quot;&gt;Voir mon ticket&lt;/a&gt;
+    &lt;/p&gt;
+    &lt;p style=&quot;color: #777777; font-size: 13px;&quot;&gt;Les ethers utilisés sont fictifs et n&#x27;ont aucune valeur. Participation réservée aux personnes majeures.&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Règle</th>
+<th>Raison</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Styles en ligne (<code>style=&quot;...&quot;</code>), pas de feuille de style ni de <code>&lt;style&gt;</code></td>
+<td>Beaucoup de clients de messagerie ignorent les feuilles de style</td>
+</tr>
+<tr>
+<td>Aucune image distante ni script</td>
+<td>Les clients les bloquent, et une image distante sert de mouchard d&#39;ouverture</td>
+</tr>
+<tr>
+<td>Variables en <code>{{MAJUSCULES}}</code></td>
+<td>Format reconnu par <code>loadTemplate</code></td>
+</tr>
+<tr>
+<td>Pas de HTML dans une variable</td>
+<td>Chaque valeur est échappée (<code>&amp;</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&quot;</code>, <code>&#39;</code>) avant insertion : un lien passé en variable s&#39;afficherait en texte</td>
+</tr>
+<tr>
+<td>Texte en français, sans émoji</td>
+<td>Charte du projet</td>
+</tr>
+</tbody></table></div>
+<p>Une variable fournie mais absente du gabarit est ignorée ; une variable du gabarit non fournie reste affichée telle quelle (<code>{{ROUND_ID}}</code>). Si le fichier est introuvable, le service journalise un avertissement et envoie à la place le JSON des variables dans un paragraphe : vérifier le nom du fichier.</p>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Les gabarits existants utilisent encore un violet <code>#4a154b</code> qui n&#39;est pas celui de la charte EtherBay (vert <code>#253D2C</code>, terracotta <code>#C86D51</code>). Un nouveau gabarit peut utiliser le vert pour ses boutons, comme ci-dessus.</p>
+</div>
+<h2 id="2-declarer-le-gabarit"><a class="anchor" href="#2-declarer-le-gabarit" aria-hidden="true" tabindex="-1">#</a>2. Déclarer le gabarit</h2>
+<p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/email.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>email.service.ts</code></a>, ajouter le nom au type union. TypeScript refuse ensuite toute faute de frappe dans <code>templateName</code> :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">EmailTemplateName</span> =
+  | <span class="hljs-string">&#x27;otp-code&#x27;</span>
+  | <span class="hljs-string">&#x27;gdpr-deletion&#x27;</span>
+  | <span class="hljs-string">&#x27;reward-claim&#x27;</span>
+  | <span class="hljs-string">&#x27;welcome&#x27;</span>
+  | <span class="hljs-string">&#x27;security-alert&#x27;</span>
+  | <span class="hljs-string">&#x27;ticket-gift&#x27;</span>;</code></pre></div>
+<p>Une méthode dédiée (<code>sendTicketGiftEmail</code>) n&#39;est pas nécessaire : les services métier appellent tous <code>enqueueEmail</code>, et les méthodes <code>send*Email</code> existantes ne sont utilisées par aucun service.</p>
+<h2 id="3-mettre-l-envoi-en-file"><a class="anchor" href="#3-mettre-l-envoi-en-file" aria-hidden="true" tabindex="-1">#</a>3. Mettre l&#39;envoi en file</h2>
+<p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lottery.services.ts</code></a>, à la fin de <code>giftOnchain</code>, après l&#39;achat sur la chaîne :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">await</span> <span class="hljs-title function_">enqueueEmail</span>({
+  <span class="hljs-attr">to</span>: emailLower,
+  <span class="hljs-attr">subject</span>: <span class="hljs-string">&#x27;Un ticket de la Grande Loterie vous a été offert - BlockLucky&#x27;</span>,
+  <span class="hljs-attr">templateName</span>: <span class="hljs-string">&#x27;ticket-gift&#x27;</span>,
+  <span class="hljs-attr">variables</span>: {
+    <span class="hljs-attr">ROUND_ID</span>: <span class="hljs-title class_">String</span>(purchase.<span class="hljs-property">contractRoundId</span>),
+    <span class="hljs-attr">WALLET_ADDRESS</span>: recipient.<span class="hljs-property">walletAddress</span>,
+    <span class="hljs-attr">LOGIN_URL</span>: <span class="hljs-string">`<span class="hljs-subst">${env.FRONTEND_URL}</span>/connexion`</span>,
+  },
+});</code></pre></div>
+<p>avec les imports correspondants en tête du fichier :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">import</span> { enqueueEmail } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../queues/emails.queue&#x27;</span>;
+<span class="hljs-keyword">import</span> { env } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../config/env.config&#x27;</span>;</code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Règle</th>
+<th>Raison</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Toujours <code>enqueueEmail</code>, jamais <code>transporter.sendMail</code> dans un service</td>
+<td>La requête HTTP ne dépend pas du SMTP, l&#39;envoi est réessayable et compté dans <code>queue_jobs_total</code></td>
+</tr>
+<tr>
+<td>Mettre en file après l&#39;action réussie</td>
+<td>Pas d&#39;email pour un achat qui a échoué</td>
+</tr>
+<tr>
+<td>URL construites à partir de <code>FRONTEND_URL</code></td>
+<td>Le lien suit l&#39;environnement, comme pour l&#39;email RGPD</td>
+</tr>
+<tr>
+<td>Toutes les variables en chaînes</td>
+<td><code>variables</code> est un <code>Record&lt;string, string&gt;</code></td>
+</tr>
+<tr>
+<td>Sujet en français, sans majuscules abusives ni point d&#39;exclamation multiple</td>
+<td>Les filtres anti-indésirables pénalisent ces formes</td>
+</tr>
+</tbody></table></div>
+<h2 id="4-tester"><a class="anchor" href="#4-tester" aria-hidden="true" tabindex="-1">#</a>4. Tester</h2>
+<p>Les tests d&#39;API tournent en <code>NODE_ENV=test</code> : aucun email n&#39;est envoyé, mais le gabarit est tout de même lu. Le test vérifie que la mise en file a lieu avec les bonnes données en espionnant <code>enqueueEmail</code> :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> emailsQueue <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../src/queues/emails.queue&#x27;</span>;
+
+<span class="hljs-title function_">it</span>(<span class="hljs-string">&#x27;enqueues a ticket-gift email for the recipient&#x27;</span>, <span class="hljs-title function_">async</span> () =&gt; {
+  <span class="hljs-keyword">const</span> spy = jest.<span class="hljs-title function_">spyOn</span>(emailsQueue, <span class="hljs-string">&#x27;enqueueEmail&#x27;</span>).<span class="hljs-title function_">mockResolvedValue</span>({ <span class="hljs-attr">queued</span>: <span class="hljs-literal">true</span> });
+
+  <span class="hljs-keyword">await</span> <span class="hljs-title function_">request</span>(app)
+    .<span class="hljs-title function_">post</span>(<span class="hljs-string">&#x27;/api/lottery/gift&#x27;</span>)
+    .<span class="hljs-title function_">set</span>(<span class="hljs-string">&#x27;Authorization&#x27;</span>, <span class="hljs-string">`Bearer <span class="hljs-subst">${userToken}</span>`</span>)
+    .<span class="hljs-title function_">send</span>({ <span class="hljs-attr">recipientEmail</span>: <span class="hljs-string">&#x27;ami@etherbay.fr&#x27;</span> });
+
+  <span class="hljs-title function_">expect</span>(spy).<span class="hljs-title function_">toHaveBeenCalledWith</span>(expect.<span class="hljs-title function_">objectContaining</span>({ <span class="hljs-attr">to</span>: <span class="hljs-string">&#x27;ami@etherbay.fr&#x27;</span>, <span class="hljs-attr">templateName</span>: <span class="hljs-string">&#x27;ticket-gift&#x27;</span> }));
+  spy.<span class="hljs-title function_">mockRestore</span>();
+});</code></pre></div>
+<p>Ce test ne passe qu&#39;en mode <code>onchain</code>, puisque l&#39;envoi est ajouté à <code>giftOnchain</code>. Les tests d&#39;API tournent en mode simulé (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/setup-env.ts" class="external" target="_blank" rel="noopener noreferrer"><code>setup-env.ts</code></a>) : pour les deux modes, ajouter le même appel dans la branche simulée de <code>giftTicketToFriend</code>, ou placer l&#39;appel dans <code>giftTicketToFriend</code> après les deux branches.</p>
+<p>Vérifier ensuite le rendu réel :</p>
+<ol>
+<li><code>docker compose up -d --wait</code> pour Mailpit et la blockchain locale ;</li>
+<li><code>npm run dev</code> dans <code>backend/</code> ;</li>
+<li>offrir un ticket depuis le frontend web (Billetterie, « Offrir un ticket ») ;</li>
+<li>ouvrir <code>http://localhost:8025</code> et contrôler l&#39;email, y compris en version texte et sur mobile (onglets de Mailpit).</li>
+</ol>
+<h2 id="5-build-et-deploiement"><a class="anchor" href="#5-build-et-deploiement" aria-hidden="true" tabindex="-1">#</a>5. Build et déploiement</h2>
+<p>Les gabarits ne sont pas du TypeScript : <code>tsc</code> ne les copie pas. Le script <code>compile</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>backend/package.json</code></a> les recopie dans <code>dist/src/templates</code> après la compilation, et l&#39;image Docker utilise ce script. Un gabarit placé ailleurs que dans <code>src/templates/emails/</code> serait absent en production.</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npm run compile
+<span class="hljs-built_in">ls</span> dist/src/templates/emails</code></pre></div>
+<h2 id="6-donnees-personnelles"><a class="anchor" href="#6-donnees-personnelles" aria-hidden="true" tabindex="-1">#</a>6. Données personnelles</h2>
+<p>Un email ajouté peut être une nouvelle finalité de traitement de l&#39;adresse du citoyen. Ici, l&#39;adresse du destinataire est fournie par l&#39;expéditeur, sans consentement préalable du destinataire : le message doit rester strictement informatif et lié à l&#39;action. À vérifier avec le <a href="../juridique/registre-traitements.html">Registre des traitements</a> et la page <a href="../juridique/rgpd.html">RGPD</a> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Réponse attendue</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Finalité</td>
+<td>Informer du ticket offert</td>
+</tr>
+<tr>
+<td>Base légale</td>
+<td>Exécution du service demandé par l&#39;expéditeur, intérêt légitime pour le destinataire</td>
+</tr>
+<tr>
+<td>Contenu</td>
+<td>Aucune donnée sur l&#39;expéditeur au-delà du nécessaire</td>
+</tr>
+<tr>
+<td>Journaux</td>
+<td>Adresse masquée par <code>maskEmail</code> dans les journaux du service. Le repli sans Redis d&#39;<code>enqueueEmail</code> journalise encore l&#39;adresse en clair au niveau <code>debug</code></td>
+</tr>
+</tbody></table></div>
+<h2 id="liste-de-controle"><a class="anchor" href="#liste-de-controle" aria-hidden="true" tabindex="-1">#</a>Liste de contrôle</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Gabarit dans <code>src/templates/emails/</code>, styles en ligne, variables en <code>{{MAJUSCULES}}</code>.</li>
+<li><input disabled="" type="checkbox"> Nom ajouté à <code>EmailTemplateName</code>.</li>
+<li><input disabled="" type="checkbox"> Envoi par <code>enqueueEmail</code> après l&#39;action réussie.</li>
+<li><input disabled="" type="checkbox"> Test de mise en file.</li>
+<li><input disabled="" type="checkbox"> Rendu vérifié dans Mailpit.</li>
+<li><input disabled="" type="checkbox"> <code>npm run compile</code> copie bien le gabarit.</li>
+<li><input disabled="" type="checkbox"> Registre des traitements à jour si besoin.</li>
+</ul>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="ajouter-evenement-socket.html"><span>Précédent</span><strong>Ajouter un événement temps réel</strong></a><a class="pager-next" href="ajouter-variable.html"><span>Suivant</span><strong>Ajouter une variable d&#39;environnement</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/guides/ajouter-email.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#fichiers-a-toucher">Fichiers à toucher</a></li><li class="toc-h2"><a href="#chemin-d-un-email">Chemin d&#39;un email</a></li><li class="toc-h2"><a href="#1-ecrire-le-gabarit">1. Écrire le gabarit</a></li><li class="toc-h2"><a href="#2-declarer-le-gabarit">2. Déclarer le gabarit</a></li><li class="toc-h2"><a href="#3-mettre-l-envoi-en-file">3. Mettre l&#39;envoi en file</a></li><li class="toc-h2"><a href="#4-tester">4. Tester</a></li><li class="toc-h2"><a href="#5-build-et-deploiement">5. Build et déploiement</a></li><li class="toc-h2"><a href="#6-donnees-personnelles">6. Données personnelles</a></li><li class="toc-h2"><a href="#liste-de-controle">Liste de contrôle</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

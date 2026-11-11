@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analytique | Documentation BlockLucky</title>
+<meta name="description" content="Le module analytics collecte des événements d&#39;usage dans la table Analytics et calcule le tableau de bord démographique et d&#39;acquisition de la Mairie. La même t">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/css/doc.css">
+<script src="../../assets/js/theme.js"></script>
+
+<script src="../../assets/js/app.js" defer></script>
+<script src="../../assets/js/search.js" defer></script>
+</head>
+<body data-root="../../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../../index.html">
+    <img src="../../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children open"><div class="nav-row"><a href="index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="true"></button></div><ul><li><div class="nav-row"><a href="auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="analytique.html" aria-current="page">Analytique</a></div></li><li><div class="nav-row"><a href="administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>7. Backend</span><span>Modules métier</span></div>
+    <article class="markdown">
+<h1>Analytique</h1>
+<p>Le module <code>analytics</code> collecte des événements d&#39;usage dans la table <code>Analytics</code> et calcule le tableau de bord démographique et d&#39;acquisition de la Mairie. La même table sert aussi de journal d&#39;audit de l&#39;administration (préfixe <code>ADMIN_AUDIT:</code>), ce qui explique les règles de nommage imposées aux événements envoyés par les clients. Le consentement côté navigateur est décrit dans <a href="../../web/analytique-consentement.html">Analytique et consentement</a>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/analytics/analytics.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/analytics/analytics.routes.ts</code></a></td>
+<td>2 routes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/analytics/analytics.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/analytics/analytics.validators.ts</code></a></td>
+<td>Schéma <code>trackEventSchema</code> et préfixes réservés</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/analytics/analytics.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/analytics/analytics.services.ts</code></a></td>
+<td>Agrégations du tableau de bord</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/analytics/analytics.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/analytics/analytics.repo.ts</code></a></td>
+<td>Requêtes Prisma</td>
+</tr>
+</tbody></table></div>
+<h2 id="routes"><a class="anchor" href="#routes" aria-hidden="true" tabindex="-1">#</a>Routes</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Méthode et chemin</th>
+<th>Accès</th>
+<th>Middlewares</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>POST /api/v1/analytics/track</code></td>
+<td>public, jeton facultatif</td>
+<td><code>optionalAuthenticate</code>, <code>validate(trackEventSchema)</code></td>
+<td>Enregistre un événement</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/analytics/dashboard</code></td>
+<td>ADMIN</td>
+<td><code>authenticate</code>, <code>requireRoles(&#39;ADMIN&#39;)</code></td>
+<td>Indicateurs, démographie, acquisition</td>
+</tr>
+</tbody></table></div>
+<h2 id="origine-des-evenements"><a class="anchor" href="#origine-des-evenements" aria-hidden="true" tabindex="-1">#</a>Origine des événements</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th><code>eventType</code></th>
+<th>Émetteur</th>
+<th>Contenu de <code>metadata</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>USER_SIGNUP</code></td>
+<td>service d&#39;authentification à la création du compte</td>
+<td><code>provider</code>, <code>ageGroup</code>, <code>isAdultConfirmed</code></td>
+</tr>
+<tr>
+<td><code>USER_LOGIN</code></td>
+<td>service d&#39;authentification</td>
+<td><code>provider</code>, <code>ageGroup</code> et <code>isAdultConfirmed</code> ou <code>provider: EMAIL_CODE</code> ou <code>TOTP</code></td>
+</tr>
+<tr>
+<td><code>ADMIN_AUDIT:&lt;action&gt;</code></td>
+<td>module d&#39;administration</td>
+<td>détail de l&#39;action (voir <a href="administration.html#journal-d-audit">Administration Mairie</a>)</td>
+</tr>
+<tr>
+<td>tout autre type</td>
+<td>clients web et mobile par <code>POST /analytics/track</code></td>
+<td>libre, dans les limites du schéma</td>
+</tr>
+</tbody></table></div>
+<h2 id="post-analytics-track"><a class="anchor" href="#post-analytics-track" aria-hidden="true" tabindex="-1">#</a>POST /analytics/track</h2>
+<h3 id="corps"><a class="anchor" href="#corps" aria-hidden="true" tabindex="-1">#</a>Corps</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>eventType</code></td>
+<td>chaîne</td>
+<td>2 à 64 caractères <code>[A-Za-z0-9_:.-]</code> ; ne doit pas commencer, sans tenir compte de la casse, par <code>ADMIN_AUDIT</code>, <code>USER_SIGNUP</code> ou <code>USER_LOGIN</code></td>
+</tr>
+<tr>
+<td><code>utmSource</code></td>
+<td>chaîne</td>
+<td>facultatif, 100 caractères au plus ; <code>direct</code> si absent</td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td>objet</td>
+<td>facultatif, 20 clés au plus, clés de 64 caractères au plus, valeurs chaîne de 200 caractères au plus, nombre, booléen ou <code>null</code></td>
+</tr>
+</tbody></table></div>
+<p>Un type réservé est refusé avec le message <code>Type d&#39;événement réservé au serveur</code> : un client ne peut ni fabriquer une ligne d&#39;audit, ni gonfler les inscriptions. Plus de 20 clés produisent <code>Métadonnées trop nombreuses</code>. Les objets imbriqués et les tableaux sont refusés.</p>
+<p>Si un jeton valide accompagne la requête, l&#39;événement est rattaché au compte (<code>userId</code>). Sinon il est anonyme. Un jeton invalide n&#39;empêche pas l&#39;enregistrement : il est simplement ignoré.</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -X POST http://localhost:2053/api/v1/analytics/track \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{&quot;eventType&quot;:&quot;LOGIN_SUCCESS&quot;,&quot;utmSource&quot;:&quot;instagram&quot;,&quot;metadata&quot;:{&quot;ageGroup&quot;:&quot;26-35&quot;,&quot;provider&quot;:&quot;GOOGLE&quot;}}&#x27;</span></code></pre></div>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Événement analytique enregistré&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;event&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c70-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;eventType&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;LOGIN_SUCCESS&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;utmSource&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;instagram&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;metadata&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;ageGroup&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;26-35&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;provider&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;GOOGLE&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T16:20:00.000Z&quot;</span> <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>La route n&#39;a pas de limite propre en dehors du rate limiting global (300 requêtes par 15 minutes et par IP). Un client anonyme peut donc écrire jusqu&#39;à 300 lignes par fenêtre et par adresse, et influencer la répartition par âge du tableau de bord en envoyant des <code>metadata.ageGroup</code>.</p>
+</div>
+<h2 id="get-analytics-dashboard"><a class="anchor" href="#get-analytics-dashboard" aria-hidden="true" tabindex="-1">#</a>GET /analytics/dashboard</h2>
+<h3 id="calcul"><a class="anchor" href="#calcul" aria-hidden="true" tabindex="-1">#</a>Calcul</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Indicateur</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>kpis.totalUsers</code></td>
+<td>comptes dont <code>deletedAt</code> est nul</td>
+</tr>
+<tr>
+<td><code>kpis.targetParticipants</code></td>
+<td>constante 10 000</td>
+</tr>
+<tr>
+<td><code>kpis.completionRatePercent</code></td>
+<td><code>totalUsers / 10 000 x 100</code>, deux décimales</td>
+</tr>
+<tr>
+<td><code>kpis.totalTicketsSold</code></td>
+<td>nombre de lignes <code>Ticket</code></td>
+</tr>
+<tr>
+<td><code>kpis.totalPrizePoolEth</code></td>
+<td>somme de <code>prizePool</code> de tous les tours, y compris annulés</td>
+</tr>
+<tr>
+<td><code>kpis.municipalityRevenueShareEth</code></td>
+<td>10 % de cette somme, taux codé en dur</td>
+</tr>
+<tr>
+<td><code>kpis.totalClaimedRewards</code></td>
+<td>nombre de <code>ClaimedReward</code></td>
+</tr>
+<tr>
+<td><code>demographics.ageBreakdown</code></td>
+<td>compte de <code>metadata.ageGroup</code> sur les 500 événements les plus récents, tous types confondus</td>
+</tr>
+<tr>
+<td><code>utmAcquisition</code></td>
+<td>nombre d&#39;événements par <code>utmSource</code>, sur toute la table</td>
+</tr>
+</tbody></table></div>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Données analytiques et démographiques récupérées&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;kpis&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;totalUsers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">128</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;targetParticipants&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">10000</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;completionRatePercent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1.28</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;totalTicketsSold&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">342</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;totalPrizePoolEth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3.42</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;municipalityRevenueShareEth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.342</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;totalClaimedRewards&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">17</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;demographics&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;target18_35Validated&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ageBreakdown&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;18-25&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">61</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;26-35&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">44</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;36-50&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">15</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;50+&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">6</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;utmAcquisition&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;source&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;direct&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;conversions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">402</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;source&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;instagram&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;conversions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">37</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;source&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;admin-dashboard&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;conversions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">12</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">]</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<h3 id="limites-du-calcul"><a class="anchor" href="#limites-du-calcul" aria-hidden="true" tabindex="-1">#</a>Limites du calcul</h3>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Si aucun des 500 derniers événements ne porte une tranche d&#39;âge reconnue, <code>ageBreakdown</code> est remplacé par une répartition fixe codée en dur : 42, 33, 17 et 8. Le tableau de bord affiche alors des chiffres qui ne viennent d&#39;aucune donnée. <code>target18_35Validated</code> est une constante <code>true</code>.</p>
+</div>
+<ul>
+<li>Les tranches reconnues sont <code>18-25</code>, <code>26-35</code>, <code>36-50</code> et <code>50+</code>. La valeur <code>18-35</code> enregistrée par défaut à l&#39;inscription sans tranche est ignorée.</li>
+<li>Un même citoyen compte autant de fois qu&#39;il a d&#39;événements portant sa tranche parmi les 500 derniers : c&#39;est une répartition d&#39;événements, pas de personnes.</li>
+<li><code>utmAcquisition</code> additionne tous les événements, y compris connexions, événements du navigateur et lignes d&#39;audit (source <code>admin-dashboard</code>) : le terme <code>conversions</code> est trompeur.</li>
+<li>Le taux de 10 % ne lit pas la commission réelle du contrat (<code>feeBps</code>), qui vaut 10 % sur le déploiement local mais peut être configurée jusqu&#39;à 20 %.</li>
+<li>Les tours sont tous chargés en mémoire pour faire la somme.</li>
+</ul>
+<p>Ces agrégats sont repris tels quels par <a href="administration.html#get-admin-dashboard"><code>GET /admin/dashboard</code></a>.</p>
+<h2 id="erreurs-du-module"><a class="anchor" href="#erreurs-du-module" aria-hidden="true" tabindex="-1">#</a>Erreurs du module</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Statut</th>
+<th>Message</th>
+<th>Cas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>400</td>
+<td><code>Erreur de validation des données</code> avec <code>Type d&#39;événement invalide</code>, <code>Type d&#39;événement réservé au serveur</code> ou <code>Métadonnées trop nombreuses</code></td>
+<td><code>track</code></td>
+</tr>
+<tr>
+<td>401</td>
+<td><code>Authentification requise (Token JWT manquant)</code></td>
+<td><code>dashboard</code> sans jeton</td>
+</tr>
+<tr>
+<td>403</td>
+<td><code>Accès refusé (RBAC) : Rôle ADMIN requis pour cette ressource</code></td>
+<td><code>dashboard</code> pour un USER ou un PARTNER</td>
+</tr>
+<tr>
+<td>403</td>
+<td><code>La double authentification est obligatoire pour les comptes d&#39;administration. Activez-la depuis votre profil.</code></td>
+<td><code>dashboard</code> pour un ADMIN sans 2FA</td>
+</tr>
+</tbody></table></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="utilisateur.html"><span>Précédent</span><strong>Utilisateur et RGPD</strong></a><a class="pager-next" href="administration.html"><span>Suivant</span><strong>Administration Mairie</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/backend/modules/analytique.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#origine-des-evenements">Origine des événements</a></li><li class="toc-h2"><a href="#post-analytics-track">POST /analytics/track</a></li><li class="toc-h3"><a href="#corps">Corps</a></li><li class="toc-h2"><a href="#get-analytics-dashboard">GET /analytics/dashboard</a></li><li class="toc-h3"><a href="#calcul">Calcul</a></li><li class="toc-h3"><a href="#limites-du-calcul">Limites du calcul</a></li><li class="toc-h2"><a href="#erreurs-du-module">Erreurs du module</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

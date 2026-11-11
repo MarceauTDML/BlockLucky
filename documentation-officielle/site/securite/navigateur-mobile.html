@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigateur et mobile | Documentation BlockLucky</title>
+<meta name="description" content="Cette page regroupe les protections côté client : en-têtes HTTP et politique de sécurité du contenu (CSP) du frontend web, configuration du site statique de l&#39;O">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="navigateur-mobile.html" aria-current="page">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>11. Sécurité</span></div>
+    <article class="markdown">
+<h1>Navigateur et mobile</h1>
+<p>Cette page regroupe les protections côté client : en-têtes HTTP et politique de sécurité du contenu (CSP) du frontend web, configuration du site statique de l&#39;Office de Tourisme, et stockage sécurisé de l&#39;application mobile. Les détails d&#39;implémentation propres à chaque application sont dans <a href="../web/securite-navigateur.html">Sécurité du navigateur</a>, <a href="../mobile/authentification.html">Authentification et stockage sécurisé</a> et <a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a>.</p>
+<h2 id="frontend-web"><a class="anchor" href="#frontend-web" aria-hidden="true" tabindex="-1">#</a>Frontend web</h2>
+<p>Les en-têtes sont déclarés dans la fonction <code>headers()</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/next.config.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/next.config.mjs</code></a> et appliqués à toutes les routes (<code>/:path*</code>).</p>
+<h3 id="en-tetes"><a class="anchor" href="#en-tetes" aria-hidden="true" tabindex="-1">#</a>En-têtes</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>En-tête</th>
+<th>Valeur</th>
+<th>Environnement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>X-Content-Type-Options</code></td>
+<td><code>nosniff</code></td>
+<td>Tous</td>
+</tr>
+<tr>
+<td><code>X-Frame-Options</code></td>
+<td><code>DENY</code></td>
+<td>Tous</td>
+</tr>
+<tr>
+<td><code>Referrer-Policy</code></td>
+<td><code>strict-origin-when-cross-origin</code></td>
+<td>Tous</td>
+</tr>
+<tr>
+<td><code>Permissions-Policy</code></td>
+<td><code>camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()</code></td>
+<td>Tous</td>
+</tr>
+<tr>
+<td><code>Strict-Transport-Security</code></td>
+<td><code>max-age=63072000; includeSubDomains</code> (2 ans)</td>
+<td>Tous ; ignoré par le navigateur en HTTP</td>
+</tr>
+<tr>
+<td><code>Cross-Origin-Opener-Policy</code></td>
+<td><code>same-origin</code></td>
+<td>Tous</td>
+</tr>
+<tr>
+<td><code>Content-Security-Policy</code></td>
+<td>Voir ci-dessous</td>
+<td><strong>Production uniquement</strong> (<code>NODE_ENV=production</code>)</td>
+</tr>
+</tbody></table></div>
+<p>Next.js est aussi configuré avec <code>poweredByHeader: false</code> (pas d&#39;en-tête <code>X-Powered-By</code>) et <code>productionBrowserSourceMaps: false</code> (pas de source map publique). La CI vérifie qu&#39;aucun fichier <code>.map</code> ni aucun motif de secret ne figure dans <code>.next/static</code>.</p>
+<h3 id="politique-csp"><a class="anchor" href="#politique-csp" aria-hidden="true" tabindex="-1">#</a>Politique CSP</h3>
+<p>La politique est construite à partir de <code>NEXT_PUBLIC_API_URL</code> et <code>NEXT_PUBLIC_WS_URL</code>, dont seule l&#39;origine est retenue :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Directive</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>default-src</code></td>
+<td><code>&#39;self&#39;</code></td>
+</tr>
+<tr>
+<td><code>script-src</code></td>
+<td><code>&#39;self&#39; &#39;unsafe-inline&#39;</code></td>
+</tr>
+<tr>
+<td><code>style-src</code></td>
+<td><code>&#39;self&#39; &#39;unsafe-inline&#39;</code></td>
+</tr>
+<tr>
+<td><code>img-src</code></td>
+<td><code>&#39;self&#39; data: blob: https:</code> et l&#39;origine de l&#39;API</td>
+</tr>
+<tr>
+<td><code>font-src</code></td>
+<td><code>&#39;self&#39; data:</code></td>
+</tr>
+<tr>
+<td><code>connect-src</code></td>
+<td><code>&#39;self&#39;</code>, origines HTTP et WebSocket de l&#39;API et du serveur temps réel</td>
+</tr>
+<tr>
+<td><code>object-src</code></td>
+<td><code>&#39;none&#39;</code></td>
+</tr>
+<tr>
+<td><code>base-uri</code></td>
+<td><code>&#39;none&#39;</code></td>
+</tr>
+<tr>
+<td><code>frame-ancestors</code></td>
+<td><code>&#39;none&#39;</code></td>
+</tr>
+<tr>
+<td><code>form-action</code></td>
+<td><code>&#39;self&#39;</code></td>
+</tr>
+<tr>
+<td><code>manifest-src</code></td>
+<td><code>&#39;self&#39;</code></td>
+</tr>
+<tr>
+<td><code>worker-src</code></td>
+<td><code>&#39;self&#39; blob:</code></td>
+</tr>
+<tr>
+<td><code>upgrade-insecure-requests</code></td>
+<td>Ajoutée quand l&#39;API est en HTTPS</td>
+</tr>
+</tbody></table></div>
+<p><code>connect-src</code> limite les destinations des appels réseau : un script injecté ne peut pas exfiltrer de données vers un autre domaine par <code>fetch</code> ou WebSocket. <code>frame-ancestors &#39;none&#39;</code> et <code>X-Frame-Options: DENY</code> empêchent l&#39;intégration du site dans une iframe (clickjacking).</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<code>script-src</code> autorise <code>&#39;unsafe-inline&#39;</code>. Ce choix est imposé par les scripts en ligne de Next.js et par <code>themeInitScript</code>, injecté dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/layout.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/layout.tsx</code></a> pour appliquer le thème avant le premier rendu. Il affaiblit la protection contre le XSS : un script injecté dans la page serait exécuté. Comme le jeton de session est dans <code>localStorage</code> (voir <a href="sessions.html#stockage-du-jeton-par-les-clients">Sessions</a>), la CSP ne suffit pas à le protéger en cas d&#39;injection. Une CSP par nonce, que Next.js permet via un middleware, retirerait ce besoin.</p>
+</div>
+<p>En développement, aucune CSP n&#39;est envoyée, pour laisser fonctionner le rechargement à chaud.</p>
+<h3 id="autres-mesures"><a class="anchor" href="#autres-mesures" aria-hidden="true" tabindex="-1">#</a>Autres mesures</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>Situation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Polices</td>
+<td>Pile de polices système (<code>ui-sans-serif, system-ui, ...</code>), aucune requête vers un service de polices tiers</td>
+</tr>
+<tr>
+<td>Liens externes</td>
+<td>Les liens <code>target=&quot;_blank&quot;</code> portent <code>rel=&quot;noopener noreferrer&quot;</code></td>
+</tr>
+<tr>
+<td>Fichier <code>security.txt</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/public/.well-known/security.txt" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/public/.well-known/security.txt</code></a>, contact <code>securite@etherbay.fr</code>, expiration le 10 novembre 2027</td>
+</tr>
+<tr>
+<td>Cookies</td>
+<td>Aucun cookie posé par l&#39;application ; préférences et jeton dans <code>localStorage</code></td>
+</tr>
+<tr>
+<td>Rendu</td>
+<td>React échappe le texte affiché ; le seul <code>dangerouslySetInnerHTML</code> est le script de thème, sans donnée externe</td>
+</tr>
+</tbody></table></div>
+<h2 id="site-de-l-office-de-tourisme"><a class="anchor" href="#site-de-l-office-de-tourisme" aria-hidden="true" tabindex="-1">#</a>Site de l&#39;Office de Tourisme</h2>
+<p>Le site est statique (HTML, CSS, modules JavaScript) et servi par nginx non privilégié. La configuration est dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/docker/nginx.conf" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/docker/nginx.conf</code></a> et <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/docker/security-headers.conf" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/docker/security-headers.conf</code></a>.</p>
+<h3 id="en-tetes-2"><a class="anchor" href="#en-tetes-2" aria-hidden="true" tabindex="-1">#</a>En-têtes</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>En-tête</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Content-Security-Policy</code></td>
+<td><code>default-src &#39;self&#39;; script-src &#39;self&#39;; style-src &#39;self&#39;; style-src-attr &#39;unsafe-inline&#39;; img-src &#39;self&#39; data:; font-src &#39;self&#39;; connect-src &#39;self&#39;; object-src &#39;none&#39;; base-uri &#39;none&#39;; frame-ancestors &#39;none&#39;; form-action &#39;self&#39;</code></td>
+</tr>
+<tr>
+<td><code>Strict-Transport-Security</code></td>
+<td><code>max-age=63072000; includeSubDomains</code></td>
+</tr>
+<tr>
+<td><code>X-Content-Type-Options</code></td>
+<td><code>nosniff</code></td>
+</tr>
+<tr>
+<td><code>X-Frame-Options</code></td>
+<td><code>DENY</code></td>
+</tr>
+<tr>
+<td><code>Referrer-Policy</code></td>
+<td><code>strict-origin-when-cross-origin</code></td>
+</tr>
+<tr>
+<td><code>Permissions-Policy</code></td>
+<td>Identique au web</td>
+</tr>
+<tr>
+<td><code>Cross-Origin-Opener-Policy</code></td>
+<td><code>same-origin</code></td>
+</tr>
+<tr>
+<td><code>Cross-Origin-Resource-Policy</code></td>
+<td><code>same-origin</code></td>
+</tr>
+</tbody></table></div>
+<p>La CSP du site est plus stricte que celle du web : aucun script en ligne n&#39;est autorisé (<code>script-src &#39;self&#39;</code>), et seuls les attributs <code>style</code> en ligne le sont (<code>style-src-attr &#39;unsafe-inline&#39;</code>), pas les balises <code>&lt;style&gt;</code>. Toutes les ressources (polices Inter et Jost, bibliothèque <code>qrcode-generator</code>, photos) sont servies par le site lui-même.</p>
+<p>Le fichier d&#39;en-têtes est inclus au niveau du serveur <strong>et</strong> dans chaque bloc <code>location</code> qui ajoute ses propres en-têtes. Ce doublement est nécessaire : dans nginx, une directive <code>add_header</code> dans un bloc <code>location</code> annule celles héritées du niveau supérieur.</p>
+<h3 id="durcissement-nginx"><a class="anchor" href="#durcissement-nginx" aria-hidden="true" tabindex="-1">#</a>Durcissement nginx</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>Directive</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Version masquée</td>
+<td><code>server_tokens off</code></td>
+</tr>
+<tr>
+<td>Méthodes limitées</td>
+<td>Tout autre verbe que <code>GET</code> et <code>HEAD</code> reçoit 405</td>
+</tr>
+<tr>
+<td>Corps limité</td>
+<td><code>client_max_body_size 16k</code></td>
+</tr>
+<tr>
+<td>Fichiers cachés</td>
+<td><code>location ~ /\.(?!well-known)</code> renvoie 404 : <code>.git</code>, <code>.env</code> et assimilés ne sont pas servis</td>
+</tr>
+<tr>
+<td>Utilisateur</td>
+<td>Image <code>nginxinc/nginx-unprivileged</code>, utilisateur 101, port 8080</td>
+</tr>
+<tr>
+<td>Fichier <code>security.txt</code></td>
+<td>Servi depuis <code>/.well-known/security.txt</code></td>
+</tr>
+</tbody></table></div>
+<h3 id="serveur-de-developpement"><a class="anchor" href="#serveur-de-developpement" aria-hidden="true" tabindex="-1">#</a>Serveur de développement</h3>
+<p><code>npm run dev</code> sert le site avec <code>serve</code> et <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/serve.json" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/serve.json</code></a>. Ce fichier n&#39;applique qu&#39;une partie des en-têtes (CSP, <code>X-Content-Type-Options</code>, <code>Referrer-Policy</code>, <code>X-Frame-Options</code>) aux pages HTML. Les en-têtes complets ne sont garantis que par l&#39;image nginx.</p>
+<h3 id="donnees-dans-le-navigateur"><a class="anchor" href="#donnees-dans-le-navigateur" aria-hidden="true" tabindex="-1">#</a>Données dans le navigateur</h3>
+<p>Le site n&#39;envoie aucune donnée à un serveur. Panier, favoris, commandes de démonstration, inscription à la newsletter et choix du bandeau cookies sont stockés dans le <code>localStorage</code>. La billetterie ne demande aucune coordonnée bancaire. Les modules qui construisent du HTML échappent les valeurs avec <code>escapeHtml</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/modules/utils.js" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/assets/js/modules/utils.js</code></a>. Le bandeau est décrit dans <a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a>.</p>
+<h2 id="application-mobile"><a class="anchor" href="#application-mobile" aria-hidden="true" tabindex="-1">#</a>Application mobile</h2>
+<h3 id="stockage-securise"><a class="anchor" href="#stockage-securise" aria-hidden="true" tabindex="-1">#</a>Stockage sécurisé</h3>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/services/secureStorage.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/services/secureStorage.ts</code></a> enregistre le jeton (<code>blocklucky_jwt_token</code>) et le profil (<code>blocklucky_user_profile</code>) avec <code>expo-secure-store</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Plateforme</th>
+<th>Support</th>
+<th>Option</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>iOS</td>
+<td>Keychain</td>
+<td><code>WHEN_UNLOCKED_THIS_DEVICE_ONLY</code> : lisible seulement appareil déverrouillé, non migré vers un autre appareil par une sauvegarde</td>
+</tr>
+<tr>
+<td>Android</td>
+<td>Keystore (données chiffrées par une clé du Keystore)</td>
+<td>Même option</td>
+</tr>
+<tr>
+<td>Web (Expo pour le web)</td>
+<td><code>localStorage</code></td>
+<td>Aucune protection supplémentaire</td>
+</tr>
+</tbody></table></div>
+<p>Une copie du jeton est aussi gardée dans un cache mémoire du module, vidé à la fermeture de l&#39;application. Les erreurs d&#39;écriture dans le stockage sécurisé sont ignorées silencieusement : dans ce cas, la session ne survit pas au redémarrage de l&#39;application. À la déconnexion, le jeton et le profil sont effacés après l&#39;appel à <code>POST /api/auth/logout</code>.</p>
+<h3 id="configuration"><a class="anchor" href="#configuration" aria-hidden="true" tabindex="-1">#</a>Configuration</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>Fichier</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sauvegarde Android</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/app.json" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/app.json</code></a></td>
+<td><code>android.allowBackup: false</code> : les données de l&#39;application ne partent pas dans la sauvegarde Google</td>
+</tr>
+<tr>
+<td>Chiffrement déclaré</td>
+<td>idem</td>
+<td><code>ios.config.usesNonExemptEncryption: false</code></td>
+</tr>
+<tr>
+<td>Secrets embarqués</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/.env.example" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/.env.example</code></a></td>
+<td>Uniquement des URL et un identifiant client public ; toute variable <code>EXPO_PUBLIC_*</code> est lisible dans le binaire</td>
+</tr>
+</tbody></table></div>
+<h3 id="ce-qui-n-est-pas-en-place"><a class="anchor" href="#ce-qui-n-est-pas-en-place" aria-hidden="true" tabindex="-1">#</a>Ce qui n&#39;est pas en place</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>Situation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Trafic chiffré obligatoire</td>
+<td>Les URL d&#39;exemple sont en <code>http://localhost</code> pour le développement. En production, <code>EXPO_PUBLIC_API_URL</code> doit être en HTTPS ; rien dans le code ne refuse une URL HTTP.</td>
+</tr>
+<tr>
+<td>Épinglage de certificat</td>
+<td>Absent</td>
+</tr>
+<tr>
+<td>Détection de root ou de jailbreak, attestation d&#39;intégrité</td>
+<td>Absentes</td>
+</tr>
+<tr>
+<td>Masquage de l&#39;écran dans le sélecteur d&#39;applications</td>
+<td>Absent</td>
+</tr>
+<tr>
+<td>Mise à jour forcée</td>
+<td>Le backend expose <code>MOBILE_MIN_VERSION</code> sous le nom <code>minimumMobileVersion</code> dans <code>GET /api/config</code>, mais l&#39;application ne lit pas cette valeur aujourd&#39;hui. Le déploiement est traité dans <a href="../mobile/builds-publication.html">Builds et publication</a>.</td>
+</tr>
+</tbody></table></div>
+<p>Ces absences sont acceptables pour un pilote sur réseau de test. Elles redeviennent prioritaires si l&#39;application manipule des fonds réels, la clé de portefeuille restant de toute façon côté serveur.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="protection-api.html"><span>Précédent</span><strong>Protection des API</strong></a><a class="pager-next" href="chaine-logicielle.html"><span>Suivant</span><strong>Chaîne logicielle</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/securite/navigateur-mobile.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#frontend-web">Frontend web</a></li><li class="toc-h3"><a href="#en-tetes">En-têtes</a></li><li class="toc-h3"><a href="#politique-csp">Politique CSP</a></li><li class="toc-h3"><a href="#autres-mesures">Autres mesures</a></li><li class="toc-h2"><a href="#site-de-l-office-de-tourisme">Site de l&#39;Office de Tourisme</a></li><li class="toc-h3"><a href="#en-tetes-2">En-têtes</a></li><li class="toc-h3"><a href="#durcissement-nginx">Durcissement nginx</a></li><li class="toc-h3"><a href="#serveur-de-developpement">Serveur de développement</a></li><li class="toc-h3"><a href="#donnees-dans-le-navigateur">Données dans le navigateur</a></li><li class="toc-h2"><a href="#application-mobile">Application mobile</a></li><li class="toc-h3"><a href="#stockage-securise">Stockage sécurisé</a></li><li class="toc-h3"><a href="#configuration">Configuration</a></li><li class="toc-h3"><a href="#ce-qui-n-est-pas-en-place">Ce qui n&#39;est pas en place</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

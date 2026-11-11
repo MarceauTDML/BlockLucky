@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ajouter un écran mobile | Documentation BlockLucky</title>
+<meta name="description" content="L&#39;application mobile (mobile-app/) est une application Expo SDK 58 en React Native, avec React Navigation 7 et RTK Query. Ce guide ajoute un écran « Historique ">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="ajouter-ecran-mobile.html" aria-current="page">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>15. Guides pratiques</span></div>
+    <article class="markdown">
+<h1>Ajouter un écran mobile</h1>
+<p>L&#39;application mobile (<a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/</code></a>) est une application Expo SDK 58 en React Native, avec React Navigation 7 et RTK Query. Ce guide ajoute un écran « Historique des tirages » qui consomme la route <code>GET /api/v1/lottery/rounds</code> créée dans <a href="ajouter-endpoint.html">Ajouter un endpoint</a>, et l&#39;ouvre depuis l&#39;écran « Aide et charte ».</p>
+<h2 id="fichiers-a-toucher"><a class="anchor" href="#fichiers-a-toucher" aria-hidden="true" tabindex="-1">#</a>Fichiers à toucher</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Modification</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/types/api.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/types/api.types.ts</code></a></td>
+<td>Type de la réponse</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/api/lotteryApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/api/lotteryApi.ts</code></a></td>
+<td>Endpoint RTK Query et hook</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/types/navigation.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/types/navigation.types.ts</code></a></td>
+<td>Nom et paramètres de la route</td>
+</tr>
+<tr>
+<td><code>mobile-app/src/screens/lottery/RoundHistoryScreen.tsx</code></td>
+<td>L&#39;écran</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/RootNavigator.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/navigation/RootNavigator.tsx</code></a></td>
+<td>Enregistrement de l&#39;écran</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/HelpSupportScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/settings/HelpSupportScreen.tsx</code></a></td>
+<td>Bouton d&#39;accès</td>
+</tr>
+</tbody></table></div>
+<h2 id="choisir-le-navigateur"><a class="anchor" href="#choisir-le-navigateur" aria-hidden="true" tabindex="-1">#</a>Choisir le navigateur</h2>
+<p>La navigation est imbriquée :</p>
+<div class="diagram"><pre class="mermaid">flowchart TD
+    R[&quot;RootNavigator, pile racine&quot;] --&gt;|&quot;non connecté&quot;| A[&quot;AuthStack : Onboarding, Login, Verify2FA, Setup2FA&quot;]
+    R --&gt;|&quot;connecté&quot;| M[&quot;MainTabs, onglets&quot;]
+    R --&gt; P[&quot;Écrans plein écran : BuyTicket, LiveDraw, TransactionHistory, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, Setup2FA&quot;]
+    M --&gt; T1[&quot;HomeTab&quot;]
+    M --&gt; T2[&quot;BuyTicketTab&quot;]
+    M --&gt; T3[&quot;LiveDrawTab&quot;]
+    M --&gt; T4[&quot;MarketplaceTab&quot;]
+    M --&gt; T5[&quot;SettingsTab : SettingsStack&quot;]
+    T5 --&gt; S[&quot;ProfileMain, Security, Setup2FA, GDPR, HelpSupport&quot;]</pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type d&#39;écran</th>
+<th>Où l&#39;enregistrer</th>
+<th>Type de navigation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Onglet principal</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/MainTabs.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>MainTabs.tsx</code></a></td>
+<td><code>MainTabsParamList</code></td>
+</tr>
+<tr>
+<td>Écran de réglages, avec la barre d&#39;onglets visible</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/SettingsStack.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SettingsStack.tsx</code></a></td>
+<td><code>SettingsStackParamList</code></td>
+</tr>
+<tr>
+<td>Écran plein écran, accessible de partout une fois connecté</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/RootNavigator.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>RootNavigator.tsx</code></a></td>
+<td><code>RootStackParamList</code></td>
+</tr>
+<tr>
+<td>Écran avant connexion</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/AuthStack.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>AuthStack.tsx</code></a></td>
+<td><code>AuthStackParamList</code></td>
+</tr>
+</tbody></table></div>
+<p>L&#39;historique des tirages est consultable depuis plusieurs endroits : il va dans la pile racine, comme <code>TransactionHistory</code>. Les écrans de la pile racine ne sont montés que si l&#39;utilisateur est connecté (<code>isAuthenticated</code> de <code>useAuth</code>).</p>
+<h2 id="1-typer-la-reponse-et-declarer-l-appel"><a class="anchor" href="#1-typer-la-reponse-et-declarer-l-appel" aria-hidden="true" tabindex="-1">#</a>1. Typer la réponse et déclarer l&#39;appel</h2>
+<p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/types/api.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>api.types.ts</code></a> :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">RoundHistoryItem</span> {
+  <span class="hljs-attr">contractRoundId</span>: <span class="hljs-built_in">number</span>;
+  <span class="hljs-attr">winner</span>: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+  <span class="hljs-attr">winningTicket</span>: <span class="hljs-built_in">number</span> | <span class="hljs-literal">null</span>;
+  <span class="hljs-attr">prizeEth</span>: <span class="hljs-built_in">number</span> | <span class="hljs-literal">null</span>;
+  <span class="hljs-attr">ticketsCount</span>: <span class="hljs-built_in">number</span>;
+  <span class="hljs-attr">chainlinkRequestId</span>: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+  <span class="hljs-attr">drawnAt</span>: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+  <span class="hljs-attr">prizeClaimedAt</span>: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+}</code></pre></div>
+<p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/api/lotteryApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lotteryApi.ts</code></a>, ajouter l&#39;endpoint et exporter <code>useGetRoundHistoryQuery</code> avec les autres hooks :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-attr">getRoundHistory</span>: builder.<span class="hljs-property">query</span>&lt;<span class="hljs-title class_">ApiResponse</span>&lt;{ <span class="hljs-attr">rounds</span>: <span class="hljs-title class_">RoundHistoryItem</span>[] }&gt;, <span class="hljs-built_in">void</span>&gt;({
+  <span class="hljs-attr">query</span>: <span class="hljs-function">() =&gt;</span> ({ <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;/lottery/rounds&#x27;</span>, <span class="hljs-attr">params</span>: { <span class="hljs-attr">page</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">limit</span>: <span class="hljs-number">20</span> } }),
+  <span class="hljs-attr">providesTags</span>: [<span class="hljs-string">&#x27;Lottery&#x27;</span>],
+}),</code></pre></div>
+<p>L&#39;URL de base vient de <code>EXPO_PUBLIC_API_URL</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/services/api.client.ts" class="external" target="_blank" rel="noopener noreferrer"><code>services/api.client.ts</code></a>, <code>http://localhost:2053/api</code> par défaut) et le jeton est lu dans le stockage sécurisé à chaque requête (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/api/baseApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>baseApi.ts</code></a>). L&#39;étiquette <code>Lottery</code> est invalidée par <code>useSocket</code> à chaque <code>draw:winner</code> : la liste se rafraîchit après un tirage.</p>
+<h2 id="2-declarer-la-route"><a class="anchor" href="#2-declarer-la-route" aria-hidden="true" tabindex="-1">#</a>2. Déclarer la route</h2>
+<p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/types/navigation.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>navigation.types.ts</code></a>, ajouter la route à <code>RootStackParamList</code>. <code>undefined</code> signifie que l&#39;écran ne prend pas de paramètre :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">RootStackParamList</span> = {
+  <span class="hljs-title class_">Auth</span>: <span class="hljs-literal">undefined</span>;
+  <span class="hljs-title class_">Main</span>: <span class="hljs-literal">undefined</span>;
+  <span class="hljs-title class_">TransactionHistory</span>: <span class="hljs-literal">undefined</span>;
+  <span class="hljs-title class_">RoundHistory</span>: <span class="hljs-literal">undefined</span>;
+};</code></pre></div>
+<p>Seules les lignes <code>TransactionHistory</code> et <code>RoundHistory</code> sont montrées ici : les autres routes existantes restent inchangées.</p>
+<h2 id="3-ecrire-l-ecran"><a class="anchor" href="#3-ecrire-l-ecran" aria-hidden="true" tabindex="-1">#</a>3. Écrire l&#39;écran</h2>
+<p>Fichier <code>src/screens/lottery/RoundHistoryScreen.tsx</code>, sur le modèle de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/marketplace/MyCodesScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>MyCodesScreen.tsx</code></a> :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">ScrollView</span>, <span class="hljs-title class_">StyleSheet</span>, <span class="hljs-title class_">View</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">SafeAreaView</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native-safe-area-context&#x27;</span>;
+<span class="hljs-keyword">import</span> useAppTheme <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../hooks/useAppTheme&#x27;</span>;
+<span class="hljs-keyword">import</span> { useGetRoundHistoryQuery } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../store/api/lotteryApi&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">AppText</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../components/ui/AppText&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">BackButton</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../components/ui/BackButton&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">Loader</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../components/ui/Loader&#x27;</span>;
+<span class="hljs-keyword">import</span> { formatEth } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../utils/formatters.util&#x27;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">RoundHistoryScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span>&lt;{ <span class="hljs-attr">navigation</span>: <span class="hljs-built_in">any</span> }&gt; = <span class="hljs-function">(<span class="hljs-params">{ navigation }</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> { colors, borderRadius, spacing, t } = <span class="hljs-title function_">useAppTheme</span>();
+  <span class="hljs-keyword">const</span> { data, isLoading, isError } = <span class="hljs-title function_">useGetRoundHistoryQuery</span>();
+  <span class="hljs-keyword">const</span> rounds = data?.<span class="hljs-property">data</span>?.<span class="hljs-property">rounds</span> ?? [];
+
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">edges</span>=<span class="hljs-string">{[</span>&#x27;<span class="hljs-attr">top</span>&#x27;, &#x27;<span class="hljs-attr">left</span>&#x27;, &#x27;<span class="hljs-attr">right</span>&#x27;]} <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.safeArea,</span> { <span class="hljs-attr">backgroundColor:</span> <span class="hljs-attr">colors.background</span> }]}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">ScrollView</span> <span class="hljs-attr">contentContainerStyle</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">padding:</span> <span class="hljs-attr">spacing.lg</span>, <span class="hljs-attr">paddingBottom:</span> <span class="hljs-attr">spacing.xxl</span> }}&gt;</span>
+        {navigation?.canGoBack?.() ? <span class="hljs-tag">&lt;<span class="hljs-name">BackButton</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> navigation.goBack()} /&gt; : null}
+        <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">&quot;title&quot;</span> <span class="hljs-attr">weight</span>=<span class="hljs-string">&quot;bold&quot;</span>&gt;</span>
+          {t(&#x27;Historique des tirages&#x27;, &#x27;Draw history&#x27;)}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
+        {isLoading ? <span class="hljs-tag">&lt;<span class="hljs-name">Loader</span> /&gt;</span> : null}
+        {isError ? (
+          <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">color</span>=<span class="hljs-string">{colors.textSecondary}</span>&gt;</span>{t(&#x27;Historique indisponible.&#x27;, &#x27;History unavailable.&#x27;)}<span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
+        ) : null}
+        {rounds.map((round) =&gt; (
+          <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+            <span class="hljs-attr">key</span>=<span class="hljs-string">{round.contractRoundId}</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.card,</span> { <span class="hljs-attr">backgroundColor:</span> <span class="hljs-attr">colors.surface</span>, <span class="hljs-attr">borderColor:</span> <span class="hljs-attr">colors.border</span>, <span class="hljs-attr">borderRadius:</span> <span class="hljs-attr">borderRadius.lg</span> }]}
+          &gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">&quot;subtitle&quot;</span> <span class="hljs-attr">weight</span>=<span class="hljs-string">&quot;semibold&quot;</span>&gt;</span>
+              {t(&#x27;Tour&#x27;, &#x27;Round&#x27;)} #{round.contractRoundId}
+            <span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">&quot;caption&quot;</span> <span class="hljs-attr">color</span>=<span class="hljs-string">{colors.textSecondary}</span>&gt;</span>
+              {t(&#x27;Gagnant&#x27;, &#x27;Winner&#x27;)} : {round.winner ?? &#x27;—&#x27;}
+            <span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">&quot;caption&quot;</span> <span class="hljs-attr">color</span>=<span class="hljs-string">{colors.textSecondary}</span>&gt;</span>
+              {t(&#x27;Cagnotte&#x27;, &#x27;Prize&#x27;)} : {formatEth(round.prizeEth ?? 0)}
+            <span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        ))}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">ScrollView</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">const</span> styles = <span class="hljs-title class_">StyleSheet</span>.<span class="hljs-title function_">create</span>({
+  <span class="hljs-attr">safeArea</span>: { <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span> },
+  <span class="hljs-attr">card</span>: { <span class="hljs-attr">padding</span>: <span class="hljs-number">14</span>, <span class="hljs-attr">borderWidth</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">gap</span>: <span class="hljs-number">4</span>, <span class="hljs-attr">marginTop</span>: <span class="hljs-number">12</span> },
+});
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">RoundHistoryScreen</span>;</code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Règle</th>
+<th>Outil</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Couleurs, espacements, rayons</td>
+<td><code>colors</code>, <code>spacing</code>, <code>borderRadius</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useAppTheme.ts" class="external" target="_blank" rel="noopener noreferrer"><code>useAppTheme</code></a>, qui suivent le thème clair ou sombre</td>
+</tr>
+<tr>
+<td>Textes</td>
+<td><code>AppText</code> (variantes <code>hero</code>, <code>title</code>, <code>subtitle</code>, <code>body</code>, <code>caption</code>, <code>overline</code>) et <code>t(&#39;français&#39;, &#39;english&#39;)</code></td>
+</tr>
+<tr>
+<td>Zones sûres</td>
+<td><code>SafeAreaView</code> de <code>react-native-safe-area-context</code>, bords <code>top</code>, <code>left</code>, <code>right</code> : la barre d&#39;onglets gère le bas</td>
+</tr>
+<tr>
+<td>Boutons</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/AppButton.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>AppButton</code></a>, qui gère le chargement et l&#39;accessibilité</td>
+</tr>
+<tr>
+<td>Retour</td>
+<td><code>BackButton</code> affiché seulement si <code>navigation.canGoBack()</code></td>
+</tr>
+</tbody></table></div>
+<h2 id="4-enregistrer-l-ecran"><a class="anchor" href="#4-enregistrer-l-ecran" aria-hidden="true" tabindex="-1">#</a>4. Enregistrer l&#39;écran</h2>
+<p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/RootNavigator.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>RootNavigator.tsx</code></a>, importer l&#39;écran et l&#39;ajouter dans le bloc des écrans connectés, après <code>TransactionHistory</code> :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">import</span> <span class="hljs-title class_">RoundHistoryScreen</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../screens/lottery/RoundHistoryScreen&#x27;</span>;</code></pre></div>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript">&lt;<span class="hljs-title class_">Stack</span>.<span class="hljs-property">Screen</span> name=<span class="hljs-string">&quot;RoundHistory&quot;</span> component={<span class="hljs-title class_">RoundHistoryScreen</span>} /&gt;</code></pre></div>
+<p>TypeScript refuse un <code>name</code> absent de <code>RootStackParamList</code> : l&#39;étape 2 est obligatoire.</p>
+<h2 id="5-ouvrir-l-ecran"><a class="anchor" href="#5-ouvrir-l-ecran" aria-hidden="true" tabindex="-1">#</a>5. Ouvrir l&#39;écran</h2>
+<p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/HelpSupportScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>HelpSupportScreen.tsx</code></a>, qui appartient à <code>SettingsStack</code>, ajouter un bouton :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript">&lt;<span class="hljs-title class_">AppButton</span>
+  title={<span class="hljs-title function_">t</span>(<span class="hljs-string">&quot;Voir l&#x27;historique des tirages&quot;</span>, <span class="hljs-string">&#x27;See draw history&#x27;</span>)}
+  variant=<span class="hljs-string">&quot;secondary&quot;</span>
+  onPress={<span class="hljs-function">() =&gt;</span> navigation.<span class="hljs-title function_">navigate</span>(<span class="hljs-string">&#x27;RoundHistory&#x27;</span>)}
+/&gt;</code></pre></div>
+<p><code>navigate</code> remonte les navigateurs parents jusqu&#39;à trouver la route : depuis la pile des réglages, imbriquée dans un onglet, il atteint <code>RoundHistory</code> dans la pile racine.</p>
+<h2 id="6-verifier"><a class="anchor" href="#6-verifier" aria-hidden="true" tabindex="-1">#</a>6. Vérifier</h2>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> mobile-app
+npm run typecheck
+npm run lint
+npx expo config --<span class="hljs-built_in">type</span> public &gt; /dev/null</code></pre></div>
+<p>Ce sont les trois contrôles du job <code>mobile</code> de la CI. Le projet n&#39;a pas de script de tests exécutable (voir <a href="../contribuer/tests-qualite.html#application-mobile">Tests et qualité</a>) : l&#39;écran se vérifie à la main.</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npm start</code></pre></div>
+<p>Ouvrir l&#39;application dans Expo Go, se connecter, aller dans Profil, puis Aide, puis « Voir l&#39;historique des tirages ». Sur un téléphone physique, l&#39;API doit être joignable : remplacer <code>localhost</code> par l&#39;adresse IP locale du poste dans <code>mobile-app/.env</code> (voir <a href="../mobile/telephone-physique.html">Tester sur un téléphone</a>).</p>
+<p>À vérifier sur l&#39;appareil :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Point</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Thème sombre</td>
+<td>Basculer le thème du système</td>
+</tr>
+<tr>
+<td>Anglais</td>
+<td>Changer la langue dans le profil</td>
+</tr>
+<tr>
+<td>Lecteur d&#39;écran</td>
+<td>VoiceOver ou TalkBack : chaque carte se lit dans l&#39;ordre</td>
+</tr>
+<tr>
+<td>Petit écran</td>
+<td>Le contenu défile, rien n&#39;est coupé par l&#39;encoche ni par la barre d&#39;onglets</td>
+</tr>
+<tr>
+<td>Hors connexion</td>
+<td>Mode avion : l&#39;écran affiche le message d&#39;erreur, sans plantage</td>
+</tr>
+</tbody></table></div>
+<h2 id="ecran-avec-parametres"><a class="anchor" href="#ecran-avec-parametres" aria-hidden="true" tabindex="-1">#</a>Écran avec paramètres</h2>
+<p>Pour un écran qui reçoit un identifiant, sur le modèle de <code>RewardDetail</code> :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-title class_">RoundDetail</span>: { <span class="hljs-attr">contractRoundId</span>: <span class="hljs-built_in">number</span> };</code></pre></div>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript">navigation.<span class="hljs-title function_">navigate</span>(<span class="hljs-string">&#x27;RoundDetail&#x27;</span>, { <span class="hljs-attr">contractRoundId</span>: round.<span class="hljs-property">contractRoundId</span> });</code></pre></div>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">RoundDetailScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span>&lt;{ <span class="hljs-attr">route</span>: { <span class="hljs-attr">params</span>: { <span class="hljs-attr">contractRoundId</span>: <span class="hljs-built_in">number</span> } }; <span class="hljs-attr">navigation</span>: <span class="hljs-built_in">any</span> }&gt; = <span class="hljs-function">(<span class="hljs-params">{
+  route,
+  navigation,
+}</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> { contractRoundId } = route.<span class="hljs-property">params</span>;
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
+};</code></pre></div>
+<h2 id="liste-de-controle"><a class="anchor" href="#liste-de-controle" aria-hidden="true" tabindex="-1">#</a>Liste de contrôle</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Route typée dans <code>navigation.types.ts</code>.</li>
+<li><input disabled="" type="checkbox"> Écran enregistré dans le bon navigateur.</li>
+<li><input disabled="" type="checkbox"> Endpoint RTK Query avec étiquette.</li>
+<li><input disabled="" type="checkbox"> Textes bilingues, couleurs du thème, <code>SafeAreaView</code>.</li>
+<li><input disabled="" type="checkbox"> <code>typecheck</code>, <code>lint</code> et configuration Expo verts.</li>
+<li><input disabled="" type="checkbox"> Testé sur un appareil ou un émulateur, captures jointes à la pull request.</li>
+</ul>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="ajouter-page-web.html"><span>Précédent</span><strong>Ajouter une page web</strong></a><a class="pager-next" href="ajouter-evenement-socket.html"><span>Suivant</span><strong>Ajouter un événement temps réel</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/guides/ajouter-ecran-mobile.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#fichiers-a-toucher">Fichiers à toucher</a></li><li class="toc-h2"><a href="#choisir-le-navigateur">Choisir le navigateur</a></li><li class="toc-h2"><a href="#1-typer-la-reponse-et-declarer-l-appel">1. Typer la réponse et déclarer l&#39;appel</a></li><li class="toc-h2"><a href="#2-declarer-la-route">2. Déclarer la route</a></li><li class="toc-h2"><a href="#3-ecrire-l-ecran">3. Écrire l&#39;écran</a></li><li class="toc-h2"><a href="#4-enregistrer-l-ecran">4. Enregistrer l&#39;écran</a></li><li class="toc-h2"><a href="#5-ouvrir-l-ecran">5. Ouvrir l&#39;écran</a></li><li class="toc-h2"><a href="#6-verifier">6. Vérifier</a></li><li class="toc-h2"><a href="#ecran-avec-parametres">Écran avec paramètres</a></li><li class="toc-h2"><a href="#liste-de-controle">Liste de contrôle</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

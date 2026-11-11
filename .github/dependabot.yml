@@ -23,6 +23,16 @@ updates:
       contracts-minor-patch:
         update-types: [minor, patch]
   - package-ecosystem: npm
+    directory: /documentation-officielle
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    cooldown:
+      default-days: 5
+    groups:
+      documentation:
+        patterns: ['*']
+  - package-ecosystem: npm
     directory: /frontend-web
     schedule:
       interval: weekly

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tirage et versement de la cagnotte | Documentation BlockLucky</title>
+<meta name="description" content="Le tirage se fait en deux transactions séparées par l&#39;oracle Chainlink VRF. La première, envoyée par le keeper du backend ou par un administrateur, demande un n">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/css/doc.css">
+<script src="../../assets/js/theme.js"></script>
+<script src="../../assets/vendor/mermaid.min.js" defer></script>
+<script src="../../assets/js/app.js" defer></script>
+<script src="../../assets/js/search.js" defer></script>
+</head>
+<body data-root="../../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../../index.html">
+    <img src="../../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children open"><div class="nav-row"><a href="index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="true"></button></div><ul><li><div class="nav-row"><a href="inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="tirage.html" aria-current="page">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>3. Architecture</span><span>Flux métier</span></div>
+    <article class="markdown">
+<h1>Tirage et versement de la cagnotte</h1>
+<p>Le tirage se fait en deux transactions séparées par l&#39;oracle Chainlink VRF. La première, envoyée par le keeper du backend ou par un administrateur, demande un nombre aléatoire et fige le tour. La seconde, envoyée par le coordinateur VRF, apporte ce nombre : le contrat désigne alors lui-même le gagnant dans <code>fulfillRandomWords</code>, calcule la cagnotte et ouvre le tour suivant. Le backend découvre le résultat en lisant les événements, l&#39;annonce en direct, puis réclame la cagnotte pour le compte du gagnant.</p>
+<h2 id="diagramme-de-sequence"><a class="anchor" href="#diagramme-de-sequence" aria-hidden="true" tabindex="-1">#</a>Diagramme de séquence</h2>
+<div class="diagram"><pre class="mermaid">sequenceDiagram
+  autonumber
+  participant K as Keeper
+  participant R as Redis
+  participant BL as Contrat BlockLucky
+  participant VRF as Coordinateur VRF
+  participant I as Indexeur du worker
+  participant DB as PostgreSQL
+  participant API as API Socket.IO
+  participant Q as File chain-actions
+  participant W as Worker chain-actions
+
+  K-&gt;&gt;R: setIfAbsent chain:keeper-lock
+  K-&gt;&gt;BL: paused, isDrawReady
+  BL--&gt;&gt;K: true
+  K-&gt;&gt;BL: requestDraw par le compte opérateur
+  BL-&gt;&gt;VRF: requestRandomWords, numWords 1
+  BL--&gt;&gt;K: reçu avec DrawRequested
+  K-&gt;&gt;I: processReceipt
+  I-&gt;&gt;DB: statut LOCKED, chainlinkRequestId, drawRequestedAt
+  K-&gt;&gt;R: del chain:keeper-lock
+  VRF-&gt;&gt;BL: rawFulfillRandomWords avec la preuve vérifiée
+  BL-&gt;&gt;BL: fulfillRandomWords, gagnant = ticketOwners de randomWords modulo ticketCount
+  BL-&gt;&gt;BL: WinnerPicked puis _openRound et RoundOpened
+  I-&gt;&gt;BL: getLogs depuis ChainCursor
+  I-&gt;&gt;DB: statut COMPLETED, winnerWallet, prizeWei, drawnAt
+  I-&gt;&gt;R: publish draw:winner sur socket-events
+  R--&gt;&gt;API: message relayé, io.emit draw:winner
+  I-&gt;&gt;Q: CLAIM_PRIZE jobId CLAIM_PRIZE-tour-gagnant
+  I-&gt;&gt;DB: nouveau tour OPEN
+  Q--&gt;&gt;W: job CLAIM_PRIZE
+  W-&gt;&gt;BL: claimPrize(tour) signé par le portefeuille du gagnant
+  BL--&gt;&gt;W: PrizeClaimed et envoi des ethers
+  I-&gt;&gt;DB: prizeClaimedAt</pre></div>
+<h2 id="etape-1-demande-du-tirage"><a class="anchor" href="#etape-1-demande-du-tirage" aria-hidden="true" tabindex="-1">#</a>Étape 1 : demande du tirage</h2>
+<h3 id="par-le-keeper"><a class="anchor" href="#par-le-keeper" aria-hidden="true" tabindex="-1">#</a>Par le keeper</h3>
+<p><code>startChainServices</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.keeper.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.keeper.ts</code></a>) lance <code>runKeeperOnce</code> toutes les <code>KEEPER_INTERVAL_MS</code> (10 s par défaut), dans le worker ou dans l&#39;API si <code>RUN_WORKERS=true</code>. À chaque passage :</p>
+<ol>
+<li>Rien en mode <code>simulated</code>.</li>
+<li>Verrou <code>chain:keeper-lock</code> posé par <code>redis.setIfAbsent</code>, pour une durée égale à l&#39;intervalle avec un minimum de 5 s. Si une autre instance le détient, le passage s&#39;arrête.</li>
+<li>Si le contrat est en pause (<code>paused()</code>), rien.</li>
+<li>Si <code>isDrawReady()</code> : appel de <code>requestDraw()</code> avec le compte opérateur <code>chainClient.operator</code>, attente du reçu, puis <code>lotteryIndexer.processReceipt(receipt)</code>.</li>
+<li>Sinon, si <code>isExpiredWithoutDraw()</code> : annulation du tour. Voir <a href="annulation.html">Annulation et remboursement</a>.</li>
+<li>Le verrou est supprimé dans le bloc <code>finally</code>. Les erreurs <code>DrawNotReady</code> et <code>RoundNotCancellable</code> (un autre acteur a été plus rapide) ne sont pas journalisées ; les autres le sont en avertissement.</li>
+</ol>
+<p><code>isDrawReady</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a>) est vraie quand le tour est <code>Open</code>, compte au moins <code>minTicketsToDraw</code> tickets, et est complet ou a atteint <code>endTime</code>. Le tirage peut donc partir dès le dernier ticket vendu, au plus <code>KEEPER_INTERVAL_MS</code> après.</p>
+<h3 id="par-un-administrateur"><a class="anchor" href="#par-un-administrateur" aria-hidden="true" tabindex="-1">#</a>Par un administrateur</h3>
+<p><code>POST /api/v1/lottery/draw</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.routes.ts</code></a> : <code>authenticate</code>, <code>requireRoles(&#39;ADMIN&#39;)</code>, <code>validate(triggerDrawSchema)</code>. <code>lotteryController.triggerDraw</code> appelle <code>lotteryService.executeChainlinkDraw</code>, qui délègue à <code>drawOnchain</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.services.ts</code></a>) :</p>
+<ol>
+<li><code>lotteryGateway.requestDraw()</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.gateway.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.gateway.ts</code></a>) envoie <code>requestDraw</code> avec le compte opérateur et indexe le reçu.</li>
+<li>Le tour courant est relu et recopié en base.</li>
+<li>La réponse 200 contient <code>vrfProof.status: &#39;PENDING&#39;</code>, l&#39;identifiant de requête VRF et le hash de la transaction. Le gagnant n&#39;est pas encore connu.</li>
+</ol>
+<p>Le champ <code>roundId</code> du corps est ignoré : on ne peut tirer que le tour courant. <code>requestDraw</code> n&#39;exige aucun rôle dans le contrat : n&#39;importe quel compte peut la déclencher dès que les conditions sont remplies, ce que fait aussi Chainlink Automation par <code>performUpkeep</code> s&#39;il est configuré. Voir <a href="../../smart-contracts/automation.html">Chainlink Automation</a>.</p>
+<h3 id="dans-le-contrat"><a class="anchor" href="#dans-le-contrat" aria-hidden="true" tabindex="-1">#</a>Dans le contrat</h3>
+<p><code>requestDraw</code> (<code>whenNotPaused</code>, <code>nonReentrant</code>) vérifie <code>isDrawReady</code>, puis <code>_requestRandomness</code> passe le tour à <code>Drawing</code>, note <code>drawRequestedAt</code>, appelle <code>s_vrfCoordinator.requestRandomWords</code> avec la configuration <code>vrfConfig</code> (key hash, abonnement, confirmations, limite de gaz du rappel, paiement natif ou LINK), mémorise <code>roundByRequestId[requestId]</code> et émet <code>DrawRequested(roundId, requestId, ticketCount)</code>.</p>
+<p><code>onDrawRequested</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.indexer.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.indexer.ts</code></a>) passe le tour à <code>LOCKED</code> en base avec <code>chainlinkRequestId</code> et <code>drawRequestedAt</code>. À partir de ce moment, les achats sont refusés par le contrat (<code>RoundNotOpen</code>) et par la passerelle (409).</p>
+<h2 id="etape-2-reponse-de-l-oracle"><a class="anchor" href="#etape-2-reponse-de-l-oracle" aria-hidden="true" tabindex="-1">#</a>Étape 2 : réponse de l&#39;oracle</h2>
+<p>Le coordinateur VRF vérifie la preuve cryptographique, puis appelle <code>rawFulfillRandomWords</code> sur le contrat, qui n&#39;accepte que l&#39;adresse du coordinateur et transmet à <code>fulfillRandomWords</code> :</p>
+<ol>
+<li>Retrouve le tour par <code>roundByRequestId</code>. Si la requête est inconnue, si le tour n&#39;est plus <code>Drawing</code> ou si l&#39;identifiant ne correspond pas à la dernière requête, la réponse est ignorée sans erreur.</li>
+<li><code>winningTicket = randomWords[0] % ticketCount</code>, <code>winner = ticketOwners[roundId][winningTicket]</code>.</li>
+<li><code>fee = totalCollected * feeBps / 10000</code>, <code>prize = totalCollected - fee</code>, <code>accruedFees += fee</code>.</li>
+<li>Statut <code>Completed</code>, émission de <code>WinnerPicked(roundId, winner, winningTicket, prize, fee, requestId)</code>.</li>
+<li><code>_openRound()</code> ouvre le tour suivant avec la configuration courante et émet <code>RoundOpened</code>.</li>
+</ol>
+<p>En local, le coordinateur est <code>VRFCoordinatorV2_5Mock</code>. Le script <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/local-vrf-responder.ts" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/scripts/local-vrf-responder.ts</code></a>, lancé dans le conteneur <code>blockchain</code>, interroge les événements <code>RandomWordsRequested</code> toutes les 2 s (<code>VRF_POLL_INTERVAL_MS</code>) et appelle <code>fulfillRandomWords</code> sur le coordinateur simulé. Sur Sepolia, c&#39;est le réseau d&#39;oracles Chainlink qui répond. Voir <a href="../../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a>.</p>
+<h2 id="etape-3-indexation-et-annonce"><a class="anchor" href="#etape-3-indexation-et-annonce" aria-hidden="true" tabindex="-1">#</a>Étape 3 : indexation et annonce</h2>
+<p>La transaction de l&#39;oracle n&#39;est pas envoyée par le backend : seul l&#39;indexeur périodique la voit. <code>lotteryIndexer.syncOnce</code> tourne toutes les <code>INDEXER_INTERVAL_MS</code> (3 s par défaut). Il lit le curseur <code>ChainCursor</code>, demande les journaux du contrat de <code>lastBlock + 1</code> à la tête de chaîne moins <code>CHAIN_CONFIRMATIONS</code> (plages de 2 000 blocs au plus), les traite dans l&#39;ordre (bloc, puis index du journal) et avance le curseur.</p>
+<p><code>onWinnerPicked</code> :</p>
+<ol>
+<li>Met à jour <code>LotteryRound</code> : <code>COMPLETED</code>, <code>winnerWallet</code>, <code>winningTicket</code>, <code>prizeWei</code>, <code>chainlinkRequestId</code>, <code>drawnAt</code> (date du bloc).</li>
+<li><code>emitSocketEvent(&#39;draw:winner&#39;, ...)</code> avec <code>contractRoundId</code>, <code>winnerWallet</code>, <code>prizePool</code> (en ETH, cagnotte nette) et <code>vrfProofHash</code>, qui contient le hash de la transaction de l&#39;oracle. Dans le worker, l&#39;événement est publié sur le canal Redis <code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:socket-events</code>. L&#39;API, abonnée par <code>startSocketEventBridge</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/socket/event-bridge.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/socket/event-bridge.ts</code></a>), le réémet à tous les clients connectés. Les clients l&#39;écoutent dans <code>useSocket</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/hooks/useSocket.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/hooks/useSocket.ts</code></a>).</li>
+<li><code>enqueueChainAction({ type: &#39;CLAIM_PRIZE&#39;, contractRoundId, walletAddress: winner })</code>.</li>
+</ol>
+<p><code>onRoundOpened</code> crée ensuite le tour suivant en base.</p>
+<h2 id="etape-4-versement-de-la-cagnotte"><a class="anchor" href="#etape-4-versement-de-la-cagnotte" aria-hidden="true" tabindex="-1">#</a>Étape 4 : versement de la cagnotte</h2>
+<p><code>executeChainAction</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/chain-actions.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/chain-actions.ts</code></a>), exécuté par le worker <code>chain-actions</code> (concurrence 1) :</p>
+<ol>
+<li>Retrouve le compte du gagnant par son adresse. Sans compte ou sans clé chiffrée, le job se termine sans rien faire.</li>
+<li>Signe <code>claimPrize(contractRoundId)</code> avec le portefeuille du gagnant (<code>walletService.signerFor</code>). Les frais de réseau sont payés par le gagnant, sur son solde d&#39;ethers fictifs.</li>
+<li>Le contrat vérifie l&#39;état <code>Completed</code>, que l&#39;appelant est le gagnant et que la cagnotte n&#39;a pas été versée, passe <code>prizeClaimed</code> à vrai, émet <code>PrizeClaimed</code>, puis envoie <code>prize</code> au gagnant.</li>
+<li>L&#39;indexeur traite <code>PrizeClaimed</code> et renseigne <code>prizeClaimedAt</code>.</li>
+</ol>
+<p>Le gagnant peut aussi réclamer lui-même : <code>POST /api/v1/lottery/claim-prize</code> avec <code>contractRoundId</code> (<code>authenticate</code>, <code>idempotency</code>, <code>validate(claimPrizeSchema)</code>) appelle <code>lotteryService.claimPrize</code>, puis <code>lotteryGateway.claimPrize</code>. Le frontend web le propose dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/lottery/WinnerClaimCard.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/components/lottery/WinnerClaimCard.tsx</code></a>.</p>
+<h2 id="erreurs-possibles"><a class="anchor" href="#erreurs-possibles" aria-hidden="true" tabindex="-1">#</a>Erreurs possibles</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Point</th>
+<th>Code ou effet</th>
+<th>Cause</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>POST /lottery/draw</code></td>
+<td>403</td>
+<td>Rôle <code>ADMIN</code> absent, ou 2FA non activée avec <code>ADMIN_MFA_REQUIRED=true</code></td>
+</tr>
+<tr>
+<td><code>POST /lottery/draw</code></td>
+<td>409</td>
+<td><code>DrawNotReady</code> : pas assez de tickets, durée non écoulée, ou tirage déjà demandé</td>
+</tr>
+<tr>
+<td><code>POST /lottery/draw</code></td>
+<td>503</td>
+<td>Contrat en pause, ou réseau injoignable</td>
+</tr>
+<tr>
+<td><code>POST /lottery/draw</code></td>
+<td>502</td>
+<td>Échec non reconnu, par exemple abonnement VRF non financé ou consommateur non enregistré</td>
+</tr>
+<tr>
+<td><code>POST /lottery/claim-prize</code></td>
+<td>409</td>
+<td>Mode <code>simulated</code>, <code>RoundNotCompleted</code>, <code>PrizeAlreadyClaimed</code></td>
+</tr>
+<tr>
+<td><code>POST /lottery/claim-prize</code></td>
+<td>403</td>
+<td><code>NotWinner</code></td>
+</tr>
+<tr>
+<td><code>POST /lottery/claim-prize</code></td>
+<td>402</td>
+<td>Solde insuffisant pour payer les frais</td>
+</tr>
+<tr>
+<td>Job <code>CLAIM_PRIZE</code></td>
+<td>Terminé sans erreur</td>
+<td><code>PrizeAlreadyClaimed</code> (déjà réclamée, par exemple à la main)</td>
+</tr>
+<tr>
+<td>Job <code>CLAIM_PRIZE</code></td>
+<td>Échec définitif</td>
+<td><code>NotWinner</code>, <code>RoundNotCompleted</code> (<code>UnrecoverableError</code>)</td>
+</tr>
+<tr>
+<td>Job <code>CLAIM_PRIZE</code></td>
+<td>Jusqu&#39;à 5 tentatives</td>
+<td>Erreur réseau, solde insuffisant pour les frais, autre erreur</td>
+</tr>
+<tr>
+<td>Oracle</td>
+<td>Tour bloqué en <code>Drawing</code></td>
+<td>Aucune réponse VRF : seul <code>retryDraw</code> (rôle opérateur, après <code>drawTimeout</code>) relance une requête</td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le backend n&#39;appelle jamais <code>retryDraw</code>. Si l&#39;oracle ne répond pas, un opérateur doit l&#39;appeler à la main après <code>drawTimeout</code>. Voir <a href="../../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a>.</p>
+</div>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Si le gagnant a supprimé son compte (voir <a href="suppression-rgpd.html">Suppression RGPD</a>), son adresse n&#39;est plus en base et sa clé est effacée : le job <code>CLAIM_PRIZE</code> se termine sans rien faire et la cagnotte reste dans le contrat, réclamable seulement par l&#39;adresse gagnante.</p>
+</div>
+<h2 id="idempotence"><a class="anchor" href="#idempotence" aria-hidden="true" tabindex="-1">#</a>Idempotence</h2>
+<ul>
+<li><strong>Demande de tirage.</strong> Le contrat refuse une seconde demande pour le même tour (<code>DrawNotReady</code>, car le tour n&#39;est plus <code>Open</code>). Le verrou du keeper évite que plusieurs instances envoient la transaction en même temps. <code>POST /lottery/draw</code> n&#39;a pas de middleware <code>idempotency</code> : un double appel renvoie 409 au second.</li>
+<li><strong>Réponse VRF.</strong> <code>fulfillRandomWords</code> ignore une réponse inconnue, en retard ou en double, sans annuler la transaction de l&#39;oracle.</li>
+<li><strong>Indexation.</strong> <code>onWinnerPicked</code> et <code>onDrawRequested</code> sont des mises à jour qui donnent le même résultat si elles sont rejouées. En revanche, si <code>syncOnce</code> échoue après avoir traité une partie des journaux, le curseur n&#39;avance pas et la plage est relue : <code>draw:winner</code> peut être émis une seconde fois, et la mise en file de <code>CLAIM_PRIZE</code> est absorbée par l&#39;identifiant de job.</li>
+<li><strong>Versement.</strong> L&#39;identifiant <code>CLAIM_PRIZE-&lt;tour&gt;-&lt;adresse&gt;</code> empêche deux jobs identiques, et <code>prizeClaimed</code> dans le contrat empêche deux versements.</li>
+</ul>
+<h2 id="en-mode-simule"><a class="anchor" href="#en-mode-simule" aria-hidden="true" tabindex="-1">#</a>En mode simulé</h2>
+<p><code>executeChainlinkDraw</code> passe le tour à <code>LOCKED</code>, choisit un gagnant parmi les tickets par <code>crypto.randomInt</code> dans <code>blockchainService.requestChainlinkVrfDraw</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/blockchain.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/blockchain.service.ts</code></a>), passe le tour à <code>COMPLETED</code> et diffuse <code>draw:winner</code> par <code>broadcastWinnerEvent</code>. L&#39;identifiant de requête et la « preuve » sont des chaînes aléatoires, la réponse indique <code>verifiedFair: false</code> et <code>simulated: true</code>, et aucune cagnotte n&#39;est versée.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="achat-cadeau.html"><span>Précédent</span><strong>Achat et cadeau de ticket</strong></a><a class="pager-next" href="annulation.html"><span>Suivant</span><strong>Annulation et remboursement</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/architecture/flux/tirage.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#diagramme-de-sequence">Diagramme de séquence</a></li><li class="toc-h2"><a href="#etape-1-demande-du-tirage">Étape 1 : demande du tirage</a></li><li class="toc-h3"><a href="#par-le-keeper">Par le keeper</a></li><li class="toc-h3"><a href="#par-un-administrateur">Par un administrateur</a></li><li class="toc-h3"><a href="#dans-le-contrat">Dans le contrat</a></li><li class="toc-h2"><a href="#etape-2-reponse-de-l-oracle">Étape 2 : réponse de l&#39;oracle</a></li><li class="toc-h2"><a href="#etape-3-indexation-et-annonce">Étape 3 : indexation et annonce</a></li><li class="toc-h2"><a href="#etape-4-versement-de-la-cagnotte">Étape 4 : versement de la cagnotte</a></li><li class="toc-h2"><a href="#erreurs-possibles">Erreurs possibles</a></li><li class="toc-h2"><a href="#idempotence">Idempotence</a></li><li class="toc-h2"><a href="#en-mode-simule">En mode simulé</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

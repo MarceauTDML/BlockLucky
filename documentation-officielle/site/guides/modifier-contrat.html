@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modifier le contrat | Documentation BlockLucky</title>
+<meta name="description" content="Modifier BlockLucky.sol ou BlockLuckyPOAP.sol ne s&#39;arrête pas au Solidity. Le backend embarque les ABI des contrats, décode leurs erreurs, indexe leurs événemen">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="modifier-contrat.html" aria-current="page">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>15. Guides pratiques</span></div>
+    <article class="markdown">
+<h1>Modifier le contrat</h1>
+<p>Modifier <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>BlockLucky.sol</code></a> ou <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLuckyPOAP.sol" class="external" target="_blank" rel="noopener noreferrer"><code>BlockLuckyPOAP.sol</code></a> ne s&#39;arrête pas au Solidity. Le backend embarque les ABI des contrats, décode leurs erreurs, indexe leurs événements et envoie leurs transactions : chaque changement d&#39;interface se répercute dans quatre fichiers du backend, puis dans un redéploiement. Ce guide suit une modification complète, de l&#39;éditeur à la blockchain locale.</p>
+<div class="hint hint-caution"><p class="hint-title">Danger</p>
+<p>Un contrat déployé est immuable : il n&#39;a pas de mécanisme de mise à jour (pas de proxy). Une nouvelle version est un nouveau contrat, à une nouvelle adresse, avec un état vide : tours, tickets, cagnottes et badges de l&#39;ancien contrat y restent. Toute modification destinée à Sepolia se planifie entre deux tours, jamais pendant un tour ouvert.</p>
+</div>
+<p>L&#39;exemple ajoute une limite de tickets par achat, <code>MAX_TICKETS_PER_PURCHASE</code>, qui borne la boucle de <code>_buyTickets</code> quelle que soit la configuration du tour.</p>
+<h2 id="fichiers-a-toucher"><a class="anchor" href="#fichiers-a-toucher" aria-hidden="true" tabindex="-1">#</a>Fichiers à toucher</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Modification</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a></td>
+<td>Constante, erreur, vérification</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/test/BlockLucky.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/test/BlockLucky.test.ts</code></a></td>
+<td>Test unitaire de la nouvelle règle</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/test/BlockLucky.t.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/test/BlockLucky.t.sol</code></a></td>
+<td>Test de fuzzing, si la règle porte sur une plage de valeurs</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/abi/BlockLucky.json" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/abi/BlockLucky.json</code></a></td>
+<td>Régénéré par <code>npm run export:abi</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.gateway.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.gateway.ts</code></a></td>
+<td>Traduction de la nouvelle erreur, nouvelle méthode éventuelle</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/chain-actions.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/chain-actions.ts</code></a></td>
+<td>Classement de l&#39;erreur pour les actions en file, si elle peut y survenir</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.indexer.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.indexer.ts</code></a></td>
+<td>Traitement d&#39;un nouvel événement, voir <a href="indexer-evenement.html">Indexer un nouvel événement</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/_data/contrats.json" class="external" target="_blank" rel="noopener noreferrer"><code>documentation-officielle/content/_data/contrats.json</code></a></td>
+<td>Description des nouvelles fonctions, erreurs et événements</td>
+</tr>
+</tbody></table></div>
+<h2 id="1-modifier-le-solidity"><a class="anchor" href="#1-modifier-le-solidity" aria-hidden="true" tabindex="-1">#</a>1. Modifier le Solidity</h2>
+<div class="code-block"><div class="code-head"><span>Solidity</span></div><pre><code class="hljs language-solidity">uint32 public constant MAX_TICKETS_PER_PURCHASE = 100;</code></pre></div>
+<div class="code-block"><div class="code-head"><span>Solidity</span></div><pre><code class="hljs language-solidity">error PurchaseTooLarge(uint32 quantity, uint32 limit);</code></pre></div>
+<p>Dans <code>_buyTickets</code>, après le contrôle <code>quantity == 0</code> :</p>
+<div class="code-block"><div class="code-head"><span>Solidity</span></div><pre><code class="hljs language-solidity">if (quantity &gt; MAX_TICKETS_PER_PURCHASE) revert PurchaseTooLarge(quantity, MAX_TICKETS_PER_PURCHASE);</code></pre></div>
+<p>Règles du contrat, vérifiées en revue et en partie par solhint et Slither :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Règle</th>
+<th>Application dans le contrat</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Erreurs personnalisées avec paramètres, jamais <code>require(..., &quot;message&quot;)</code></td>
+<td><code>RoundSoldOut(roundId, remaining)</code>, <code>IncorrectPayment(expected, received)</code>. Imposé par la règle solhint <code>gas-custom-errors</code></td>
+</tr>
+<tr>
+<td>Un événement pour chaque changement d&#39;état observable</td>
+<td><code>TicketsPurchased</code>, <code>DrawRequested</code>, <code>WinnerPicked</code>, <code>RoundConfigUpdated</code>... L&#39;indexeur ne voit que les événements</td>
+</tr>
+<tr>
+<td>Vérifications, puis effets, puis interactions</td>
+<td><code>claimPrize</code> passe <code>prizeClaimed</code> à <code>true</code> avant d&#39;envoyer les ethers</td>
+</tr>
+<tr>
+<td><code>nonReentrant</code> sur toute fonction qui envoie des ethers ou appelle un contrat externe</td>
+<td><code>claimPrize</code>, <code>claimRefund</code>, <code>withdrawFees</code>, <code>requestDraw</code></td>
+</tr>
+<tr>
+<td>Droits par rôle</td>
+<td><code>onlyRole(DEFAULT_ADMIN_ROLE)</code> pour la configuration, <code>OPERATOR_ROLE</code> pour l&#39;exploitation, <code>PAUSER_ROLE</code> pour le disjoncteur</td>
+</tr>
+<tr>
+<td>Fonds en retrait, jamais poussés en boucle</td>
+<td><code>claimPrize</code>, <code>claimRefund</code> : un destinataire qui refuse les paiements ne bloque personne</td>
+</tr>
+<tr>
+<td>Nouvelle configuration validée</td>
+<td><code>_validateRoundConfig</code>, <code>_validateVrfConfig</code> refusent les valeurs incohérentes avec <code>InvalidConfiguration</code></td>
+</tr>
+<tr>
+<td><code>whenNotPaused</code> sur les entrées de fonds</td>
+<td><code>buyTickets</code>, <code>buyTicketsFor</code>, <code>requestDraw</code></td>
+</tr>
+</tbody></table></div>
+<p>Les règles de sécurité et les constats acceptés sont détaillés dans <a href="../smart-contracts/securite.html">Sécurité du contrat</a>.</p>
+<h2 id="2-tester"><a class="anchor" href="#2-tester" aria-hidden="true" tabindex="-1">#</a>2. Tester</h2>
+<p>Ajouter le cas dans le bloc <code>describe(&quot;Achat de tickets&quot;)</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/test/BlockLucky.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>BlockLucky.test.ts</code></a>. La configuration par défaut des tests (<code>maxTickets: 20</code>, <code>maxTicketsPerPlayer: 10</code>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/test/fixtures.ts" class="external" target="_blank" rel="noopener noreferrer"><code>fixtures.ts</code></a>) bloquerait l&#39;achat avant la nouvelle règle : le test déploie donc un contrat dont la configuration l&#39;autorise.</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-title function_">it</span>(<span class="hljs-string">&quot;refuse un achat de plus de MAX_TICKETS_PER_PURCHASE tickets&quot;</span>, <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> { lottery, admin, alice } = <span class="hljs-keyword">await</span> <span class="hljs-title function_">loadFixture</span>(deployLotteryFixture);
+  <span class="hljs-keyword">await</span> lottery
+    .<span class="hljs-title function_">connect</span>(admin)
+    .<span class="hljs-title function_">setRoundConfig</span>(<span class="hljs-title function_">defaultRoundConfig</span>({ <span class="hljs-attr">maxTickets</span>: <span class="hljs-number">500</span>, <span class="hljs-attr">maxTicketsPerPlayer</span>: <span class="hljs-number">500</span> }));
+  <span class="hljs-keyword">await</span> lottery.<span class="hljs-title function_">connect</span>(admin).<span class="hljs-title function_">cancelRound</span>();
+  <span class="hljs-keyword">await</span> <span class="hljs-title function_">expect</span>(lottery.<span class="hljs-title function_">connect</span>(alice).<span class="hljs-title function_">buyTickets</span>(<span class="hljs-number">101</span>, { <span class="hljs-attr">value</span>: <span class="hljs-variable constant_">TICKET_PRICE</span> * <span class="hljs-number">101n</span> }))
+    .<span class="hljs-property">to</span>.<span class="hljs-property">be</span>.<span class="hljs-title function_">revertedWithCustomError</span>(lottery, <span class="hljs-string">&quot;PurchaseTooLarge&quot;</span>)
+    .<span class="hljs-title function_">withArgs</span>(<span class="hljs-number">101n</span>, <span class="hljs-number">100n</span>);
+});</code></pre></div>
+<p><code>setRoundConfig</code> ne s&#39;applique qu&#39;au tour suivant : <code>cancelRound</code> clôt le tour courant et ouvre un tour avec la nouvelle configuration. Le compte <code>admin</code> de la fixture détient tous les rôles, comme dans les tests existants qui appellent déjà <code>lottery.connect(admin).cancelRound()</code>.</p>
+<p>Puis, depuis <code>smart-contract/</code> :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npm run lint
+npm <span class="hljs-built_in">test</span>
+npm run <span class="hljs-built_in">test</span>:coverage
+npm run coverage:check
+npm run slither</code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Attendu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>npm run lint</code></td>
+<td>zéro avertissement</td>
+</tr>
+<tr>
+<td><code>npm test</code></td>
+<td>tous les tests verts, y compris les 4 tests de fuzzing (256 exécutions chacun)</td>
+</tr>
+<tr>
+<td><code>npm run coverage:check</code></td>
+<td><code>OK contracts/BlockLucky.sol : 100.00 % des lignes couvertes</code> : chaque nouvelle ligne doit être atteinte par un test</td>
+</tr>
+<tr>
+<td><code>npm run slither</code></td>
+<td>aucun nouveau constat de niveau Medium ou plus. Docker est nécessaire</td>
+</tr>
+<tr>
+<td><code>npm run test:gas</code></td>
+<td>facultatif : comparer le coût de <code>buyTickets</code> avant et après</td>
+</tr>
+</tbody></table></div>
+<p>Un faux positif de Slither se consigne dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/slither.db.json" class="external" target="_blank" rel="noopener noreferrer"><code>slither.db.json</code></a> en lançant Slither en mode triage, et la justification s&#39;écrit dans <a href="../smart-contracts/securite.html">Sécurité du contrat</a>. Un vrai constat se corrige.</p>
+<h2 id="3-exporter-les-abi"><a class="anchor" href="#3-exporter-les-abi" aria-hidden="true" tabindex="-1">#</a>3. Exporter les ABI</h2>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npm run <span class="hljs-built_in">export</span>:abi</code></pre></div>
+<p>Le script compile puis copie l&#39;ABI de chaque contrat dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/src/blockchain/abi" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/abi/</code></a>. Il affiche <code>BlockLucky : ABI exportée vers ...</code> pour un fichier modifié et <code>ABI à jour</code> sinon. La CI lance <code>node scripts/export-abi.mjs --check</code>, qui échoue si les fichiers du backend ne correspondent pas au contrat compilé : les ABI régénérées se commitent dans la même pull request que le Solidity.</p>
+<h2 id="4-adapter-le-backend"><a class="anchor" href="#4-adapter-le-backend" aria-hidden="true" tabindex="-1">#</a>4. Adapter le backend</h2>
+<h3 id="traduire-la-nouvelle-erreur"><a class="anchor" href="#traduire-la-nouvelle-erreur" aria-hidden="true" tabindex="-1">#</a>Traduire la nouvelle erreur</h3>
+<p>Les erreurs du contrat sont décodées par <code>decodeContractError</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/chain-actions.ts" class="external" target="_blank" rel="noopener noreferrer"><code>chain-actions.ts</code></a>, à partir des ABI, puis traduites par la table <code>CONTRACT_ERRORS</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.gateway.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lottery.gateway.ts</code></a> :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-title class_">PurchaseTooLarge</span>: { <span class="hljs-attr">status</span>: <span class="hljs-number">400</span>, <span class="hljs-attr">message</span>: <span class="hljs-string">&#x27;Trop de tickets dans un seul achat.&#x27;</span> },</code></pre></div>
+<p>Une erreur absente de la table devient une réponse 502 générique « L&#39;achat n&#39;a pas pu être enregistré sur la blockchain » et un journal d&#39;erreur : le citoyen ne comprend pas ce qui s&#39;est passé. Toute nouvelle erreur atteignable depuis une route doit y figurer.</p>
+<p>Pour une action exécutée en file (<code>CLAIM_PRIZE</code>, <code>CLAIM_REFUND</code>, <code>MINT_BADGE</code>), classer l&#39;erreur dans <code>chain-actions.ts</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ensemble</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ALREADY_DONE_ERRORS</code></td>
+<td>L&#39;action est considérée comme faite, le job se termine sans erreur (<code>PrizeAlreadyClaimed</code>, <code>NothingToRefund</code>, <code>BadgeAlreadyMinted</code>)</td>
+</tr>
+<tr>
+<td><code>PERMANENT_ERRORS</code></td>
+<td>Le job échoue définitivement, sans nouvelle tentative (<code>NotWinner</code>, <code>RoundNotCompleted</code>...)</td>
+</tr>
+<tr>
+<td>aucun</td>
+<td>Le job est réessayé jusqu&#39;à 5 fois</td>
+</tr>
+</tbody></table></div>
+<h3 id="appeler-une-nouvelle-fonction"><a class="anchor" href="#appeler-une-nouvelle-fonction" aria-hidden="true" tabindex="-1">#</a>Appeler une nouvelle fonction</h3>
+<p>Une fonction ajoutée au contrat s&#39;appelle par son nom, avec <code>getFunction</code>, dans une méthode de <code>LotteryGateway</code> :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> <span class="hljs-title function_">maxTicketsPerPurchase</span>(): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">number</span>&gt; {
+  <span class="hljs-keyword">return</span> <span class="hljs-title class_">Number</span>(<span class="hljs-keyword">await</span> chainClient.<span class="hljs-title function_">lottery</span>().<span class="hljs-title function_">getFunction</span>(<span class="hljs-string">&#x27;MAX_TICKETS_PER_PURCHASE&#x27;</span>)());
+}</code></pre></div>
+<p>Une écriture passe par <code>sendAndIndex</code>, qui attend le reçu, l&#39;indexe immédiatement et traduit les erreurs. Le signataire est <code>chainClient.operator</code> pour une action de la plateforme, ou <code>walletService.signerFor(user)</code> pour une action faite au nom d&#39;un citoyen.</p>
+<h3 id="aligner-les-validations-de-l-api"><a class="anchor" href="#aligner-les-validations-de-l-api" aria-hidden="true" tabindex="-1">#</a>Aligner les validations de l&#39;API</h3>
+<p>La règle du contrat doit être reprise, au moins aussi stricte, dans le schéma Zod de la route : le citoyen reçoit alors une erreur 400 claire, sans transaction ni frais. Ici, <code>buyTicketSchema</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lottery.validators.ts</code></a> limite déjà <code>quantity</code> à 10.</p>
+<h3 id="nouvel-evenement"><a class="anchor" href="#nouvel-evenement" aria-hidden="true" tabindex="-1">#</a>Nouvel événement</h3>
+<p>Un événement ajouté doit être traité par l&#39;indexeur, sinon il n&#39;existe pas pour la base, l&#39;API et les clients : voir <a href="indexer-evenement.html">Indexer un nouvel événement</a>.</p>
+<h2 id="5-verifier-sur-la-blockchain-locale"><a class="anchor" href="#5-verifier-sur-la-blockchain-locale" aria-hidden="true" tabindex="-1">#</a>5. Vérifier sur la blockchain locale</h2>
+<p>L&#39;image <code>blockchain</code> compile et déploie les contrats au démarrage : il faut la reconstruire. Le nœud Hardhat ne garde pas son état, la base doit donc repartir de zéro elle aussi.</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose down -v
+docker compose up -d --build --<span class="hljs-built_in">wait</span>
+<span class="hljs-built_in">cd</span> backend
+npm run prisma:deploy
+npm run prisma:seed
+npm run dev</code></pre></div>
+<p>Les adresses locales ne changent pas : elles dépendent de l&#39;ordre des déploiements dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/deploy-local.ts" class="external" target="_blank" rel="noopener noreferrer"><code>deploy-local.ts</code></a> et du nonce du compte déployeur, pas du code. Si l&#39;ordre des transactions du script change, les adresses changent, et il faut mettre à jour <code>LOTTERY_CONTRACT_ADDRESS</code> et <code>POAP_CONTRACT_ADDRESS</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/env.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>env.config.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/.env.example" class="external" target="_blank" rel="noopener noreferrer"><code>backend/.env.example</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker-compose.yml" class="external" target="_blank" rel="noopener noreferrer"><code>docker-compose.yml</code></a> et <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/chain/setup-chain-env.ts" class="external" target="_blank" rel="noopener noreferrer"><code>setup-chain-env.ts</code></a>. Les adresses déployées sont affichées dans les journaux du conteneur et écrites dans <code>deployments/localhost.json</code>.</p>
+<p>Lancer enfin le test de bout en bout sur la chaîne :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> backend
+npm run <span class="hljs-built_in">test</span>:chain</code></pre></div>
+<h2 id="6-documenter"><a class="anchor" href="#6-documenter" aria-hidden="true" tabindex="-1">#</a>6. Documenter</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Mise à jour</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></td>
+<td>Générée depuis l&#39;ABI : ajouter dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/_data/contrats.json" class="external" target="_blank" rel="noopener noreferrer"><code>contrats.json</code></a> la description de chaque fonction, événement et erreur ajoutés, puis <code>npm run build</code></td>
+</tr>
+<tr>
+<td><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a>, <a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></td>
+<td>Règle métier en clair</td>
+</tr>
+<tr>
+<td><a href="../smart-contracts/securite.html">Sécurité du contrat</a></td>
+<td>Nouveau risque ou nouveau constat accepté</td>
+</tr>
+<tr>
+<td><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></td>
+<td>Nouvelle traduction d&#39;erreur</td>
+</tr>
+</tbody></table></div>
+<p>Exemple d&#39;entrées pour <code>contrats.json</code> :</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;BlockLucky&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;fonctions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;MAX_TICKETS_PER_PURCHASE&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Nombre maximal de tickets par appel à buyTickets ou buyTicketsFor (100).&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;erreurs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;PurchaseTooLarge&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;La quantité demandée dépasse MAX_TICKETS_PER_PURCHASE.&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<h2 id="7-deployer"><a class="anchor" href="#7-deployer" aria-hidden="true" tabindex="-1">#</a>7. Déployer</h2>
+<p>Sur Sepolia, la nouvelle version est un nouveau contrat : suivre <a href="redeployer-sepolia.html">Redéployer sur Sepolia</a>. Le plan de retour arrière de la pull request doit dire ce qui arrive à l&#39;ancien contrat : en général, pause de l&#39;ancien contrat, dernier tour terminé ou annulé, remboursements réclamés, puis bascule du backend sur la nouvelle adresse.</p>
+<h2 id="liste-de-controle"><a class="anchor" href="#liste-de-controle" aria-hidden="true" tabindex="-1">#</a>Liste de contrôle</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Erreur personnalisée, événement pour chaque changement d&#39;état, <code>nonReentrant</code> et rôle si nécessaire.</li>
+<li><input disabled="" type="checkbox"> Tests unitaires, fuzzing si pertinent, couverture à 100 %.</li>
+<li><input disabled="" type="checkbox"> solhint et Slither verts.</li>
+<li><input disabled="" type="checkbox"> ABI exportées et commitées.</li>
+<li><input disabled="" type="checkbox"> <code>CONTRACT_ERRORS</code>, <code>ALREADY_DONE_ERRORS</code>, <code>PERMANENT_ERRORS</code> à jour.</li>
+<li><input disabled="" type="checkbox"> Indexeur adapté pour tout nouvel événement.</li>
+<li><input disabled="" type="checkbox"> Validation Zod alignée.</li>
+<li><input disabled="" type="checkbox"> <code>npm run test:chain</code> vert sur la blockchain locale reconstruite.</li>
+<li><input disabled="" type="checkbox"> <code>contrats.json</code> complété, documentation régénérée.</li>
+<li><input disabled="" type="checkbox"> Plan de migration de l&#39;ancien contrat décrit dans la pull request.</li>
+</ul>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="ajouter-partenaire.html"><span>Précédent</span><strong>Ajouter un commerçant partenaire</strong></a><a class="pager-next" href="indexer-evenement.html"><span>Suivant</span><strong>Indexer un nouvel événement</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/guides/modifier-contrat.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#fichiers-a-toucher">Fichiers à toucher</a></li><li class="toc-h2"><a href="#1-modifier-le-solidity">1. Modifier le Solidity</a></li><li class="toc-h2"><a href="#2-tester">2. Tester</a></li><li class="toc-h2"><a href="#3-exporter-les-abi">3. Exporter les ABI</a></li><li class="toc-h2"><a href="#4-adapter-le-backend">4. Adapter le backend</a></li><li class="toc-h3"><a href="#traduire-la-nouvelle-erreur">Traduire la nouvelle erreur</a></li><li class="toc-h3"><a href="#appeler-une-nouvelle-fonction">Appeler une nouvelle fonction</a></li><li class="toc-h3"><a href="#aligner-les-validations-de-l-api">Aligner les validations de l&#39;API</a></li><li class="toc-h3"><a href="#nouvel-evenement">Nouvel événement</a></li><li class="toc-h2"><a href="#5-verifier-sur-la-blockchain-locale">5. Vérifier sur la blockchain locale</a></li><li class="toc-h2"><a href="#6-documenter">6. Documenter</a></li><li class="toc-h2"><a href="#7-deployer">7. Déployer</a></li><li class="toc-h2"><a href="#liste-de-controle">Liste de contrôle</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

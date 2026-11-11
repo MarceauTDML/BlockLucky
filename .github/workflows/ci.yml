@@ -71,6 +71,26 @@ jobs:
           docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.30.1
           git /repo --no-banner --redact --config /repo/.gitleaks.toml
 
+  documentation:
+    name: Documentation officielle (génération, liens, fraîcheur)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: documentation-officielle
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: documentation-officielle/package-lock.json
+      - run: npm ci
+      - name: Pages générées depuis le code à jour, liens et ancres valides, descriptions complètes
+        run: npm run check
+
   backend:
     name: Backend (typecheck, lint, tests, migrations)
     needs: changes

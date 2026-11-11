@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boutique et récompenses | Documentation BlockLucky</title>
+<meta name="description" content="Le module marketplace permet aux citoyens de dépenser leurs EtherPoints contre des récompenses proposées par les commerçants partenaires, puis aux commerçants d">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/css/doc.css">
+<script src="../../assets/js/theme.js"></script>
+
+<script src="../../assets/js/app.js" defer></script>
+<script src="../../assets/js/search.js" defer></script>
+</head>
+<body data-root="../../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../../index.html">
+    <img src="../../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children open"><div class="nav-row"><a href="index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="true"></button></div><ul><li><div class="nav-row"><a href="auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="boutique.html" aria-current="page">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>7. Backend</span><span>Modules métier</span></div>
+    <article class="markdown">
+<h1>Boutique et récompenses</h1>
+<p>Le module <code>marketplace</code> permet aux citoyens de dépenser leurs EtherPoints contre des récompenses proposées par les commerçants partenaires, puis aux commerçants de valider en magasin le code obtenu. Les EtherPoints sont des points de fidélité stockés uniquement en base : ils ne circulent pas sur la blockchain. Les offres et les lots de codes sont créés par le module <a href="partenaires.html">Partenaires</a>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/marketplace.routes.ts</code></a></td>
+<td>6 routes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/marketplace.validators.ts</code></a></td>
+<td>2 schémas Zod</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/marketplace.services.ts</code></a></td>
+<td>Catalogue, échange, validation en magasin</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/marketplace.repo.ts</code></a></td>
+<td><code>RewardCatalog</code>, <code>ClaimedReward</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/ledger.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/ledger.service.ts</code></a></td>
+<td>Débit des points et historique</td>
+</tr>
+</tbody></table></div>
+<p>Le parcours est décrit dans <a href="../../architecture/flux/recompense.html">Échange de récompense</a>.</p>
+<h2 id="routes"><a class="anchor" href="#routes" aria-hidden="true" tabindex="-1">#</a>Routes</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Méthode et chemin</th>
+<th>Accès</th>
+<th>Middlewares</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /api/v1/marketplace/catalog</code></td>
+<td>public</td>
+<td>aucun</td>
+<td>Offres actives des partenaires actifs</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/marketplace/rewards/:id</code></td>
+<td>public</td>
+<td>aucun</td>
+<td>Détail d&#39;une offre</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/marketplace/points</code></td>
+<td>connecté</td>
+<td><code>authenticate</code></td>
+<td>Solde et 50 derniers mouvements</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/marketplace/claim</code></td>
+<td>connecté</td>
+<td><code>authenticate</code>, <code>idempotency</code>, <code>validate(claimRewardSchema)</code></td>
+<td>Échange de points contre un code</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/marketplace/my-codes</code></td>
+<td>connecté</td>
+<td><code>authenticate</code></td>
+<td>Codes obtenus, avec QR code</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/marketplace/redeem</code></td>
+<td>PARTNER, ADMIN</td>
+<td><code>authenticate</code>, <code>requireRoles(&#39;PARTNER&#39;, &#39;ADMIN&#39;)</code>, <code>validate(usePromoCodeSchema)</code></td>
+<td>Validation d&#39;un code en magasin</td>
+</tr>
+</tbody></table></div>
+<h2 id="sources-des-etherpoints"><a class="anchor" href="#sources-des-etherpoints" aria-hidden="true" tabindex="-1">#</a>Sources des EtherPoints</h2>
+<p>Le solde <code>User.pointsBalance</code> ne bouge que par <a href="../services.html#ledgerservice"><code>ledgerService</code></a>, qui écrit en même temps une ligne <code>PointTransaction</code>. Une contrainte <code>CHECK (&quot;pointsBalance&quot; &gt;= 0)</code> interdit un solde négatif en base.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type de mouvement</th>
+<th>Montant</th>
+<th>Déclencheur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SOCIAL_QUEST</code></td>
+<td>+25</td>
+<td>création du compte</td>
+</tr>
+<tr>
+<td><code>REFERRAL</code></td>
+<td>+100 au parrain, +50 au filleul</td>
+<td>création d&#39;un compte avec code de parrainage</td>
+</tr>
+<tr>
+<td><code>TICKET_PURCHASE</code></td>
+<td>+50 par ticket</td>
+<td>achat (indexeur en onchain, service loterie en simulé)</td>
+</tr>
+<tr>
+<td><code>GIFT_TICKET</code></td>
+<td>+75 par ticket offert</td>
+<td>cadeau, crédité à l&#39;acheteur</td>
+</tr>
+<tr>
+<td><code>SOCIAL_QUEST</code></td>
+<td>+20 à +40</td>
+<td><a href="utilisateur.html#quetes-sociales">quêtes sociales</a></td>
+</tr>
+<tr>
+<td><code>REWARD_CLAIM</code></td>
+<td>moins le coût de l&#39;offre</td>
+<td>échange dans la boutique</td>
+</tr>
+</tbody></table></div>
+<p>Le type <code>ADMIN_BONUS</code> existe dans <code>LedgerActionType</code> mais aucune route ne l&#39;utilise.</p>
+<h2 id="get-marketplace-catalog"><a class="anchor" href="#get-marketplace-catalog" aria-hidden="true" tabindex="-1">#</a>GET /marketplace/catalog</h2>
+<p>Renvoie les offres <code>isActive</code> dont le partenaire est <code>isActive</code>, triées par coût croissant.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Catalogue des récompenses partenaires récupéré&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;catalog&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+      <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c50-1d3e-7b8a-9c0f-2e4d6a8b0c13&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;-15% sur les viennoiseries et pains spéciaux&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;costInPoints&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;totalStock&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;remainingStock&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">97</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;stockPercentage&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">97</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;isActive&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;partner&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c4f-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;La Boulangerie du Port d&#x27;EtherBay&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;logoUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://assets.etherbay.fr/partners/default.png&quot;</span> <span class="hljs-punctuation">}</span>
+      <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">]</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p><code>stockPercentage</code> vaut <code>round(remainingStock / totalStock x 100)</code>, ou 0 si le stock total est nul.</p>
+<h2 id="get-marketplace-rewards-id"><a class="anchor" href="#get-marketplace-rewards-id" aria-hidden="true" tabindex="-1">#</a>GET /marketplace/rewards/:id</h2>
+<p>Renvoie l&#39;offre complète avec son partenaire (toutes les colonnes de <code>Partner</code>, dont <code>ownerId</code>), <code>stockPercentage</code> et <code>claimedCount</code> (nombre de codes déjà obtenus). Une offre inexistante renvoie <code>404 Récompense introuvable dans le catalogue</code>. Une offre désactivée, ou dont le partenaire est suspendu, reste lisible par cette route.</p>
+<h2 id="get-marketplace-points"><a class="anchor" href="#get-marketplace-points" aria-hidden="true" tabindex="-1">#</a>GET /marketplace/points</h2>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Solde et historique d&#x27;EtherPoints récupérés&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;balance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">125</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;history&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+      <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c45-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;amount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;actionType&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;TICKET_PURCHASE&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Achat de 2 ticket(s) sur le tour #1&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T13:41:02.512Z&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;amount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">25</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;actionType&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;SOCIAL_QUEST&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Bonus de bienvenue Onboarding EtherBay&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T13:30:11.204Z&quot;</span> <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">]</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p>L&#39;historique est limité aux 50 mouvements les plus récents, sans pagination. Les débits ont un <code>amount</code> négatif.</p>
+<h2 id="post-marketplace-claim"><a class="anchor" href="#post-marketplace-claim" aria-hidden="true" tabindex="-1">#</a>POST /marketplace/claim</h2>
+<h3 id="corps"><a class="anchor" href="#corps" aria-hidden="true" tabindex="-1">#</a>Corps</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>rewardId</code></td>
+<td>UUID</td>
+<td>obligatoire, message <code>Identifiant de récompense invalide</code></td>
+</tr>
+</tbody></table></div>
+<h3 id="regles"><a class="anchor" href="#regles" aria-hidden="true" tabindex="-1">#</a>Règles</h3>
+<ol>
+<li>L&#39;offre doit exister et être active : sinon <code>404 Cette offre n&#39;est plus disponible</code>. L&#39;état du partenaire n&#39;est pas contrôlé ici.</li>
+<li>Le stock restant doit être positif : sinon <code>400 Stock épuisé pour cette récompense partenaire</code>.</li>
+<li>Le solde doit couvrir le coût : sinon <code>400 EtherPoints insuffisants (80 disponibles, 100 requis)</code>.</li>
+<li>Les points sont débités par <code>ledgerService.debitPoints</code> (<code>REWARD_CLAIM</code>, description <code>Échange récompense : &lt;titre&gt; (&lt;partenaire&gt;)</code>).</li>
+<li>Le code est pris en tête du lot importé par le partenaire (clé Redis <code>partner:codes:&lt;rewardId&gt;</code>). Si le lot est vide ou absent, un code est généré : préfixe tiré des quatre premiers caractères du nom du partenaire en majuscules, chaque caractère qui n&#39;est pas une lettre de A à Z étant remplacé par <code>EBAY</code>, puis un tiret et 12 caractères hexadécimaux. « La Boulangerie… » donne par exemple <code>LAEBAYB-3F9A1C07B2DE</code>.</li>
+<li>Le stock est décrémenté et le <code>ClaimedReward</code> créé dans une même transaction.</li>
+<li>Un QR code PNG en data URL encode <code>{ claimId, uniqueCode, partner }</code>.</li>
+<li>Un email <code>reward-claim</code> est envoyé si le compte a une adresse.</li>
+</ol>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Récompense débloquée ! Grattez votre carte virtuelle.&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;claim&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c52-6f0a-7c1d-8e2b-4a6c8e0f2d15&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;uniqueCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;BOUL-2026-0007&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;isUsed&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;claimedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T14:02:44.019Z&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;rewardTitle&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;-15% sur les viennoiseries et pains spéciaux&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;partnerName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;La Boulangerie du Port d&#x27;EtherBay&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;partnerLogo&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://assets.etherbay.fr/partners/default.png&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;qrCodeDataUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;data:image/png;base64,iVBORw0KGgo...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;scratchCardReady&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;remainingStock&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">96</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;newPointsBalance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">25</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p><code>scratchCardReady</code> est une constante <code>true</code> : la carte à gratter est une animation du client, le code est attribué dès cette réponse.</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le débit des points et la décrémentation du stock sont deux transactions distinctes. Si la seconde échoue (stock passé à zéro entre la vérification et l&#39;écriture, ce que la contrainte <code>CHECK</code> transforme en <code>409 L&#39;opération viole une règle d&#39;intégrité des données</code>), les points sont déjà débités et ne sont pas recrédités. Le code tiré du lot Redis est lui aussi perdu. Utiliser <code>Idempotency-Key</code> évite le cas du double clic, pas celui de deux citoyens sur la dernière unité.</p>
+</div>
+<h3 id="effets-de-bord"><a class="anchor" href="#effets-de-bord" aria-hidden="true" tabindex="-1">#</a>Effets de bord</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Effet</th>
+<th>Détail</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PointTransaction</code></td>
+<td>ligne négative <code>REWARD_CLAIM</code></td>
+</tr>
+<tr>
+<td><code>RewardCatalog.remainingStock</code></td>
+<td>moins 1</td>
+</tr>
+<tr>
+<td><code>ClaimedReward</code></td>
+<td>nouvelle ligne, <code>uniqueCode</code> unique</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>retrait du premier code du lot <code>partner:codes:&lt;rewardId&gt;</code></td>
+</tr>
+<tr>
+<td>Email</td>
+<td>gabarit <code>reward-claim</code> avec <code>REWARD_TITLE</code>, <code>PARTNER_NAME</code>, <code>PROMO_CODE</code></td>
+</tr>
+<tr>
+<td>Métrique</td>
+<td><code>business_events_total{event=&quot;reward_claimed&quot;}</code> et <code>points_debited_reward_claim</code></td>
+</tr>
+</tbody></table></div>
+<h2 id="get-marketplace-my-codes"><a class="anchor" href="#get-marketplace-my-codes" aria-hidden="true" tabindex="-1">#</a>GET /marketplace/my-codes</h2>
+<p>Renvoie <code>codes</code>, la liste des récompenses obtenues par le citoyen, de la plus récente à la plus ancienne : identifiant, <code>uniqueCode</code>, <code>isUsed</code>, <code>claimedAt</code>, titre, coût, partenaire et <code>qrCodeDataUrl</code>. Contrairement à la réponse de <code>claim</code>, ce QR code encode seulement le texte du code, pas l&#39;objet JSON. Les QR codes sont recalculés à chaque appel.</p>
+<h2 id="post-marketplace-redeem"><a class="anchor" href="#post-marketplace-redeem" aria-hidden="true" tabindex="-1">#</a>POST /marketplace/redeem</h2>
+<p>Utilisé par le commerçant, depuis l&#39;espace partenaire, pour marquer un code comme consommé.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>uniqueCode</code></td>
+<td>chaîne</td>
+<td>4 à 64 caractères, espaces retirés aux extrémités, message <code>Code promo requis</code></td>
+</tr>
+</tbody></table></div>
+<ol>
+<li>Le code doit exister : sinon <code>404 Code promo introuvable</code>.</li>
+<li>Un PARTNER ne peut valider que les codes des entreprises dont il est propriétaire (<code>Partner.ownerId</code>). Pour un code d&#39;une autre entreprise, la réponse est aussi <code>404 Code promo introuvable</code>, pour ne pas révéler l&#39;existence du code. Un ADMIN peut valider tous les codes.</li>
+<li>Un code déjà utilisé renvoie <code>400 Ce code promo a déjà été utilisé en magasin</code>.</li>
+<li><code>isUsed</code> passe à <code>true</code>.</li>
+</ol>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Code promo validé en magasin avec succès&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;redeemed&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;uniqueCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;BOUL-2026-0007&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;rewardTitle&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;-15% sur les viennoiseries et pains spéciaux&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;partnerName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;La Boulangerie du Port d&#x27;EtherBay&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;usedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-12T09:15:30.441Z&quot;</span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>La date de validation n&#39;est pas stockée : <code>usedAt</code> est l&#39;heure de la réponse. La mise à jour n&#39;est pas conditionnée à <code>isUsed = false</code>, si bien que deux validations simultanées du même code peuvent toutes deux réussir. Le code est comparé tel quel : la casse compte.</p>
+</div>
+<h2 id="erreurs-du-module"><a class="anchor" href="#erreurs-du-module" aria-hidden="true" tabindex="-1">#</a>Erreurs du module</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Statut</th>
+<th>Message</th>
+<th>Route</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>400</td>
+<td><code>Erreur de validation des données</code></td>
+<td><code>claim</code>, <code>redeem</code></td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>Stock épuisé pour cette récompense partenaire</code></td>
+<td><code>claim</code></td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>EtherPoints insuffisants (&lt;solde&gt; disponibles, &lt;coût&gt; requis)</code></td>
+<td><code>claim</code></td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>Ce code promo a déjà été utilisé en magasin</code></td>
+<td><code>redeem</code></td>
+</tr>
+<tr>
+<td>403</td>
+<td><code>Accès refusé (RBAC) : Rôle PARTNER ou ADMIN requis pour cette ressource</code></td>
+<td><code>redeem</code> par un USER</td>
+</tr>
+<tr>
+<td>404</td>
+<td><code>Récompense introuvable dans le catalogue</code></td>
+<td><code>rewards/:id</code></td>
+</tr>
+<tr>
+<td>404</td>
+<td><code>Cette offre n&#39;est plus disponible</code></td>
+<td><code>claim</code></td>
+</tr>
+<tr>
+<td>404</td>
+<td><code>Code promo introuvable</code></td>
+<td><code>redeem</code></td>
+</tr>
+<tr>
+<td>409</td>
+<td><code>L&#39;opération viole une règle d&#39;intégrité des données (solde ou stock insuffisant)</code></td>
+<td><code>claim</code> en concurrence</td>
+</tr>
+</tbody></table></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="loterie.html"><span>Précédent</span><strong>Loterie</strong></a><a class="pager-next" href="partenaires.html"><span>Suivant</span><strong>Partenaires</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/backend/modules/boutique.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#sources-des-etherpoints">Sources des EtherPoints</a></li><li class="toc-h2"><a href="#get-marketplace-catalog">GET /marketplace/catalog</a></li><li class="toc-h2"><a href="#get-marketplace-rewards-id">GET /marketplace/rewards/:id</a></li><li class="toc-h2"><a href="#get-marketplace-points">GET /marketplace/points</a></li><li class="toc-h2"><a href="#post-marketplace-claim">POST /marketplace/claim</a></li><li class="toc-h3"><a href="#corps">Corps</a></li><li class="toc-h3"><a href="#regles">Règles</a></li><li class="toc-h3"><a href="#effets-de-bord">Effets de bord</a></li><li class="toc-h2"><a href="#get-marketplace-my-codes">GET /marketplace/my-codes</a></li><li class="toc-h2"><a href="#post-marketplace-redeem">POST /marketplace/redeem</a></li><li class="toc-h2"><a href="#erreurs-du-module">Erreurs du module</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

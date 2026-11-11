@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intégration continue | Documentation BlockLucky</title>
+<meta name="description" content="L&#39;intégration continue tourne sur GitHub Actions avec deux workflows :">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="ci.html" aria-current="page">Intégration continue</a></div></li><li><div class="nav-row"><a href="deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>13. Infrastructure et exploitation</span></div>
+    <article class="markdown">
+<h1>Intégration continue</h1>
+<p>L&#39;intégration continue tourne sur GitHub Actions avec deux workflows :</p>
+<ul>
+<li><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/workflows/ci.yml" class="external" target="_blank" rel="noopener noreferrer"><code>.github/workflows/ci.yml</code></a> : contrôles de chaque projet, intégration sur une vraie blockchain locale, images Docker ;</li>
+<li><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/workflows/codeql.yml" class="external" target="_blank" rel="noopener noreferrer"><code>.github/workflows/codeql.yml</code></a> : analyse statique de sécurité du JavaScript et du TypeScript.</li>
+</ul>
+<p>Les deux se déclenchent à chaque pull request et à chaque push sur <code>main</code>. <code>ci.yml</code> peut aussi être lancé à la main (<code>workflow_dispatch</code>) ; <code>codeql.yml</code> tourne en plus chaque lundi à 3 h 17 UTC (<code>cron: &#39;17 3 * * 1&#39;</code>), pour détecter les nouvelles règles ou vulnérabilités sur un code qui n&#39;a pas bougé.</p>
+<h2 id="vue-d-ensemble"><a class="anchor" href="#vue-d-ensemble" aria-hidden="true" tabindex="-1">#</a>Vue d&#39;ensemble</h2>
+<div class="diagram"><pre class="mermaid">flowchart LR
+    CH[&quot;changes&quot;] --&gt; BE[&quot;backend&quot;]
+    CH --&gt; SC[&quot;contracts&quot;]
+    CH --&gt; WEB[&quot;web&quot;]
+    CH --&gt; MOB[&quot;mobile&quot;]
+    CH --&gt; TOU[&quot;tourisme&quot;]
+    BE --&gt; CHAIN[&quot;chain&quot;]
+    SC --&gt; CHAIN
+    BE --&gt; DOCK[&quot;docker&quot;]
+    SC --&gt; DOCK
+    WEB --&gt; DOCK
+    TOU --&gt; DOCK
+    SEC[&quot;secrets (gitleaks)&quot;]</pre></div>
+<p>Le job <code>secrets</code> ne dépend de rien et tourne toujours. Les autres ne tournent que si le projet qu&#39;ils contrôlent a changé.</p>
+<h2 id="principes-communs"><a class="anchor" href="#principes-communs" aria-hidden="true" tabindex="-1">#</a>Principes communs</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Principe</th>
+<th>Mise en œuvre</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Moindre privilège</td>
+<td><code>permissions: contents: read</code> au niveau du workflow ; seul <code>changes</code> ajoute <code>pull-requests: read</code>, seul CodeQL ajoute <code>security-events: write</code> et <code>actions: read</code></td>
+</tr>
+<tr>
+<td>Jeton non persistant</td>
+<td>chaque <code>actions/checkout</code> utilise <code>persist-credentials: false</code> : le jeton GitHub n&#39;est pas écrit dans <code>.git/config</code>, donc inaccessible aux scripts npm exécutés ensuite</td>
+</tr>
+<tr>
+<td>Actions épinglées</td>
+<td>chaque action est référencée par un SHA de commit complet et non par un tag modifiable</td>
+</tr>
+<tr>
+<td>Une exécution par branche</td>
+<td><code>concurrency</code> groupe par workflow et par référence, avec <code>cancel-in-progress: true</code> : un nouveau push annule l&#39;exécution précédente de la même branche</td>
+</tr>
+<tr>
+<td>Délais</td>
+<td>chaque job a un <code>timeout-minutes</code> (de 5 à 30 minutes)</td>
+</tr>
+<tr>
+<td>Version de Node.js</td>
+<td><code>actions/setup-node</code> lit <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.nvmrc" class="external" target="_blank" rel="noopener noreferrer"><code>.nvmrc</code></a> à la racine (Node.js 22), avec le cache npm de chaque <code>package-lock.json</code></td>
+</tr>
+<tr>
+<td>Installation reproductible</td>
+<td><code>npm ci</code> partout</td>
+</tr>
+</tbody></table></div>
+<h2 id="secrets"><a class="anchor" href="#secrets" aria-hidden="true" tabindex="-1">#</a>Secrets</h2>
+<p>La CI n&#39;utilise aucun secret de dépôt : aucun <code>${{ secrets.* }}</code> n&#39;apparaît dans les workflows. Les bases de données des jobs sont des conteneurs de service éphémères avec des identifiants <code>ci</code>/<code>ci</code>, et le nœud Hardhat utilise ses comptes de test publics. Les tests du backend ne lisent donc que des valeurs de développement, que le schéma de configuration refuserait en production.</p>
+<p>À l&#39;inverse, la CI cherche des secrets dans le code :</p>
+<ul>
+<li>le job <code>secrets</code> lance gitleaks sur tout l&#39;historique Git ;</li>
+<li>le job <code>web</code> vérifie qu&#39;aucun secret ni source map ne se trouve dans le bundle public.</li>
+</ul>
+<p>Le fichier <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.gitleaks.toml" class="external" target="_blank" rel="noopener noreferrer"><code>.gitleaks.toml</code></a> étend les règles par défaut de gitleaks et n&#39;autorise que deux valeurs : la clé de développement <code>ENCRYPTION_KEY</code> (<code>0123…cdef</code>) et la clé privée du compte Hardhat n° 0. Toutes deux sont publiques et refusées par le backend en production.</p>
+<h2 id="detection-des-projets-modifies"><a class="anchor" href="#detection-des-projets-modifies" aria-hidden="true" tabindex="-1">#</a>Détection des projets modifiés</h2>
+<p>Le job <code>changes</code> utilise <code>dorny/paths-filter</code>. Sur une pull request, il compare la branche à sa base ; sur un push, au commit précédent. Il expose une sortie booléenne par filtre :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Sortie</th>
+<th>Chemins surveillés</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>backend</code></td>
+<td><code>backend/**</code></td>
+</tr>
+<tr>
+<td><code>contracts</code></td>
+<td><code>smart-contract/**</code></td>
+</tr>
+<tr>
+<td><code>web</code></td>
+<td><code>frontend-web/**</code></td>
+</tr>
+<tr>
+<td><code>mobile</code></td>
+<td><code>mobile-app/**</code></td>
+</tr>
+<tr>
+<td><code>tourisme</code></td>
+<td><code>frontend-office-tourisme/**</code></td>
+</tr>
+<tr>
+<td><code>infra</code></td>
+<td><code>docker-compose.yml</code>, <code>docker/**</code>, <code>**/Dockerfile</code></td>
+</tr>
+</tbody></table></div>
+<p>Chaque filtre inclut aussi <code>.github/workflows/ci.yml</code> : une modification du workflow relance tous les jobs. La documentation (<code>documentation-officielle/</code>, <code>docs/</code>) et <code>load-tests/</code> ne déclenchent aucun job de contrôle, seulement <code>secrets</code> et CodeQL.</p>
+<h2 id="les-jobs-de-ci-yml"><a class="anchor" href="#les-jobs-de-ci-yml" aria-hidden="true" tabindex="-1">#</a>Les jobs de ci.yml</h2>
+<h3 id="backend"><a class="anchor" href="#backend" aria-hidden="true" tabindex="-1">#</a>backend</h3>
+<p>Conteneurs de service <code>postgres:15-alpine</code> et <code>redis:7.4-alpine</code>, avec sondes de santé. Étapes, depuis <code>backend/</code> :</p>
+<ol>
+<li><code>npm ci</code> ;</li>
+<li><code>npm audit --omit=dev --audit-level=high</code> : échec sur une vulnérabilité haute ou critique d&#39;une dépendance de production ;</li>
+<li><code>npx prisma generate</code> ;</li>
+<li><code>npm run env:check</code> : <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/scripts/check-env-example.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>check-env-example.mjs</code></a> vérifie que <code>.env.example</code> contient exactement les variables du schéma ;</li>
+<li><code>npm run typecheck</code> et <code>npm run lint</code> ;</li>
+<li><code>npx prisma migrate deploy</code> sur une base vierge : chaque migration doit s&#39;appliquer depuis zéro ;</li>
+<li><code>npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code</code> : échec si <code>schema.prisma</code> a changé sans migration correspondante ;</li>
+<li><code>npm test -- --ci</code> ;</li>
+<li><code>npm run compile</code> : le build de production réussit.</li>
+</ol>
+<h3 id="contracts"><a class="anchor" href="#contracts" aria-hidden="true" tabindex="-1">#</a>contracts</h3>
+<p>Lancé si <code>smart-contract/</code> ou <code>backend/</code> a changé, car le backend embarque les ABI des contrats. Depuis <code>smart-contract/</code> :</p>
+<ol>
+<li><code>npm audit --omit=dev --audit-level=critical</code> : seuil critique seulement, justifié dans l&#39;<a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">ADR 0004</a>. Les alertes hautes viennent des dépendances transitives de <code>@chainlink/contracts</code> (sources OpenZeppelin 4.x non importées, outillage JavaScript), qui ne sont ni dans le bytecode déployé, ni exécutées par le backend ;</li>
+<li><code>npm run typecheck</code> (compilation Hardhat puis <code>tsc --noEmit</code>) ;</li>
+<li><code>npm run lint</code> : solhint avec zéro avertissement toléré ;</li>
+<li><code>npm run test:coverage</code> : tests unitaires et fuzzing avec couverture ;</li>
+<li><code>npm run coverage:check</code> : 100 % des lignes des contrats de production ;</li>
+<li><code>node scripts/export-abi.mjs --check</code> : les ABI copiées dans <code>backend/src/blockchain/abi/</code> correspondent aux contrats compilés ;</li>
+<li><code>npm run slither</code> : analyse statique Slither, échec dès le niveau Medium.</li>
+</ol>
+<p>Le détail de ces contrôles est dans <a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a>.</p>
+<h3 id="chain"><a class="anchor" href="#chain" aria-hidden="true" tabindex="-1">#</a>chain</h3>
+<p>Intégration du backend contre une vraie blockchain. Il dépend de <code>changes</code>, <code>contracts</code> et <code>backend</code>, avec la condition :</p>
+<div class="code-block"><div class="code-head"><span>YAML</span></div><pre><code class="hljs language-yaml"><span class="hljs-attr">if:</span> <span class="hljs-string">&gt;-
+  always() &amp;&amp; !failure() &amp;&amp; !cancelled() &amp;&amp;
+  (needs.changes.outputs.contracts == &#x27;true&#x27; || needs.changes.outputs.backend == &#x27;true&#x27;)</span></code></pre></div>
+<p><code>always()</code> force l&#39;évaluation même si un job requis a été sauté (par exemple <code>backend</code> quand seuls les contrats changent) ; <code>!failure()</code> l&#39;empêche de tourner si l&#39;un d&#39;eux a échoué.</p>
+<ol>
+<li>Construction de l&#39;image <code>smart-contract</code> et démarrage du conteneur <code>blocklucky-chain</code> sur le port 8545 ;</li>
+<li>attente de l&#39;état <code>healthy</code> (60 essais espacés de 3 secondes, journaux du nœud affichés en cas d&#39;échec) ;</li>
+<li><code>npm ci</code>, <code>npx prisma generate</code>, <code>npx prisma migrate deploy</code> dans <code>backend/</code> ;</li>
+<li><code>npm run test:chain -- --ci</code> : la configuration <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/jest.chain.config.json" class="external" target="_blank" rel="noopener noreferrer"><code>jest.chain.config.json</code></a> lance les scénarios d&#39;achat, de cadeau, de tirage VRF, de versement de la cagnotte et de disjoncteur sur la chaîne ;</li>
+<li>en cas d&#39;échec, <code>docker logs blocklucky-chain</code>.</li>
+</ol>
+<p>Voir <a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a>.</p>
+<h3 id="web"><a class="anchor" href="#web" aria-hidden="true" tabindex="-1">#</a>web</h3>
+<p>Depuis <code>frontend-web/</code> : <code>npm audit --omit=dev --audit-level=high</code>, <code>npm run lint</code>, <code>npm run typecheck</code>, <code>npm test</code> (Vitest), puis <code>npm run build</code> avec le cache <code>.next/cache</code> restauré par <code>actions/cache</code>. Le build est suivi de deux contrôles sur <code>.next/static</code>, le dossier servi aux navigateurs :</p>
+<ul>
+<li>aucune chaîne ne ressemble à une clé Stripe live (<code>sk_live_</code>), à une clé d&#39;accès AWS (<code>AKIA…</code>), à un bloc <code>PRIVATE KEY</code> ou à la clé privée du compte Hardhat n° 0 ;</li>
+<li>aucun fichier <code>.map</code> n&#39;est présent.</li>
+</ul>
+<h3 id="mobile"><a class="anchor" href="#mobile" aria-hidden="true" tabindex="-1">#</a>mobile</h3>
+<p>Depuis <code>mobile-app/</code> : <code>npm audit --omit=dev --audit-level=high</code>, <code>npm run typecheck</code>, <code>npm run lint</code> et <code>npx expo config --type public</code>, qui échoue si la configuration Expo est invalide. Aucun build natif n&#39;est lancé en CI.</p>
+<h3 id="tourisme"><a class="anchor" href="#tourisme" aria-hidden="true" tabindex="-1">#</a>tourisme</h3>
+<p>Le site n&#39;a pas de dépendances npm. Le job vérifie la syntaxe de chaque module de <code>assets/js</code> avec <code>node --check</code>, puis lance <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/scripts/check-static-links.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>check-static-links.mjs</code></a>, qui contrôle que chaque ressource locale référencée par les pages HTML existe.</p>
+<h3 id="docker"><a class="anchor" href="#docker" aria-hidden="true" tabindex="-1">#</a>docker</h3>
+<p>Il dépend de <code>changes</code>, <code>backend</code>, <code>contracts</code>, <code>web</code> et <code>tourisme</code>, avec la même logique <code>always() &amp;&amp; !failure() &amp;&amp; !cancelled()</code>, et tourne dès qu&#39;un des projets conteneurisés ou l&#39;infrastructure a changé.</p>
+<ol>
+<li><code>docker compose --profile app config -q</code> : validation du fichier Compose ;</li>
+<li>construction avec Buildx des images backend (cible <code>runtime</code>), web, blockchain et Office de Tourisme, chargées localement (<code>load: true</code>, <code>push: false</code>) avec un cache GitHub Actions par image (<code>type=gha</code>, un <code>scope</code> par image) ;</li>
+<li>analyse Trivy des images backend, web et tourisme (vulnérabilités <code>CRITICAL</code> et <code>HIGH</code> corrigeables).</li>
+</ol>
+<p>Aucune image n&#39;est publiée dans un registre. Voir <a href="images.html#analyse-de-vulnerabilites">Images Docker</a>.</p>
+<h3 id="secrets-2"><a class="anchor" href="#secrets-2" aria-hidden="true" tabindex="-1">#</a>secrets</h3>
+<p><code>gitleaks</code> en version <code>v8.30.1</code>, lancé dans Docker sur le dépôt cloné avec tout son historique (<code>fetch-depth: 0</code>), en mode <code>--redact</code> : un secret trouvé n&#39;est pas recopié en clair dans les journaux de la CI.</p>
+<h2 id="codeql"><a class="anchor" href="#codeql" aria-hidden="true" tabindex="-1">#</a>CodeQL</h2>
+<p>Le workflow <code>codeql.yml</code> analyse le code JavaScript et TypeScript de tout le dépôt avec la suite de requêtes <code>security-extended</code>, qui ajoute à la suite par défaut des requêtes de sécurité de précision moindre. Il ignore <code>node_modules</code>, les dossiers <code>__tests__</code> et les bibliothèques tierces de <code>frontend-office-tourisme/assets/js/vendor/</code>. Les résultats apparaissent dans l&#39;onglet Security du dépôt GitHub (droit <code>security-events: write</code>).</p>
+<p>Le Solidity n&#39;est pas couvert par CodeQL : il l&#39;est par solhint et Slither dans le job <code>contracts</code>.</p>
+<h2 id="reference-generee"><a class="anchor" href="#reference-generee" aria-hidden="true" tabindex="-1">#</a>Référence générée</h2>
+<p>La liste ci-dessous est produite depuis les fichiers de workflow à chaque construction de la documentation.</p>
+<h3 id="workflow-ci-yml-ci"><a class="anchor" href="#workflow-ci-yml-ci" aria-hidden="true" tabindex="-1">#</a>Workflow <code>ci.yml</code> : CI</h3>
+<p>Déclencheurs : pull_request, push, workflow_dispatch.</p>
+<h4 id="detection-des-projets-modifies-2"><a class="anchor" href="#detection-des-projets-modifies-2" aria-hidden="true" tabindex="-1">#</a>Détection des projets modifiés</h4>
+<p>Identifiant <code>changes</code>, délai maximal 5 minutes.</p>
+<ol>
+<li>action <code>actions/checkout</code></li>
+<li>action <code>dorny/paths-filter</code></li>
+</ol>
+<h4 id="recherche-de-secrets-gitleaks"><a class="anchor" href="#recherche-de-secrets-gitleaks" aria-hidden="true" tabindex="-1">#</a>Recherche de secrets (gitleaks)</h4>
+<p>Identifiant <code>secrets</code>, délai maximal 10 minutes.</p>
+<ol>
+<li>action <code>actions/checkout</code></li>
+<li>Historique Git complet</li>
+</ol>
+<h4 id="documentation-officielle-generation-liens-fraicheur"><a class="anchor" href="#documentation-officielle-generation-liens-fraicheur" aria-hidden="true" tabindex="-1">#</a>Documentation officielle (génération, liens, fraîcheur)</h4>
+<p>Identifiant <code>documentation</code>, délai maximal 10 minutes.</p>
+<ol>
+<li>action <code>actions/checkout</code></li>
+<li>action <code>actions/setup-node</code></li>
+<li><code>npm ci</code></li>
+<li>Pages générées depuis le code à jour, liens et ancres valides, descriptions complètes</li>
+</ol>
+<h4 id="backend-typecheck-lint-tests-migrations"><a class="anchor" href="#backend-typecheck-lint-tests-migrations" aria-hidden="true" tabindex="-1">#</a>Backend (typecheck, lint, tests, migrations)</h4>
+<p>Identifiant <code>backend</code>, après <code>changes</code>, délai maximal 15 minutes.</p>
+<ol>
+<li>action <code>actions/checkout</code></li>
+<li>action <code>actions/setup-node</code></li>
+<li><code>npm ci</code></li>
+<li>Vulnérabilités hautes et critiques des dépendances de production</li>
+<li><code>npx prisma generate</code></li>
+<li>Synchronisation de .env.example avec le schéma de configuration</li>
+<li><code>npm run typecheck</code></li>
+<li><code>npm run lint</code></li>
+<li>Migrations appliquées sur une base vierge</li>
+<li>Absence de dérive entre le schéma Prisma et les migrations</li>
+<li><code>npm test -- --ci</code></li>
+<li><code>npm run compile</code></li>
+</ol>
+<h4 id="smart-contracts-lint-tests-couverture-slither"><a class="anchor" href="#smart-contracts-lint-tests-couverture-slither" aria-hidden="true" tabindex="-1">#</a>Smart contracts (lint, tests, couverture, Slither)</h4>
+<p>Identifiant <code>contracts</code>, après <code>changes</code>, délai maximal 20 minutes.</p>
+<ol>
+<li>action <code>actions/checkout</code></li>
+<li>action <code>actions/setup-node</code></li>
+<li><code>npm ci</code></li>
+<li>Vulnérabilités critiques des dépendances des contrats (voir ADR 0004)</li>
+<li><code>npm run typecheck</code></li>
+<li>Règles Solidity (solhint, zéro avertissement)</li>
+<li>Tests unitaires, fuzzing et couverture</li>
+<li>Couverture des lignes des contrats de production à 100 %</li>
+<li>ABI embarquées par le backend à jour</li>
+<li>Analyse statique (Slither, échec dès le niveau Medium)</li>
+</ol>
+<h4 id="integration-backend-sur-une-vraie-blockchain-locale"><a class="anchor" href="#integration-backend-sur-une-vraie-blockchain-locale" aria-hidden="true" tabindex="-1">#</a>Intégration backend sur une vraie blockchain locale</h4>
+<p>Identifiant <code>chain</code>, après <code>changes</code>, <code>contracts</code>, <code>backend</code>, délai maximal 20 minutes.</p>
+<ol>
+<li>action <code>actions/checkout</code></li>
+<li>Nœud Hardhat, contrats déployés et oracle VRF local</li>
+<li>action <code>actions/setup-node</code></li>
+<li><code>npm ci</code></li>
+<li><code>npx prisma generate</code></li>
+<li><code>npx prisma migrate deploy</code></li>
+<li>Achat, cadeau, tirage VRF, versement de la cagnotte et disjoncteur sur la chaîne</li>
+<li>Journaux du nœud en cas d&#39;échec</li>
+</ol>
+<h4 id="frontend-web-lint-typecheck-tests-build"><a class="anchor" href="#frontend-web-lint-typecheck-tests-build" aria-hidden="true" tabindex="-1">#</a>Frontend web (lint, typecheck, tests, build)</h4>
+<p>Identifiant <code>web</code>, après <code>changes</code>, délai maximal 15 minutes.</p>
+<ol>
+<li>action <code>actions/checkout</code></li>
+<li>action <code>actions/setup-node</code></li>
+<li><code>npm ci</code></li>
+<li>Vulnérabilités hautes et critiques des dépendances de production</li>
+<li><code>npm run lint</code></li>
+<li><code>npm run typecheck</code></li>
+<li><code>npm test</code></li>
+<li>action <code>actions/cache</code></li>
+<li><code>npm run build</code></li>
+<li>Aucun secret ni source map dans le bundle public</li>
+</ol>
+<h4 id="application-mobile-typecheck-lint"><a class="anchor" href="#application-mobile-typecheck-lint" aria-hidden="true" tabindex="-1">#</a>Application mobile (typecheck, lint)</h4>
+<p>Identifiant <code>mobile</code>, après <code>changes</code>, délai maximal 15 minutes.</p>
+<ol>
+<li>action <code>actions/checkout</code></li>
+<li>action <code>actions/setup-node</code></li>
+<li><code>npm ci</code></li>
+<li>Vulnérabilités hautes et critiques des dépendances de production</li>
+<li><code>npm run typecheck</code></li>
+<li><code>npm run lint</code></li>
+<li>Vérification de la configuration Expo</li>
+</ol>
+<h4 id="site-office-de-tourisme-syntaxe-et-liens"><a class="anchor" href="#site-office-de-tourisme-syntaxe-et-liens" aria-hidden="true" tabindex="-1">#</a>Site Office de Tourisme (syntaxe et liens)</h4>
+<p>Identifiant <code>tourisme</code>, après <code>changes</code>, délai maximal 5 minutes.</p>
+<ol>
+<li>action <code>actions/checkout</code></li>
+<li>action <code>actions/setup-node</code></li>
+<li>Syntaxe des modules JavaScript</li>
+<li>Ressources locales référencées par les pages HTML</li>
+</ol>
+<h4 id="images-docker-et-compose"><a class="anchor" href="#images-docker-et-compose" aria-hidden="true" tabindex="-1">#</a>Images Docker et Compose</h4>
+<p>Identifiant <code>docker</code>, après <code>changes</code>, <code>backend</code>, <code>contracts</code>, <code>web</code>, <code>tourisme</code>, délai maximal 20 minutes.</p>
+<ol>
+<li>action <code>actions/checkout</code></li>
+<li>Validation de docker-compose.yml</li>
+<li>action <code>docker/setup-buildx-action</code></li>
+<li>Image backend</li>
+<li>Image frontend web</li>
+<li>Image blockchain locale</li>
+<li>Image Office de Tourisme</li>
+<li>Vulnérabilités des images (Trivy)</li>
+</ol>
+<h3 id="workflow-codeql-yml-codeql"><a class="anchor" href="#workflow-codeql-yml-codeql" aria-hidden="true" tabindex="-1">#</a>Workflow <code>codeql.yml</code> : CodeQL</h3>
+<p>Déclencheurs : pull_request, push, schedule.</p>
+<h4 id="analyse-statique-javascript-et-typescript"><a class="anchor" href="#analyse-statique-javascript-et-typescript" aria-hidden="true" tabindex="-1">#</a>Analyse statique JavaScript et TypeScript</h4>
+<p>Identifiant <code>analyze</code>, délai maximal 30 minutes.</p>
+<ol>
+<li>action <code>actions/checkout</code></li>
+<li>action <code>github/codeql-action/init</code></li>
+<li>action <code>github/codeql-action/analyze</code></li>
+</ol>
+<h2 id="lire-un-echec"><a class="anchor" href="#lire-un-echec" aria-hidden="true" tabindex="-1">#</a>Lire un échec</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Job en échec</th>
+<th>Où chercher</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>backend</code>, étape <code>env:check</code></td>
+<td>variable ajoutée au schéma sans <code>.env.example</code>, ou l&#39;inverse (voir <a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a>)</td>
+</tr>
+<tr>
+<td><code>backend</code>, dérive Prisma</td>
+<td>modèle modifié sans <code>npx prisma migrate dev</code> (voir <a href="../guides/ajouter-migration.html">Ajouter une migration</a>)</td>
+</tr>
+<tr>
+<td><code>contracts</code>, ABI</td>
+<td>contrat modifié sans <code>npm run export:abi</code></td>
+</tr>
+<tr>
+<td><code>contracts</code>, couverture</td>
+<td>ligne de contrat non couverte par un test</td>
+</tr>
+<tr>
+<td><code>chain</code></td>
+<td>lire l&#39;étape « Journaux du nœud en cas d&#39;échec », puis rejouer en local avec <code>docker compose up -d --wait blockchain</code> et <code>npm run test:chain</code></td>
+</tr>
+<tr>
+<td><code>docker</code>, Trivy</td>
+<td>mettre à jour l&#39;image de base ou la dépendance signalée ; une PR Dependabot existe souvent déjà</td>
+</tr>
+<tr>
+<td><code>secrets</code></td>
+<td>supprimer le secret de l&#39;historique et le révoquer : le retirer du dernier commit ne suffit pas</td>
+</tr>
+<tr>
+<td><code>audit</code></td>
+<td><code>npm audit</code> en local, puis mise à jour ciblée de la dépendance</td>
+</tr>
+</tbody></table></div>
+<p>Les règles de branche et de revue qui s&#39;appuient sur ces jobs sont décrites dans <a href="../contribuer/workflow-git.html">Workflow Git</a>.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="environnements.html"><span>Précédent</span><strong>Environnements</strong></a><a class="pager-next" href="deploiement-etherbay.html"><span>Suivant</span><strong>Déploiement sur etherbay.tech</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/infrastructure/ci.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#vue-d-ensemble">Vue d&#39;ensemble</a></li><li class="toc-h2"><a href="#principes-communs">Principes communs</a></li><li class="toc-h2"><a href="#secrets">Secrets</a></li><li class="toc-h2"><a href="#detection-des-projets-modifies">Détection des projets modifiés</a></li><li class="toc-h2"><a href="#les-jobs-de-ci-yml">Les jobs de ci.yml</a></li><li class="toc-h3"><a href="#backend">backend</a></li><li class="toc-h3"><a href="#contracts">contracts</a></li><li class="toc-h3"><a href="#chain">chain</a></li><li class="toc-h3"><a href="#web">web</a></li><li class="toc-h3"><a href="#mobile">mobile</a></li><li class="toc-h3"><a href="#tourisme">tourisme</a></li><li class="toc-h3"><a href="#docker">docker</a></li><li class="toc-h3"><a href="#secrets-2">secrets</a></li><li class="toc-h2"><a href="#codeql">CodeQL</a></li><li class="toc-h2"><a href="#reference-generee">Référence générée</a></li><li class="toc-h3"><a href="#workflow-ci-yml-ci">Workflow ci.yml : CI</a></li><li class="toc-h3"><a href="#workflow-codeql-yml-codeql">Workflow codeql.yml : CodeQL</a></li><li class="toc-h2"><a href="#lire-un-echec">Lire un échec</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

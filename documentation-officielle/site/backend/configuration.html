@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Configuration | Documentation BlockLucky</title>
+<meta name="description" content="Toute la configuration du backend passe par des variables d&#39;environnement. Elles sont lues une seule fois, au chargement du module backend/src/config/env.config">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="configuration.html" aria-current="page">Configuration</a></div></li><li><div class="nav-row"><a href="variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>7. Backend</span></div>
+    <article class="markdown">
+<h1>Configuration</h1>
+<p>Toute la configuration du backend passe par des variables d&#39;environnement. Elles sont lues une seule fois, au chargement du module <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/env.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/env.config.ts</code></a>, validées par un schéma Zod, puis exposées sous forme d&#39;un objet typé <code>env</code>. Aucun autre fichier ne lit <code>process.env</code> directement, à l&#39;exception des fichiers de préparation des tests. La liste complète des variables est sur la page <a href="variables-environnement.html">Variables d&#39;environnement</a>.</p>
+<h2 id="chargement"><a class="anchor" href="#chargement" aria-hidden="true" tabindex="-1">#</a>Chargement</h2>
+<div class="diagram"><pre class="mermaid">flowchart LR
+    A[&quot;Fichier backend/.env&quot;] --&gt;|&quot;dotenv, mode silencieux&quot;| B[&quot;process.env&quot;]
+    C[&quot;Variables du shell ou de Docker&quot;] --&gt; B
+    B --&gt; D[&quot;envSchema.safeParse&quot;]
+    D -- &quot;succès&quot; --&gt; E[&quot;export const env&quot;]
+    D -- &quot;échec&quot; --&gt; F[&quot;Message sur stderr puis exit 1&quot;]
+    E --&gt; G[&quot;corsOrigins et trustProxy dérivés&quot;]</pre></div>
+<ol>
+<li><code>dotenv.config({ quiet: true })</code> charge <code>backend/.env</code> s&#39;il existe. Une variable déjà présente dans l&#39;environnement du process n&#39;est pas écrasée : les valeurs de Docker Compose ou du shell priment sur le fichier.</li>
+<li><code>envSchema.safeParse(process.env)</code> applique les types, valeurs par défaut et contraintes.</li>
+<li>En cas d&#39;échec, le process écrit la liste des erreurs et s&#39;arrête avant d&#39;ouvrir le moindre port :</li>
+</ol>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">Configuration invalide, démarrage interrompu :
+  - JWT_SECRET : JWT_SECRET utilise la valeur de développement, interdite en production
+  - METRICS_TOKEN : METRICS_TOKEN est obligatoire en production pour protéger /metrics</code></pre></div>
+<p>Comme <code>env.config.ts</code> est importé par presque tous les modules, l&#39;erreur survient aussi bien au démarrage de <code>server.ts</code>, de <code>worker.ts</code> que des tests.</p>
+<h2 id="types-et-conversions"><a class="anchor" href="#types-et-conversions" aria-hidden="true" tabindex="-1">#</a>Types et conversions</h2>
+<p>Le schéma utilise quelques assistants pour convertir les chaînes de l&#39;environnement.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Forme</th>
+<th>Construction Zod</th>
+<th>Valeurs acceptées</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Entier</td>
+<td><code>z.coerce.number().int()</code> avec <code>.positive()</code> ou <code>.min()</code></td>
+<td><code>&quot;2053&quot;</code> devient <code>2053</code> ; <code>&quot;abc&quot;</code> est refusé</td>
+</tr>
+<tr>
+<td>Booléen</td>
+<td><code>booleanFromEnv(défaut)</code></td>
+<td><code>true</code>, <code>false</code>, <code>1</code>, <code>0</code> uniquement ; <code>yes</code> ou <code>TRUE</code> sont refusés</td>
+</tr>
+<tr>
+<td>Liste</td>
+<td><code>csvList(défaut)</code></td>
+<td>Valeurs séparées par des virgules, espaces retirés, éléments vides ignorés</td>
+</tr>
+<tr>
+<td>URL</td>
+<td><code>z.string().url()</code></td>
+<td>URL absolue (<code>http://</code>, <code>https://</code>, <code>postgresql://</code>, <code>redis://</code>)</td>
+</tr>
+<tr>
+<td>Énumération</td>
+<td><code>z.enum([...])</code></td>
+<td>Liste fermée, sensible à la casse</td>
+</tr>
+<tr>
+<td>Motif</td>
+<td><code>.regex(...)</code></td>
+<td>Adresses Ethereum <code>0x</code> + 40 hexadécimaux, clé privée <code>0x</code> + 64 hexadécimaux, <code>ENCRYPTION_KEY</code> en 64 hexadécimaux, durée JWT <code>12h</code></td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-important"><p class="hint-title">Important</p>
+<p>Une variable définie mais vide n&#39;est pas absente. <code>JWT_SECRET=&quot;&quot;</code> est validé comme une chaîne vide et refusé par <code>.min(16)</code> : la valeur par défaut ne s&#39;applique que si la variable n&#39;existe pas. C&#39;est le cas dans la stack Docker, où <code>JWT_SECRET: ${JWT_SECRET:-}</code> transmet une chaîne vide quand le fichier <code>.env</code> racine ne la définit pas.</p>
+</div>
+<p>Deux valeurs dérivées sont calculées après validation :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Export</th>
+<th>Calcul</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>corsOrigins</code></td>
+<td><code>FRONTEND_URL</code> suivi de <code>CORS_ORIGINS</code>, sans doublon. Utilisé par Express et par Socket.IO.</td>
+</tr>
+<tr>
+<td><code>trustProxy</code></td>
+<td><code>true</code> ou <code>false</code> pour ces chaînes, un nombre de proxys si la valeur est un entier, sinon la chaîne telle quelle (liste d&#39;adresses ou de sous-réseaux).</td>
+</tr>
+</tbody></table></div>
+<h2 id="regles-de-production"><a class="anchor" href="#regles-de-production" aria-hidden="true" tabindex="-1">#</a>Règles de production</h2>
+<p>Quand <code>NODE_ENV=production</code>, un <code>superRefine</code> ajoute des contrôles qui ne s&#39;appliquent dans aucun autre environnement.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Règle</th>
+<th>Message renvoyé</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>LOGIN_EMAIL_CODE_REQUIRED</code> et <code>ADMIN_MFA_REQUIRED</code> doivent valoir <code>true</code></td>
+<td><code>&lt;variable&gt; ne peut pas être désactivé en production</code></td>
+</tr>
+<tr>
+<td><code>BLOCKCHAIN_MODE</code> doit valoir <code>onchain</code></td>
+<td><code>BLOCKCHAIN_MODE doit valoir onchain en production : la simulation est réservée au développement</code></td>
+</tr>
+<tr>
+<td>Si <code>METRICS_ENABLED=true</code>, <code>METRICS_TOKEN</code> doit être non vide</td>
+<td><code>METRICS_TOKEN est obligatoire en production pour protéger /metrics</code></td>
+</tr>
+<tr>
+<td><code>JWT_SECRET</code>, <code>ENCRYPTION_KEY</code>, <code>RELAYER_PRIVATE_KEY</code> et <code>WEBHOOK_SECRET</code> doivent différer des valeurs de développement</td>
+<td><code>&lt;variable&gt; utilise la valeur de développement, interdite en production</code></td>
+</tr>
+</tbody></table></div>
+<p>Les valeurs de développement refusées sont celles de l&#39;objet <code>DEV_DEFAULTS</code> du schéma, identiques à celles de <code>.env.example</code>. <code>RELAYER_PRIVATE_KEY</code> par défaut est le compte 0 public de Hardhat : une clé connue de tous, à ne jamais utiliser hors d&#39;une chaîne locale.</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Ces règles ne vérifient pas la qualité des secrets, seulement qu&#39;ils diffèrent des valeurs publiques. Elles ne contrôlent pas non plus <code>DATABASE_URL</code>, <code>SMTP_*</code> ou <code>AWS_*</code> : les identifiants par défaut (<code>etherbay_password</code>, <code>minioadmin</code>) sont acceptés en production. Voir <a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a>.</p>
+</div>
+<h2 id="comportements-selon-node-env"><a class="anchor" href="#comportements-selon-node-env" aria-hidden="true" tabindex="-1">#</a>Comportements selon NODE_ENV</h2>
+<p><code>NODE_ENV</code> modifie aussi le comportement du code, en dehors du schéma.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Comportement</th>
+<th>development</th>
+<th>test</th>
+<th>production</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Format des logs</td>
+<td>texte coloré</td>
+<td>silencieux</td>
+<td>JSON</td>
+</tr>
+<tr>
+<td>Niveau de log par défaut</td>
+<td><code>debug</code></td>
+<td><code>info</code> (silencieux)</td>
+<td><code>info</code></td>
+</tr>
+<tr>
+<td>Client Redis</td>
+<td>créé</td>
+<td>non créé, repli mémoire</td>
+<td>créé</td>
+</tr>
+<tr>
+<td>Envoi SMTP et dépôt S3</td>
+<td>réels</td>
+<td>ignorés</td>
+<td>réels</td>
+</tr>
+<tr>
+<td><code>devOtpPreview</code> dans les réponses de connexion et de 2FA</td>
+<td>présent</td>
+<td>absent</td>
+<td>absent</td>
+</tr>
+<tr>
+<td><code>confirmationToken</code> dans la demande de suppression RGPD</td>
+<td>présent</td>
+<td>présent</td>
+<td>absent</td>
+</tr>
+<tr>
+<td>Message des erreurs 500</td>
+<td>message d&#39;origine</td>
+<td>message d&#39;origine</td>
+<td><code>Erreur interne du serveur</code></td>
+</tr>
+<tr>
+<td>Détail de <code>/health/deep</code> sans <code>METRICS_TOKEN</code></td>
+<td>visible</td>
+<td>visible</td>
+<td>masqué</td>
+</tr>
+<tr>
+<td>Arrêt sur promesse rejetée non gérée</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td>Rate limiting</td>
+<td>300 et 30 requêtes</td>
+<td>10 000 requêtes</td>
+<td>300 et 30 requêtes</td>
+</tr>
+</tbody></table></div>
+<h2 id="fichier-env-example"><a class="anchor" href="#fichier-env-example" aria-hidden="true" tabindex="-1">#</a>Fichier .env.example</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/.env.example" class="external" target="_blank" rel="noopener noreferrer"><code>backend/.env.example</code></a> contient une ligne par variable du schéma, avec les valeurs du développement local. Pour démarrer :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> backend
+<span class="hljs-built_in">cp</span> .env.example .<span class="hljs-built_in">env</span></code></pre></div>
+<p>Ces valeurs supposent l&#39;infrastructure locale de <code>docker compose up -d --wait</code> : PostgreSQL sur le port 5434, Redis sur 6380, Mailpit sur 1025 et le nœud Hardhat sur 8545 avec les contrats déjà déployés aux adresses par défaut. Voir <a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a>.</p>
+<p>Le fichier <code>backend/.env</code> est ignoré par Git. Il ne doit contenir aucun secret de production : en production, les variables sont injectées par l&#39;environnement du conteneur.</p>
+<h2 id="verifier-la-synchronisation"><a class="anchor" href="#verifier-la-synchronisation" aria-hidden="true" tabindex="-1">#</a>Vérifier la synchronisation</h2>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npm run <span class="hljs-built_in">env</span>:check</code></pre></div>
+<p>Le script <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/scripts/check-env-example.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>backend/scripts/check-env-example.mjs</code></a> extrait les noms de variables du schéma (lignes indentées de quatre espaces dans <code>env.config.ts</code>) et les compare aux lignes <code>NOM=</code> de <code>.env.example</code>. Il échoue si une variable manque d&#39;un côté ou de l&#39;autre :</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">Variables absentes de .env.example : NOUVELLE_VARIABLE</code></pre></div>
+<p>En cas de succès, il affiche <code>.env.example synchronisé avec le schéma (53 variables)</code>. La CI l&#39;exécute dans le job backend, avant le typage et le lint. Le script ne vérifie que les noms, pas les valeurs.</p>
+<h2 id="ajouter-une-variable"><a class="anchor" href="#ajouter-une-variable" aria-hidden="true" tabindex="-1">#</a>Ajouter une variable</h2>
+<ol>
+<li>Ajouter la clé dans <code>envSchema</code>, avec un type, une valeur par défaut sûre pour le développement et, si besoin, une règle de production dans <code>superRefine</code>.</li>
+<li>Ajouter la ligne dans <code>backend/.env.example</code>.</li>
+<li>Lire la valeur par <code>env.NOM</code> dans le code, jamais par <code>process.env</code>.</li>
+<li>Décrire la variable dans <code>documentation-officielle/content/_data/variables.json</code>.</li>
+<li>Si la stack Docker en a besoin, l&#39;ajouter à l&#39;ancre <code>x-backend-env</code> de <code>docker-compose.yml</code>.</li>
+</ol>
+<p>Le pas à pas complet est dans le guide <a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a>.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="structure.html"><span>Précédent</span><strong>Structure et cycle d&#39;une requête</strong></a><a class="pager-next" href="variables-environnement.html"><span>Suivant</span><strong>Variables d&#39;environnement</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/backend/configuration.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#chargement">Chargement</a></li><li class="toc-h2"><a href="#types-et-conversions">Types et conversions</a></li><li class="toc-h2"><a href="#regles-de-production">Règles de production</a></li><li class="toc-h2"><a href="#comportements-selon-node-env">Comportements selon NODE_ENV</a></li><li class="toc-h2"><a href="#fichier-env-example">Fichier .env.example</a></li><li class="toc-h2"><a href="#verifier-la-synchronisation">Vérifier la synchronisation</a></li><li class="toc-h2"><a href="#ajouter-une-variable">Ajouter une variable</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

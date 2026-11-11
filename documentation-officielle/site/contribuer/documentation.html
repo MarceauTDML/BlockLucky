@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Écrire la documentation | Documentation BlockLucky</title>
+<meta name="description" content="La documentation officielle vit dans le dépôt, à côté du code qu&#39;elle décrit, dans le dossier documentation-officielle/. Elle s&#39;écrit en Markdown. Un générateur">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="documentation.html" aria-current="page">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>14. Contribuer</span></div>
+    <article class="markdown">
+<h1>Écrire la documentation</h1>
+<p>La documentation officielle vit dans le dépôt, à côté du code qu&#39;elle décrit, dans le dossier <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/documentation-officielle" class="external" target="_blank" rel="noopener noreferrer"><code>documentation-officielle/</code></a>. Elle s&#39;écrit en Markdown. Un générateur écrit en Node.js, sans framework, la transforme en site HTML statique de type GitBook. Le site est commité dans <code>site/</code> et publié sur <code>docs.etherbay.tech</code>.</p>
+<p>Toute modification du code qui change un comportement documenté doit mettre à jour la documentation dans la même pull request. La CI le vérifie en partie : le job « Documentation officielle » échoue si une page générée depuis le code n&#39;est plus à jour.</p>
+<h2 id="organisation-du-dossier"><a class="anchor" href="#organisation-du-dossier" aria-hidden="true" tabindex="-1">#</a>Organisation du dossier</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Chemin</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/SUMMARY.md" class="external" target="_blank" rel="noopener noreferrer"><code>content/SUMMARY.md</code></a></td>
+<td>Sommaire du site : ordre des pages, titres du menu, regroupement en parties. Une page absente du sommaire fait échouer la construction.</td>
+</tr>
+<tr>
+<td><code>content/**/*.md</code></td>
+<td>Pages de la documentation, une par fichier. <code>README.md</code> devient la page d&#39;accueil <code>index.html</code>.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/documentation-officielle/content/_data" class="external" target="_blank" rel="noopener noreferrer"><code>content/_data/</code></a></td>
+<td>Descriptions humaines des tableaux générés : variables d&#39;environnement, modèle de données, contrats, événements temps réel, services Docker, migrations.</td>
+</tr>
+<tr>
+<td><code>content/images/</code></td>
+<td>Images référencées par les pages (facultatif).</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/documentation-officielle/theme" class="external" target="_blank" rel="noopener noreferrer"><code>theme/</code></a></td>
+<td>Gabarit HTML, feuille de style, scripts du site (thème, navigation, recherche, diagrammes), polices et logo.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/scripts/build.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/build.mjs</code></a></td>
+<td>Génère le site dans <code>site/</code>.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/documentation-officielle/scripts/lib" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/lib/</code></a></td>
+<td>Lecture du sommaire, rendu Markdown, générateurs de pages depuis le code.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/scripts/check.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/check.mjs</code></a></td>
+<td>Vérification utilisée par la CI.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/scripts/serve.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/serve.mjs</code></a></td>
+<td>Serveur local de prévisualisation.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/scripts/publish.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/publish.mjs</code></a></td>
+<td>Publication sur le serveur de démonstration.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/documentation-officielle/deploiement/Caddyfile" class="external" target="_blank" rel="noopener noreferrer"><code>deploiement/Caddyfile</code></a></td>
+<td>Bloc Caddy qui sert <code>docs.etherbay.tech</code>.</td>
+</tr>
+<tr>
+<td><code>site/</code></td>
+<td>Site généré, commité, prêt à être servi tel quel. Ne jamais le modifier à la main.</td>
+</tr>
+</tbody></table></div>
+<h2 id="commandes"><a class="anchor" href="#commandes" aria-hidden="true" tabindex="-1">#</a>Commandes</h2>
+<p>Depuis <code>documentation-officielle/</code>, après <code>npm ci</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>npm run build</code></td>
+<td>Régénère <code>site/</code>. Échoue sur une erreur bloquante (fichier du dépôt introuvable, page absente du sommaire, titre manquant). Signale sans échouer les liens vers des pages pas encore ajoutées au sommaire et les descriptions à compléter, ce qui permet d&#39;écrire une partie à la fois.</td>
+</tr>
+<tr>
+<td><code>npm run serve</code></td>
+<td>Sert <code>site/</code> sur <code>http://localhost:4040</code> avec les mêmes en-têtes de sécurité qu&#39;en production. La recherche a besoin d&#39;un serveur : ouvrir <code>index.html</code> directement depuis le disque ne la fait pas fonctionner.</td>
+</tr>
+<tr>
+<td><code>npm run check</code></td>
+<td>Construction stricte dans un dossier temporaire : les avertissements de <code>npm run build</code> deviennent bloquants. Compare ensuite le résultat avec <code>site/</code> et contrôle tous les liens internes et toutes les ancres. C&#39;est la commande de la CI.</td>
+</tr>
+<tr>
+<td><code>npm run publish</code></td>
+<td>Vérifie puis publie le site, voir <a href="../infrastructure/publier-documentation.html">Publier la documentation</a>.</td>
+</tr>
+</tbody></table></div>
+<p>Le cycle normal est donc : modifier les pages, <code>npm run build</code>, relire avec <code>npm run serve</code>, <code>npm run check</code>, puis commiter les pages <strong>et</strong> le dossier <code>site/</code> régénéré.</p>
+<h2 id="ecrire-une-page"><a class="anchor" href="#ecrire-une-page" aria-hidden="true" tabindex="-1">#</a>Écrire une page</h2>
+<h3 id="ajouter-ou-deplacer-une-page"><a class="anchor" href="#ajouter-ou-deplacer-une-page" aria-hidden="true" tabindex="-1">#</a>Ajouter ou déplacer une page</h3>
+<ol>
+<li>Créer le fichier Markdown dans le dossier de la partie concernée, avec des noms en minuscules séparés par des tirets.</li>
+<li>L&#39;ajouter dans <code>content/SUMMARY.md</code> à l&#39;endroit voulu. Une ligne <code>## Titre</code> ouvre une partie ; une puce <code>- [Titre](chemin.md)</code> ajoute une page ; une puce indentée de deux espaces crée une sous-page.</li>
+<li>Lancer <code>npm run build</code>.</li>
+</ol>
+<p>Le premier titre de niveau 1 de la page devient son titre dans l&#39;onglet du navigateur, le fil d&#39;Ariane et les liens précédent et suivant. Il doit être unique dans la page.</p>
+<h3 id="syntaxe-disponible"><a class="anchor" href="#syntaxe-disponible" aria-hidden="true" tabindex="-1">#</a>Syntaxe disponible</h3>
+<p>Le rendu suit le Markdown de GitHub (GFM) : tableaux, listes, blocs de code, liens. Les extensions propres au site sont les suivantes.</p>
+<p><strong>Liens vers le code.</strong> Un lien dont la cible commence par <code>src:</code> pointe vers le fichier sur GitHub, sur la branche <code>main</code>. La construction échoue si le fichier n&#39;existe pas dans le dépôt, ou s&#39;il existe sur le poste sans être versionné (fichier généré ou ignoré par Git), ce qui protège la documentation contre les renommages et les liens cassés sur GitHub.</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">[`backend/src/app.ts`](src:backend/src/app.ts)
+[le dossier des contrats](src:smart-contract/contracts/)</code></pre></div>
+<p><strong>Liens entre pages.</strong> Ils visent le fichier <code>.md</code> par un chemin relatif, avec une ancre facultative. L&#39;ancre d&#39;un titre est son texte en minuscules, sans accents, chaque suite de caractères non alphanumériques étant remplacée par un tiret.</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">[le keeper](../integration-blockchain/keeper.md)
+[le cycle d&#x27;un tour](../smart-contracts/cycle-tour.md#transitions)</code></pre></div>
+<p><strong>Encadrés.</strong> Une citation dont la première ligne est <code>[!NOTE]</code>, <code>[!TIP]</code>, <code>[!IMPORTANT]</code>, <code>[!WARNING]</code> ou <code>[!CAUTION]</code> devient un encadré coloré, intitulé « À savoir », « Astuce », « Important », « Attention » ou « Danger ».</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">&gt; [!WARNING]
+&gt; Après un redémarrage de la blockchain locale, réinitialiser aussi la base.</code></pre></div>
+<p><strong>Diagrammes.</strong> Un bloc de code de langage <code>mermaid</code> est rendu en diagramme par Mermaid, hébergé dans le site. Les diagrammes suivent le thème clair ou sombre.</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">```mermaid
+sequenceDiagram
+    Citoyen-&gt;&gt;API: POST /api/v1/lottery/buy
+    API-&gt;&gt;Contrat: buyTickets(1)
+```</code></pre></div>
+<p><strong>Coloration syntaxique.</strong> Elle est appliquée à la construction, sans script dans le navigateur, pour les langages déclarés après les trois accents graves : <code>bash</code>, <code>typescript</code>, <code>javascript</code>, <code>json</code>, <code>yaml</code>, <code>sql</code>, <code>ini</code>, <code>dockerfile</code>, <code>powershell</code>, <code>http</code>, <code>css</code>, <code>diff</code>. Les autres langages, comme <code>solidity</code>, <code>prisma</code> ou <code>caddyfile</code>, sont affichés sans coloration mais avec leur libellé.</p>
+<h3 id="regles-de-redaction"><a class="anchor" href="#regles-de-redaction" aria-hidden="true" tabindex="-1">#</a>Règles de rédaction</h3>
+<ul>
+<li>Vérifier chaque affirmation dans le code avant de l&#39;écrire, et citer le fichier source.</li>
+<li>Écrire en français, avec des phrases courtes et sans formules marketing.</li>
+<li>Ne mettre ni émoji, ni commentaire dans les blocs de code : les explications vont dans le texte.</li>
+<li>Préférer un tableau à une longue liste de propriétés, et un diagramme à un long paragraphe sur un flux.</li>
+<li>Dire clairement ce qui est simulé, partiel ou non implémenté.</li>
+</ul>
+<h2 id="pages-generees-depuis-le-code"><a class="anchor" href="#pages-generees-depuis-le-code" aria-hidden="true" tabindex="-1">#</a>Pages générées depuis le code</h2>
+<p>Une ligne seule de la forme <code>{{generated:nom}}</code> est remplacée, à la construction, par un contenu calculé à partir du code. Ces pages sont donc toujours exactes, et la CI échoue si <code>site/</code> n&#39;a pas été régénéré après un changement du code.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Générateur</th>
+<th>Source lue</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>variables-environnement</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/env.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/env.config.ts</code></a> : type, valeur par défaut, contraintes et règles de production de chaque variable</td>
+<td><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></td>
+</tr>
+<tr>
+<td><code>dictionnaire-donnees</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/schema.prisma" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/schema.prisma</code></a> et les contraintes CHECK des migrations</td>
+<td><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></td>
+</tr>
+<tr>
+<td><code>migrations</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/prisma/migrations" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/migrations/</code></a></td>
+<td><a href="../base-de-donnees/migrations.html">Migrations</a></td>
+</tr>
+<tr>
+<td><code>reference-api</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a> et les fichiers <code>*.routes.ts</code> : méthode, chemin, accès, contrôles, résumé OpenAPI</td>
+<td><a href="../backend/reference-api.html">Référence de l&#39;API</a></td>
+</tr>
+<tr>
+<td><code>evenements-socket</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/types/socket.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/types/socket.types.ts</code></a></td>
+<td><a href="../backend/socket-io.html">Temps réel Socket.IO</a></td>
+</tr>
+<tr>
+<td><code>contrat-blocklucky</code>, <code>contrat-poap</code></td>
+<td>ABI de <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/src/blockchain/abi" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/abi/</code></a> et modificateurs lus dans les sources Solidity</td>
+<td><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a>, <a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></td>
+</tr>
+<tr>
+<td><code>versions-stack</code>, <code>scripts-npm</code></td>
+<td>Les <code>package.json</code> de chaque projet</td>
+<td><a href="../architecture/versions.html">Versions de la stack</a>, <a href="../annexes/scripts-npm.html">Scripts npm</a></td>
+</tr>
+<tr>
+<td><code>services-compose</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker-compose.yml" class="external" target="_blank" rel="noopener noreferrer"><code>docker-compose.yml</code></a></td>
+<td><a href="../infrastructure/docker-compose.html">Docker Compose</a></td>
+</tr>
+<tr>
+<td><code>jobs-ci</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/.github/workflows" class="external" target="_blank" rel="noopener noreferrer"><code>.github/workflows/</code></a></td>
+<td><a href="../infrastructure/ci.html">Intégration continue</a></td>
+</tr>
+</tbody></table></div>
+<p>Le code ne contient pas de commentaires : le rôle de chaque élément des tableaux vient donc des fichiers JSON de <code>content/_data/</code>. Quand une variable, un champ, une fonction de contrat, un événement ou un service apparaît dans le code sans description, <code>npm run build</code> le signale et <code>npm run check</code> échoue. Par exemple, ajouter une variable d&#39;environnement demande d&#39;ajouter son entrée dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/_data/variables.json" class="external" target="_blank" rel="noopener noreferrer"><code>content/_data/variables.json</code></a> :</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;NOUVELLE_VARIABLE&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;categorie&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Blockchain&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Rôle de la variable, valeur conseillée et effet d&#x27;une mauvaise valeur.&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<h2 id="ce-que-verifie-la-ci"><a class="anchor" href="#ce-que-verifie-la-ci" aria-hidden="true" tabindex="-1">#</a>Ce que vérifie la CI</h2>
+<p>Le job <code>documentation</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/workflows/ci.yml" class="external" target="_blank" rel="noopener noreferrer"><code>.github/workflows/ci.yml</code></a> lance <code>npm run check</code> à chaque push et sur chaque pull request. Il échoue dans ces cas :</p>
+<ul>
+<li>une page est absente du sommaire, ou le sommaire cite une page qui n&#39;existe pas ;</li>
+<li>un lien <code>src:</code> vise un fichier qui n&#39;existe plus ;</li>
+<li>un lien interne ou une ancre ne mène nulle part ;</li>
+<li>une description de <code>content/_data/</code> manque ;</li>
+<li>le dossier <code>site/</code> commité diffère du site que la construction produit, par exemple parce que le code a changé sans que la documentation soit régénérée.</li>
+</ul>
+<div class="hint hint-tip"><p class="hint-title">Astuce</p>
+<p>Si le job échoue sur un code qui n&#39;a rien à voir avec la documentation, c&#39;est en général le dernier cas : lancer <code>npm run build</code> dans <code>documentation-officielle/</code>, puis commiter le dossier <code>site/</code> mis à jour.</p>
+</div>
+<h2 id="fonctionnement-du-site"><a class="anchor" href="#fonctionnement-du-site" aria-hidden="true" tabindex="-1">#</a>Fonctionnement du site</h2>
+<p>Le site ne charge rien depuis l&#39;extérieur : polices, scripts et Mermaid sont servis par le même domaine. Il respecte donc une politique de sécurité de contenu stricte (<code>script-src &#39;self&#39;</code>, aucun script en ligne).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fonction</th>
+<th>Mise en œuvre</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Menu de gauche repliable</td>
+<td>Généré depuis <code>SUMMARY.md</code>, la page courante et ses parents sont ouverts.</td>
+</tr>
+<tr>
+<td>Sommaire de droite</td>
+<td>Titres de niveau 2 et 3 de la page, avec suivi de la lecture.</td>
+</tr>
+<tr>
+<td>Recherche</td>
+<td>Index <code>search-index.json</code> produit à la construction, une entrée par section. Recherche sans accents, ouverte par <code>Ctrl K</code> ou <code>/</code>.</td>
+</tr>
+<tr>
+<td>Thème clair et sombre</td>
+<td>Bouton de la barre du haut, préférence du système par défaut, choix mémorisé dans le navigateur.</td>
+</tr>
+<tr>
+<td>Copie des blocs de code</td>
+<td>Bouton « Copier » ajouté à chaque bloc.</td>
+</tr>
+<tr>
+<td>Diagrammes</td>
+<td>Mermaid chargé seulement sur les pages qui en contiennent.</td>
+</tr>
+<tr>
+<td>Lien d&#39;édition</td>
+<td>Chaque page renvoie vers son fichier source sur GitHub.</td>
+</tr>
+</tbody></table></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="dependances.html"><span>Précédent</span><strong>Dépendances</strong></a><a class="pager-next" href="mise-en-production.html"><span>Suivant</span><strong>Avant une mise en production</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/contribuer/documentation.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#organisation-du-dossier">Organisation du dossier</a></li><li class="toc-h2"><a href="#commandes">Commandes</a></li><li class="toc-h2"><a href="#ecrire-une-page">Écrire une page</a></li><li class="toc-h3"><a href="#ajouter-ou-deplacer-une-page">Ajouter ou déplacer une page</a></li><li class="toc-h3"><a href="#syntaxe-disponible">Syntaxe disponible</a></li><li class="toc-h3"><a href="#regles-de-redaction">Règles de rédaction</a></li><li class="toc-h2"><a href="#pages-generees-depuis-le-code">Pages générées depuis le code</a></li><li class="toc-h2"><a href="#ce-que-verifie-la-ci">Ce que vérifie la CI</a></li><li class="toc-h2"><a href="#fonctionnement-du-site">Fonctionnement du site</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

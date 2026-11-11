@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autorisations et matrice des droits | Documentation BlockLucky</title>
+<meta name="description" content="Le backend applique un contrôle d&#39;accès par rôles (RBAC) complété par des contrôles de propriété. Cette page donne la matrice complète, route par route, relevée">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="autorisations.html" aria-current="page">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>11. Sécurité</span></div>
+    <article class="markdown">
+<h1>Autorisations et matrice des droits</h1>
+<p>Le backend applique un contrôle d&#39;accès par rôles (RBAC) complété par des contrôles de propriété. Cette page donne la matrice complète, route par route, relevée dans les fichiers <code>*.routes.ts</code> de <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/src/api" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api</code></a>. Elle explique ensuite les contrôles de propriété qui empêchent un partenaire d&#39;agir sur les données d&#39;un autre.</p>
+<h2 id="roles"><a class="anchor" href="#roles" aria-hidden="true" tabindex="-1">#</a>Rôles</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rôle</th>
+<th>Attribution</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Anonyme</td>
+<td>Aucun jeton</td>
+<td>Consultation publique, connexion</td>
+</tr>
+<tr>
+<td><code>USER</code></td>
+<td>Valeur par défaut de <code>User.role</code> à la création du compte</td>
+<td>Citoyen : tickets, points, profil</td>
+</tr>
+<tr>
+<td><code>PARTNER</code></td>
+<td>Modification du rôle en base (aucune route ne le permet)</td>
+<td>Commerçant : entreprises, offres, codes promo</td>
+</tr>
+<tr>
+<td><code>ADMIN</code></td>
+<td>Modification du rôle en base (aucune route ne le permet)</td>
+<td>Mairie : tirage, trésorerie, disjoncteur, analytique ; 2FA obligatoire</td>
+</tr>
+</tbody></table></div>
+<p>Aucune route ne permet de changer un rôle : cela se fait par le seed (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/seed.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/seed.ts</code></a>) ou par une requête en base. L&#39;élévation de privilèges par l&#39;API est donc impossible par construction.</p>
+<h2 id="briques-de-controle"><a class="anchor" href="#briques-de-controle" aria-hidden="true" tabindex="-1">#</a>Briques de contrôle</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Brique</th>
+<th>Fichier</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>authenticate</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/auth.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/auth.middleware.ts</code></a></td>
+<td>Exige un jeton valide et non révoqué, sinon 401</td>
+</tr>
+<tr>
+<td><code>optionalAuthenticate</code></td>
+<td>idem</td>
+<td>Lit le jeton s&#39;il est présent et valide, sans jamais refuser</td>
+</tr>
+<tr>
+<td><code>requireRoles(...roles)</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/rbac.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/rbac.middleware.ts</code></a></td>
+<td>403 si le rôle du jeton n&#39;est pas dans la liste, si le rôle en base diffère, si le compte est supprimé, ou si un ADMIN n&#39;a pas activé la 2FA ; 503 si la base ne répond pas</td>
+</tr>
+<tr>
+<td><code>requireWebhookSignature</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/webhooks/webhook-signature.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/webhooks/webhook-signature.ts</code></a></td>
+<td>401 si la signature HMAC est absente, fausse ou expirée</td>
+</tr>
+<tr>
+<td>Jeton <code>METRICS_TOKEN</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/system/system.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/system/system.routes.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/observability/metrics.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/observability/metrics.ts</code></a></td>
+<td>Protège <code>/metrics</code> et le détail de <code>/health/deep</code></td>
+</tr>
+<tr>
+<td><code>assertPartnerAccess</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/partners/partners.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/partners/partners.services.ts</code></a></td>
+<td>Contrôle de propriété sur une entreprise partenaire</td>
+</tr>
+</tbody></table></div>
+<p><code>requireRoles()</code> sans argument refuse tout le monde : l&#39;oubli d&#39;un rôle aboutit à un refus, pas à une ouverture.</p>
+<p>Toutes les routes <code>/api/...</code> existent aussi sous <code>/api/v1/...</code> avec les mêmes contrôles, car le même routeur est monté deux fois dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a>.</p>
+<h2 id="matrice-complete"><a class="anchor" href="#matrice-complete" aria-hidden="true" tabindex="-1">#</a>Matrice complète</h2>
+<p>Légende : <strong>oui</strong> accès accordé, <strong>non</strong> refusé (401 sans jeton, 403 avec un rôle insuffisant), <strong>propre</strong> limité aux données du compte ou de ses entreprises.</p>
+<h3 id="systeme-et-documentation"><a class="anchor" href="#systeme-et-documentation" aria-hidden="true" tabindex="-1">#</a>Système et documentation</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Contrôle</th>
+<th>Anonyme</th>
+<th>USER</th>
+<th>PARTNER</th>
+<th>ADMIN</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /health</code>, <code>/health/live</code>, <code>/health/ready</code></td>
+<td>Aucun</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /health/deep</code></td>
+<td>Détail réservé au porteur de <code>METRICS_TOKEN</code> (ou à tous hors production si le jeton est vide)</td>
+<td>résumé</td>
+<td>résumé</td>
+<td>résumé</td>
+<td>résumé</td>
+</tr>
+<tr>
+<td><code>GET /metrics</code></td>
+<td><code>Authorization: Bearer &lt;METRICS_TOKEN&gt;</code> quand le jeton est défini, obligatoire en production</td>
+<td>jeton</td>
+<td>jeton</td>
+<td>jeton</td>
+<td>jeton</td>
+</tr>
+<tr>
+<td><code>GET /api/config</code></td>
+<td>Aucun</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/docs</code> (Swagger UI)</td>
+<td>Aucun</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+</tbody></table></div>
+<h3 id="authentification"><a class="anchor" href="#authentification" aria-hidden="true" tabindex="-1">#</a>Authentification</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Contrôle</th>
+<th>Anonyme</th>
+<th>USER</th>
+<th>PARTNER</th>
+<th>ADMIN</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /api/auth/onboarding</code></td>
+<td>Aucun</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/login</code></td>
+<td><code>authRateLimiter</code></td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/2fa/verify</code></td>
+<td><code>authRateLimiter</code>, <code>optionalAuthenticate</code></td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/2fa/setup</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/2fa/disable</code></td>
+<td><code>authRateLimiter</code>, <code>authenticate</code>, preuve récente</td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/logout</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+</tbody></table></div>
+<h3 id="loterie"><a class="anchor" href="#loterie" aria-hidden="true" tabindex="-1">#</a>Loterie</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Contrôle</th>
+<th>Anonyme</th>
+<th>USER</th>
+<th>PARTNER</th>
+<th>ADMIN</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /api/lottery/status</code></td>
+<td>Aucun</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/lottery/transparency-charter</code></td>
+<td>Aucun</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/lottery/leaderboard</code></td>
+<td>Aucun</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/lottery/poap/:file</code></td>
+<td>Aucun (nom de fichier <code>&lt;n&gt;.json</code> ou <code>&lt;n&gt;.svg</code>, au plus 9 chiffres)</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/lottery/buy</code></td>
+<td><code>authenticate</code>, <code>idempotency</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/lottery/gift</code></td>
+<td><code>authenticate</code>, <code>idempotency</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>GET /api/lottery/my-tickets</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>GET /api/lottery/wallet</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/lottery/claim-prize</code></td>
+<td><code>authenticate</code>, <code>idempotency</code> ; le contrat vérifie que l&#39;appelant est le gagnant</td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/lottery/draw</code></td>
+<td><code>authenticate</code>, <code>requireRoles(&#39;ADMIN&#39;)</code></td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/lottery/refund</code></td>
+<td><code>authenticate</code>, <code>requireRoles(&#39;ADMIN&#39;)</code></td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+</tbody></table></div>
+<h3 id="boutique-et-partenaires"><a class="anchor" href="#boutique-et-partenaires" aria-hidden="true" tabindex="-1">#</a>Boutique et partenaires</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Contrôle</th>
+<th>Anonyme</th>
+<th>USER</th>
+<th>PARTNER</th>
+<th>ADMIN</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /api/marketplace/catalog</code></td>
+<td>Aucun</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/marketplace/rewards/:id</code></td>
+<td>Aucun</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/marketplace/points</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/marketplace/claim</code></td>
+<td><code>authenticate</code>, <code>idempotency</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>GET /api/marketplace/my-codes</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/marketplace/redeem</code></td>
+<td><code>requireRoles(&#39;PARTNER&#39;, &#39;ADMIN&#39;)</code>, propriété du code</td>
+<td>non</td>
+<td>non</td>
+<td>propre</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/partners</code></td>
+<td>Aucun</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/partners</code></td>
+<td><code>requireRoles(&#39;PARTNER&#39;, &#39;ADMIN&#39;)</code></td>
+<td>non</td>
+<td>non</td>
+<td>propre</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/partners/offers</code></td>
+<td><code>requireRoles(&#39;PARTNER&#39;, &#39;ADMIN&#39;)</code>, propriété de l&#39;entreprise</td>
+<td>non</td>
+<td>non</td>
+<td>propre</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/partners/codes/upload</code></td>
+<td><code>requireRoles(&#39;PARTNER&#39;, &#39;ADMIN&#39;)</code>, propriété de l&#39;offre</td>
+<td>non</td>
+<td>non</td>
+<td>propre</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/partners/:partnerId/consumption</code></td>
+<td><code>requireRoles(&#39;PARTNER&#39;, &#39;ADMIN&#39;)</code>, propriété de l&#39;entreprise</td>
+<td>non</td>
+<td>non</td>
+<td>propre</td>
+<td>oui</td>
+</tr>
+</tbody></table></div>
+<h3 id="utilisateur-et-rgpd"><a class="anchor" href="#utilisateur-et-rgpd" aria-hidden="true" tabindex="-1">#</a>Utilisateur et RGPD</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Contrôle</th>
+<th>Anonyme</th>
+<th>USER</th>
+<th>PARTNER</th>
+<th>ADMIN</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /api/user/profile</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>GET /api/user/referrals</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>GET /api/user/quests</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/user/quests/complete</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>PUT /api/user/responsible-limit</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>PUT /api/user/preferences</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>GET /api/user/notifications</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>GET /api/user/gdpr/export</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/user/gdpr/delete-request</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/user/gdpr/confirm-delete</code></td>
+<td>Jeton de suppression reçu par email (haché en base, valide 24 heures)</td>
+<td>jeton</td>
+<td>jeton</td>
+<td>jeton</td>
+<td>jeton</td>
+</tr>
+</tbody></table></div>
+<p>Les routes « propres » de ce module n&#39;acceptent aucun identifiant de compte en paramètre : elles utilisent toujours <code>req.user.userId</code>. Il n&#39;existe donc pas de vecteur IDOR sur le profil ou l&#39;export.</p>
+<h3 id="analytique-administration-et-webhooks"><a class="anchor" href="#analytique-administration-et-webhooks" aria-hidden="true" tabindex="-1">#</a>Analytique, administration et webhooks</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Contrôle</th>
+<th>Anonyme</th>
+<th>USER</th>
+<th>PARTNER</th>
+<th>ADMIN</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>POST /api/analytics/track</code></td>
+<td><code>optionalAuthenticate</code>, types <code>ADMIN_AUDIT</code>, <code>USER_SIGNUP</code> et <code>USER_LOGIN</code> refusés</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/analytics/dashboard</code></td>
+<td><code>authenticate</code>, <code>requireRoles(&#39;ADMIN&#39;)</code></td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/admin/dashboard</code></td>
+<td><code>router.use(authenticate, requireRoles(&#39;ADMIN&#39;))</code></td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/admin/circuit-breaker</code></td>
+<td>idem, journalisé</td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/admin/treasury/withdraw</code></td>
+<td>idem, journalisé</td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>PATCH /api/admin/partners/:partnerId/status</code></td>
+<td>idem, journalisé</td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/admin/reports/export</code></td>
+<td>idem, journalisé</td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/admin/audit-logs</code></td>
+<td>idem</td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/webhooks/blockchain</code></td>
+<td>Signature HMAC <code>x-webhook-signature</code></td>
+<td>signature</td>
+<td>signature</td>
+<td>signature</td>
+<td>signature</td>
+</tr>
+</tbody></table></div>
+<p>Toutes les routes ADMIN, y compris <code>/api/lottery/draw</code>, <code>/api/lottery/refund</code> et <code>/api/analytics/dashboard</code>, passent par <code>requireRoles(&#39;ADMIN&#39;)</code> et exigent donc la 2FA active sur le compte.</p>
+<h2 id="controles-de-propriete-idor-partenaires"><a class="anchor" href="#controles-de-propriete-idor-partenaires" aria-hidden="true" tabindex="-1">#</a>Contrôles de propriété (IDOR partenaires)</h2>
+<p>Une entreprise partenaire appartient au compte qui l&#39;a créée, par la colonne <code>Partner.ownerId</code> (clé étrangère vers <code>User</code>, <code>ON DELETE SET NULL</code>). Le rôle <code>PARTNER</code> ne suffit pas : chaque opération sur une entreprise, une offre ou un code vérifie la propriété.</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> assertPartnerAccess = (
+  <span class="hljs-attr">partner</span>: { <span class="hljs-attr">ownerId</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span> } | <span class="hljs-literal">null</span> | <span class="hljs-literal">undefined</span>,
+  <span class="hljs-attr">actor</span>: <span class="hljs-title class_">PartnerActor</span>
+): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+  <span class="hljs-keyword">if</span> (!partner) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AppError</span>(<span class="hljs-string">&#x27;Entreprise partenaire introuvable&#x27;</span>, <span class="hljs-number">404</span>);
+  <span class="hljs-keyword">if</span> (actor.<span class="hljs-property">role</span> === <span class="hljs-string">&#x27;ADMIN&#x27;</span>) <span class="hljs-keyword">return</span>;
+  <span class="hljs-keyword">if</span> (!partner.<span class="hljs-property">ownerId</span> || partner.<span class="hljs-property">ownerId</span> !== actor.<span class="hljs-property">userId</span>) {
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AppError</span>(<span class="hljs-string">&quot;Accès refusé : cette entreprise partenaire n&#x27;est pas rattachée à votre compte&quot;</span>, <span class="hljs-number">403</span>);
+  }
+};</code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Opération</th>
+<th>Ressource vérifiée</th>
+<th>Réponse en cas d&#39;accès refusé</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>createPartner</code></td>
+<td>Un PARTNER devient toujours propriétaire ; le champ <code>ownerId</code> du corps n&#39;est pris en compte que pour un ADMIN</td>
+<td>Sans objet</td>
+</tr>
+<tr>
+<td><code>createOffer</code></td>
+<td>Entreprise désignée par <code>partnerId</code></td>
+<td>403</td>
+</tr>
+<tr>
+<td><code>uploadPromoCodesBatch</code></td>
+<td>Entreprise de l&#39;offre <code>rewardId</code></td>
+<td>403</td>
+</tr>
+<tr>
+<td><code>getPartnerConsumptionStats</code></td>
+<td>Entreprise <code>partnerId</code></td>
+<td>403</td>
+</tr>
+<tr>
+<td><code>validateAndRedeemStoreCode</code></td>
+<td>Entreprise de l&#39;offre du code</td>
+<td><strong>404</strong> « Code promo introuvable », pour ne pas révéler l&#39;existence d&#39;un code appartenant à un autre commerçant</td>
+</tr>
+</tbody></table></div>
+<p>Une entreprise sans propriétaire (<code>ownerId</code> nul, par exemple après la suppression du compte propriétaire) n&#39;est plus accessible qu&#39;aux administrateurs. Le test <code>empêche un partenaire d&#39;agir sur l&#39;entreprise d&#39;un autre partenaire</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/api/auth-security.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/api/auth-security.test.ts</code></a> couvre ces contrôles ; <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/api/partners.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/api/partners.test.ts</code></a> et <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/api/admin.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/api/admin.test.ts</code></a> complètent la couverture des rôles.</p>
+<h2 id="autres-controles-d-appartenance"><a class="anchor" href="#autres-controles-d-appartenance" aria-hidden="true" tabindex="-1">#</a>Autres contrôles d&#39;appartenance</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ressource</th>
+<th>Contrôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tickets, points, codes obtenus</td>
+<td>Lus par <code>req.user.userId</code>, jamais par un identifiant fourni</td>
+</tr>
+<tr>
+<td>Retrait de la cagnotte</td>
+<td>Signé avec la clé du compte appelant ; <code>claimPrize</code> du contrat refuse tout autre que <code>round.winner</code></td>
+</tr>
+<tr>
+<td>Identifiants</td>
+<td>UUID v7 générés par la base (<code>@default(uuid(7))</code>) : non séquentiels, mais leur début reflète l&#39;horodatage</td>
+</tr>
+</tbody></table></div>
+<h2 id="limites-connues"><a class="anchor" href="#limites-connues" aria-hidden="true" tabindex="-1">#</a>Limites connues</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Limite</th>
+<th>Détail</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Swagger exposé</td>
+<td><code>/api/docs</code> est servi sans authentification, y compris en production. La documentation ne contient pas de secret, mais elle facilite la reconnaissance.</td>
+</tr>
+<tr>
+<td>Validation d&#39;un code promo non atomique</td>
+<td><code>validateAndRedeemStoreCode</code> lit <code>isUsed</code> puis met à jour sans condition. Deux validations simultanées du même code peuvent toutes deux réussir. Une mise à jour conditionnelle (<code>updateMany</code> avec <code>isUsed: false</code>) fermerait cette fenêtre.</td>
+</tr>
+<tr>
+<td>Rôle non relu hors <code>requireRoles</code></td>
+<td>Voir <a href="sessions.html#droits-relus-a-chaque-requete">Sessions</a>.</td>
+</tr>
+<tr>
+<td>Pas de revue périodique des accès</td>
+<td>Aucun outil ne liste les comptes ADMIN et PARTNER ; la revue se fait en base.</td>
+</tr>
+</tbody></table></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="sessions.html"><span>Précédent</span><strong>Sessions</strong></a><a class="pager-next" href="validation.html"><span>Suivant</span><strong>Validation des entrées</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/securite/autorisations.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#roles">Rôles</a></li><li class="toc-h2"><a href="#briques-de-controle">Briques de contrôle</a></li><li class="toc-h2"><a href="#matrice-complete">Matrice complète</a></li><li class="toc-h3"><a href="#systeme-et-documentation">Système et documentation</a></li><li class="toc-h3"><a href="#authentification">Authentification</a></li><li class="toc-h3"><a href="#loterie">Loterie</a></li><li class="toc-h3"><a href="#boutique-et-partenaires">Boutique et partenaires</a></li><li class="toc-h3"><a href="#utilisateur-et-rgpd">Utilisateur et RGPD</a></li><li class="toc-h3"><a href="#analytique-administration-et-webhooks">Analytique, administration et webhooks</a></li><li class="toc-h2"><a href="#controles-de-propriete-idor-partenaires">Contrôles de propriété (IDOR partenaires)</a></li><li class="toc-h2"><a href="#autres-controles-d-appartenance">Autres contrôles d&#39;appartenance</a></li><li class="toc-h2"><a href="#limites-connues">Limites connues</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

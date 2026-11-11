@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veille juridique | Documentation BlockLucky</title>
+<meta name="description" content="Cette page recense les textes susceptibles de s&#39;appliquer à BlockLucky et leur effet sur le projet. Elle répond à la partie « Aspects éthiques et réglementaires">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="veille-juridique.html" aria-current="page">Veille juridique</a></div></li><li><div class="nav-row"><a href="crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="licences.html">Licences</a></div></li><li><div class="nav-row"><a href="registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>12. Juridique et conformité</span></div>
+    <article class="markdown">
+<h1>Veille juridique</h1>
+<p>Cette page recense les textes susceptibles de s&#39;appliquer à BlockLucky et leur effet sur le projet. Elle répond à la partie « Aspects éthiques et réglementaires » du kickoff.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Date de la veille</td>
+<td>11 novembre 2026</td>
+</tr>
+<tr>
+<td>Portée</td>
+<td>Loterie BlockLucky de la Ville d&#39;EtherBay, en démonstration sur un réseau de test avec des ethers fictifs</td>
+</tr>
+<tr>
+<td>Statut</td>
+<td>Analyse de l&#39;équipe projet, <strong>à faire valider par un juriste</strong> avant toute exploitation publique</td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-caution"><p class="hint-title">Danger</p>
+<p>Cette page n&#39;est pas un avis juridique. Les numéros d&#39;articles cités sont ceux que l&#39;équipe a relevés dans les sources indiquées en fin de page ; plusieurs sources secondaires divergent sur la numérotation et doivent être vérifiées sur Légifrance et EUR-Lex. Les questions ouvertes sont regroupées dans <a href="points-a-valider.html">Points à valider</a>.</p>
+</div>
+<h2 id="synthese"><a class="anchor" href="#synthese" aria-hidden="true" tabindex="-1">#</a>Synthèse</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Réponse pour la démonstration</th>
+<th>Ce qui changerait avec de vrais euros ou de vrais ethers</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Est-ce une loterie prohibée ?</td>
+<td>A priori non : sans sacrifice financier réel ni gain ayant une valeur, l&#39;opération ne réunit pas les éléments de la définition légale de la loterie</td>
+<td>Oui en principe : loterie prohibée sauf exceptions étroites, monopole de la Française des Jeux pour les loteries publiques</td>
+</tr>
+<tr>
+<td>Faut-il une autorisation de l&#39;Autorité nationale des jeux (ANJ) ?</td>
+<td>Non</td>
+<td>Oui, ou exploitation impossible hors des exceptions légales</td>
+</tr>
+<tr>
+<td>Le portefeuille intégré est-il une activité réglementée ?</td>
+<td>Non tant que les actifs n&#39;ont pas de valeur marchande</td>
+<td>Oui : la conservation de crypto-actifs pour le compte de tiers relève du règlement MiCA</td>
+</tr>
+<tr>
+<td>Le RGPD s&#39;applique-t-il ?</td>
+<td>Oui : email, adresse de portefeuille, historique de participation</td>
+<td>Idem, avec en plus des obligations de lutte contre le blanchiment</td>
+</tr>
+<tr>
+<td>Les mineurs peuvent-ils jouer ?</td>
+<td>L&#39;inscription exige une déclaration de majorité (<code>isAdultConfirmed</code>)</td>
+<td>Contrôle d&#39;âge effectif obligatoire</td>
+</tr>
+<tr>
+<td>Des cookies sont-ils déposés ?</td>
+<td>Le web n&#39;en dépose pas ; le site de l&#39;Office de Tourisme utilise le <code>localStorage</code></td>
+<td>Bandeau et preuve de consentement si une mesure d&#39;audience est ajoutée</td>
+</tr>
+<tr>
+<td>L&#39;accessibilité est-elle obligatoire ?</td>
+<td>Oui pour un service public en ligne d&#39;une commune</td>
+<td>Idem</td>
+</tr>
+</tbody></table></div>
+<h2 id="jeux-d-argent-et-loteries"><a class="anchor" href="#jeux-d-argent-et-loteries" aria-hidden="true" tabindex="-1">#</a>Jeux d&#39;argent et loteries</h2>
+<h3 id="textes"><a class="anchor" href="#textes" aria-hidden="true" tabindex="-1">#</a>Textes</h3>
+<ul>
+<li>Code de la sécurité intérieure (CSI), livre III, titre II, issu de l&#39;ordonnance n° 2019-1015 du 2 octobre 2019 :<ul>
+<li><strong>article L320-1</strong> : interdiction de principe des jeux d&#39;argent et de hasard ;</li>
+<li><strong>article L322-1</strong> : les loteries de toute espèce sont prohibées ;</li>
+<li><strong>article L322-2</strong> : définition de la loterie, opération offerte au public qui fait naître l&#39;espérance d&#39;un gain dû, même partiellement, au hasard, et pour laquelle un sacrifice financier est exigé des participants.</li>
+</ul>
+</li>
+<li>Exceptions prévues aux articles suivants du même chapitre :<ul>
+<li>loteries d&#39;objets mobiliers destinées à des actes de bienfaisance, à l&#39;encouragement des arts ou au financement d&#39;activités sportives à but non lucratif, sur autorisation administrative ;</li>
+<li>lotos traditionnels en cercle restreint, avec des mises et des lots de faible valeur.</li>
+</ul>
+</li>
+<li>L&#39;<strong>Autorité nationale des jeux (ANJ)</strong>, créée par la même ordonnance, régule les jeux d&#39;argent et contrôle les droits exclusifs de la Française des Jeux sur les loteries.</li>
+</ul>
+<p>La numérotation exacte des articles d&#39;exception et l&#39;autorité qui délivre l&#39;autorisation sont à confirmer sur Légifrance : les sources secondaires consultées divergent.</p>
+<h3 id="application-au-projet"><a class="anchor" href="#application-au-projet" aria-hidden="true" tabindex="-1">#</a>Application au projet</h3>
+<p>La définition légale repose sur quatre éléments cumulatifs.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Situation de BlockLucky</th>
+<th>Preuve dans le dépôt</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Offre au public</td>
+<td>Oui : tous les habitants d&#39;EtherBay</td>
+<td></td>
+</tr>
+<tr>
+<td>Espérance d&#39;un gain</td>
+<td>La cagnotte est en ethers de réseau de test, sans valeur marchande. Les EtherPoints et les offres des partenaires s&#39;obtiennent par la participation, pas par le hasard.</td>
+<td>Conditions de participation, voir <a href="cookies-mentions.html">Cookies, mentions et CGU</a></td>
+</tr>
+<tr>
+<td>Hasard</td>
+<td>Oui : tirage Chainlink VRF</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a></td>
+</tr>
+<tr>
+<td>Sacrifice financier</td>
+<td>Non : les ethers utilisés sont une dotation gratuite de la Mairie ; le citoyen ne paie rien</td>
+<td><code>grantWelcomeEthers</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/wallet.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/wallet.service.ts</code></a></td>
+</tr>
+</tbody></table></div>
+<p>Sans sacrifice financier ni gain de valeur, l&#39;opération relèverait d&#39;un dispositif pédagogique et non d&#39;un jeu d&#39;argent. Cette qualification doit être confirmée, notamment parce que la dotation est financée par la commune (voir <a href="points-a-valider.html">Points à valider</a>).</p>
+<h3 id="conditions-a-maintenir"><a class="anchor" href="#conditions-a-maintenir" aria-hidden="true" tabindex="-1">#</a>Conditions à maintenir</h3>
+<ol>
+<li>Ne jamais vendre d&#39;ethers fictifs, ni échanger la cagnotte contre des euros, des biens ou des services.</li>
+<li>Ne pas déployer le contrat sur le réseau Ethereum principal et ne pas l&#39;alimenter en ethers réels. Le script <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/deploy-sepolia.ts" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/scripts/deploy-sepolia.ts</code></a> refuse tout réseau dont l&#39;identifiant n&#39;est pas celui de Sepolia.</li>
+<li>Garder les avantages des commerces partenaires indépendants du tirage. La « carte à gratter » du catalogue est une animation qui révèle la récompense choisie et payée en EtherPoints ; elle ne doit jamais devenir un tirage aléatoire, sinon elle recréerait une loterie à mise.</li>
+<li>L&#39;afficher clairement dans l&#39;interface (charte de transparence, bandeau de démonstration) et dans les conditions de participation.</li>
+</ol>
+<h3 id="si-la-mairie-voulait-une-vraie-loterie"><a class="anchor" href="#si-la-mairie-voulait-une-vraie-loterie" aria-hidden="true" tabindex="-1">#</a>Si la Mairie voulait une vraie loterie</h3>
+<ul>
+<li><strong>Loterie de fin d&#39;année avec mise en euros.</strong> Elle ne serait possible que par une association, avec des lots en nature et une autorisation administrative. Elle ne pourrait pas être gérée par la commune pour son propre compte.</li>
+<li><strong>Jeux à objets numériques monétisables (JONUM).</strong> Ils sont expérimentés pendant trois ans depuis la loi n° 2024-449 du 21 mai 2024, dite SREN (articles 40 et 41), et un décret publié au Journal officiel du 6 février 2026. Le régime exige une déclaration préalable à l&#39;ANJ, un compte joueur, l&#39;exclusion des mineurs et des lots en objets numériques, non une cagnotte en crypto-monnaie. Une cagnotte en ether n&#39;entre pas dans ce régime.</li>
+</ul>
+<h2 id="crypto-actifs"><a class="anchor" href="#crypto-actifs" aria-hidden="true" tabindex="-1">#</a>Crypto-actifs</h2>
+<p>Le sujet est développé dans <a href="crypto-actifs.html">Crypto-actifs et MiCA</a>. En résumé :</p>
+<ul>
+<li>le <strong>règlement (UE) 2023/1114 dit MiCA</strong> soumet la conservation et l&#39;administration de crypto-actifs pour le compte de clients à un agrément de prestataire (CASP), délivré en France par l&#39;AMF ;</li>
+<li>le portefeuille de BlockLucky est custodial : la Ville conserve les clés chiffrées des citoyens ;</li>
+<li>avec des actifs de réseau de test sans valeur, ce n&#39;est pas un crypto-actif au sens économique ; sur un réseau principal, il faudrait un agrément, un modèle non custodial ou un prestataire agréé ;</li>
+<li>un service manipulant de vrais crypto-actifs impose l&#39;identification des clients (KYC) au titre de la lutte contre le blanchiment ;</li>
+<li>les ethers fictifs ne doivent jamais être présentés comme un investissement ou un placement.</li>
+</ul>
+<h2 id="donnees-personnelles"><a class="anchor" href="#donnees-personnelles" aria-hidden="true" tabindex="-1">#</a>Données personnelles</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Texte</th>
+<th>Effet sur le projet</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Règlement (UE) 2016/679 (RGPD)</td>
+<td>Bases légales, droits des personnes, registre, sécurité, sous-traitants</td>
+<td><a href="rgpd.html">RGPD</a>, <a href="registre-traitements.html">Registre des traitements</a></td>
+</tr>
+<tr>
+<td>Loi n° 78-17 du 6 janvier 1978 (Informatique et Libertés)</td>
+<td>Transposition et compléments nationaux, dont les règles sur les traceurs</td>
+<td><a href="cookies-mentions.html">Cookies, mentions et CGU</a></td>
+</tr>
+<tr>
+<td>Lignes directrices 02/2025 du Comité européen de la protection des données sur le traitement de données personnelles au moyen de technologies blockchain</td>
+<td>Garder les données identifiantes hors chaîne, documenter l&#39;impossibilité d&#39;effacer ce qui est inscrit</td>
+<td><a href="blockchain-donnees.html">Blockchain et données personnelles</a></td>
+</tr>
+</tbody></table></div>
+<p>Points propres à la blockchain :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Sujet</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>L&#39;adresse de portefeuille est une donnée pseudonyme</td>
+<td>Aucune autre donnée personnelle n&#39;est écrite sur la chaîne, ni email ni nom</td>
+</tr>
+<tr>
+<td>Droit à l&#39;effacement contre immutabilité</td>
+<td>L&#39;effacement supprime l&#39;email et la clé chiffrée en base ; les transactions restent sur la chaîne</td>
+</tr>
+<tr>
+<td>Clé privée du citoyen</td>
+<td>Chiffrée en AES-256-GCM, jamais renvoyée au client ni journalisée</td>
+</tr>
+<tr>
+<td>Transferts hors UE</td>
+<td>Les nœuds de la blockchain publique sont répartis dans le monde ; seules des données pseudonymes y sont publiées. Chainlink ne reçoit que des demandes d&#39;aléa.</td>
+</tr>
+</tbody></table></div>
+<h2 id="commerce-electronique-et-information-du-public"><a class="anchor" href="#commerce-electronique-et-information-du-public" aria-hidden="true" tabindex="-1">#</a>Commerce électronique et information du public</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Texte</th>
+<th>Effet</th>
+<th>Situation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Loi n° 2004-575 du 21 juin 2004 pour la confiance dans l&#39;économie numérique (LCEN)</td>
+<td>Mentions légales identifiant l&#39;éditeur, le directeur de la publication et l&#39;hébergeur</td>
+<td>Partielles sur le site de l&#39;Office de Tourisme, absentes sur le web (voir <a href="cookies-mentions.html">Cookies, mentions et CGU</a>)</td>
+</tr>
+<tr>
+<td>Code de la consommation</td>
+<td>Conditions générales de vente si un service est vendu à un consommateur</td>
+<td>Sans objet : aucune vente ; la billetterie de l&#39;Office de Tourisme est une démonstration</td>
+</tr>
+<tr>
+<td>Règlement (UE) 2022/2065 sur les services numériques (DSA)</td>
+<td>Point de contact et mécanisme de signalement pour les services d&#39;hébergement de contenus</td>
+<td>Le chat en direct diffuse des messages de participants sans modération ; l&#39;applicabilité est à faire préciser</td>
+</tr>
+</tbody></table></div>
+<h2 id="accessibilite"><a class="anchor" href="#accessibilite" aria-hidden="true" tabindex="-1">#</a>Accessibilité</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Texte</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Article 47 de la loi n° 2005-102 du 11 février 2005</td>
+<td>Obligation d&#39;accessibilité des services de communication au public en ligne des organismes publics, dont les communes</td>
+</tr>
+<tr>
+<td>Référentiel général d&#39;amélioration de l&#39;accessibilité (RGAA)</td>
+<td>Méthode de mise en conformité, déclaration d&#39;accessibilité, schéma pluriannuel</td>
+</tr>
+<tr>
+<td>Directive (UE) 2019/882 (European Accessibility Act)</td>
+<td>Applicable à certains produits et services privés depuis juin 2025 ; à vérifier pour les commerçants partenaires</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;état réel est décrit dans <a href="accessibilite.html">Accessibilité numérique</a>.</p>
+<h2 id="ethique-et-jeu-responsable"><a class="anchor" href="#ethique-et-jeu-responsable" aria-hidden="true" tabindex="-1">#</a>Éthique et jeu responsable</h2>
+<ul>
+<li>Public visé : les 18 à 35 ans d&#39;EtherBay. L&#39;accès est réservé aux majeurs, sur déclaration à l&#39;inscription.</li>
+<li>Plafonds : par participant et par tour dans le contrat (<code>maxTicketsPerPlayer</code>), et limite de jeu responsable de 1 à 500 tickets réglable par le citoyen (<code>PUT /api/user/responsible-limit</code>).</li>
+<li>Transparence : code du contrat vérifiable sur Etherscan après déploiement sur Sepolia, preuve VRF consultable, commission de la Mairie plafonnée à 20 % dans le contrat (<code>MAX_FEE_BPS = 2000</code>), remboursement intégral si le tour est annulé.</li>
+<li>Les conditions de participation rappellent le numéro de Joueurs Info Service (09 74 75 13 13).</li>
+<li>Les mécaniques d&#39;engagement (compte à rebours, cadeaux, parrainage, quêtes) doivent rester mesurées. Aucune incitation à racheter des ethers ne doit exister, puisqu&#39;aucun achat n&#39;est possible.</li>
+</ul>
+<h2 id="suivi-de-la-veille"><a class="anchor" href="#suivi-de-la-veille" aria-hidden="true" tabindex="-1">#</a>Suivi de la veille</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Sujet à surveiller</th>
+<th>Raison</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bilan de l&#39;expérimentation JONUM</td>
+<td>Peut ouvrir ou fermer une voie pour une variante à valeur réelle</td>
+</tr>
+<tr>
+<td>Lignes directrices définitives du CEPD sur la blockchain</td>
+<td>La version 02/2025 a été soumise à consultation publique</td>
+</tr>
+<tr>
+<td>Normes techniques de MiCA sur la conservation</td>
+<td>Exigences précises en cas d&#39;exploitation réelle</td>
+</tr>
+<tr>
+<td>Doctrine de l&#39;ANJ sur les dispositifs gratuits</td>
+<td>Confirme ou non la qualification hors loterie</td>
+</tr>
+</tbody></table></div>
+<p>La veille est à reprendre à chaque évolution de la portée du projet, et au moins avant tout passage sur un réseau principal.</p>
+<h2 id="sources-consultees"><a class="anchor" href="#sources-consultees" aria-hidden="true" tabindex="-1">#</a>Sources consultées</h2>
+<ul>
+<li>Code de la sécurité intérieure, articles L320-1 et L322-1 et suivants (Légifrance)</li>
+<li><a href="https://www.douane.gouv.fr/fiche/vous-souhaitez-organiser-des-loteries-ou-lotos" class="external" target="_blank" rel="noopener noreferrer">Douane : organiser des loteries ou lotos</a></li>
+<li><a href="https://www.associatheque.fr/fr/organiser-une-manifestation/loterie-tombola-loto.html" class="external" target="_blank" rel="noopener noreferrer">Associathèque : loteries, tombolas et lotos</a></li>
+<li><a href="https://anj.fr/launch-jonum-regulatory-framework-trial" class="external" target="_blank" rel="noopener noreferrer">ANJ : lancement de l&#39;expérimentation JONUM</a></li>
+<li><a href="https://larevue.squirepattonboggs.com/le-regime-experimental-des-jonum-jeux-a-objet-numeriques-monetisables.html" class="external" target="_blank" rel="noopener noreferrer">Squire Patton Boggs : le régime expérimental des JONUM</a></li>
+<li>Règlement (UE) 2023/1114 sur les marchés de crypto-actifs (MiCA)</li>
+<li>Règlement (UE) 2016/679 (RGPD)</li>
+<li>Lignes directrices 02/2025 du CEPD sur le traitement de données personnelles au moyen de technologies blockchain, citées dans la politique de confidentialité du web</li>
+</ul>
+<p>Les textes ajoutés dans cette version (LCEN, DSA, loi de 2005, directive 2019/882) n&#39;ont pas fait l&#39;objet d&#39;une lecture détaillée par l&#39;équipe : leur applicabilité est à confirmer.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="../securite/signalement.html"><span>Précédent</span><strong>Signaler une vulnérabilité</strong></a><a class="pager-next" href="crypto-actifs.html"><span>Suivant</span><strong>Crypto-actifs et MiCA</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/juridique/veille-juridique.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#synthese">Synthèse</a></li><li class="toc-h2"><a href="#jeux-d-argent-et-loteries">Jeux d&#39;argent et loteries</a></li><li class="toc-h3"><a href="#textes">Textes</a></li><li class="toc-h3"><a href="#application-au-projet">Application au projet</a></li><li class="toc-h3"><a href="#conditions-a-maintenir">Conditions à maintenir</a></li><li class="toc-h3"><a href="#si-la-mairie-voulait-une-vraie-loterie">Si la Mairie voulait une vraie loterie</a></li><li class="toc-h2"><a href="#crypto-actifs">Crypto-actifs</a></li><li class="toc-h2"><a href="#donnees-personnelles">Données personnelles</a></li><li class="toc-h2"><a href="#commerce-electronique-et-information-du-public">Commerce électronique et information du public</a></li><li class="toc-h2"><a href="#accessibilite">Accessibilité</a></li><li class="toc-h2"><a href="#ethique-et-jeu-responsable">Éthique et jeu responsable</a></li><li class="toc-h2"><a href="#suivi-de-la-veille">Suivi de la veille</a></li><li class="toc-h2"><a href="#sources-consultees">Sources consultées</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

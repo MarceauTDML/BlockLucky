@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Organisation du dépôt | Documentation BlockLucky</title>
+<meta name="description" content="Le dépôt MarceauTDML/BlockLucky est un monorepo sans gestionnaire d&#39;espaces de travail : chaque projet possède son propre package.json, son package-lock.json et">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="organisation-depot.html" aria-current="page">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>3. Architecture</span></div>
+    <article class="markdown">
+<h1>Organisation du dépôt</h1>
+<p>Le dépôt <code>MarceauTDML/BlockLucky</code> est un monorepo sans gestionnaire d&#39;espaces de travail : chaque projet possède son propre <code>package.json</code>, son <code>package-lock.json</code> et ses <code>node_modules</code>. Il n&#39;y a ni <code>workspaces</code> npm, ni Turborepo, ni Nx. Chaque commande se lance depuis le dossier du projet concerné, et la CI installe chaque projet séparément avec <code>npm ci</code>.</p>
+<h2 id="vue-d-ensemble"><a class="anchor" href="#vue-d-ensemble" aria-hidden="true" tabindex="-1">#</a>Vue d&#39;ensemble</h2>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">BlockLucky/
+├── smart-contract/            contrats Solidity, tests, déploiement
+├── backend/                   API Express, worker, Prisma, intégration blockchain
+├── frontend-web/              application Next.js (citoyen, partenaire, Mairie)
+├── mobile-app/                application Expo (citoyen)
+├── frontend-office-tourisme/  site statique de l&#x27;Office de Tourisme
+├── documentation-officielle/  cette documentation (Markdown vers HTML)
+├── load-tests/                scénarios k6
+├── docker/                    fichiers montés dans les conteneurs d&#x27;infrastructure
+├── .github/                   CI, Dependabot, CODEOWNERS, modèle de pull request
+├── .vscode/                   configurations de débogage
+├── docker-compose.yml         infrastructure locale et stack complète
+└── fichiers racine            conventions d&#x27;éditeur, Node, Git, sécurité</code></pre></div>
+<h2 id="fichiers-racine"><a class="anchor" href="#fichiers-racine" aria-hidden="true" tabindex="-1">#</a>Fichiers racine</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker-compose.yml" class="external" target="_blank" rel="noopener noreferrer"><code>docker-compose.yml</code></a></td>
+<td>Services <code>postgres</code>, <code>redis</code>, <code>mailpit</code>, <code>blockchain</code> (démarrés par défaut) et <code>migrate</code>, <code>backend</code>, <code>worker</code>, <code>web</code>, <code>tourisme</code> (profil <code>app</code>). Voir <a href="../infrastructure/docker-compose.html">Docker Compose</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.nvmrc" class="external" target="_blank" rel="noopener noreferrer"><code>.nvmrc</code></a></td>
+<td>Version majeure de Node.js utilisée en local et par la CI : <code>22</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.editorconfig" class="external" target="_blank" rel="noopener noreferrer"><code>.editorconfig</code></a></td>
+<td>UTF-8, fins de ligne LF, indentation de 2 espaces, ligne finale, suppression des espaces de fin sauf dans le Markdown</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.gitattributes" class="external" target="_blank" rel="noopener noreferrer"><code>.gitattributes</code></a></td>
+<td>Normalisation des fins de ligne, <code>*.sh</code> forcés en LF pour qu&#39;ils s&#39;exécutent dans les conteneurs Linux</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.gitignore" class="external" target="_blank" rel="noopener noreferrer"><code>.gitignore</code></a></td>
+<td>Ignore les <code>.env</code>, journaux et fichiers d&#39;éditeur. Chaque projet a aussi son propre <code>.gitignore</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.gitleaks.toml" class="external" target="_blank" rel="noopener noreferrer"><code>.gitleaks.toml</code></a></td>
+<td>Configuration de la recherche de secrets lancée par la CI sur tout l&#39;historique</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/CONTRIBUTING.md" class="external" target="_blank" rel="noopener noreferrer"><code>CONTRIBUTING.md</code></a></td>
+<td>Résumé des règles de contribution, qui renvoie vers <a href="../contribuer/workflow-git.html">Workflow Git</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/SECURITY.md" class="external" target="_blank" rel="noopener noreferrer"><code>SECURITY.md</code></a></td>
+<td>Procédure de signalement de vulnérabilité. Voir <a href="../securite/signalement.html">Signaler une vulnérabilité</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/README.md" class="external" target="_blank" rel="noopener noreferrer"><code>README.md</code></a></td>
+<td>Présentation courte et démarrage rapide</td>
+</tr>
+</tbody></table></div>
+<h2 id="smart-contract"><a class="anchor" href="#smart-contract" aria-hidden="true" tabindex="-1">#</a><code>smart-contract/</code></h2>
+<p>Projet Hardhat 3 en modules ES (<code>&quot;type&quot;: &quot;module&quot;</code>).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Chemin</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>contracts/BlockLucky.sol</code></a></td>
+<td>Contrat de loterie : tours, tickets, tirage VRF, cagnotte, remboursements, commission</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLuckyPOAP.sol" class="external" target="_blank" rel="noopener noreferrer"><code>contracts/BlockLuckyPOAP.sol</code></a></td>
+<td>Badge ERC-721 non transférable, un par participant et par tour</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/smart-contract/contracts/test" class="external" target="_blank" rel="noopener noreferrer"><code>contracts/test/</code></a></td>
+<td>Contrats d&#39;attaque utilisés par les tests uniquement (<code>ReentrantPlayer</code>, <code>RejectingPlayer</code>)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/smart-contract/test" class="external" target="_blank" rel="noopener noreferrer"><code>test/</code></a></td>
+<td>Tests TypeScript (Mocha et ethers), tests Solidity de fuzzing <code>BlockLucky.t.sol</code>, fixtures</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/smart-contract/scripts" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/</code></a></td>
+<td>Déploiement local et Sepolia, oracle VRF local, export des ABI vers le backend, contrôle de couverture, Slither</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/docker/start-local-chain.sh" class="external" target="_blank" rel="noopener noreferrer"><code>docker/start-local-chain.sh</code></a></td>
+<td>Démarre le nœud, déploie les contrats, crée le fichier de disponibilité, lance l&#39;oracle VRF local</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/hardhat.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>hardhat.config.ts</code></a></td>
+<td>Compilateur 0.8.34, EVM <code>prague</code>, optimiseur 200 runs, réseaux <code>localhost</code> et <code>sepolia</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/.solhint.json" class="external" target="_blank" rel="noopener noreferrer"><code>.solhint.json</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/slither.config.json" class="external" target="_blank" rel="noopener noreferrer"><code>slither.config.json</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/slither.db.json" class="external" target="_blank" rel="noopener noreferrer"><code>slither.db.json</code></a></td>
+<td>Règles de lint Solidity, configuration de Slither et constats acceptés</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/smart-contract/Dockerfile" class="external" target="_blank" rel="noopener noreferrer"><code>Dockerfile</code></a></td>
+<td>Image de la chaîne locale, pour le développement et la CI uniquement</td>
+</tr>
+</tbody></table></div>
+<h2 id="backend"><a class="anchor" href="#backend" aria-hidden="true" tabindex="-1">#</a><code>backend/</code></h2>
+<p>Projet TypeScript compilé en CommonJS. La structure de <code>src/</code> suit l&#39;<a href="adr/0001-monolithe-modulaire.html">ADR 0001</a>.</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">backend/
+├── src/
+│   ├── server.ts              process API
+│   ├── worker.ts              process worker
+│   ├── app.ts                 application Express et ordre des middlewares
+│   ├── api/&lt;domaine&gt;/         routes, controllers, services, repo, validators
+│   ├── blockchain/            client RPC, portefeuilles, passerelle, indexeur, keeper, actions, ABI
+│   ├── config/                env, Prisma, Redis, SMTP, Swagger
+│   ├── middlewares/           auth, RBAC, validation, idempotence, rate limit, erreurs, contexte
+│   ├── observability/         métriques, contexte de requête, cycle de vie, arrêt propre
+│   ├── queues/                producteurs BullMQ et options par défaut des jobs
+│   ├── workers/               consommateurs BullMQ et indexeur du webhook simulé
+│   ├── services/              services partagés entre domaines
+│   ├── socket/                serveur Socket.IO, événements, pont Redis
+│   ├── templates/emails/      gabarits HTML des emails
+│   ├── types/                 types partagés et augmentation de Express
+│   └── utils/                 réponses, cryptographie, logs, pagination
+├── prisma/                    schéma, migrations, seed
+├── __tests__/                 tests Jest (api, services, integration, chain) et mocks
+└── scripts/                   contrôle de .env.example</code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Chemin</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/src/api" class="external" target="_blank" rel="noopener noreferrer"><code>src/api/</code></a></td>
+<td>Un dossier par domaine : <code>admin</code>, <code>analytics</code>, <code>auth</code>, <code>lottery</code>, <code>marketplace</code>, <code>partners</code>, <code>system</code>, <code>user</code>, <code>webhooks</code>. Voir <a href="../backend/modules/index.html">Modules métier</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/src/blockchain/abi" class="external" target="_blank" rel="noopener noreferrer"><code>src/blockchain/abi/</code></a></td>
+<td>ABI de <code>BlockLucky</code> et <code>BlockLuckyPOAP</code>, générées par <code>npm run export:abi</code> dans <code>smart-contract/</code> et vérifiées en CI</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/workers/blockchain-indexer.worker.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/workers/blockchain-indexer.worker.ts</code></a></td>
+<td>Malgré son nom, ce n&#39;est pas un worker BullMQ : c&#39;est l&#39;indexeur appelé par le webhook de simulation</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/schema.prisma" class="external" target="_blank" rel="noopener noreferrer"><code>prisma/schema.prisma</code></a></td>
+<td>Modèle de données. Voir <a href="../base-de-donnees/modele.html">Modèle de données</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/prisma/migrations" class="external" target="_blank" rel="noopener noreferrer"><code>prisma/migrations/</code></a></td>
+<td>Migrations SQL versionnées. Voir <a href="../base-de-donnees/migrations.html">Migrations</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>prisma.config.ts</code></a></td>
+<td>Configuration de Prisma 7 : chemin du schéma et URL de la base (<code>DATABASE_URL</code>, avec la base locale par défaut)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/__tests__" class="external" target="_blank" rel="noopener noreferrer"><code>__tests__/</code></a></td>
+<td><code>api/</code> et <code>services/</code> pour les tests unitaires avec mocks Prisma et Redis, <code>integration/</code> pour les parcours complets, <code>chain/</code> pour les tests sur un vrai nœud (<code>npm run test:chain</code>)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/scripts/check-env-example.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/check-env-example.mjs</code></a></td>
+<td>Vérifie que <code>.env.example</code> contient exactement les variables du schéma (<code>npm run env:check</code>)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/Dockerfile" class="external" target="_blank" rel="noopener noreferrer"><code>Dockerfile</code></a></td>
+<td>Image multi-étapes : cibles <code>migrator</code> (migrations) et <code>runtime</code> (API et worker)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/.env.example" class="external" target="_blank" rel="noopener noreferrer"><code>.env.example</code></a></td>
+<td>Modèle de configuration locale. Voir <a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/jest.chain.config.json" class="external" target="_blank" rel="noopener noreferrer"><code>jest.chain.config.json</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/nodemon.json" class="external" target="_blank" rel="noopener noreferrer"><code>nodemon.json</code></a></td>
+<td>Configuration Jest des tests de chaîne, configuration nodemon</td>
+</tr>
+</tbody></table></div>
+<h2 id="frontend-web"><a class="anchor" href="#frontend-web" aria-hidden="true" tabindex="-1">#</a><code>frontend-web/</code></h2>
+<p>Application Next.js 16 avec App Router.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Chemin</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/app" class="external" target="_blank" rel="noopener noreferrer"><code>src/app/</code></a></td>
+<td>Routes. Le groupe <code>(citoyen)</code> porte l&#39;espace citoyen (<code>accueil</code>, <code>billetterie</code>, <code>tirage</code>, <code>boutique</code>, <code>historique</code>, <code>profil</code>), <code>mairie/</code> et <code>partenaire/</code> les deux espaces métiers, les autres dossiers les pages publiques</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/components" class="external" target="_blank" rel="noopener noreferrer"><code>src/components/</code></a></td>
+<td>Composants par domaine : <code>auth</code>, <code>charts</code>, <code>layout</code>, <code>lottery</code>, <code>marketplace</code>, <code>partner</code>, <code>ui</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/store" class="external" target="_blank" rel="noopener noreferrer"><code>src/store/</code></a></td>
+<td>Store Redux : <code>api/</code> (RTK Query, un fichier par domaine d&#39;API) et <code>slices/</code> (<code>auth</code>, <code>lottery</code>, <code>ui</code>)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/hooks" class="external" target="_blank" rel="noopener noreferrer"><code>src/hooks/</code></a></td>
+<td>Hooks applicatifs (<code>useAuth</code>, <code>useSocket</code>, <code>useBlockLuckyWallet</code>)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/lib" class="external" target="_blank" rel="noopener noreferrer"><code>src/lib/</code></a></td>
+<td>Fonctions sans état : configuration, formatage, stockage local, client Socket.IO, analytique</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/theme" class="external" target="_blank" rel="noopener noreferrer"><code>src/theme/</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/types" class="external" target="_blank" rel="noopener noreferrer"><code>src/types/</code></a></td>
+<td>Fournisseur de thème, types des réponses de l&#39;API</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/__tests__" class="external" target="_blank" rel="noopener noreferrer"><code>__tests__/</code></a></td>
+<td>Tests Vitest et Testing Library</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/next.config.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>next.config.mjs</code></a></td>
+<td>En-têtes de sécurité et CSP, sortie <code>standalone</code> pour l&#39;image Docker</td>
+</tr>
+</tbody></table></div>
+<p>Le détail est dans <a href="../web/structure.html">Stack et structure</a>.</p>
+<h2 id="mobile-app"><a class="anchor" href="#mobile-app" aria-hidden="true" tabindex="-1">#</a><code>mobile-app/</code></h2>
+<p>Application Expo en TypeScript.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Chemin</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/App.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/App.tsx</code></a></td>
+<td>Point d&#39;entrée déclaré dans <code>package.json</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/navigation" class="external" target="_blank" rel="noopener noreferrer"><code>src/navigation/</code></a></td>
+<td>Navigateurs React Navigation : racine, authentification, onglets, réglages</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/screens" class="external" target="_blank" rel="noopener noreferrer"><code>src/screens/</code></a></td>
+<td>Écrans par domaine : <code>auth</code>, <code>lottery</code>, <code>marketplace</code>, <code>settings</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components" class="external" target="_blank" rel="noopener noreferrer"><code>src/components/</code></a></td>
+<td>Composants <code>lottery</code>, <code>marketplace</code>, <code>ui</code>, <code>web3</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/services" class="external" target="_blank" rel="noopener noreferrer"><code>src/services/</code></a></td>
+<td>Client HTTP axios, stockage sécurisé, client Socket.IO, collecteur d&#39;erreurs local <code>sentry.client.ts</code> (sans SDK Sentry)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/store" class="external" target="_blank" rel="noopener noreferrer"><code>src/store/</code></a></td>
+<td>RTK Query et slices, même découpage que le web</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/app.json" class="external" target="_blank" rel="noopener noreferrer"><code>app.json</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/eas.json" class="external" target="_blank" rel="noopener noreferrer"><code>eas.json</code></a></td>
+<td>Configuration Expo et profils de build EAS</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/.expo" class="external" target="_blank" rel="noopener noreferrer"><code>.expo/</code></a></td>
+<td>Dossier local d&#39;Expo (<code>README.md</code>, <code>devices.json</code>) versionné alors qu&#39;il est propre à chaque poste : il ne contient aucune configuration du projet</td>
+</tr>
+</tbody></table></div>
+<p>Le détail est dans <a href="../mobile/structure.html">Stack et structure</a>.</p>
+<h2 id="frontend-office-tourisme"><a class="anchor" href="#frontend-office-tourisme" aria-hidden="true" tabindex="-1">#</a><code>frontend-office-tourisme/</code></h2>
+<p>Site statique servi tel quel, sans étape de build.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Chemin</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>*.html</code> à la racine</td>
+<td>Une page par rubrique : <code>index</code>, <code>decouvrir</code>, <code>sortir</code>, <code>manger</code>, <code>dormir</code>, <code>fiche</code>, <code>article</code>, <code>billetterie</code>, <code>commande</code>, <code>favoris</code>, <code>infos-pratiques</code>, <code>mentions-legales</code>, <code>bientot</code>, <code>404</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/main.js" class="external" target="_blank" rel="noopener noreferrer"><code>assets/js/main.js</code></a></td>
+<td>Point d&#39;entrée commun, charge dynamiquement le module de la page</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme/assets/js/data" class="external" target="_blank" rel="noopener noreferrer"><code>assets/js/data/</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme/assets/js/modules" class="external" target="_blank" rel="noopener noreferrer"><code>modules/</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme/assets/js/pages" class="external" target="_blank" rel="noopener noreferrer"><code>pages/</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme/assets/js/vendor" class="external" target="_blank" rel="noopener noreferrer"><code>vendor/</code></a></td>
+<td>Contenus codés en dur, modules réutilisables, scripts par page, générateur de QR code tiers</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme/assets/css" class="external" target="_blank" rel="noopener noreferrer"><code>assets/css/</code></a></td>
+<td>Feuilles découpées : jetons, base, mise en page, composants, pages</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme/docker" class="external" target="_blank" rel="noopener noreferrer"><code>docker/</code></a></td>
+<td>Configuration nginx et en-têtes de sécurité de l&#39;image</td>
+</tr>
+</tbody></table></div>
+<p>Voir <a href="../office-tourisme/architecture.html">Architecture JavaScript</a>.</p>
+<h2 id="autres-dossiers"><a class="anchor" href="#autres-dossiers" aria-hidden="true" tabindex="-1">#</a>Autres dossiers</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Chemin</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/documentation-officielle" class="external" target="_blank" rel="noopener noreferrer"><code>documentation-officielle/</code></a></td>
+<td>Sources Markdown (<code>content/</code>), générateur (<code>scripts/</code>), gabarit (<code>theme/</code>). Voir <a href="../contribuer/documentation.html">Écrire la documentation</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/load-tests" class="external" target="_blank" rel="noopener noreferrer"><code>load-tests/</code></a></td>
+<td>Scénarios k6 <code>smoke.js</code> et <code>load.js</code>. Voir <a href="../infrastructure/tests-charge.html">Tests de charge</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/docker/postgres/init" class="external" target="_blank" rel="noopener noreferrer"><code>docker/postgres/init/</code></a></td>
+<td>Script exécuté à la création de la base : active <code>pg_stat_statements</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/.github/workflows" class="external" target="_blank" rel="noopener noreferrer"><code>.github/workflows/</code></a></td>
+<td><code>ci.yml</code> (jobs par projet modifié) et <code>codeql.yml</code>. Voir <a href="../infrastructure/ci.html">Intégration continue</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/dependabot.yml" class="external" target="_blank" rel="noopener noreferrer"><code>.github/dependabot.yml</code></a></td>
+<td>Mises à jour automatiques. Voir <a href="versions.html">Versions de la stack</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/CODEOWNERS" class="external" target="_blank" rel="noopener noreferrer"><code>.github/CODEOWNERS</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/pull_request_template.md" class="external" target="_blank" rel="noopener noreferrer"><code>.github/pull_request_template.md</code></a></td>
+<td>Propriétaires des dossiers et modèle de pull request</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.vscode/launch.json" class="external" target="_blank" rel="noopener noreferrer"><code>.vscode/launch.json</code></a></td>
+<td>Lancement de l&#39;API et du worker avec <code>tsx</code>, tests Jest du fichier courant, attachement au port 9229</td>
+</tr>
+</tbody></table></div>
+<h2 id="conventions-de-nommage"><a class="anchor" href="#conventions-de-nommage" aria-hidden="true" tabindex="-1">#</a>Conventions de nommage</h2>
+<h3 id="dossiers-et-fichiers"><a class="anchor" href="#dossiers-et-fichiers" aria-hidden="true" tabindex="-1">#</a>Dossiers et fichiers</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Projet</th>
+<th>Convention observée</th>
+<th>Exemples</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Backend</td>
+<td><code>&lt;domaine&gt;.&lt;couche&gt;.ts</code> dans <code>src/api/&lt;domaine&gt;/</code></td>
+<td><code>lottery.routes.ts</code>, <code>lottery.controllers.ts</code>, <code>lottery.services.ts</code>, <code>lottery.repo.ts</code>, <code>lottery.validators.ts</code></td>
+</tr>
+<tr>
+<td>Backend</td>
+<td><code>&lt;nom&gt;.&lt;rôle&gt;.ts</code> hors des modules</td>
+<td><code>auth.middleware.ts</code>, <code>redis.config.ts</code>, <code>ledger.service.ts</code>, <code>emails.queue.ts</code>, <code>email.worker.ts</code>, <code>response.util.ts</code>, <code>api.types.ts</code></td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Tests en <code>*.test.ts</code>, tests de chaîne en <code>*.chain.ts</code></td>
+<td><code>__tests__/api/lottery.test.ts</code>, <code>__tests__/chain/onchain-lottery.chain.ts</code></td>
+</tr>
+<tr>
+<td>Contrats</td>
+<td>PascalCase, un contrat par fichier ; tests TypeScript en <code>*.test.ts</code>, fuzzing en <code>*.t.sol</code></td>
+<td><code>BlockLucky.sol</code>, <code>BlockLucky.test.ts</code>, <code>BlockLucky.t.sol</code></td>
+</tr>
+<tr>
+<td>Web et mobile</td>
+<td>Composants en PascalCase <code>.tsx</code>, hooks en <code>useX.ts</code>, slices en <code>xSlice.ts</code>, API en <code>xApi.ts</code></td>
+<td><code>TicketCard.tsx</code>, <code>useSocket.ts</code>, <code>authSlice.ts</code>, <code>lotteryApi.ts</code></td>
+</tr>
+<tr>
+<td>Web</td>
+<td>Segments de route en français, en minuscules</td>
+<td><code>app/(citoyen)/boutique/mes-codes/page.tsx</code>, <code>app/mairie/partenaires/page.tsx</code></td>
+</tr>
+<tr>
+<td>Mobile</td>
+<td>Écrans suffixés <code>Screen</code>, navigateurs suffixés <code>Stack</code> ou <code>Tabs</code>, utilitaires en <code>*.util.ts</code></td>
+<td><code>BuyTicketScreen.tsx</code>, <code>SettingsStack.tsx</code>, <code>formatters.util.ts</code></td>
+</tr>
+<tr>
+<td>Office de Tourisme</td>
+<td>Pages et modules en minuscules, mots séparés par des tirets</td>
+<td><code>infos-pratiques.html</code>, <code>pages/billetterie.js</code></td>
+</tr>
+<tr>
+<td>Migrations</td>
+<td>Horodatage puis description en snake_case</td>
+<td><code>20261111150000_onchain_wallets_tickets_indexer</code></td>
+</tr>
+</tbody></table></div>
+<h3 id="identifiants"><a class="anchor" href="#identifiants" aria-hidden="true" tabindex="-1">#</a>Identifiants</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Convention</th>
+<th>Exemples</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Modèles Prisma</td>
+<td>PascalCase au singulier, champs en camelCase</td>
+<td><code>LotteryRound.contractRoundId</code>, <code>ClaimedReward.uniqueCode</code></td>
+</tr>
+<tr>
+<td>Énumérations</td>
+<td>Valeurs en majuscules</td>
+<td><code>Role.ADMIN</code>, <code>Status.LOCKED</code>, <code>TokenType.ACCOUNT_DELETION</code></td>
+</tr>
+<tr>
+<td>Variables d&#39;environnement</td>
+<td>Majuscules et tirets bas</td>
+<td><code>BLOCKCHAIN_MODE</code>, <code>WELCOME_GRANT_WEI</code>, <code>NEXT_PUBLIC_API_URL</code>, <code>EXPO_PUBLIC_API_URL</code></td>
+</tr>
+<tr>
+<td>Clés Redis</td>
+<td>Segments séparés par <code>:</code>, préfixés automatiquement par <code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:</code></td>
+<td><code>auth:otp:&lt;id&gt;</code>, <code>wallet:grant-lock:&lt;id&gt;</code>, <code>chain:keeper-lock</code>, <code>user:ticket_limit:&lt;id&gt;</code></td>
+</tr>
+<tr>
+<td>Files BullMQ</td>
+<td>Nom fixe dans le producteur</td>
+<td><code>emails-queue</code>, <code>ledger-queue</code>, <code>chain-actions</code></td>
+</tr>
+<tr>
+<td>Événements Socket.IO</td>
+<td><code>domaine:action</code></td>
+<td><code>draw:winner</code>, <code>draw:waiting-room</code>, <code>chat:message</code>, <code>points:awarded</code></td>
+</tr>
+<tr>
+<td>Classes et singletons</td>
+<td>Classe en PascalCase suffixée par la couche, instance exportée en camelCase et par défaut</td>
+<td><code>export class LotteryService</code>, <code>export const lotteryService = new LotteryService()</code></td>
+</tr>
+</tbody></table></div>
+<p>Les conventions de code elles-mêmes sont décrites dans <a href="conventions.html">Conventions de code</a>.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="vue-ensemble.html"><span>Précédent</span><strong>Vue d&#39;ensemble</strong></a><a class="pager-next" href="choix-techniques.html"><span>Suivant</span><strong>Choix techniques</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/architecture/organisation-depot.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#vue-d-ensemble">Vue d&#39;ensemble</a></li><li class="toc-h2"><a href="#fichiers-racine">Fichiers racine</a></li><li class="toc-h2"><a href="#smart-contract">smart-contract/</a></li><li class="toc-h2"><a href="#backend">backend/</a></li><li class="toc-h2"><a href="#frontend-web">frontend-web/</a></li><li class="toc-h2"><a href="#mobile-app">mobile-app/</a></li><li class="toc-h2"><a href="#frontend-office-tourisme">frontend-office-tourisme/</a></li><li class="toc-h2"><a href="#autres-dossiers">Autres dossiers</a></li><li class="toc-h2"><a href="#conventions-de-nommage">Conventions de nommage</a></li><li class="toc-h3"><a href="#dossiers-et-fichiers">Dossiers et fichiers</a></li><li class="toc-h3"><a href="#identifiants">Identifiants</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vue d&#39;ensemble | Documentation BlockLucky</title>
+<meta name="description" content="Cette page décrit l&#39;architecture de BlockLucky selon le modèle C4, du plus large au plus détaillé : le contexte (qui utilise le système et avec quels systèmes e">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="vue-ensemble.html" aria-current="page">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>3. Architecture</span></div>
+    <article class="markdown">
+<h1>Vue d&#39;ensemble</h1>
+<p>Cette page décrit l&#39;architecture de BlockLucky selon le modèle C4, du plus large au plus détaillé : le contexte (qui utilise le système et avec quels systèmes externes il échange), les conteneurs (les applications et les stockages qui tournent), puis les composants du backend. Les diagrammes sont écrits en Mermaid dans les sources de la documentation : ils se modifient dans la même pull request que le changement d&#39;architecture qu&#39;ils décrivent.</p>
+<p>Trois idées structurent l&#39;ensemble :</p>
+<ul>
+<li><strong>La blockchain est la source de vérité de la loterie.</strong> Les tickets, le tirage, la cagnotte et les remboursements vivent dans le contrat <code>BlockLucky</code>. La base PostgreSQL en est une projection, reconstruite par un indexeur d&#39;événements.</li>
+<li><strong>Le citoyen n&#39;installe aucun portefeuille.</strong> Le backend crée et chiffre un portefeuille Ethereum par citoyen, signe ses transactions et lui verse une dotation d&#39;ethers fictifs (voir l&#39;<a href="adr/0004-smart-contract-portefeuille-integre.html">ADR 0004</a>).</li>
+<li><strong>Un seul backend, deux process.</strong> L&#39;API HTTP et le worker sont construits depuis la même image et le même code (voir l&#39;<a href="adr/0001-monolithe-modulaire.html">ADR 0001</a>).</li>
+</ul>
+<h2 id="niveau-1-contexte"><a class="anchor" href="#niveau-1-contexte" aria-hidden="true" tabindex="-1">#</a>Niveau 1 : contexte</h2>
+<div class="diagram"><pre class="mermaid">flowchart LR
+  citoyen([&quot;Citoyen d&#39;EtherBay&quot;])
+  commercant([&quot;Commerçant partenaire&quot;])
+  mairie([&quot;Mairie et DSI&quot;])
+  visiteur([&quot;Visiteur&quot;])
+
+  blocklucky[[&quot;BlockLucky : loterie citoyenne et fidélité&quot;]]
+  tourisme[[&quot;Site de l&#39;Office de Tourisme&quot;]]
+
+  ethereum[(&quot;Réseau Ethereum : Hardhat local ou Sepolia&quot;)]
+  vrf[(&quot;Chainlink VRF v2.5&quot;)]
+  smtp[(&quot;Serveur SMTP&quot;)]
+  s3[(&quot;Stockage objet S3&quot;)]
+
+  citoyen --&gt;|&quot;achète et offre des tickets, échange ses EtherPoints&quot;| blocklucky
+  commercant --&gt;|&quot;publie des offres, valide des codes&quot;| blocklucky
+  mairie --&gt;|&quot;pilote tirage, disjoncteur, trésorerie, rapports&quot;| blocklucky
+  visiteur --&gt;|&quot;prépare son séjour&quot;| tourisme
+  tourisme -.-&gt;|&quot;liens vers la loterie&quot;| blocklucky
+  blocklucky --&gt;|&quot;transactions signées, lecture des événements&quot;| ethereum
+  ethereum &lt;--&gt;|&quot;demande et preuve d&#39;aléa&quot;| vrf
+  blocklucky --&gt;|&quot;emails transactionnels&quot;| smtp
+  blocklucky --&gt;|&quot;rapports comptables&quot;| s3</pre></div>
+<h3 id="acteurs"><a class="anchor" href="#acteurs" aria-hidden="true" tabindex="-1">#</a>Acteurs</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Acteur</th>
+<th>Rôle applicatif</th>
+<th>Ce qu&#39;il fait</th>
+<th>Interface</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Citoyen</td>
+<td><code>USER</code></td>
+<td>Se connecte avec un code reçu par email, achète des tickets, en offre à un proche, suit le tirage en direct, échange ses EtherPoints contre des codes promo, exporte ou supprime ses données</td>
+<td>Frontend web, application mobile</td>
+</tr>
+<tr>
+<td>Commerçant partenaire</td>
+<td><code>PARTNER</code></td>
+<td>Gère son entreprise et ses offres, alimente un lot de codes, valide en caisse les codes présentés par les citoyens</td>
+<td>Espace <code>/partenaire</code> du frontend web</td>
+</tr>
+<tr>
+<td>Mairie et DSI</td>
+<td><code>ADMIN</code></td>
+<td>Consulte le tableau de bord, déclenche le tirage ou l&#39;annulation, actionne le disjoncteur, reverse la commission, approuve les partenaires, exporte les rapports</td>
+<td>Espace <code>/mairie</code> du frontend web</td>
+</tr>
+<tr>
+<td>Visiteur</td>
+<td>aucun compte</td>
+<td>Consulte les sorties, restaurants et hébergements, remplit un panier de billetterie simulé</td>
+<td>Site de l&#39;Office de Tourisme</td>
+</tr>
+</tbody></table></div>
+<p>Les rôles sont l&#39;énumération <code>Role</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/schema.prisma" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/schema.prisma</code></a>, contrôlés par <code>requireRoles</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/rbac.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/rbac.middleware.ts</code></a>. Le détail des droits est dans la <a href="../securite/autorisations.html">matrice des autorisations</a>.</p>
+<h3 id="systemes-externes"><a class="anchor" href="#systemes-externes" aria-hidden="true" tabindex="-1">#</a>Systèmes externes</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Système</th>
+<th>Usage</th>
+<th>Point d&#39;intégration</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Réseau Ethereum</td>
+<td>Héberge <code>BlockLucky</code> et <code>BlockLuckyPOAP</code>. En local, nœud Hardhat (service <code>blockchain</code> de Docker Compose, chain id 31337). En démonstration publique, Sepolia</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/chain.client.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/chain.client.ts</code></a>, RPC principal <code>RPC_URL</code> et de secours <code>FALLBACK_RPC_URL</code></td>
+</tr>
+<tr>
+<td>Chainlink VRF v2.5</td>
+<td>Fournit le nombre aléatoire prouvé qui désigne le gagnant. En local, <code>VRFCoordinatorV2_5Mock</code> et un oracle de développement</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/local-vrf-responder.ts" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/scripts/local-vrf-responder.ts</code></a></td>
+</tr>
+<tr>
+<td>SMTP</td>
+<td>Codes de connexion, bienvenue, alertes de sécurité, codes promo, confirmation RGPD. En local, Mailpit</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/mailer.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/mailer.config.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/email.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/email.service.ts</code></a></td>
+</tr>
+<tr>
+<td>Stockage S3</td>
+<td>Dépôt des rapports CSV et « PDF » de la Mairie</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/s3.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/s3.service.ts</code></a></td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Aucun service S3 n&#39;est déclaré dans <code>docker-compose.yml</code>. En local, l&#39;envoi échoue, l&#39;erreur est journalisée et l&#39;URL renvoyée pointe vers <code>AWS_S3_ENDPOINT</code> sans que le fichier existe. Le rapport « PDF » est un résumé JSON enregistré avec le type <code>application/pdf</code> : aucun PDF n&#39;est réellement produit.</p>
+</div>
+<h2 id="niveau-2-conteneurs"><a class="anchor" href="#niveau-2-conteneurs" aria-hidden="true" tabindex="-1">#</a>Niveau 2 : conteneurs</h2>
+<div class="diagram"><pre class="mermaid">flowchart TB
+  subgraph clients[&quot;Clients&quot;]
+    web[&quot;frontend-web : Next.js 16&quot;]
+    mobile[&quot;mobile-app : Expo et React Native&quot;]
+    office[&quot;frontend-office-tourisme : HTML statique&quot;]
+  end
+
+  subgraph backend[&quot;backend : même image&quot;]
+    api[&quot;API : Express 5, REST /api/v1, Socket.IO&quot;]
+    worker[&quot;Worker : BullMQ, indexeur, keeper&quot;]
+  end
+
+  pg[(&quot;PostgreSQL 15&quot;)]
+  redis[(&quot;Redis 7&quot;)]
+  smtp[(&quot;Mailpit ou SMTP&quot;)]
+  rpc[(&quot;Nœud RPC Ethereum&quot;)]
+  contracts[[&quot;BlockLucky et BlockLuckyPOAP&quot;]]
+  vrf[(&quot;Coordinateur VRF&quot;)]
+
+  web --&gt;|&quot;HTTPS JSON, WebSocket&quot;| api
+  mobile --&gt;|&quot;HTTPS JSON, WebSocket&quot;| api
+  office -.-&gt;|&quot;liens&quot;| web
+  api --&gt;|&quot;Prisma, pool pg&quot;| pg
+  api --&gt;|&quot;ioredis&quot;| redis
+  worker --&gt;|&quot;Prisma&quot;| pg
+  worker --&gt;|&quot;jobs, verrous, pub/sub&quot;| redis
+  worker --&gt;|&quot;SMTP&quot;| smtp
+  api --&gt;|&quot;ethers v6&quot;| rpc
+  worker --&gt;|&quot;ethers v6&quot;| rpc
+  rpc --- contracts
+  contracts &lt;--&gt; vrf
+  redis -.-&gt;|&quot;événements temps réel&quot;| api</pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Conteneur</th>
+<th>Technologie</th>
+<th>Responsabilité</th>
+<th>Port local</th>
+<th>Point d&#39;entrée</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>frontend-web</code></td>
+<td>Next.js 16, React 19, Tailwind 4, RTK Query</td>
+<td>Espaces citoyen, partenaire et Mairie, pages publiques</td>
+<td>3000</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/layout.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/layout.tsx</code></a></td>
+</tr>
+<tr>
+<td><code>mobile-app</code></td>
+<td>Expo SDK 58, React Native 0.88, RTK Query</td>
+<td>Application citoyenne iOS et Android</td>
+<td>8081 (Metro)</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/App.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/App.tsx</code></a></td>
+</tr>
+<tr>
+<td><code>frontend-office-tourisme</code></td>
+<td>HTML, CSS, modules ES, nginx</td>
+<td>Site vitrine sans backend, renvoie vers la loterie</td>
+<td>4000</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/index.html" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/index.html</code></a></td>
+</tr>
+<tr>
+<td>API</td>
+<td>Express 5, Socket.IO 4, TypeScript</td>
+<td>REST sous <code>/api/v1</code> (alias <code>/api</code>), WebSocket, Swagger sur <code>/api/docs</code>, sondes <code>/health/*</code>, <code>/metrics</code></td>
+<td>2053</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/server.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/server.ts</code></a></td>
+</tr>
+<tr>
+<td>Worker</td>
+<td>BullMQ 6, ethers v6</td>
+<td>Files <code>emails-queue</code>, <code>ledger-queue</code>, <code>chain-actions</code>, indexeur et keeper de la loterie, sondes sur <code>PORT + 1</code></td>
+<td>2054</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/worker.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/worker.ts</code></a></td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td>PostgreSQL 15 (<code>postgres:15-alpine</code>), extension <code>pg_stat_statements</code></td>
+<td>Comptes, projection des tours et tickets, EtherPoints, offres, codes, analytique, audit</td>
+<td>5434</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/schema.prisma" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/schema.prisma</code></a></td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>Redis 7.4, AOF <code>everysec</code>, <code>noeviction</code></td>
+<td>Files BullMQ, défis OTP, révocation de sessions, idempotence, rate limit, verrous du keeper et de la dotation, préférences, relais Socket.IO</td>
+<td>6380</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/redis.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/redis.config.ts</code></a></td>
+</tr>
+<tr>
+<td>Nœud RPC</td>
+<td>Hardhat 3 en local, fournisseur Sepolia sinon</td>
+<td>Exécution et lecture des contrats</td>
+<td>8545</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/docker/start-local-chain.sh" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/docker/start-local-chain.sh</code></a></td>
+</tr>
+<tr>
+<td>Smart contracts</td>
+<td>Solidity, OpenZeppelin 5, Chainlink VRF v2.5</td>
+<td>Tours, tickets, tirage, cagnotte, remboursements, commission, badges POAP</td>
+<td>-</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a></td>
+</tr>
+</tbody></table></div>
+<h3 id="repartition-entre-l-api-et-le-worker"><a class="anchor" href="#repartition-entre-l-api-et-le-worker" aria-hidden="true" tabindex="-1">#</a>Répartition entre l&#39;API et le worker</h3>
+<p>Le process API (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/server.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/server.ts</code></a>) démarre Express, Socket.IO et le pont d&#39;événements Redis. Il ne démarre les workers BullMQ et les services de chaîne (indexeur et keeper) que si <code>RUN_WORKERS=true</code>, la valeur par défaut du schéma de configuration. Docker Compose fixe <code>RUN_WORKERS: &quot;false&quot;</code> pour le service <code>backend</code> et lance un service <code>worker</code> séparé.</p>
+<p>Le process worker (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/worker.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/worker.ts</code></a>) démarre toujours <code>startWorkers()</code> et <code>startChainServices()</code>. Il s&#39;arrête avec un code d&#39;erreur si aucun worker n&#39;a pu être créé, et expose <code>/health/live</code> et <code>/metrics</code> sur le port <code>PORT + 1</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Traitement</th>
+<th>Process API (<code>RUN_WORKERS=false</code>)</th>
+<th>Process worker</th>
+<th>Process API seul (<code>RUN_WORKERS=true</code>)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Requêtes REST et Socket.IO</td>
+<td>oui</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td>Workers <code>emails-queue</code>, <code>ledger-queue</code>, <code>chain-actions</code></td>
+<td>non</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td>Indexeur (<code>lotteryIndexer.syncOnce</code>, toutes les <code>INDEXER_INTERVAL_MS</code>)</td>
+<td>non</td>
+<td>oui (mode <code>onchain</code>)</td>
+<td>oui (mode <code>onchain</code>)</td>
+</tr>
+<tr>
+<td>Keeper (<code>runKeeperOnce</code>, toutes les <code>KEEPER_INTERVAL_MS</code>)</td>
+<td>non</td>
+<td>oui (mode <code>onchain</code>)</td>
+<td>oui (mode <code>onchain</code>)</td>
+</tr>
+<tr>
+<td>Indexation immédiate du reçu d&#39;une transaction envoyée par l&#39;API</td>
+<td>oui</td>
+<td>-</td>
+<td>oui</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;indexeur et le keeper sont démarrés par <code>startChainServices</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.keeper.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.keeper.ts</code></a>. Ils ne font rien en mode <code>simulated</code>. Le détail est dans <a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a> et <a href="../integration-blockchain/keeper.html">Keeper du tirage</a>.</p>
+<h3 id="relais-des-evenements-temps-reel"><a class="anchor" href="#relais-des-evenements-temps-reel" aria-hidden="true" tabindex="-1">#</a>Relais des événements temps réel</h3>
+<p>Les événements <code>draw:winner</code> et <code>points:awarded</code> sont produits par l&#39;indexeur, donc souvent dans le worker, qui n&#39;a pas de serveur Socket.IO. <code>emitSocketEvent</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/socket/event-bridge.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/socket/event-bridge.ts</code></a>) émet directement si le process possède un serveur Socket.IO, sinon publie le message sur le canal Redis <code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:socket-events</code>. L&#39;API s&#39;y abonne au démarrage (<code>startSocketEventBridge</code>) et réémet vers tous les clients connectés, en ne laissant passer que ces deux événements. Voir <a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a>.</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Socket.IO n&#39;utilise pas d&#39;adaptateur Redis. Les événements émis directement par une instance d&#39;API (salle d&#39;attente, chat) n&#39;atteignent que les clients de cette instance. Le passage à plusieurs instances d&#39;API demande l&#39;ajout de <code>@socket.io/redis-adapter</code> ou équivalent.</p>
+</div>
+<h3 id="modes-de-fonctionnement"><a class="anchor" href="#modes-de-fonctionnement" aria-hidden="true" tabindex="-1">#</a>Modes de fonctionnement</h3>
+<p><code>BLOCKCHAIN_MODE</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/env.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/env.config.ts</code></a>) vaut <code>onchain</code> par défaut et est imposé en production par le schéma Zod. En mode <code>simulated</code>, les services de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/blockchain.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/blockchain.service.ts</code></a> génèrent des hash aléatoires, tirent le gagnant avec <code>crypto.randomInt</code> et ne versent aucune cagnotte. Ce mode sert aux tests unitaires et au développement sans nœud. Voir <a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a>.</p>
+<h2 id="niveau-3-composants-du-backend"><a class="anchor" href="#niveau-3-composants-du-backend" aria-hidden="true" tabindex="-1">#</a>Niveau 3 : composants du backend</h2>
+<div class="diagram"><pre class="mermaid">flowchart TB
+  subgraph http[&quot;Chaîne HTTP : app.ts&quot;]
+    mw[&quot;Middlewares transverses&quot;]
+    routes[&quot;Modules api/domaine : routes, controllers, services, repo&quot;]
+    err[&quot;error.middleware&quot;]
+  end
+
+  subgraph transverse[&quot;Services transverses&quot;]
+    ledger[&quot;ledger.service&quot;]
+    session[&quot;session.service et otp-challenge.service&quot;]
+    mail[&quot;emails.queue et email.service&quot;]
+  end
+
+  subgraph chain[&quot;blockchain/&quot;]
+    gateway[&quot;lottery.gateway&quot;]
+    wallet[&quot;wallet.service&quot;]
+    indexer[&quot;lottery.indexer&quot;]
+    keeper[&quot;lottery.keeper&quot;]
+    actions[&quot;chain-actions&quot;]
+    client[&quot;chain.client&quot;]
+  end
+
+  socket[&quot;socket/ : handler et event-bridge&quot;]
+  prisma[(&quot;prisma.config&quot;)]
+  redis[(&quot;redis.config&quot;)]
+
+  mw --&gt; routes --&gt; err
+  routes --&gt; ledger
+  routes --&gt; session
+  routes --&gt; mail
+  routes --&gt; gateway
+  gateway --&gt; wallet
+  gateway --&gt; indexer
+  keeper --&gt; indexer
+  indexer --&gt; actions
+  indexer --&gt; ledger
+  indexer --&gt; socket
+  gateway --&gt; client
+  actions --&gt; client
+  ledger --&gt; prisma
+  routes --&gt; redis</pre></div>
+<h3 id="chaine-http"><a class="anchor" href="#chaine-http" aria-hidden="true" tabindex="-1">#</a>Chaîne HTTP</h3>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a> monte les middlewares dans cet ordre :</p>
+<ol>
+<li><code>requestContextMiddleware</code> : identifiant <code>X-Request-Id</code> propagé dans les logs par <code>AsyncLocalStorage</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/observability/request-context.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/observability/request-context.ts</code></a>).</li>
+<li><code>httpMetricsMiddleware</code> : histogrammes Prometheus par route (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/observability/metrics.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/observability/metrics.ts</code></a>).</li>
+<li>Helmet, CORS limité à <code>FRONTEND_URL</code> et <code>CORS_ORIGINS</code>, <code>express.json</code> limité à 1 Mo (corps brut conservé pour <code>/api/webhooks/*</code>), <code>express.urlencoded</code>.</li>
+<li>Routes système (<code>/health</code>, <code>/health/live</code>, <code>/health/ready</code>, <code>/health/deep</code>, <code>/api/config</code>) et <code>/metrics</code>, avant le mode maintenance et le rate limit.</li>
+<li>Mode maintenance : <code>MAINTENANCE_MODE=true</code> renvoie 503 avec <code>Retry-After: 300</code> sur <code>/api/*</code> sauf <code>/api/admin</code>.</li>
+<li><code>globalRateLimiter</code> : 300 requêtes par 15 minutes et par IP, compteurs dans Redis.</li>
+<li>Swagger sur <code>/api/docs</code>, puis le routeur des modules monté sur <code>/api/v1</code> et <code>/api</code>.</li>
+<li><code>notFoundHandler</code> et <code>errorHandler</code>.</li>
+</ol>
+<p>Dans chaque route, les middlewares spécifiques suivent l&#39;ordre <code>authenticate</code>, <code>requireRoles</code>, <code>idempotency</code>, <code>validate</code>, puis le controller. Le détail est dans <a href="../backend/structure.html">Structure et cycle d&#39;une requête</a>.</p>
+<h3 id="modules-metier"><a class="anchor" href="#modules-metier" aria-hidden="true" tabindex="-1">#</a>Modules métier</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Préfixe</th>
+<th>Contenu</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>auth</code></td>
+<td><code>/auth</code></td>
+<td>Connexion par code email, 2FA par application ou email, déconnexion, onboarding</td>
+<td><a href="../backend/modules/auth.html">Authentification</a></td>
+</tr>
+<tr>
+<td><code>lottery</code></td>
+<td><code>/lottery</code></td>
+<td>Statut du tour, achat, cadeau, portefeuille, retrait de cagnotte, tirage et annulation (Mairie), métadonnées POAP, classement, charte</td>
+<td><a href="../backend/modules/loterie.html">Loterie</a></td>
+</tr>
+<tr>
+<td><code>marketplace</code></td>
+<td><code>/marketplace</code></td>
+<td>Catalogue, solde d&#39;EtherPoints, échange contre un code, codes du citoyen, validation en caisse</td>
+<td><a href="../backend/modules/boutique.html">Boutique et récompenses</a></td>
+</tr>
+<tr>
+<td><code>partners</code></td>
+<td><code>/partners</code></td>
+<td>Entreprises partenaires, offres, lots de codes</td>
+<td><a href="../backend/modules/partenaires.html">Partenaires</a></td>
+</tr>
+<tr>
+<td><code>user</code></td>
+<td><code>/user</code></td>
+<td>Profil, parrainage, quêtes sociales, limite de jeu responsable, préférences, notifications, export et suppression RGPD</td>
+<td><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></td>
+</tr>
+<tr>
+<td><code>analytics</code></td>
+<td><code>/analytics</code></td>
+<td>Événements d&#39;acquisition et tableau analytique</td>
+<td><a href="../backend/modules/analytique.html">Analytique</a></td>
+</tr>
+<tr>
+<td><code>admin</code></td>
+<td><code>/admin</code></td>
+<td>Tableau de bord, disjoncteur, trésorerie, approbation des partenaires, rapports, journal d&#39;audit</td>
+<td><a href="../backend/modules/administration.html">Administration Mairie</a></td>
+</tr>
+<tr>
+<td><code>webhooks</code></td>
+<td><code>/webhooks</code></td>
+<td>Webhook signé d&#39;indexation, désactivé en mode <code>onchain</code></td>
+<td><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></td>
+</tr>
+<tr>
+<td><code>system</code></td>
+<td>racine</td>
+<td>Sondes de santé et configuration client</td>
+<td><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></td>
+</tr>
+</tbody></table></div>
+<h3 id="composants-transverses"><a class="anchor" href="#composants-transverses" aria-hidden="true" tabindex="-1">#</a>Composants transverses</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Composant</th>
+<th>Fichier</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Configuration</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/env.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/env.config.ts</code></a></td>
+<td>Schéma Zod de toutes les variables, arrêt au démarrage si invalide, garde-fous de production</td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/prisma.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/prisma.config.ts</code></a></td>
+<td><code>PrismaClient</code> avec l&#39;adaptateur <code>@prisma/adapter-pg</code>, pool borné, <code>statement_timeout</code>, <code>lock_timeout</code> de 5 s</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/redis.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/redis.config.ts</code></a></td>
+<td><code>RedisManager</code> : préfixe de clés, timeout de 500 ms par commande, repli en mémoire</td>
+</tr>
+<tr>
+<td>Ledger</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/ledger.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/ledger.service.ts</code></a></td>
+<td>Crédit et débit d&#39;EtherPoints dans une transaction avec écriture d&#39;un <code>PointTransaction</code></td>
+</tr>
+<tr>
+<td>Sessions</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/session.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/session.service.ts</code></a></td>
+<td>JWT HS256 avec <code>jti</code>, révocation unitaire et globale dans Redis</td>
+</tr>
+<tr>
+<td>Défis OTP</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/otp-challenge.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/otp-challenge.service.ts</code></a></td>
+<td>Codes à 6 chiffres hachés en HMAC, 10 minutes, 5 essais par code, blocage après 10 échecs par heure</td>
+</tr>
+<tr>
+<td>Emails</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/queues/emails.queue.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/queues/emails.queue.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/workers/email.worker.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/workers/email.worker.ts</code></a></td>
+<td>Mise en file, ou envoi direct si la file est indisponible</td>
+</tr>
+<tr>
+<td>Arrêt propre</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/observability/shutdown.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/observability/shutdown.ts</code></a></td>
+<td>Fermeture ordonnée sur <code>SIGTERM</code> et <code>SIGINT</code>, arrêt forcé après <code>SHUTDOWN_TIMEOUT_MS</code></td>
+</tr>
+</tbody></table></div>
+<h3 id="composants-blockchain"><a class="anchor" href="#composants-blockchain" aria-hidden="true" tabindex="-1">#</a>Composants blockchain</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Composant</th>
+<th>Fichier</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Client RPC</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/chain.client.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/chain.client.ts</code></a></td>
+<td>Fournisseurs principal et de secours (timeout 15 s), signataire opérateur <code>NonceManager</code>, instances des contrats, URL d&#39;explorateur</td>
+</tr>
+<tr>
+<td>Portefeuilles</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/wallet.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/wallet.service.ts</code></a></td>
+<td>Création et chiffrement des portefeuilles, signataire du citoyen, dotation de bienvenue sous verrou Redis</td>
+</tr>
+<tr>
+<td>Passerelle</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.gateway.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.gateway.ts</code></a></td>
+<td>Lecture des tours, envoi des transactions puis indexation du reçu, traduction des erreurs du contrat en <code>AppError</code></td>
+</tr>
+<tr>
+<td>Indexeur</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.indexer.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.indexer.ts</code></a></td>
+<td>Lecture des événements depuis le curseur <code>ChainCursor</code>, projection idempotente en base, EtherPoints, événements temps réel, mise en file des actions</td>
+</tr>
+<tr>
+<td>Keeper</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.keeper.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.keeper.ts</code></a></td>
+<td>Demande du tirage ou clôture des tours expirés, sous verrou Redis</td>
+</tr>
+<tr>
+<td>Actions on-chain</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/chain-actions.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/chain-actions.ts</code></a></td>
+<td>File BullMQ <code>chain-actions</code> : frappe des POAP, retrait de la cagnotte et des remboursements pour le compte des citoyens</td>
+</tr>
+<tr>
+<td>Métadonnées POAP</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/poap.metadata.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/poap.metadata.ts</code></a></td>
+<td>JSON ERC-721 et visuel SVG servis par <code>/lottery/poap/:file</code></td>
+</tr>
+</tbody></table></div>
+<h2 id="ou-trouver-la-suite"><a class="anchor" href="#ou-trouver-la-suite" aria-hidden="true" tabindex="-1">#</a>Où trouver la suite</h2>
+<ul>
+<li>Le rôle de chaque dossier : <a href="organisation-depot.html">Organisation du dépôt</a>.</li>
+<li>Les raisons des choix de briques : <a href="choix-techniques.html">Choix techniques</a> et les <a href="adr/index.html">décisions d&#39;architecture</a>.</li>
+<li>Le déroulé précis des cas d&#39;usage : <a href="flux/index.html">Flux métier</a>.</li>
+<li>Le déploiement des conteneurs : <a href="../infrastructure/docker-compose.html">Docker Compose</a>.</li>
+</ul>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="../demarrage/depannage.html"><span>Précédent</span><strong>Dépannage</strong></a><a class="pager-next" href="organisation-depot.html"><span>Suivant</span><strong>Organisation du dépôt</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/architecture/vue-ensemble.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#niveau-1-contexte">Niveau 1 : contexte</a></li><li class="toc-h3"><a href="#acteurs">Acteurs</a></li><li class="toc-h3"><a href="#systemes-externes">Systèmes externes</a></li><li class="toc-h2"><a href="#niveau-2-conteneurs">Niveau 2 : conteneurs</a></li><li class="toc-h3"><a href="#repartition-entre-l-api-et-le-worker">Répartition entre l&#39;API et le worker</a></li><li class="toc-h3"><a href="#relais-des-evenements-temps-reel">Relais des événements temps réel</a></li><li class="toc-h3"><a href="#modes-de-fonctionnement">Modes de fonctionnement</a></li><li class="toc-h2"><a href="#niveau-3-composants-du-backend">Niveau 3 : composants du backend</a></li><li class="toc-h3"><a href="#chaine-http">Chaîne HTTP</a></li><li class="toc-h3"><a href="#modules-metier">Modules métier</a></li><li class="toc-h3"><a href="#composants-transverses">Composants transverses</a></li><li class="toc-h3"><a href="#composants-blockchain">Composants blockchain</a></li><li class="toc-h2"><a href="#ou-trouver-la-suite">Où trouver la suite</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

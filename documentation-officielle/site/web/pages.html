@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages et espaces | Documentation BlockLucky</title>
+<meta name="description" content="Le dossier frontend-web/src/app contient 29 fichiers page.tsx, donc 29 URL. Elles se répartissent en quatre espaces qui partagent le même design system mais pas">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="pages.html" aria-current="page">Pages et espaces</a></div></li><li><div class="nav-row"><a href="authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>8. Frontend web</span></div>
+    <article class="markdown">
+<h1>Pages et espaces</h1>
+<p>Le dossier <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/app" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app</code></a> contient 29 fichiers <code>page.tsx</code>, donc 29 URL. Elles se répartissent en quatre espaces qui partagent le même design system mais pas les mêmes droits. Cette page en donne l&#39;inventaire complet : URL, rôle, données appelées et droits requis côté client et côté backend.</p>
+<h2 id="lire-les-tableaux"><a class="anchor" href="#lire-les-tableaux" aria-hidden="true" tabindex="-1">#</a>Lire les tableaux</h2>
+<ul>
+<li><strong>Données</strong> : hooks RTK Query (définis dans <a href="etat-api.html">État et appels API</a>) et endpoint du backend. « Aucune » signifie que la page n&#39;appelle pas l&#39;API.</li>
+<li><strong>Droit client</strong> : contrôle effectué par <a href="authentification.html#garde-des-routes"><code>RequireRole</code></a> dans le layout de l&#39;espace. C&#39;est un confort d&#39;interface, pas une protection.</li>
+<li><strong>Droit backend</strong> : contrôle réel appliqué par les middlewares <code>authenticate</code> et <code>requireRoles</code> des routes appelées. La matrice complète est dans <a href="../securite/autorisations.html">Autorisations et matrice des droits</a>.</li>
+</ul>
+<p>Les pages sans espace (erreurs) sont listées en fin de page.</p>
+<h2 id="espace-public"><a class="anchor" href="#espace-public" aria-hidden="true" tabindex="-1">#</a>Espace public</h2>
+<p>Sept pages accessibles sans compte. La page d&#39;accueil et la transparence utilisent <code>PublicShell</code> ; les pages légales passent par <code>LegalPage</code> ; la connexion et l&#39;invitation sont des pages autonomes.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Fichier</th>
+<th>Rôle</th>
+<th>Données</th>
+<th>Droits</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>page.tsx</code></a></td>
+<td>Page municipale : présentation, compte à rebours, cagnotte, six étapes du parcours, garanties, résultat du tirage, FAQ. Envoie <code>landing_view</code> puis <code>result_view</code> si un gagnant existe.</td>
+<td><code>useGetLotteryStatusQuery</code> (<code>GET /lottery/status</code>)</td>
+<td>Aucun ; route publique</td>
+</tr>
+<tr>
+<td><code>/transparence</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/transparence/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>transparence/page.tsx</code></a></td>
+<td>Charte de transparence du tirage. Envoie <code>rules_view</code>.</td>
+<td><code>TransparencyCharter</code> : <code>useGetTransparencyCharterQuery</code> (<code>GET /lottery/transparency-charter</code>), avec un texte de repli codé en dur</td>
+<td>Aucun</td>
+</tr>
+<tr>
+<td><code>/confidentialite</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/confidentialite/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>confidentialite/page.tsx</code></a></td>
+<td>Politique de confidentialité et bouton d&#39;opposition à la mesure d&#39;audience</td>
+<td>Aucune (texte statique, <code>localStorage</code>)</td>
+<td>Aucun</td>
+</tr>
+<tr>
+<td><code>/mentions-legales</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mentions-legales/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mentions-legales/page.tsx</code></a></td>
+<td>Conditions de participation</td>
+<td>Aucune</td>
+<td>Aucun</td>
+</tr>
+<tr>
+<td><code>/connexion</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/connexion/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>connexion/page.tsx</code></a></td>
+<td>Connexion citoyenne ou professionnelle (<code>?espace=pro</code>), vérification de majorité, carrousel d&#39;introduction, parrainage. Accepte <code>?next=</code></td>
+<td><code>useSocialLoginMutation</code> (<code>POST /auth/login</code>), <code>useGetOnboardingQuery</code> (<code>GET /auth/onboarding</code>) dans le carrousel</td>
+<td>Aucun ; redirige si déjà connecté</td>
+</tr>
+<tr>
+<td><code>/connexion/verification</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/connexion/verification/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>connexion/verification/page.tsx</code></a></td>
+<td>Saisie du code à 6 chiffres (email ou application TOTP)</td>
+<td><code>useVerify2FAMutation</code> (<code>POST /auth/2fa/verify</code>)</td>
+<td>Exige une vérification en attente dans le store, sinon retour à <code>/connexion</code></td>
+</tr>
+<tr>
+<td><code>/invite/[code]</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/invite/[code]/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>invite/[code]/page.tsx</code></a></td>
+<td>Lien de parrainage : stocke le code dans <code>bl.referral.code</code>, met <code>utm_source</code> à <code>referral</code> s&#39;il est vide, envoie <code>REFERRAL_LINK_OPENED</code>, redirige vers <code>/</code></td>
+<td>Aucune (sauf <code>POST /analytics/track</code>)</td>
+<td>Aucun</td>
+</tr>
+</tbody></table></div>
+<h2 id="espace-citoyen"><a class="anchor" href="#espace-citoyen" aria-hidden="true" tabindex="-1">#</a>Espace citoyen</h2>
+<p>Treize pages sous le groupe de routes <code>(citoyen)</code>. Le layout <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/layout.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>(citoyen)/layout.tsx</code></a> appelle <code>RequireRole</code> sans liste de rôles : tout compte authentifié y entre, y compris un administrateur ou un partenaire. Toutes les routes du backend appelées ici exigent <code>authenticate</code>, sauf les lectures publiques de la loterie et du catalogue.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Fichier</th>
+<th>Rôle</th>
+<th>Données</th>
+<th>Droit backend</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/accueil</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/accueil/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>accueil/page.tsx</code></a></td>
+<td>Tableau de bord : carte du gagnant, état du réseau, compte à rebours, achat en un clic d&#39;un ticket, jauge, classement</td>
+<td><code>useGetLotteryStatusQuery</code> (rafraîchi toutes les 30 s), <code>useGetLeaderboardQuery</code>, <code>useBlockLuckyWallet</code> (<code>POST /lottery/buy</code>), <code>WinnerClaimCard</code></td>
+<td>Statut et classement publics ; achat : connecté</td>
+</tr>
+<tr>
+<td><code>/billetterie</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/billetterie/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>billetterie/page.tsx</code></a></td>
+<td>Achat de 1, 2, 5 ou 10 tickets, ou cadeau par email (<code>?mode=cadeau</code>), reçu en attente puis confirmé</td>
+<td><code>useGetLotteryStatusQuery</code>, <code>useBlockLuckyWallet</code> (<code>POST /lottery/buy</code>, <code>POST /lottery/gift</code>), <code>WalletCard</code> (<code>GET /lottery/wallet</code>)</td>
+<td>Connecté</td>
+</tr>
+<tr>
+<td><code>/tirage</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/tirage/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>tirage/page.tsx</code></a></td>
+<td>Salle de tirage en direct : salle d&#39;attente, roue, preuve VRF, discussion, retrait des gains. Envoie <code>result_view</code></td>
+<td><code>useGetLotteryStatusQuery</code> (15 s), <code>useSocket(round.id)</code>, <code>WinnerClaimCard</code> (<code>POST /lottery/claim-prize</code>)</td>
+<td>Statut public ; retrait : connecté</td>
+</tr>
+<tr>
+<td><code>/historique</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/historique/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>historique/page.tsx</code></a></td>
+<td>Tickets avec liens vers l&#39;explorateur et galerie des badges POAP</td>
+<td><code>useGetMyTransactionsQuery</code> (<code>GET /lottery/my-tickets</code>)</td>
+<td>Connecté</td>
+</tr>
+<tr>
+<td><code>/boutique</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/boutique/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>boutique/page.tsx</code></a></td>
+<td>Catalogue des offres des commerces partenaires, solde de points</td>
+<td><code>useGetCatalogQuery</code> (<code>GET /marketplace/catalog</code>), <code>usePoints</code> (<code>GET /marketplace/points</code>)</td>
+<td>Catalogue public ; points : connecté</td>
+</tr>
+<tr>
+<td><code>/boutique/[rewardId]</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/boutique/[rewardId]/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>boutique/[rewardId]/page.tsx</code></a></td>
+<td>Détail d&#39;une offre et échange contre des EtherPoints ; enregistre le code obtenu dans <code>bl.marketplace.lastClaim</code> puis redirige vers <code>/boutique/carte</code></td>
+<td><code>useGetRewardDetailQuery</code> (<code>GET /marketplace/rewards/:id</code>), <code>useClaimRewardMutation</code> (<code>POST /marketplace/claim</code>), <code>usePoints</code></td>
+<td>Détail public ; échange : connecté</td>
+</tr>
+<tr>
+<td><code>/boutique/carte</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/boutique/carte/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>boutique/carte/page.tsx</code></a></td>
+<td>Carte à gratter qui révèle le dernier code obtenu</td>
+<td>Aucune : lit <code>bl.marketplace.lastClaim</code> dans <code>localStorage</code></td>
+<td>Aucun appel</td>
+</tr>
+<tr>
+<td><code>/boutique/mes-codes</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/boutique/mes-codes/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>boutique/mes-codes/page.tsx</code></a></td>
+<td>Codes partenaires déjà obtenus</td>
+<td><code>useGetMyCodesQuery</code> (<code>GET /marketplace/my-codes</code>)</td>
+<td>Connecté</td>
+</tr>
+<tr>
+<td><code>/profil</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>profil/page.tsx</code></a></td>
+<td>Passeport citoyen : portefeuille, statistiques, thème et langue, parrainage et partage, missions citoyennes, déconnexion</td>
+<td><code>WalletCard</code>, <code>useGetReferralsQuery</code>, <code>useGetQuestsQuery</code>, <code>useCompleteQuestMutation</code>, <code>useUpdatePreferencesMutation</code>, <code>usePoints</code></td>
+<td>Connecté</td>
+</tr>
+<tr>
+<td><code>/profil/securite</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/securite/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>profil/securite/page.tsx</code></a></td>
+<td>Plafond de tickets par tirage (jeu responsable), état et désactivation de la 2FA, déconnexion de tous les appareils, rappel du rôle RBAC</td>
+<td><code>useSetResponsibleLimitMutation</code> (<code>PUT /user/responsible-limit</code>), <code>disable2FA</code> (<code>POST /auth/2fa/disable</code>), <code>signOutEverywhere</code> (<code>POST /auth/logout</code>)</td>
+<td>Connecté</td>
+</tr>
+<tr>
+<td><code>/profil/securite/2fa</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/securite/2fa/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>profil/securite/2fa/page.tsx</code></a></td>
+<td>Activation de la 2FA par application (QR code, clé, codes de secours) ou par email</td>
+<td><code>setup2FA</code> (<code>POST /auth/2fa/setup</code>), <code>verifyOtpCode</code> (<code>POST /auth/2fa/verify</code>)</td>
+<td>Connecté</td>
+</tr>
+<tr>
+<td><code>/profil/rgpd</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>profil/rgpd/page.tsx</code></a></td>
+<td>Export JSON des données, demande puis confirmation d&#39;anonymisation</td>
+<td><code>useExportGdprDataMutation</code> (<code>GET /user/gdpr/export</code>), <code>useRequestGdprDeletionMutation</code>, <code>useConfirmGdprDeletionMutation</code></td>
+<td>Connecté ; la confirmation (<code>POST /user/gdpr/confirm-delete</code>) n&#39;exige que le jeton</td>
+</tr>
+<tr>
+<td><code>/profil/aide</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/aide/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>profil/aide/page.tsx</code></a></td>
+<td>Charte de transparence et bouton de notification simulée</td>
+<td><code>TransparencyCharter</code>, <code>usePushNotifications</code> (<code>GET /user/notifications</code>)</td>
+<td>Connecté pour les notifications</td>
+</tr>
+</tbody></table></div>
+<p>La navigation de l&#39;espace citoyen expose cinq onglets (Accueil, Tickets, Tirage, Boutique, Profil) et trois entrées réservées au bureau : Historique et POAP, Mes codes, Charte et aide.</p>
+<h2 id="dashboard-mairie"><a class="anchor" href="#dashboard-mairie" aria-hidden="true" tabindex="-1">#</a>Dashboard Mairie</h2>
+<p>Cinq pages sous <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/layout.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mairie/layout.tsx</code></a>, réservées au rôle <code>ADMIN</code> côté client. Côté backend, tout le routeur <code>/admin</code> applique <code>authenticate</code> puis <code>requireRoles(&#39;ADMIN&#39;)</code>. Ce middleware refuse aussi un administrateur qui n&#39;a pas activé la 2FA quand <code>ADMIN_MFA_REQUIRED</code> vaut <code>true</code> (valeur par défaut, imposée en production) : la page s&#39;affiche alors, mais les appels répondent 403 jusqu&#39;à l&#39;activation depuis <code>/profil/securite/2fa</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Fichier</th>
+<th>Rôle</th>
+<th>Données</th>
+<th>Droit backend</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/mairie</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mairie/page.tsx</code></a></td>
+<td>Pilotage : indicateurs (cagnotte, tickets, part Mairie, inscrits, partenaires, récompenses), état du réseau, progression vers 10 000 participants</td>
+<td><code>useGetAdminDashboardQuery</code> (<code>GET /admin/dashboard</code>, 60 s), <code>useGetLotteryStatusQuery</code> (60 s)</td>
+<td><code>ADMIN</code></td>
+</tr>
+<tr>
+<td><code>/mairie/analytique</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/analytique/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mairie/analytique/page.tsx</code></a></td>
+<td>Indicateurs, répartition par tranche d&#39;âge et part des 18-35 ans, événements par source UTM ; export CSV téléchargé ou rapport imprimable</td>
+<td><code>useGetAnalyticsDashboardQuery</code> (<code>GET /analytics/dashboard</code>), <code>useExportReportMutation</code> (<code>GET /admin/reports/export?format=</code>)</td>
+<td><code>ADMIN</code></td>
+</tr>
+<tr>
+<td><code>/mairie/partenaires</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/partenaires/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mairie/partenaires/page.tsx</code></a></td>
+<td>Liste des commerces, activation ou suspension</td>
+<td><code>useGetPartnersQuery</code> (<code>GET /partners</code>), <code>useSetPartnerStatusMutation</code> (<code>PATCH /admin/partners/:id/status</code>)</td>
+<td>Liste publique ; changement de statut : <code>ADMIN</code></td>
+</tr>
+<tr>
+<td><code>/mairie/securite</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/securite/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mairie/securite/page.tsx</code></a></td>
+<td>Disjoncteur du contrat (confirmation par le mot <code>PAUSE</code>), lancement du tirage, annulation et remboursement du tour, retrait de la part Mairie vers une adresse multisig</td>
+<td><code>useGetAdminDashboardQuery</code>, <code>useGetLotteryStatusQuery</code>, <code>useToggleCircuitBreakerMutation</code>, <code>useTriggerDrawMutation</code> (<code>POST /lottery/draw</code>), <code>useRefundRoundMutation</code> (<code>POST /lottery/refund</code>), <code>useWithdrawTreasuryMutation</code>, <code>useSocket()</code> pour le gagnant</td>
+<td><code>ADMIN</code></td>
+</tr>
+<tr>
+<td><code>/mairie/audit</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/audit/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mairie/audit/page.tsx</code></a></td>
+<td>Journal des actions d&#39;administration, filtre par action, export CSV généré dans le navigateur</td>
+<td><code>useGetAuditLogsQuery</code> (<code>GET /admin/audit-logs</code>)</td>
+<td><code>ADMIN</code></td>
+</tr>
+</tbody></table></div>
+<h2 id="espace-partenaires"><a class="anchor" href="#espace-partenaires" aria-hidden="true" tabindex="-1">#</a>Espace partenaires</h2>
+<p>Quatre pages sous <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/partenaire/layout.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>partenaire/layout.tsx</code></a>, ouvertes aux rôles <code>PARTNER</code> et <code>ADMIN</code>. Le layout insère <code>PartnerSelectionProvider</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/partner/PartnerSelection.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>PartnerSelection.tsx</code></a>) : il charge <code>GET /partners</code> et choisit l&#39;établissement courant.</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le backend ne relie pas un compte <code>PARTNER</code> à sa fiche commerce. Le fournisseur devine l&#39;établissement en cherchant la partie locale de l&#39;email dans le nom des commerces (par exemple <code>boulangerie@etherbay.fr</code>), sinon prend le premier de la liste, et mémorise le choix dans <code>bl.partner.selected</code>. Un partenaire peut donc sélectionner et consulter un autre commerce que le sien.</p>
+</div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Fichier</th>
+<th>Rôle</th>
+<th>Données</th>
+<th>Droit backend</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/partenaire</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/partenaire/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>partenaire/page.tsx</code></a></td>
+<td>Tableau de bord du commerce : consommation des offres et des codes</td>
+<td><code>useGetPartnerConsumptionQuery</code> (<code>GET /partners/:id/consumption</code>)</td>
+<td><code>PARTNER</code> ou <code>ADMIN</code></td>
+</tr>
+<tr>
+<td><code>/partenaire/offres</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/partenaire/offres/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>partenaire/offres/page.tsx</code></a></td>
+<td>Création de l&#39;établissement si aucun n&#39;existe, création d&#39;une offre</td>
+<td><code>useCreatePartnerMutation</code> (<code>POST /partners</code>), <code>useCreateOfferMutation</code> (<code>POST /partners/offers</code>)</td>
+<td><code>PARTNER</code> ou <code>ADMIN</code></td>
+</tr>
+<tr>
+<td><code>/partenaire/codes</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/partenaire/codes/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>partenaire/codes/page.tsx</code></a></td>
+<td>Import des codes promo par copier-coller ou fichier CSV, analysés par <code>parseCodes</code> avant envoi</td>
+<td><code>useUploadCodesMutation</code> (<code>POST /partners/codes/upload</code>)</td>
+<td><code>PARTNER</code> ou <code>ADMIN</code></td>
+</tr>
+<tr>
+<td><code>/partenaire/validation</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/partenaire/validation/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>partenaire/validation/page.tsx</code></a></td>
+<td>Validation en caisse d&#39;un code présenté par un citoyen</td>
+<td><code>useRedeemCodeMutation</code> (<code>POST /marketplace/redeem</code>)</td>
+<td><code>PARTNER</code> ou <code>ADMIN</code></td>
+</tr>
+</tbody></table></div>
+<h2 id="recapitulatif"><a class="anchor" href="#recapitulatif" aria-hidden="true" tabindex="-1">#</a>Récapitulatif</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Espace</th>
+<th>Pages</th>
+<th>Garde client</th>
+<th>Coquille</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Public</td>
+<td>7</td>
+<td>aucune</td>
+<td><code>PublicShell</code>, <code>LegalPage</code> ou page autonome</td>
+</tr>
+<tr>
+<td>Citoyen</td>
+<td>13</td>
+<td>connecté</td>
+<td><code>AppShell</code> avec actions citoyennes</td>
+</tr>
+<tr>
+<td>Mairie</td>
+<td>5</td>
+<td><code>ADMIN</code></td>
+<td><code>AppShell</code></td>
+</tr>
+<tr>
+<td>Partenaires</td>
+<td>4</td>
+<td><code>PARTNER</code> ou <code>ADMIN</code></td>
+<td><code>AppShell</code> et sélection d&#39;établissement</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>29</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table></div>
+<div class="diagram"><pre class="mermaid">flowchart LR
+  V[&quot;Visiteur&quot;] --&gt; PUB[&quot;/ et pages publiques&quot;]
+  PUB --&gt; CX[&quot;/connexion&quot;]
+  CX --&gt;|&quot;USER&quot;| ACC[&quot;/accueil&quot;]
+  CX --&gt;|&quot;ADMIN&quot;| MAI[&quot;/mairie&quot;]
+  CX --&gt;|&quot;PARTNER&quot;| PAR[&quot;/partenaire&quot;]
+  CX --&gt;|&quot;2FA requise&quot;| VER[&quot;/connexion/verification&quot;]
+  VER --&gt; ACC
+  VER --&gt; MAI
+  VER --&gt; PAR</pre></div>
+<p>La redirection après connexion est calculée par <code>homeForRole</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/hooks/useAuth.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/hooks/useAuth.ts</code></a>, sauf si un paramètre <code>next</code> valide est présent.</p>
+<h2 id="pages-d-erreur"><a class="anchor" href="#pages-d-erreur" aria-hidden="true" tabindex="-1">#</a>Pages d&#39;erreur</h2>
+<p>Trois fichiers ne sont pas des pages mais des frontières d&#39;erreur de l&#39;App Router :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Déclenchement</th>
+<th>Comportement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/not-found.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>not-found.tsx</code></a></td>
+<td>URL inconnue</td>
+<td>Message 404 bilingue et lien vers <code>/</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/error.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>error.tsx</code></a></td>
+<td>Exception dans une page</td>
+<td>Bouton « Réessayer » (<code>reset</code>) et affichage du <code>digest</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/global-error.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>global-error.tsx</code></a></td>
+<td>Exception dans le layout racine</td>
+<td>Remplace tout le document, avec son propre <code>&lt;html&gt;</code></td>
+</tr>
+</tbody></table></div>
+<h2 id="comptes-pour-parcourir-les-espaces"><a class="anchor" href="#comptes-pour-parcourir-les-espaces" aria-hidden="true" tabindex="-1">#</a>Comptes pour parcourir les espaces</h2>
+<p>Les comptes du seed (<code>citoyen@etherbay.fr</code>, <code>maire@etherbay.fr</code>, <code>boulangerie@etherbay.fr</code>) et la manière d&#39;obtenir le code de connexion en local sont décrits dans <a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a>. Les comptes Mairie et partenaire se connectent par <code>/connexion?espace=pro</code>, qui masque la tranche d&#39;âge et le parrainage.</p>
+<p>Pour ajouter une page, suivre <a href="../guides/ajouter-page-web.html">Ajouter une page web</a>.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="structure.html"><span>Précédent</span><strong>Stack et structure</strong></a><a class="pager-next" href="authentification.html"><span>Suivant</span><strong>Authentification et routes protégées</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/web/pages.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#lire-les-tableaux">Lire les tableaux</a></li><li class="toc-h2"><a href="#espace-public">Espace public</a></li><li class="toc-h2"><a href="#espace-citoyen">Espace citoyen</a></li><li class="toc-h2"><a href="#dashboard-mairie">Dashboard Mairie</a></li><li class="toc-h2"><a href="#espace-partenaires">Espace partenaires</a></li><li class="toc-h2"><a href="#recapitulatif">Récapitulatif</a></li><li class="toc-h2"><a href="#pages-d-erreur">Pages d&#39;erreur</a></li><li class="toc-h2"><a href="#comptes-pour-parcourir-les-espaces">Comptes pour parcourir les espaces</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

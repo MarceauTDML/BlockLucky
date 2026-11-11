@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Performance et sauvegardes | Documentation BlockLucky</title>
+<meta name="description" content="Cette page décrit les réglages de PostgreSQL et du pool de connexions, les outils pour diagnostiquer une requête lente, et le plan de sauvegarde et de restaurat">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="seed.html">Seed</a></div></li><li><div class="nav-row"><a href="reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="performance-sauvegardes.html" aria-current="page">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>6. Base de données</span></div>
+    <article class="markdown">
+<h1>Performance et sauvegardes</h1>
+<p>Cette page décrit les réglages de PostgreSQL et du pool de connexions, les outils pour diagnostiquer une requête lente, et le plan de sauvegarde et de restauration avec ses objectifs de perte de données (RPO) et de durée de reprise (RTO). Les procédures d&#39;exploitation complètes sont sur les pages <a href="../infrastructure/sauvegardes.html">Sauvegardes</a> et <a href="../infrastructure/runbooks.html">Runbooks</a>.</p>
+<h2 id="pool-de-connexions"><a class="anchor" href="#pool-de-connexions" aria-hidden="true" tabindex="-1">#</a>Pool de connexions</h2>
+<p>Le client Prisma utilise l&#39;adaptateur <code>@prisma/adapter-pg</code>, qui s&#39;appuie sur le pool du pilote <code>pg</code>. Il est configuré dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/prisma.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/prisma.config.ts</code></a> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Variable</th>
+<th>Défaut</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>max</code></td>
+<td><code>DB_POOL_MAX</code></td>
+<td>10</td>
+<td>Connexions simultanées au plus, par process</td>
+</tr>
+<tr>
+<td><code>connectionTimeoutMillis</code></td>
+<td><code>DB_CONNECTION_TIMEOUT_MS</code></td>
+<td>5 000 ms</td>
+<td>Attente maximale d&#39;une connexion libre du pool ou de l&#39;ouverture d&#39;une connexion</td>
+</tr>
+<tr>
+<td><code>idleTimeoutMillis</code></td>
+<td><code>DB_IDLE_TIMEOUT_MS</code></td>
+<td>30 000 ms</td>
+<td>Fermeture d&#39;une connexion inutilisée</td>
+</tr>
+<tr>
+<td><code>application_name</code></td>
+<td></td>
+<td><code>blocklucky-backend</code></td>
+<td>Nom visible dans <code>pg_stat_activity</code></td>
+</tr>
+</tbody></table></div>
+<p>Le client est un singleton par process. Hors production, il est mémorisé dans <code>global</code> pour que le rechargement à chaud de <code>tsx watch</code> ne multiplie pas les pools.</p>
+<h3 id="delais-par-connexion"><a class="anchor" href="#delais-par-connexion" aria-hidden="true" tabindex="-1">#</a>Délais par connexion</h3>
+<p>Chaque connexion ouverte par l&#39;application reçoit trois délais côté serveur :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paramètre PostgreSQL</th>
+<th>Valeur</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>statement_timeout</code></td>
+<td><code>DB_STATEMENT_TIMEOUT_MS</code>, 15 000 ms</td>
+<td>Une requête plus longue est annulée par le serveur</td>
+</tr>
+<tr>
+<td><code>lock_timeout</code></td>
+<td>5 000 ms, fixe</td>
+<td>Une requête qui attend un verrou plus de 5 s échoue au lieu de bloquer</td>
+</tr>
+<tr>
+<td><code>idle_in_transaction_session_timeout</code></td>
+<td>60 000 ms, fixe</td>
+<td>Une session restée en transaction ouverte sans activité est fermée, ce qui libère ses verrous</td>
+</tr>
+</tbody></table></div>
+<p>Une requête annulée par <code>statement_timeout</code> remonte avec le code PostgreSQL <code>57014</code>. Le gestionnaire d&#39;erreurs <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/error.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/error.middleware.ts</code></a> la traduit en HTTP 503 « La requête a dépassé le délai autorisé ». Les codes <code>40001</code> (sérialisation) et <code>40P01</code> (interblocage) donnent une 409 « Conflit de transaction, veuillez réessayer ».</p>
+<p>Le délai de 15 s reste sous la limite <code>HTTP_REQUEST_TIMEOUT_MS</code> de 30 s du serveur HTTP : une requête SQL bloquée échoue proprement avant que le serveur ne coupe la connexion du client.</p>
+<h3 id="dimensionnement"><a class="anchor" href="#dimensionnement" aria-hidden="true" tabindex="-1">#</a>Dimensionnement</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>max_connections</code> du serveur</td>
+<td>100 (service <code>postgres</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker-compose.yml" class="external" target="_blank" rel="noopener noreferrer"><code>docker-compose.yml</code></a>)</td>
+</tr>
+<tr>
+<td>Connexions par process</td>
+<td><code>DB_POOL_MAX</code>, 10</td>
+</tr>
+<tr>
+<td>Process par déploiement Compose</td>
+<td>2 (<code>backend</code> et <code>worker</code>) plus le job <code>migrate</code> ponctuel</td>
+</tr>
+</tbody></table></div>
+<p>Au-delà de 8 process de 10 connexions, il reste trop peu de marge sous 100 connexions pour les connexions d&#39;administration et de migration. Il faudra alors placer un PgBouncer en mode transaction devant PostgreSQL, ou réduire <code>DB_POOL_MAX</code>.</p>
+<p>Le worker consomme peu de connexions : la file <code>chain-actions</code> et la file ledger ont une concurrence de 1, l&#39;indexeur traite les événements un par un.</p>
+<h2 id="index-et-requetes"><a class="anchor" href="#index-et-requetes" aria-hidden="true" tabindex="-1">#</a>Index et requêtes</h2>
+<p>Les index existants et la requête que chacun sert sont décrits sur la page <a href="index-contraintes.html">Index et contraintes</a>. Les requêtes les plus fréquentes sont couvertes :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Requête</th>
+<th>Index</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tour courant (<code>status IN (&#39;OPEN&#39;, &#39;LOCKED&#39;)</code>)</td>
+<td><code>LotteryRound_status_idx</code></td>
+</tr>
+<tr>
+<td>Tour par numéro du contrat</td>
+<td><code>LotteryRound_contractRoundId_key</code></td>
+</tr>
+<tr>
+<td>Compte par adresse (indexeur, file d&#39;actions)</td>
+<td><code>User_walletAddress_key</code></td>
+</tr>
+<tr>
+<td>Tickets d&#39;un compte par date (<code>my-tickets</code>)</td>
+<td><code>Ticket_userId_purchasedAt_idx</code></td>
+</tr>
+<tr>
+<td>Tickets d&#39;un tour (comptage, payeurs)</td>
+<td><code>Ticket_lotteryId_idx</code></td>
+</tr>
+<tr>
+<td>Idempotence de l&#39;indexeur</td>
+<td><code>Ticket_lotteryId_ticketIndex_key</code></td>
+</tr>
+<tr>
+<td>Historique des points</td>
+<td><code>PointTransaction_userId_createdAt_idx</code></td>
+</tr>
+</tbody></table></div>
+<p>Deux requêtes ne sont pas servies par un index dédié :</p>
+<ul>
+<li>le classement (<code>getLeaderboardData</code>) trie les comptes actifs par <code>pointsBalance</code>, sans index sur cette colonne : PostgreSQL parcourt la table <code>User</code> ;</li>
+<li>le comptage des participants distincts d&#39;un tour (<code>countDistinctParticipants</code>) agrège les tickets du tour par <code>userId</code> à partir de <code>Ticket_lotteryId_idx</code>.</li>
+</ul>
+<p>Aux volumes visés (un objectif de 10 000 participants par tour), ces parcours restent rapides. Ils sont les premiers candidats à surveiller dans <code>pg_stat_statements</code>.</p>
+<h2 id="diagnostic-pg-stat-statements"><a class="anchor" href="#diagnostic-pg-stat-statements" aria-hidden="true" tabindex="-1">#</a>Diagnostic : pg_stat_statements</h2>
+<p>Le service <code>postgres</code> de Docker Compose démarre avec :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Valeur</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>shared_preload_libraries</code></td>
+<td><code>pg_stat_statements</code></td>
+<td>Charge l&#39;extension de statistiques des requêtes</td>
+</tr>
+<tr>
+<td><code>pg_stat_statements.track</code></td>
+<td><code>all</code></td>
+<td>Mesure aussi les requêtes imbriquées dans des fonctions</td>
+</tr>
+<tr>
+<td><code>log_min_duration_statement</code></td>
+<td>500</td>
+<td>Journalise toute requête de plus de 500 ms</td>
+</tr>
+<tr>
+<td><code>log_lock_waits</code></td>
+<td><code>on</code></td>
+<td>Journalise les attentes de verrou plus longues que <code>deadlock_timeout</code></td>
+</tr>
+<tr>
+<td><code>idle_in_transaction_session_timeout</code></td>
+<td>60 000</td>
+<td>Même délai que celui de l&#39;application, appliqué à tous les clients</td>
+</tr>
+<tr>
+<td><code>max_connections</code></td>
+<td>100</td>
+<td></td>
+</tr>
+</tbody></table></div>
+<p>L&#39;extension est créée à l&#39;initialisation du volume par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker/postgres/init/01-extensions.sql" class="external" target="_blank" rel="noopener noreferrer"><code>docker/postgres/init/01-extensions.sql</code></a> (<code>CREATE EXTENSION IF NOT EXISTS pg_stat_statements;</code>). Ce script ne s&#39;exécute qu&#39;à la création du volume <code>pgdata</code> : sur un volume plus ancien, il faut lancer la commande à la main.</p>
+<p>Les requêtes les plus coûteuses en temps cumulé :</p>
+<div class="code-block"><div class="code-head"><span>SQL</span></div><pre><code class="hljs language-sql"><span class="hljs-keyword">SELECT</span> calls, round(total_exec_time) <span class="hljs-keyword">AS</span> total_ms, round(mean_exec_time, <span class="hljs-number">1</span>) <span class="hljs-keyword">AS</span> moyenne_ms, <span class="hljs-keyword">rows</span>, <span class="hljs-keyword">left</span>(query, <span class="hljs-number">120</span>) <span class="hljs-keyword">AS</span> requete
+<span class="hljs-keyword">FROM</span> pg_stat_statements
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> total_exec_time <span class="hljs-keyword">DESC</span>
+LIMIT <span class="hljs-number">10</span>;</code></pre></div>
+<p>Les connexions de l&#39;application et leur état :</p>
+<div class="code-block"><div class="code-head"><span>SQL</span></div><pre><code class="hljs language-sql"><span class="hljs-keyword">SELECT</span> state, <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> pg_stat_activity <span class="hljs-keyword">WHERE</span> application_name <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;blocklucky-backend&#x27;</span> <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> state;</code></pre></div>
+<p>Le plan d&#39;une requête suspecte, par exemple l&#39;historique d&#39;un citoyen :</p>
+<div class="code-block"><div class="code-head"><span>SQL</span></div><pre><code class="hljs language-sql">EXPLAIN (ANALYZE, BUFFERS)
+<span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> &quot;Ticket&quot; <span class="hljs-keyword">WHERE</span> &quot;userId&quot; <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;…&#x27;</span> <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> &quot;purchasedAt&quot; <span class="hljs-keyword">DESC</span> LIMIT <span class="hljs-number">20</span>;</code></pre></div>
+<p>Pour voir les requêtes SQL générées par Prisma, démarrer le backend avec <code>DB_LOG_QUERIES=true</code> : le client journalise alors chaque requête (niveau <code>query</code>), en plus des erreurs et avertissements.</p>
+<p>La sonde <code>GET /health/ready</code> exécute <code>SELECT 1</code> avec un délai de 2 s et répond 503 si la base ne répond pas ; <code>GET /health/deep</code> donne aussi la latence mesurée. Le détail est sur la page <a href="../backend/observabilite.html">Observabilité</a>.</p>
+<h2 id="sauvegardes"><a class="anchor" href="#sauvegardes" aria-hidden="true" tabindex="-1">#</a>Sauvegardes</h2>
+<h3 id="ce-qu-il-faut-sauvegarder"><a class="anchor" href="#ce-qu-il-faut-sauvegarder" aria-hidden="true" tabindex="-1">#</a>Ce qu&#39;il faut sauvegarder</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Donnée</th>
+<th>Source de vérité</th>
+<th>Mécanisme</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Comptes, clés chiffrées des portefeuilles, EtherPoints, partenaires, récompenses, analytique</td>
+<td>PostgreSQL</td>
+<td><code>pg_dump</code> manuel</td>
+</tr>
+<tr>
+<td>Tickets, tours, cagnottes</td>
+<td>Smart contract <code>BlockLucky</code></td>
+<td>Aucun : reconstruction par l&#39;indexeur (voir <a href="reconstruction.html">Reconstruire depuis la chaîne</a>)</td>
+</tr>
+<tr>
+<td>Files de jobs, limites de jeu responsable, préférences, quêtes, lots de codes promo</td>
+<td>Redis</td>
+<td>Persistance AOF <code>appendfsync everysec</code> sur le volume <code>redisdata</code></td>
+</tr>
+<tr>
+<td>Clé <code>ENCRYPTION_KEY</code></td>
+<td>Secret d&#39;environnement</td>
+<td>Hors de la base, à conserver séparément</td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-caution"><p class="hint-title">Danger</p>
+<p>Une sauvegarde de la base sans la clé <code>ENCRYPTION_KEY</code> est inutilisable pour les portefeuilles : les clés privées chiffrées ne peuvent pas être déchiffrées. À l&#39;inverse, la sauvegarde contient les clés chiffrées et doit être protégée comme un secret : quiconque obtient le fichier et la clé contrôle les portefeuilles.</p>
+</div>
+<h3 id="sauvegarde-logique"><a class="anchor" href="#sauvegarde-logique" aria-hidden="true" tabindex="-1">#</a>Sauvegarde logique</h3>
+<p>Depuis la racine du dépôt, avec la pile Docker Compose démarrée :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose <span class="hljs-built_in">exec</span> -T postgres pg_dump -U etherbay_admin -d blocklucky_db -Fc &gt; backup-$(<span class="hljs-built_in">date</span> +%Y%m%d-%H%M).dump</code></pre></div>
+<p>Le format <code>-Fc</code> (custom) est compressé et permet de restaurer table par table avec <code>pg_restore</code>. <code>pg_dump</code> lit un instantané cohérent sans bloquer l&#39;application.</p>
+<p>Aucune sauvegarde n&#39;est planifiée dans le dépôt : il n&#39;existe pas de tâche cron, ni d&#39;archivage continu des journaux WAL. La sauvegarde est manuelle.</p>
+<h3 id="tester-une-restauration"><a class="anchor" href="#tester-une-restauration" aria-hidden="true" tabindex="-1">#</a>Tester une restauration</h3>
+<p>Restaurer dans une base temporaire, sans toucher à <code>blocklucky_db</code> :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose <span class="hljs-built_in">exec</span> -T postgres createdb -U etherbay_admin blocklucky_restore_test
+docker compose <span class="hljs-built_in">exec</span> -T postgres pg_restore -U etherbay_admin -d blocklucky_restore_test --no-owner &lt; backup-AAAAMMJJ-HHMM.dump
+docker compose <span class="hljs-built_in">exec</span> -T postgres psql -U etherbay_admin -d blocklucky_restore_test -c <span class="hljs-string">&#x27;SELECT count(*) FROM &quot;User&quot;;&#x27;</span>
+docker compose <span class="hljs-built_in">exec</span> -T postgres dropdb -U etherbay_admin blocklucky_restore_test</code></pre></div>
+<h3 id="restauration-reelle"><a class="anchor" href="#restauration-reelle" aria-hidden="true" tabindex="-1">#</a>Restauration réelle</h3>
+<p>Destructive : arrêter d&#39;abord l&#39;API et le worker.</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose stop backend worker
+docker compose <span class="hljs-built_in">exec</span> -T postgres pg_restore -U etherbay_admin -d blocklucky_db --clean --if-exists --no-owner &lt; backup-AAAAMMJJ-HHMM.dump
+docker compose start backend worker</code></pre></div>
+<p>Après la restauration, le curseur <code>ChainCursor</code> est revenu à la date du dump. Au redémarrage, l&#39;indexeur relit les blocs postérieurs et recrée les tickets achetés depuis : les données de la loterie se recalent seules sur la chaîne. Les points de ces tickets sont crédités à ce moment, puisque les tickets sont absents de la base restaurée. En revanche, les comptes créés et les échanges de récompenses postérieurs au dump sont perdus.</p>
+<h2 id="rpo-et-rto"><a class="anchor" href="#rpo-et-rto" aria-hidden="true" tabindex="-1">#</a>RPO et RTO</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Donnée</th>
+<th>RPO cible</th>
+<th>RTO cible</th>
+<th>Comment l&#39;objectif est tenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Comptes, EtherPoints, récompenses (PostgreSQL)</td>
+<td>24 h</td>
+<td>1 h</td>
+<td>Un <code>pg_dump</code> par jour ; restauration en moins d&#39;une heure aux volumes du projet</td>
+</tr>
+<tr>
+<td>Files, préférences, quêtes (Redis)</td>
+<td>1 s</td>
+<td>15 min</td>
+<td>AOF avec <code>fsync</code> chaque seconde ; Redis recharge l&#39;AOF au redémarrage</td>
+</tr>
+<tr>
+<td>Tickets, tirages, cagnottes (chaîne)</td>
+<td>0</td>
+<td>Durée de la réindexation</td>
+<td>Rien n&#39;est perdu sur la chaîne ; la base se recale par l&#39;indexeur</td>
+</tr>
+</tbody></table></div>
+<p>Le RPO (Recovery Point Objective) est la quantité maximale de données qu&#39;on accepte de perdre, exprimée en durée. Le RTO (Recovery Time Objective) est la durée maximale acceptée pour revenir en service.</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le RPO de 24 h de PostgreSQL suppose un <code>pg_dump</code> quotidien, qui n&#39;est pas automatisé. Sans discipline d&#39;exploitation, le RPO réel est la date du dernier dump manuel. Pour un hébergement réel, il faudrait planifier les dumps, les copier hors de la machine, ou activer l&#39;archivage WAL pour une restauration à un instant donné.</p>
+</div>
+<p>Le RPO de 1 s de Redis ne vaut que contre un arrêt du process : l&#39;AOF est sur le même volume que les données. Une perte du volume <code>redisdata</code> efface les files et les données utilisateur stockées dans Redis, sans copie ailleurs (voir <a href="redis.html#donnees-utilisateur-et-partenaires">Données Redis</a>).</p>
+<p>Le RTO de la chaîne dépend du nombre de blocs à relire. L&#39;indexeur avance d&#39;au plus 2 000 blocs par passe de 3 s ; sur Sepolia, à un bloc toutes les 12 s environ, une semaine représente environ 50 000 blocs, soit environ 25 passes et un peu plus d&#39;une minute de rattrapage.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="reconstruction.html"><span>Précédent</span><strong>Reconstruire depuis la chaîne</strong></a><a class="pager-next" href="../backend/structure.html"><span>Suivant</span><strong>Structure et cycle d&#39;une requête</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/base-de-donnees/performance-sauvegardes.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#pool-de-connexions">Pool de connexions</a></li><li class="toc-h3"><a href="#delais-par-connexion">Délais par connexion</a></li><li class="toc-h3"><a href="#dimensionnement">Dimensionnement</a></li><li class="toc-h2"><a href="#index-et-requetes">Index et requêtes</a></li><li class="toc-h2"><a href="#diagnostic-pg-stat-statements">Diagnostic : pg_stat_statements</a></li><li class="toc-h2"><a href="#sauvegardes">Sauvegardes</a></li><li class="toc-h3"><a href="#ce-qu-il-faut-sauvegarder">Ce qu&#39;il faut sauvegarder</a></li><li class="toc-h3"><a href="#sauvegarde-logique">Sauvegarde logique</a></li><li class="toc-h3"><a href="#tester-une-restauration">Tester une restauration</a></li><li class="toc-h3"><a href="#restauration-reelle">Restauration réelle</a></li><li class="toc-h2"><a href="#rpo-et-rto">RPO et RTO</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

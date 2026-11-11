@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cookies, mentions et CGU | Documentation BlockLucky</title>
+<meta name="description" content="Cette page fait l&#39;inventaire des traceurs, des bandeaux de consentement et des pages d&#39;information légale des trois interfaces : le frontend web, l&#39;application ">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="cookies-mentions.html" aria-current="page">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="licences.html">Licences</a></div></li><li><div class="nav-row"><a href="registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>12. Juridique et conformité</span></div>
+    <article class="markdown">
+<h1>Cookies, mentions et CGU</h1>
+<p>Cette page fait l&#39;inventaire des traceurs, des bandeaux de consentement et des pages d&#39;information légale des trois interfaces : le frontend web, l&#39;application mobile et le site de l&#39;Office de Tourisme. Pour chaque élément, elle indique ce qui existe dans le code et ce qui manque. Elle ne constitue pas un avis juridique ; les compléments à apporter sont repris dans <a href="points-a-valider.html">Points à valider</a>.</p>
+<h2 id="regles-applicables-en-bref"><a class="anchor" href="#regles-applicables-en-bref" aria-hidden="true" tabindex="-1">#</a>Règles applicables en bref</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Règle</th>
+<th>Source</th>
+<th>Portée</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Consentement préalable à tout dépôt ou lecture d&#39;information sur le terminal, sauf exceptions (traceurs strictement nécessaires, certaines mesures d&#39;audience exemptées)</td>
+<td>Article 82 de la loi Informatique et Libertés, transposant la directive ePrivacy ; lignes directrices et recommandation de la CNIL sur les cookies</td>
+<td>Cookies <strong>et</strong> <code>localStorage</code> : la règle vise toute technologie de stockage sur le terminal</td>
+</tr>
+<tr>
+<td>Refus aussi simple que l&#39;acceptation</td>
+<td>Recommandation de la CNIL</td>
+<td>Bandeaux</td>
+</tr>
+<tr>
+<td>Mentions légales identifiant l&#39;éditeur, le directeur de la publication et l&#39;hébergeur</td>
+<td>Loi pour la confiance dans l&#39;économie numérique (LCEN)</td>
+<td>Tous les sites</td>
+</tr>
+<tr>
+<td>Information des personnes sur le traitement de leurs données</td>
+<td>Articles 13 et 14 du RGPD</td>
+<td>Politique de confidentialité</td>
+</tr>
+</tbody></table></div>
+<p>Les articles et le périmètre exact de l&#39;exemption de consentement pour la mesure d&#39;audience sont à confirmer par un juriste.</p>
+<h2 id="frontend-web"><a class="anchor" href="#frontend-web" aria-hidden="true" tabindex="-1">#</a>Frontend web</h2>
+<h3 id="traceurs"><a class="anchor" href="#traceurs" aria-hidden="true" tabindex="-1">#</a>Traceurs</h3>
+<p>Le web ne dépose <strong>aucun cookie</strong>. Il utilise le <code>localStorage</code> sous les clés déclarées dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/lib/storage.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/lib/storage.ts</code></a> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Clé</th>
+<th>Contenu</th>
+<th>Nécessaire au service ?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>bl.auth.token</code>, <code>bl.auth.user</code></td>
+<td>Jeton de session et profil</td>
+<td>Oui</td>
+</tr>
+<tr>
+<td><code>bl.onboarding.done</code></td>
+<td>Écrans d&#39;accueil déjà vus</td>
+<td>Oui (confort demandé par l&#39;utilisateur)</td>
+</tr>
+<tr>
+<td><code>bl.pref.theme</code>, <code>bl.pref.language</code></td>
+<td>Thème et langue</td>
+<td>Oui (préférence explicite)</td>
+</tr>
+<tr>
+<td><code>bl.referral.code</code></td>
+<td>Code de parrainage reçu par lien</td>
+<td>Oui pour le parrainage</td>
+</tr>
+<tr>
+<td><code>bl.partner.selected</code>, <code>bl.marketplace.lastClaim</code></td>
+<td>État de l&#39;espace partenaire et de la boutique</td>
+<td>Oui</td>
+</tr>
+<tr>
+<td><code>bl.tracking.optout</code></td>
+<td>Opposition à la mesure d&#39;audience</td>
+<td>Oui</td>
+</tr>
+<tr>
+<td><code>bl.utm.source</code></td>
+<td>Source de la visite (paramètre <code>utm_source</code>)</td>
+<td><strong>Non</strong> : sert à la mesure d&#39;audience</td>
+</tr>
+</tbody></table></div>
+<h3 id="consentement"><a class="anchor" href="#consentement" aria-hidden="true" tabindex="-1">#</a>Consentement</h3>
+<p>Il n&#39;y a pas de bandeau sur le web. La mesure d&#39;audience fonctionne par défaut, sur la base de l&#39;intérêt légitime, avec un droit d&#39;opposition : la page Confidentialité propose un bouton « M&#39;opposer à la mesure d&#39;audience » qui écrit <code>bl.tracking.optout</code>. <code>trackEvent</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/lib/analytics.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/lib/analytics.ts</code></a> ne fait plus aucun appel tant que ce marqueur est présent. Le fonctionnement est détaillé dans <a href="../web/analytique-consentement.html">Analytique et consentement</a>.</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>La mesure envoie l&#39;identifiant du compte quand l&#39;utilisateur est connecté, et l&#39;enregistrement de <code>bl.utm.source</code> a lieu sans consentement. Une mesure d&#39;audience peut être exemptée de consentement sous des conditions strictes, notamment de finalité limitée et de données non recoupées avec d&#39;autres traitements. L&#39;éligibilité de ce dispositif à l&#39;exemption est à vérifier ; à défaut, un bandeau de consentement serait nécessaire avant toute mesure.</p>
+</div>
+<h3 id="pages-legales"><a class="anchor" href="#pages-legales" aria-hidden="true" tabindex="-1">#</a>Pages légales</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Chemin</th>
+<th>Fichier</th>
+<th>Titre affiché</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/mentions-legales</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mentions-legales/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/mentions-legales/page.tsx</code></a></td>
+<td>« Conditions de participation »</td>
+<td>Organisateur, éligibilité (majeurs uniquement), nature des unités (ethers fictifs sans valeur), jeu responsable avec le numéro de Joueurs Info Service, avantages partenaires</td>
+</tr>
+<tr>
+<td><code>/confidentialite</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/confidentialite/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/confidentialite/page.tsx</code></a></td>
+<td>« Politique de confidentialité »</td>
+<td>Responsable de traitement, données collectées, blockchain et minimisation, droits, mesure d&#39;audience avec bouton d&#39;opposition, durée de conservation</td>
+</tr>
+</tbody></table></div>
+<p>Les deux pages portent la mention « Version de travail du pilote, novembre 2026 » et sont bilingues (français, anglais). Elles sont liées depuis le pied de page public (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/layout/PublicShell.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/components/layout/PublicShell.tsx</code></a>) et depuis l&#39;écran de connexion, qui indique : « En continuant, vous acceptez les conditions de participation et la politique de confidentialité ». La majorité est confirmée par une case à cocher distincte.</p>
+<p>Ce qui manque :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Situation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mentions légales au sens de la LCEN</td>
+<td>La page <code>/mentions-legales</code> contient en réalité les conditions de participation. Aucune page n&#39;identifie l&#39;éditeur (adresse, contact), le directeur de la publication ni l&#39;hébergeur.</td>
+</tr>
+<tr>
+<td>Règlement de jeu complet</td>
+<td>Durée, dotation, modalités du tirage et du remboursement, résolution des litiges : à rédiger</td>
+</tr>
+<tr>
+<td>Conditions générales d&#39;utilisation distinctes</td>
+<td>Absentes ; les conditions de participation en tiennent lieu</td>
+</tr>
+<tr>
+<td>Exactitude de la politique de confidentialité</td>
+<td>Elle parle d&#39;« événements de parcours anonymisés » alors qu&#39;ils sont rattachés au compte ; elle ne mentionne ni le cadeau de ticket, ni les données Redis, ni l&#39;immutabilité des transactions</td>
+</tr>
+<tr>
+<td>Déclaration d&#39;accessibilité</td>
+<td>Absente (voir <a href="accessibilite.html">Accessibilité numérique</a>)</td>
+</tr>
+</tbody></table></div>
+<h2 id="application-mobile"><a class="anchor" href="#application-mobile" aria-hidden="true" tabindex="-1">#</a>Application mobile</h2>
+<p>L&#39;application ne dépose pas de cookie et n&#39;envoie pas d&#39;événement de mesure d&#39;audience. Elle conserve le jeton et le profil dans le stockage sécurisé du système (voir <a href="../securite/navigateur-mobile.html#application-mobile">Navigateur et mobile</a>). Elle propose l&#39;export et la suppression des données dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/GDPRScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/settings/GDPRScreen.tsx</code></a>.</p>
+<p>Elle ne contient en revanche <strong>aucun écran</strong> de conditions de participation ni de politique de confidentialité, ni de lien vers les pages du web. Les magasins d&#39;applications exigent une URL de politique de confidentialité et des déclarations sur les données collectées ; ces éléments sont à préparer avant publication (voir <a href="../mobile/builds-publication.html">Builds et publication</a>).</p>
+<h2 id="site-de-l-office-de-tourisme"><a class="anchor" href="#site-de-l-office-de-tourisme" aria-hidden="true" tabindex="-1">#</a>Site de l&#39;Office de Tourisme</h2>
+<h3 id="bandeau-cookies"><a class="anchor" href="#bandeau-cookies" aria-hidden="true" tabindex="-1">#</a>Bandeau cookies</h3>
+<p>Le bandeau est construit par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/modules/cookies.js" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/assets/js/modules/cookies.js</code></a>, appelé à chaque page par <code>initCookies</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/main.js" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/assets/js/main.js</code></a>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Comportement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Affichage</td>
+<td>Boîte de dialogue au premier passage, tant qu&#39;aucun choix n&#39;est enregistré</td>
+</tr>
+<tr>
+<td>Boutons</td>
+<td>« Personnaliser », « Tout rejeter » et « Accepter tout », côte à côte dès le premier écran : le refus demande un seul clic, comme l&#39;acceptation. Les trois boutons ont des styles différents (<code>btn--dark</code>, <code>btn--outline</code>, <code>btn--wide</code>) ; la mise en avant de l&#39;acceptation est à vérifier au regard des recommandations de la CNIL</td>
+</tr>
+<tr>
+<td>Personnalisation</td>
+<td>Case « Mesure d&#39;audience anonyme », non cochée par défaut ; « Cookies essentiels (favoris, panier) » cochée et désactivée</td>
+</tr>
+<tr>
+<td>Enregistrement</td>
+<td>Clé <code>etherbay.cookie-consent</code> du <code>localStorage</code>, avec le choix et sa date</td>
+</tr>
+<tr>
+<td>Retour sur le choix</td>
+<td>Bouton flottant « Gérer mes cookies », présent sur toutes les pages</td>
+</tr>
+</tbody></table></div>
+<p>Le choix est enregistré mais <strong>aucune mesure d&#39;audience n&#39;est implémentée</strong> : accepter ou refuser ne change rien au fonctionnement du site. Le texte du bandeau parle de « cookies » alors que le site n&#39;utilise que le <code>localStorage</code>. Le bandeau est donc prêt pour une future mesure d&#39;audience, mais n&#39;en conditionne aucune aujourd&#39;hui.</p>
+<h3 id="donnees-stockees"><a class="anchor" href="#donnees-stockees" aria-hidden="true" tabindex="-1">#</a>Données stockées</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Donnée</th>
+<th>Stockage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Favoris, panier</td>
+<td><code>localStorage</code></td>
+</tr>
+<tr>
+<td>Commandes de démonstration, coordonnées saisies à la commande</td>
+<td><code>localStorage</code></td>
+</tr>
+<tr>
+<td>Inscription à la newsletter</td>
+<td><code>localStorage</code></td>
+</tr>
+<tr>
+<td>Choix du bandeau</td>
+<td><code>localStorage</code></td>
+</tr>
+</tbody></table></div>
+<p>Aucune de ces données n&#39;est transmise à un serveur. Aucun service tiers n&#39;est appelé : les polices et la bibliothèque de QR code sont hébergées sur le site, et la CSP (<code>connect-src &#39;self&#39;</code>) interdit les appels vers d&#39;autres domaines.</p>
+<h3 id="mentions-legales"><a class="anchor" href="#mentions-legales" aria-hidden="true" tabindex="-1">#</a>Mentions légales</h3>
+<p>La page <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/mentions-legales.html" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/mentions-legales.html</code></a> regroupe :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Éditeur du site</td>
+<td>Office de Tourisme de la Ville d&#39;EtherBay (ville fictive), adresse, cadre du projet pédagogique</td>
+</tr>
+<tr>
+<td>Crédits</td>
+<td>Photographies Pixabay sous la licence de contenu Pixabay ; lieux et commerces fictifs</td>
+</tr>
+<tr>
+<td>Conditions générales d&#39;utilisation</td>
+<td>Informations indicatives, données conservées dans le navigateur</td>
+</tr>
+<tr>
+<td>Conditions générales de vente</td>
+<td>Billetterie de démonstration : aucun paiement, aucune coordonnée bancaire, billets fictifs</td>
+</tr>
+<tr>
+<td>Accessibilité</td>
+<td>Objectif de conformité RGAA, contact</td>
+</tr>
+<tr>
+<td>Tourisme éco-responsable</td>
+<td>Engagements de sobriété</td>
+</tr>
+<tr>
+<td>Données personnelles</td>
+<td>Newsletter stockée localement, contact du DPO <code>dpo@destination-etherbay.fr</code></td>
+</tr>
+</tbody></table></div>
+<p>Manquent : le directeur de la publication, l&#39;hébergeur et ses coordonnées. Le contact DPO de ce site (<code>dpo@destination-etherbay.fr</code>) diffère de celui du projet (<code>dpo@etherbay.fr</code>) ; l&#39;un des deux est à harmoniser.</p>
+<h2 id="synthese"><a class="anchor" href="#synthese" aria-hidden="true" tabindex="-1">#</a>Synthèse</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Exigence</th>
+<th>Web</th>
+<th>Mobile</th>
+<th>Office de Tourisme</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Absence de cookie tiers</td>
+<td>Oui</td>
+<td>Oui</td>
+<td>Oui</td>
+</tr>
+<tr>
+<td>Bandeau ou opposition</td>
+<td>Opposition sur la page Confidentialité</td>
+<td>Sans objet (pas de mesure)</td>
+<td>Bandeau conforme dans sa forme, sans mesure derrière</td>
+</tr>
+<tr>
+<td>Mentions légales LCEN</td>
+<td>Absentes</td>
+<td>Absentes</td>
+<td>Partielles</td>
+</tr>
+<tr>
+<td>Conditions d&#39;utilisation</td>
+<td>Conditions de participation (version de travail)</td>
+<td>Absentes</td>
+<td>Présentes</td>
+</tr>
+<tr>
+<td>Politique de confidentialité</td>
+<td>Présente, à corriger</td>
+<td>Absente</td>
+<td>Section courte</td>
+</tr>
+</tbody></table></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="blockchain-donnees.html"><span>Précédent</span><strong>Blockchain et données personnelles</strong></a><a class="pager-next" href="accessibilite.html"><span>Suivant</span><strong>Accessibilité numérique</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/juridique/cookies-mentions.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#regles-applicables-en-bref">Règles applicables en bref</a></li><li class="toc-h2"><a href="#frontend-web">Frontend web</a></li><li class="toc-h3"><a href="#traceurs">Traceurs</a></li><li class="toc-h3"><a href="#consentement">Consentement</a></li><li class="toc-h3"><a href="#pages-legales">Pages légales</a></li><li class="toc-h2"><a href="#application-mobile">Application mobile</a></li><li class="toc-h2"><a href="#site-de-l-office-de-tourisme">Site de l&#39;Office de Tourisme</a></li><li class="toc-h3"><a href="#bandeau-cookies">Bandeau cookies</a></li><li class="toc-h3"><a href="#donnees-stockees">Données stockées</a></li><li class="toc-h3"><a href="#mentions-legales">Mentions légales</a></li><li class="toc-h2"><a href="#synthese">Synthèse</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Utilisateur et RGPD | Documentation BlockLucky</title>
+<meta name="description" content="Le module user regroupe tout ce qui concerne le compte du citoyen connecté : profil, parrainage, quêtes sociales, limite de jeu responsable, préférences d&#39;affic">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/css/doc.css">
+<script src="../../assets/js/theme.js"></script>
+<script src="../../assets/vendor/mermaid.min.js" defer></script>
+<script src="../../assets/js/app.js" defer></script>
+<script src="../../assets/js/search.js" defer></script>
+</head>
+<body data-root="../../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../../index.html">
+    <img src="../../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children open"><div class="nav-row"><a href="index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="true"></button></div><ul><li><div class="nav-row"><a href="auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="utilisateur.html" aria-current="page">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>7. Backend</span><span>Modules métier</span></div>
+    <article class="markdown">
+<h1>Utilisateur et RGPD</h1>
+<p>Le module <code>user</code> regroupe tout ce qui concerne le compte du citoyen connecté : profil, parrainage, quêtes sociales, limite de jeu responsable, préférences d&#39;affichage, notifications et exercice des droits RGPD (export et suppression). Toutes les routes portent sur le compte du jeton : aucune ne prend d&#39;identifiant d&#39;utilisateur en paramètre. Une partie des données de ce module vit dans Redis et non en base.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.routes.ts</code></a></td>
+<td>10 routes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.validators.ts</code></a></td>
+<td>4 schémas Zod</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a></td>
+<td>Règles métier, catalogue des quêtes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.repo.ts</code></a></td>
+<td>Profil, export, jetons de suppression, anonymisation</td>
+</tr>
+</tbody></table></div>
+<p>Les obligations juridiques couvertes par ces routes sont analysées dans <a href="../../juridique/rgpd.html">RGPD</a> et le parcours de suppression dans <a href="../../architecture/flux/suppression-rgpd.html">Suppression RGPD</a>.</p>
+<h2 id="routes"><a class="anchor" href="#routes" aria-hidden="true" tabindex="-1">#</a>Routes</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Méthode et chemin</th>
+<th>Accès</th>
+<th>Middlewares</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /api/v1/user/profile</code></td>
+<td>connecté</td>
+<td><code>authenticate</code></td>
+<td>Profil, statistiques, limite et préférences</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/user/referrals</code></td>
+<td>connecté</td>
+<td><code>authenticate</code></td>
+<td>Code et lien de parrainage, filleuls</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/user/quests</code></td>
+<td>connecté</td>
+<td><code>authenticate</code></td>
+<td>Quêtes et leur état</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/user/quests/complete</code></td>
+<td>connecté</td>
+<td><code>authenticate</code>, <code>validate(completeSocialQuestSchema)</code></td>
+<td>Validation d&#39;une quête</td>
+</tr>
+<tr>
+<td><code>PUT /api/v1/user/responsible-limit</code></td>
+<td>connecté</td>
+<td><code>authenticate</code>, <code>validate(setResponsibleGamingLimitSchema)</code></td>
+<td>Limite de tickets par tour</td>
+</tr>
+<tr>
+<td><code>PUT /api/v1/user/preferences</code></td>
+<td>connecté</td>
+<td><code>authenticate</code>, <code>validate(updatePreferencesSchema)</code></td>
+<td>Thème, langue, notifications</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/user/notifications</code></td>
+<td>connecté</td>
+<td><code>authenticate</code></td>
+<td>Centre de notifications</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/user/gdpr/export</code></td>
+<td>connecté</td>
+<td><code>authenticate</code></td>
+<td>Export JSON des données personnelles</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/user/gdpr/delete-request</code></td>
+<td>connecté</td>
+<td><code>authenticate</code></td>
+<td>Demande de suppression</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/user/gdpr/confirm-delete</code></td>
+<td>public</td>
+<td><code>validate(confirmGdprDeletionSchema)</code></td>
+<td>Confirmation par jeton</td>
+</tr>
+</tbody></table></div>
+<h2 id="donnees-stockees-dans-redis"><a class="anchor" href="#donnees-stockees-dans-redis" aria-hidden="true" tabindex="-1">#</a>Données stockées dans Redis</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Clé</th>
+<th>Contenu</th>
+<th>Valeur par défaut si absente</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>user:prefs:&lt;userId&gt;</code></td>
+<td>JSON <code>{ theme, language, pushNotificationsEnabled }</code></td>
+<td><code>{ &quot;theme&quot;: &quot;DARK&quot;, &quot;language&quot;: &quot;FR&quot;, &quot;pushNotificationsEnabled&quot;: true }</code></td>
+</tr>
+<tr>
+<td><code>user:ticket_limit:&lt;userId&gt;</code></td>
+<td>entier</td>
+<td>50</td>
+</tr>
+<tr>
+<td><code>user:quests:&lt;userId&gt;</code></td>
+<td>tableau JSON des identifiants de quêtes validées</td>
+<td><code>[]</code></td>
+</tr>
+</tbody></table></div>
+<p>Ces clés n&#39;ont pas d&#39;expiration et ne sont pas sauvegardées avec PostgreSQL. Si Redis est vidé, les préférences et les limites reviennent aux valeurs par défaut et les quêtes redeviennent validables, ce qui permet de recréditer leurs points. Elles ne sont pas supprimées lors de l&#39;anonymisation RGPD. Voir <a href="../../base-de-donnees/redis.html">Données Redis</a>.</p>
+<h2 id="get-user-profile"><a class="anchor" href="#get-user-profile" aria-hidden="true" tabindex="-1">#</a>GET /user/profile</h2>
+<p>Un compte supprimé (<code>deletedAt</code> renseigné) renvoie <code>404 Profil utilisateur introuvable ou supprimé</code>.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Profil utilisateur récupéré&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;profile&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-5d2b-7f41-9c0e-6a8b2d4f1e37&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;walletAddress&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x8b3f0e5c2d9a71b46e0f3c8d2a5b7e9f1c4d6a08&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;citoyen@etherbay.fr&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;USER&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;pointsBalance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">125</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;referralCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;6f1d2c3b-4a5e-4f60-8b7c-9d0e1f2a3b4c&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;referralLink&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://localhost:3000/invite/6f1d2c3b-4a5e-4f60-8b7c-9d0e1f2a3b4c&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;isTwoFactorEnabled&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;twoFactorMethod&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;stats&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;ticketsCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;claimedRewardsCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;referralsCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;responsibleGaming&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;maxTicketsPerRound&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">50</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;preferences&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;theme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;DARK&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;language&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;FR&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;pushNotificationsEnabled&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T13:30:11.198Z&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<h2 id="get-user-referrals"><a class="anchor" href="#get-user-referrals" aria-hidden="true" tabindex="-1">#</a>GET /user/referrals</h2>
+<p>Le code de parrainage est l&#39;UUID <code>User.referralCode</code>, généré à la création du compte. La réponse contient <code>referralCode</code>, <code>referralLink</code> (<code>FRONTEND_URL/invite/&lt;code&gt;</code>), <code>referralsCount</code>, la liste <code>referrals</code> des filleuls (identifiant, adresse tronquée <code>0x2c4e...91ab</code>, date d&#39;inscription) et trois liens de partage préremplis :</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;quickShareLinks&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;whatsapp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://wa.me/?text=Rejoins-moi%20sur%20BlockLucky...&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;twitter&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://twitter.com/intent/tweet?text=Rejoins-moi%20sur%20BlockLucky...&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;sms&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;sms:?&amp;body=Rejoins-moi%20sur%20BlockLucky...&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p>Le texte promet « +50 EtherPoints offerts », ce qui correspond au bonus du filleul. Les destinataires d&#39;un cadeau créés par <code>POST /lottery/gift</code> apparaissent aussi comme filleuls de l&#39;expéditeur, sans que celui-ci ait reçu de bonus de parrainage.</p>
+<h2 id="quetes-sociales"><a class="anchor" href="#quetes-sociales" aria-hidden="true" tabindex="-1">#</a>Quêtes sociales</h2>
+<p>Le catalogue est codé en dur dans <code>QUESTS_CATALOG</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Identifiant</th>
+<th>Intitulé</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>FOLLOW_TWITTER_ETHERBAY</code></td>
+<td>Suivre la Mairie d&#39;EtherBay sur X (Twitter)</td>
+<td>30</td>
+</tr>
+<tr>
+<td><code>JOIN_DISCORD_ETHERBAY</code></td>
+<td>Rejoindre la communauté citoyenne EtherBay sur Discord</td>
+<td>40</td>
+</tr>
+<tr>
+<td><code>SHARE_LOTTERY_LINK</code></td>
+<td>Partager la Grande Loterie sur WhatsApp ou SMS</td>
+<td>25</td>
+</tr>
+<tr>
+<td><code>READ_TRANSPARENCY_CHARTER</code></td>
+<td>Lire la Charte de Transparence du Smart Contract</td>
+<td>20</td>
+</tr>
+</tbody></table></div>
+<p><code>GET /user/quests</code> renvoie <code>{ &quot;quests&quot;: [...] }</code> avec, pour chaque quête, <code>id</code>, <code>title</code>, <code>rewardPoints</code> et <code>completed</code>.</p>
+<p><code>POST /user/quests/complete</code> attend <code>{ &quot;questId&quot;: &quot;&lt;identifiant&gt;&quot; }</code>, limité par Zod aux quatre valeurs du tableau. Une quête déjà validée renvoie <code>400 Vous avez déjà complété cette quête sociale</code>. Sinon l&#39;identifiant est ajouté à la clé Redis et les points sont crédités en <code>SOCIAL_QUEST</code> :</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Quête sociale validée ! EtherPoints bonus crédités.&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;quest&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;JOIN_DISCORD_ETHERBAY&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Rejoindre la communauté citoyenne EtherBay sur Discord&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;rewardPoints&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">40</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;completed&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;pointsAwarded&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">40</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;newPointsBalance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">165</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>La validation est déclarative : le backend ne vérifie ni l&#39;abonnement, ni le partage, ni la lecture. La lecture puis l&#39;écriture de la clé Redis ne sont pas atomiques : deux appels simultanés pour la même quête peuvent créditer deux fois.</p>
+</div>
+<h2 id="put-user-responsible-limit"><a class="anchor" href="#put-user-responsible-limit" aria-hidden="true" tabindex="-1">#</a>PUT /user/responsible-limit</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>maxTicketsPerRound</code></td>
+<td>entier</td>
+<td>1 à 500, messages <code>La limite doit être d&#39;au moins 1 ticket</code> et <code>La limite maximale autorisée est de 500 tickets</code></td>
+</tr>
+</tbody></table></div>
+<p>La valeur est écrite dans <code>user:ticket_limit:&lt;userId&gt;</code> et appliquée par <a href="loterie.html#post-lottery-buy"><code>POST /lottery/buy</code></a>. Elle s&#39;applique immédiatement dans les deux sens : une hausse ne comporte ni délai de réflexion ni confirmation. En mode onchain, la limite du contrat (<code>maxTicketsPerPlayer</code>, 100 sur le déploiement local) s&#39;applique aussi, si bien qu&#39;une valeur supérieure n&#39;a pas d&#39;effet au-delà.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Limite d&#x27;achat Jeu Responsable enregistrée&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;maxTicketsPerRound&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">10</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T16:00:00.000Z&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span></code></pre></div>
+<h2 id="put-user-preferences"><a class="anchor" href="#put-user-preferences" aria-hidden="true" tabindex="-1">#</a>PUT /user/preferences</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>theme</code></td>
+<td>énumération</td>
+<td>facultatif, <code>LIGHT</code>, <code>DARK</code> ou <code>SYSTEM</code></td>
+</tr>
+<tr>
+<td><code>language</code></td>
+<td>énumération</td>
+<td>facultatif, <code>FR</code> ou <code>EN</code></td>
+</tr>
+<tr>
+<td><code>pushNotificationsEnabled</code></td>
+<td>booléen</td>
+<td>facultatif</td>
+</tr>
+</tbody></table></div>
+<p>Les champs fournis sont fusionnés avec les préférences existantes ; la réponse renvoie <code>{ &quot;preferences&quot;: {...} }</code> complet.</p>
+<h2 id="get-user-notifications"><a class="anchor" href="#get-user-notifications" aria-hidden="true" tabindex="-1">#</a>GET /user/notifications</h2>
+<p>Renvoie <code>{ &quot;notifications&quot;: [...] }</code> : trois notifications codées en dur dans le service, datées relativement à l&#39;heure de l&#39;appel (une heure, un jour et deux jours avant). Il n&#39;existe ni table de notifications ni envoi de notifications push côté backend.</p>
+<h2 id="get-user-gdpr-export"><a class="anchor" href="#get-user-gdpr-export" aria-hidden="true" tabindex="-1">#</a>GET /user/gdpr/export</h2>
+<p>Renvoie l&#39;export des données du compte :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>exportedAt</code>, <code>gdprCompliant</code>, <code>controller</code></td>
+<td>métadonnées ; le responsable de traitement est « Mairie d&#39;EtherBay — Direction des Systèmes d&#39;Information (DSI) »</td>
+</tr>
+<tr>
+<td><code>personalData</code></td>
+<td>identifiant, adresse, email, rôle, solde, code de parrainage, état de la 2FA, dates</td>
+</tr>
+<tr>
+<td><code>ticketsHistory</code></td>
+<td>tous les tickets avec leur tour</td>
+</tr>
+<tr>
+<td><code>pointsLedger</code></td>
+<td>tous les mouvements d&#39;EtherPoints</td>
+</tr>
+<tr>
+<td><code>claimedRewards</code></td>
+<td>toutes les récompenses avec offre et partenaire</td>
+</tr>
+<tr>
+<td><code>analyticsEvents</code></td>
+<td>tous les événements analytiques rattachés au compte</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;export ne contient pas les données Redis du compte (préférences, limite, quêtes). Les secrets (clé de portefeuille chiffrée, secret TOTP, codes de secours) sont exclus.</p>
+<h2 id="suppression-du-compte"><a class="anchor" href="#suppression-du-compte" aria-hidden="true" tabindex="-1">#</a>Suppression du compte</h2>
+<p>La suppression se fait en deux temps pour éviter qu&#39;un jeton volé suffise à effacer un compte.</p>
+<div class="diagram"><pre class="mermaid">sequenceDiagram
+    participant C as &quot;Citoyen&quot;
+    participant API as &quot;API&quot;
+    participant DB as &quot;PostgreSQL&quot;
+    participant M as &quot;Email&quot;
+    C-&gt;&gt;API: POST /user/gdpr/delete-request avec jeton de session
+    API-&gt;&gt;DB: Token ACCOUNT_DELETION, SHA-256 du jeton, 24 h
+    API-&gt;&gt;M: email gdpr-deletion avec lien et jeton
+    C-&gt;&gt;API: POST /user/gdpr/confirm-delete avec le jeton reçu
+    API-&gt;&gt;DB: anonymisation et suppression du Token, en transaction
+    API-&gt;&gt;API: révocation de toutes les sessions</pre></div>
+<h3 id="post-user-gdpr-delete-request"><a class="anchor" href="#post-user-gdpr-delete-request" aria-hidden="true" tabindex="-1">#</a>POST /user/gdpr/delete-request</h3>
+<p>Pas de corps. Un jeton aléatoire de 32 octets en base64url est créé, stocké haché en SHA-256 avec une validité de 24 heures, et envoyé par email (gabarit <code>gdpr-deletion</code>). La réponse :</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Email de confirmation de suppression RGPD envoyé&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;confirmationRequired&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;emailSent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Une demande de suppression RGPD a été initiée. Veuillez confirmer avec le jeton envoyé par email.&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;confirmationToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qm9u2...x7Q&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p><code>confirmationToken</code> n&#39;est renvoyé que hors production. Chaque appel crée un nouveau jeton sans invalider les précédents.</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le lien de l&#39;email pointe vers <code>FRONTEND_URL/gdpr/confirm-delete?token=...</code>, page qui n&#39;existe pas dans <code>frontend-web</code>. La confirmation passe par l&#39;écran RGPD du profil, qui appelle l&#39;API avec le jeton. Un compte sans email ne reçoit aucun jeton en production et ne peut donc pas confirmer sa suppression.</p>
+</div>
+<h3 id="post-user-gdpr-confirm-delete"><a class="anchor" href="#post-user-gdpr-confirm-delete" aria-hidden="true" tabindex="-1">#</a>POST /user/gdpr/confirm-delete</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>token</code></td>
+<td>chaîne</td>
+<td>10 à 128 caractères, message <code>Jeton de confirmation RGPD requis</code></td>
+</tr>
+</tbody></table></div>
+<p>Route publique : le jeton suffit. Un jeton inconnu ou expiré renvoie <code>400 Jeton de suppression RGPD invalide ou expiré</code>. Sinon, dans une transaction :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ de <code>User</code></th>
+<th>Nouvelle valeur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>walletAddress</code></td>
+<td><code>0xdeleted_gdpr_</code> suivi des 8 premiers caractères de l&#39;identifiant</td>
+</tr>
+<tr>
+<td><code>walletEncryptedKey</code>, <code>welcomeGrantTxHash</code>, <code>email</code></td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td><code>twoFactorSecret</code>, <code>twoFactorMethod</code></td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td><code>twoFactorBackupCodes</code>, <code>isTwoFactorEnabled</code></td>
+<td><code>[]</code>, <code>false</code></td>
+</tr>
+<tr>
+<td><code>deletedAt</code></td>
+<td>date courante</td>
+</tr>
+</tbody></table></div>
+<p>Le jeton utilisé est supprimé, puis toutes les sessions du compte sont révoquées.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Compte anonymisé et supprimé conformément au RGPD&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;deleted&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;anonymized&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;deletedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-12T08:00:00.000Z&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span></code></pre></div>
+<p>Ce qui reste après l&#39;anonymisation : la ligne <code>User</code> (identifiant, rôle, solde, code de parrainage), les tickets, les mouvements de points, les récompenses obtenues et les événements analytiques, rattachés à l&#39;identifiant. Sur la chaîne, l&#39;ancienne adresse du portefeuille reste visible dans les événements du contrat ; la clé privée étant effacée, les ethers fictifs et un éventuel gain non versé deviennent inaccessibles. Ces limites sont discutées dans <a href="../../juridique/blockchain-donnees.html">Blockchain et données personnelles</a>.</p>
+<h2 id="erreurs-du-module"><a class="anchor" href="#erreurs-du-module" aria-hidden="true" tabindex="-1">#</a>Erreurs du module</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Statut</th>
+<th>Message</th>
+<th>Route</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>400</td>
+<td><code>Erreur de validation des données</code></td>
+<td>quêtes, limite, préférences, confirmation</td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>Vous avez déjà complété cette quête sociale</code></td>
+<td><code>quests/complete</code></td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>Jeton de suppression RGPD invalide ou expiré</code></td>
+<td><code>gdpr/confirm-delete</code></td>
+</tr>
+<tr>
+<td>404</td>
+<td><code>Profil utilisateur introuvable ou supprimé</code></td>
+<td><code>profile</code></td>
+</tr>
+<tr>
+<td>404</td>
+<td><code>Utilisateur introuvable</code></td>
+<td><code>referrals</code>, <code>gdpr/export</code>, <code>gdpr/delete-request</code></td>
+</tr>
+<tr>
+<td>404</td>
+<td><code>Quête sociale introuvable</code></td>
+<td><code>quests/complete</code>, inatteignable car Zod filtre avant</td>
+</tr>
+</tbody></table></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="partenaires.html"><span>Précédent</span><strong>Partenaires</strong></a><a class="pager-next" href="analytique.html"><span>Suivant</span><strong>Analytique</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/backend/modules/utilisateur.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#donnees-stockees-dans-redis">Données stockées dans Redis</a></li><li class="toc-h2"><a href="#get-user-profile">GET /user/profile</a></li><li class="toc-h2"><a href="#get-user-referrals">GET /user/referrals</a></li><li class="toc-h2"><a href="#quetes-sociales">Quêtes sociales</a></li><li class="toc-h2"><a href="#put-user-responsible-limit">PUT /user/responsible-limit</a></li><li class="toc-h2"><a href="#put-user-preferences">PUT /user/preferences</a></li><li class="toc-h2"><a href="#get-user-notifications">GET /user/notifications</a></li><li class="toc-h2"><a href="#get-user-gdpr-export">GET /user/gdpr/export</a></li><li class="toc-h2"><a href="#suppression-du-compte">Suppression du compte</a></li><li class="toc-h3"><a href="#post-user-gdpr-delete-request">POST /user/gdpr/delete-request</a></li><li class="toc-h3"><a href="#post-user-gdpr-confirm-delete">POST /user/gdpr/confirm-delete</a></li><li class="toc-h2"><a href="#erreurs-du-module">Erreurs du module</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

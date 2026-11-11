@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Validation des entrées | Documentation BlockLucky</title>
+<meta name="description" content="Toute donnée qui entre dans le backend par un corps de requête passe par un schéma Zod avant d&#39;atteindre un contrôleur. Les sorties sensibles (emails HTML, expo">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="validation.html" aria-current="page">Validation des entrées</a></div></li><li><div class="nav-row"><a href="cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>11. Sécurité</span></div>
+    <article class="markdown">
+<h1>Validation des entrées</h1>
+<p>Toute donnée qui entre dans le backend par un corps de requête passe par un schéma Zod avant d&#39;atteindre un contrôleur. Les sorties sensibles (emails HTML, exports CSV, journaux) sont neutralisées. Cette page décrit le mécanisme, les bornes appliquées et les zones qui échappent encore à la validation.</p>
+<h2 id="le-middleware-validate"><a class="anchor" href="#le-middleware-validate" aria-hidden="true" tabindex="-1">#</a>Le middleware <code>validate</code></h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/validate.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/validate.middleware.ts</code></a> reçoit un schéma de forme <code>{ body, query, params }</code> et appelle <code>schema.parseAsync</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cas</th>
+<th>Réponse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Données valides</td>
+<td><code>req.body</code> est <strong>remplacé</strong> par la valeur analysée : champs inconnus retirés, valeurs converties (<code>z.coerce</code>), valeurs par défaut appliquées</td>
+</tr>
+<tr>
+<td>Erreur Zod</td>
+<td>400 <code>Erreur de validation des données</code>, avec la liste <code>{ path, message }</code></td>
+</tr>
+<tr>
+<td>Autre erreur</td>
+<td>Transmise au gestionnaire d&#39;erreurs</td>
+</tr>
+</tbody></table></div>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Erreur de validation des données&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;errors&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;path&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;body.walletAddress&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Adresse de portefeuille invalide&quot;</span> <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p>Les objets Zod sont non stricts par défaut : un champ non déclaré n&#39;est pas rejeté, il est retiré. C&#39;est ce qui protège contre l&#39;affectation de masse. Un client qui ajoute <code>&quot;role&quot;: &quot;ADMIN&quot;</code> au corps de <code>/api/auth/login</code> n&#39;a aucun effet, puisque <code>role</code> ne figure pas dans <code>socialLoginSchema</code>.</p>
+<p>Seul <code>req.body</code> est réécrit. Les paramètres d&#39;URL et de requête (<code>req.params</code>, <code>req.query</code>) peuvent être vérifiés par un schéma, mais le contrôleur lit toujours la valeur brute. En pratique, aucun schéma actuel ne déclare <code>query</code> ni <code>params</code> : ces valeurs sont converties à la main dans les contrôleurs (voir <a href="#limites-connues">Limites connues</a>).</p>
+<h2 id="schemas-et-bornes"><a class="anchor" href="#schemas-et-bornes" aria-hidden="true" tabindex="-1">#</a>Schémas et bornes</h2>
+<p>Chaque module a son fichier <code>*.validators.ts</code>. Le tableau résume les règles de sécurité qu&#39;ils imposent.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Schéma</th>
+<th>Fichier</th>
+<th>Règles notables</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>socialLoginSchema</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.validators.ts</code></a></td>
+<td>Adresse <code>^0x[0-9a-fA-F]{40}$</code> mise en minuscules ; email de 254 caractères au plus ; <code>isAdultConfirmed</code> doit valoir <code>true</code> ; <code>provider</code> et <code>ageGroup</code> en énumération ; code de parrainage 64 et UTM 100 caractères au plus</td>
+</tr>
+<tr>
+<td><code>verify2FASchema</code>, <code>disable2FASchema</code></td>
+<td>idem</td>
+<td>Code de 6 à 16 caractères <code>[0-9A-Za-z-]</code>, <code>userId</code> en UUID</td>
+</tr>
+<tr>
+<td><code>buyTicketSchema</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.validators.ts</code></a></td>
+<td>Quantité entière de 1 à 10</td>
+</tr>
+<tr>
+<td><code>giftTicketSchema</code></td>
+<td>idem</td>
+<td>Email du bénéficiaire, message personnel de 250 caractères au plus</td>
+</tr>
+<tr>
+<td><code>claimPrizeSchema</code></td>
+<td>idem</td>
+<td>Numéro de tour de 1 à 1 000 000</td>
+</tr>
+<tr>
+<td><code>claimRewardSchema</code>, <code>usePromoCodeSchema</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/marketplace.validators.ts</code></a></td>
+<td>UUID ; code promo de 4 à 64 caractères</td>
+</tr>
+<tr>
+<td><code>createPartnerSchema</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/partners/partners.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/partners/partners.validators.ts</code></a></td>
+<td>Nom de 2 à 100 caractères ; logo en URL <strong>HTTPS</strong> de 500 caractères au plus</td>
+</tr>
+<tr>
+<td><code>createRewardOfferSchema</code></td>
+<td>idem</td>
+<td>Coût de 10 à 100 000 points, stock de 1 à 100 000, date ISO 8601 avec fuseau</td>
+</tr>
+<tr>
+<td><code>uploadCodesBatchSchema</code></td>
+<td>idem</td>
+<td>Au plus 5 000 codes de 3 à 64 caractères, ou un CSV de 200 000 caractères au plus</td>
+</tr>
+<tr>
+<td><code>setResponsibleGamingLimitSchema</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.validators.ts</code></a></td>
+<td>Limite entière de 1 à 500 tickets</td>
+</tr>
+<tr>
+<td><code>updatePreferencesSchema</code>, <code>completeSocialQuestSchema</code></td>
+<td>idem</td>
+<td>Énumérations fermées</td>
+</tr>
+<tr>
+<td><code>confirmGdprDeletionSchema</code></td>
+<td>idem</td>
+<td>Jeton de 10 à 128 caractères</td>
+</tr>
+<tr>
+<td><code>trackEventSchema</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/analytics/analytics.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/analytics/analytics.validators.ts</code></a></td>
+<td>Type <code>^[A-Za-z0-9_:.-]{2,64}$</code>, préfixes réservés refusés, au plus 20 métadonnées de types simples, chaînes de 200 caractères au plus</td>
+</tr>
+<tr>
+<td><code>circuitBreakerSchema</code>, <code>treasuryWithdrawalSchema</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/admin/admin.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/admin/admin.validators.ts</code></a></td>
+<td>Motif d&#39;au moins 5 caractères ; adresse Ethereum ; montant positif plafonné à 1 000 ETH ; note de 500 caractères au plus</td>
+</tr>
+<tr>
+<td><code>blockchainWebhookSchema</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/webhooks/webhooks.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/webhooks/webhooks.validators.ts</code></a></td>
+<td>Union discriminée sur <code>eventType</code> ; hash <code>^0x[0-9a-fA-F]{64}$</code> ; adresses vérifiées ; prix plafonné à 10 ETH</td>
+</tr>
+</tbody></table></div>
+<p>Les variables d&#39;environnement sont elles aussi validées par Zod au démarrage, dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/env.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/env.config.ts</code></a> : le processus s&#39;arrête si une valeur est invalide (voir <a href="cryptographie-secrets.html#secrets-refuses-en-production">Cryptographie et secrets</a>).</p>
+<h3 id="le-cas-des-evenements-analytiques"><a class="anchor" href="#le-cas-des-evenements-analytiques" aria-hidden="true" tabindex="-1">#</a>Le cas des événements analytiques</h3>
+<p><code>POST /api/analytics/track</code> est ouvert aux anonymes. Sans contrôle, un client pourrait insérer de faux événements <code>ADMIN_AUDIT:...</code>, qui apparaîtraient dans le journal d&#39;administration puisque celui-ci est stocké dans la même table. Le schéma refuse donc tout type commençant, sans tenir compte de la casse, par <code>ADMIN_AUDIT</code>, <code>USER_SIGNUP</code> ou <code>USER_LOGIN</code>. Le test <code>refuse les événements analytiques qui imitent le journal d&#39;administration</code> le vérifie.</p>
+<h2 id="limites-de-taille"><a class="anchor" href="#limites-de-taille" aria-hidden="true" tabindex="-1">#</a>Limites de taille</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Limite</th>
+<th>Valeur</th>
+<th>Où</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Corps JSON</td>
+<td>1 Mo</td>
+<td><code>express.json({ limit: &#39;1mb&#39; })</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a></td>
+</tr>
+<tr>
+<td>Corps URL-encodé</td>
+<td>1 Mo</td>
+<td><code>express.urlencoded</code></td>
+</tr>
+<tr>
+<td>Corps trop gros</td>
+<td>413 <code>Corps de requête trop volumineux</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/error.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/error.middleware.ts</code></a></td>
+</tr>
+<tr>
+<td>JSON mal formé</td>
+<td>400 <code>Corps de requête JSON invalide</code></td>
+<td>idem</td>
+</tr>
+<tr>
+<td>Pagination</td>
+<td>1 à 100 éléments par page</td>
+<td><code>getPaginationParams</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/pagination.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/utils/pagination.util.ts</code></a></td>
+</tr>
+<tr>
+<td>Message de chat</td>
+<td>280 caractères</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/socket/events/chat.events.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/socket/events/chat.events.ts</code></a></td>
+</tr>
+<tr>
+<td>Identifiant de requête entrant</td>
+<td><code>^[A-Za-z0-9._-]{8,128}$</code>, sinon remplacé</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/request-context.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/request-context.middleware.ts</code></a></td>
+</tr>
+<tr>
+<td>Corps sur le site de l&#39;Office de Tourisme</td>
+<td>16 Ko, méthodes <code>GET</code> et <code>HEAD</code> seules</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/docker/nginx.conf" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/docker/nginx.conf</code></a></td>
+</tr>
+</tbody></table></div>
+<h2 id="injections"><a class="anchor" href="#injections" aria-hidden="true" tabindex="-1">#</a>Injections</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Situation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SQL</td>
+<td>Toutes les requêtes passent par Prisma, qui paramètre les valeurs. La seule requête brute, <code>SELECT 1</code> du contrôle de santé, utilise la forme littérale balisée <code>prisma.$queryRaw`...`</code> sans aucune interpolation.</td>
+</tr>
+<tr>
+<td>NoSQL et Redis</td>
+<td>Les clés Redis sont construites à partir d&#39;identifiants internes (UUID, <code>jti</code>) ou de valeurs validées ; aucune commande n&#39;est construite à partir d&#39;une chaîne fournie par le client.</td>
+</tr>
+<tr>
+<td>Commandes système</td>
+<td>Le backend n&#39;exécute aucune commande système.</td>
+</tr>
+<tr>
+<td>Chemins de fichier</td>
+<td>Les modèles d&#39;email sont choisis dans une liste fermée (<code>EmailTemplateName</code>). Le fichier POAP est filtré par l&#39;expression <code>^(\d{1,9})\.json$</code> ou <code>.svg</code>.</td>
+</tr>
+<tr>
+<td>Requêtes sortantes</td>
+<td>Les seules URL appelées par le backend sont configurées par l&#39;environnement (RPC, SMTP, S3). Le logo d&#39;un partenaire est une URL HTTPS stockée, jamais téléchargée par le serveur.</td>
+</tr>
+</tbody></table></div>
+<h2 id="echappement-des-sorties"><a class="anchor" href="#echappement-des-sorties" aria-hidden="true" tabindex="-1">#</a>Échappement des sorties</h2>
+<h3 id="emails"><a class="anchor" href="#emails" aria-hidden="true" tabindex="-1">#</a>Emails</h3>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/email.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/email.service.ts</code></a> remplace chaque <code>{{VARIABLE}}</code> des modèles HTML par sa valeur échappée :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">const</span> escapeHtml = (<span class="hljs-attr">value</span>: <span class="hljs-built_in">string</span>): <span class="hljs-function"><span class="hljs-params">string</span> =&gt;</span>
+  value.<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/[&amp;&lt;&gt;&quot;&#x27;]/g</span>, <span class="hljs-function">(<span class="hljs-params">char</span>) =&gt;</span>
+    ({ <span class="hljs-string">&#x27;&amp;&#x27;</span>: <span class="hljs-string">&#x27;&amp;amp;&#x27;</span>, <span class="hljs-string">&#x27;&lt;&#x27;</span>: <span class="hljs-string">&#x27;&amp;lt;&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>: <span class="hljs-string">&#x27;&amp;gt;&#x27;</span>, <span class="hljs-string">&#x27;&quot;&#x27;</span>: <span class="hljs-string">&#x27;&amp;quot;&#x27;</span>, <span class="hljs-string">&quot;&#x27;&quot;</span>: <span class="hljs-string">&#x27;&amp;#39;&#x27;</span> })[char] ?? char
+  );</code></pre></div>
+<p>Un message personnel de cadeau contenant <code>&lt;script&gt;</code> arrive donc sous forme de texte dans la boîte du destinataire. Les modèles sont dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/src/templates/emails" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/templates/emails</code></a>.</p>
+<h3 id="exports-csv"><a class="anchor" href="#exports-csv" aria-hidden="true" tabindex="-1">#</a>Exports CSV</h3>
+<p>L&#39;export comptable (<code>GET /api/admin/reports/export</code>) passe chaque cellule par <code>neutralizeSpreadsheetCell</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/crypto.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/utils/crypto.util.ts</code></a> :</p>
+<ul>
+<li>la cellule est entourée de guillemets doubles et ses guillemets internes sont doublés ;</li>
+<li>si elle commence par <code>=</code>, <code>+</code>, <code>-</code>, <code>@</code>, une tabulation ou un retour chariot, une apostrophe est ajoutée devant pour qu&#39;un tableur ne l&#39;interprète pas comme une formule.</li>
+</ul>
+<h3 id="journaux"><a class="anchor" href="#journaux" aria-hidden="true" tabindex="-1">#</a>Journaux</h3>
+<p>Les adresses email sont masquées par <code>maskEmail</code> (<code>j***@domaine</code>) dans les journaux d&#39;envoi. Aucun code, jeton ou secret n&#39;est journalisé. Les erreurs non gérées renvoient en production le message générique <code>Erreur interne du serveur</code> et l&#39;identifiant <code>requestId</code>, sans trace technique.</p>
+<h3 id="frontends"><a class="anchor" href="#frontends" aria-hidden="true" tabindex="-1">#</a>Frontends</h3>
+<p>Le web (React) et le mobile (React Native) affichent les données comme du texte. Le code ne contient aucun appel à <code>dangerouslySetInnerHTML</code> sur une donnée reçue de l&#39;API. Le site de l&#39;Office de Tourisme est traité dans <a href="navigateur-mobile.html">Navigateur et mobile</a>.</p>
+<h2 id="limites-connues"><a class="anchor" href="#limites-connues" aria-hidden="true" tabindex="-1">#</a>Limites connues</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Limite</th>
+<th>Détail</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Paramètres de requête non bornés</td>
+<td><code>GET /api/lottery/leaderboard?limit=</code> est public et transmet <code>Number(req.query.limit)</code> (20 par défaut) à Prisma sans plafond. Une valeur très grande déclenche une requête lourde. <code>GET /api/admin/audit-logs?limit=</code> a le même défaut, réservé aux administrateurs.</td>
+</tr>
+<tr>
+<td>Événements Socket.IO</td>
+<td><code>chat:send</code> et <code>chat:react</code> ne passent pas par Zod. <code>chat:react</code> appelle <code>emoji.slice(0, 8)</code> sans vérifier le type : une valeur non textuelle lève une exception dans le gestionnaire. Le champ <code>emoji</code> de <code>chat:send</code> n&#39;est pas borné.</td>
+</tr>
+<tr>
+<td>Motif du disjoncteur</td>
+<td><code>reason</code> a une longueur minimale mais pas de maximum (le corps reste limité à 1 Mo).</td>
+</tr>
+<tr>
+<td>Modèle d&#39;email de secours</td>
+<td>Si un fichier de modèle manque, <code>loadTemplate</code> renvoie <code>JSON.stringify(variables)</code> dans un paragraphe HTML <strong>sans échappement</strong>. Ce cas ne se produit pas avec les modèles livrés.</td>
+</tr>
+<tr>
+<td>En-tête <code>Host</code></td>
+<td>Les métadonnées POAP construisent leur URL à partir de <code>req.get(&#39;host&#39;)</code> et sont mises en cache <code>immutable</code>. Derrière un proxy qui ne réécrit pas l&#39;en-tête, un client peut faire apparaître un autre domaine dans la réponse.</td>
+</tr>
+</tbody></table></div>
+<p>Ces points figurent dans la synthèse des <a href="audits.html">audits</a>. Pour ajouter un schéma à une nouvelle route, suivre le guide <a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a>.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="autorisations.html"><span>Précédent</span><strong>Autorisations et matrice des droits</strong></a><a class="pager-next" href="cryptographie-secrets.html"><span>Suivant</span><strong>Cryptographie et secrets</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/securite/validation.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#le-middleware-validate">Le middleware validate</a></li><li class="toc-h2"><a href="#schemas-et-bornes">Schémas et bornes</a></li><li class="toc-h3"><a href="#le-cas-des-evenements-analytiques">Le cas des événements analytiques</a></li><li class="toc-h2"><a href="#limites-de-taille">Limites de taille</a></li><li class="toc-h2"><a href="#injections">Injections</a></li><li class="toc-h2"><a href="#echappement-des-sorties">Échappement des sorties</a></li><li class="toc-h3"><a href="#emails">Emails</a></li><li class="toc-h3"><a href="#exports-csv">Exports CSV</a></li><li class="toc-h3"><a href="#journaux">Journaux</a></li><li class="toc-h3"><a href="#frontends">Frontends</a></li><li class="toc-h2"><a href="#limites-connues">Limites connues</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

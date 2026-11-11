@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blockchain locale | Documentation BlockLucky</title>
+<meta name="description" content="En développement et en CI, les contrats tournent sur un nœud Hardhat local, avec un coordinateur Chainlink VRF simulé et un petit oracle qui répond aux demandes">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="blockchain-locale.html" aria-current="page">Blockchain locale</a></div></li><li><div class="nav-row"><a href="sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>4. Smart contracts</span></div>
+    <article class="markdown">
+<h1>Blockchain locale</h1>
+<p>En développement et en CI, les contrats tournent sur un nœud Hardhat local, avec un coordinateur Chainlink VRF simulé et un petit oracle qui répond aux demandes de tirage. Le backend s&#39;y connecte sans aucune configuration : les adresses des contrats sont déterministes et correspondent à ses valeurs par défaut. Cette page décrit le nœud, le script de déploiement, l&#39;oracle, l&#39;image Docker et les variables. Le démarrage de toute l&#39;infrastructure locale est décrit dans <a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a>.</p>
+<h2 id="vue-d-ensemble"><a class="anchor" href="#vue-d-ensemble" aria-hidden="true" tabindex="-1">#</a>Vue d&#39;ensemble</h2>
+<div class="diagram"><pre class="mermaid">flowchart LR
+    subgraph conteneur[&quot;Conteneur blockchain&quot;]
+        node[&quot;hardhat node, port 8545&quot;]
+        deploy[&quot;deploy-local.ts&quot;]
+        oracle[&quot;local-vrf-responder.ts, compte 9&quot;]
+    end
+    deploy --&gt;|&quot;déploie mock VRF, BlockLucky, POAP&quot;| node
+    oracle --&gt;|&quot;lit RandomWordsRequested, appelle fulfillRandomWords&quot;| node
+    backend[&quot;Backend, compte opérateur&quot;] --&gt;|&quot;RPC_URL&quot;| node</pre></div>
+<h2 id="demarrer"><a class="anchor" href="#demarrer" aria-hidden="true" tabindex="-1">#</a>Démarrer</h2>
+<h3 id="avec-docker"><a class="anchor" href="#avec-docker" aria-hidden="true" tabindex="-1">#</a>Avec Docker</h3>
+<p>Le service <code>blockchain</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker-compose.yml" class="external" target="_blank" rel="noopener noreferrer"><code>docker-compose.yml</code></a> construit l&#39;image de <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/smart-contract/Dockerfile" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/Dockerfile</code></a> et publie le port sur <code>127.0.0.1:8545</code> uniquement.</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose up -d --<span class="hljs-built_in">wait</span> blockchain</code></pre></div>
+<p><code>--wait</code> attend que le conteneur soit sain, c&#39;est-à-dire que les contrats soient déployés.</p>
+<h3 id="sans-docker"><a class="anchor" href="#sans-docker" aria-hidden="true" tabindex="-1">#</a>Sans Docker</h3>
+<p>Dans un premier terminal, depuis <code>smart-contract/</code> :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npm run node</code></pre></div>
+<p>Dans un second terminal, une fois le nœud prêt :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npm run deploy:<span class="hljs-built_in">local</span> &amp;&amp; npx hardhat run scripts/local-vrf-responder.ts --network localhost</code></pre></div>
+<p>L&#39;oracle tourne au premier plan tant que le terminal reste ouvert. Sans lui, les tours restent en <code>Drawing</code> après la demande de tirage.</p>
+<h2 id="le-n-ud-hardhat"><a class="anchor" href="#le-n-ud-hardhat" aria-hidden="true" tabindex="-1">#</a>Le nœud Hardhat</h2>
+<p><code>hardhat node</code> lance un réseau Ethereum en mémoire, au chain ID 31337, avec 20 comptes dérivés de la phrase mnémonique publique de développement de Hardhat, chacun approvisionné en ethers fictifs. Un bloc est produit à chaque transaction.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Index</th>
+<th>Adresse</th>
+<th>Rôle dans BlockLucky</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td><code>0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266</code></td>
+<td>Mairie : déployeur, administrateur, opérateur, pauseur, frappeur, propriétaire <code>ConfirmedOwner</code> ; opérateur par défaut du backend</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>0x70997970C51812dc3A010C7d01b50e0d17dc79C8</code></td>
+<td>Trésorerie</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>0xa0Ee7A142d267C1f36714E4a8F75612F20a79720</code></td>
+<td>Signataire de l&#39;oracle VRF local</td>
+</tr>
+</tbody></table></div>
+<p>La clé privée du compte 0 est la valeur par défaut de <code>RELAYER_PRIVATE_KEY</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/env.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/env.config.ts</code></a>. Ces clés sont publiques : elles ne doivent jamais recevoir de vrais fonds ni servir hors de la chaîne locale.</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le nœud ne conserve aucun état. À chaque redémarrage du conteneur, la chaîne repart du bloc 0 et les contrats sont redéployés aux mêmes adresses, mais vides. La base du backend, elle, garde les tours et tickets de la chaîne précédente, et l&#39;indexeur détecte un curseur en avance sur la tête de chaîne. Il faut alors réinitialiser aussi la base : <code>docker compose down -v</code>, puis relancer les migrations et le seed.</p>
+</div>
+<h2 id="le-script-deploy-local-ts"><a class="anchor" href="#le-script-deploy-local-ts" aria-hidden="true" tabindex="-1">#</a>Le script deploy-local.ts</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/deploy-local.ts" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/deploy-local.ts</code></a> enchaîne, avec le compte 0 :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Nonce</th>
+<th>Transaction</th>
+<th>Résultat</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>Déploiement de <code>VRFCoordinatorV2_5Mock(0.1 ether, 1 gwei, 4e15)</code></td>
+<td><code>0x5FbDB2315678afecb367f032d93F642f64180aa3</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>createSubscription()</code></td>
+<td>Identifiant lu dans l&#39;événement <code>SubscriptionCreated</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>fundSubscription(subId, 10000 ether)</code></td>
+<td>Abonnement financé</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Déploiement de <code>BlockLucky</code></td>
+<td><code>0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>addConsumer(subId, lottery)</code></td>
+<td><code>BlockLucky</code> autorisé à demander de l&#39;aléa</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Déploiement de <code>BlockLuckyPOAP</code></td>
+<td><code>0x5FC8d32690cc91D4c39d9d3abcBD16989F875707</code></td>
+</tr>
+<tr>
+<td>6 et suivants</td>
+<td>Rôles et approvisionnement de l&#39;opérateur, si configuré</td>
+<td>Voir plus bas</td>
+</tr>
+</tbody></table></div>
+<h3 id="pourquoi-les-adresses-sont-deterministes"><a class="anchor" href="#pourquoi-les-adresses-sont-deterministes" aria-hidden="true" tabindex="-1">#</a>Pourquoi les adresses sont déterministes</h3>
+<p>L&#39;adresse d&#39;un contrat créé par un compte ne dépend que de l&#39;adresse de ce compte et de son nonce. Le nœud démarre toujours avec les mêmes comptes, et le script envoie toujours les mêmes transactions dans le même ordre : le coordinateur naît au nonce 0, <code>BlockLucky</code> au nonce 3 et <code>BlockLuckyPOAP</code> au nonce 5. Ces adresses sont les valeurs par défaut de <code>LOTTERY_CONTRACT_ADDRESS</code> et <code>POAP_CONTRACT_ADDRESS</code> dans le backend et dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker-compose.yml" class="external" target="_blank" rel="noopener noreferrer"><code>docker-compose.yml</code></a>.</p>
+<p>Conséquence : toute transaction ajoutée avant le nonce 5 dans le script, ou toute transaction envoyée par le compte 0 avant le déploiement, décale les adresses et casse la configuration par défaut du backend. L&#39;identifiant d&#39;abonnement, en revanche, change à chaque démarrage, car le mock le dérive notamment du hash du bloc précédent.</p>
+<h3 id="configuration-deployee"><a class="anchor" href="#configuration-deployee" aria-hidden="true" tabindex="-1">#</a>Configuration déployée</h3>
+<p>Le tour est configuré par <code>roundConfigFromEnv</code> avec une durée par défaut de 30 minutes. La configuration VRF est fixe :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Valeur locale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>keyHash</code></td>
+<td><code>0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae</code></td>
+</tr>
+<tr>
+<td><code>callbackGasLimit</code></td>
+<td>500 000</td>
+</tr>
+<tr>
+<td><code>requestConfirmations</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>nativePayment</code></td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>drawTimeout</code></td>
+<td>600 secondes</td>
+</tr>
+</tbody></table></div>
+<h3 id="l-operateur-du-backend"><a class="anchor" href="#l-operateur-du-backend" aria-hidden="true" tabindex="-1">#</a>L&#39;opérateur du backend</h3>
+<p>Si <code>OPERATOR_ADDRESS</code> ou <code>OPERATOR_PRIVATE_KEY</code> désigne un compte différent du compte 0, le script lui accorde <code>OPERATOR_ROLE</code> et <code>PAUSER_ROLE</code> sur <code>BlockLucky</code>, <code>MINTER_ROLE</code> sur <code>BlockLuckyPOAP</code>, et lui envoie <code>OPERATOR_FUNDING_ETH</code> ethers (1 000 par défaut). L&#39;opérateur paie en effet le gaz du keeper, des frappes de badges et les dotations de bienvenue.</p>
+<p>Dans <code>docker-compose.yml</code>, <code>OPERATOR_PRIVATE_KEY</code> reçoit <code>RELAYER_PRIVATE_KEY</code>. Si cette variable est vide, le backend utilise le compte 0, qui a déjà tous les rôles, et le script n&#39;a rien à faire.</p>
+<h3 id="fichier-de-deploiement"><a class="anchor" href="#fichier-de-deploiement" aria-hidden="true" tabindex="-1">#</a>Fichier de déploiement</h3>
+<p>Le script écrit <code>smart-contract/deployments/localhost.json</code> (ou dans <code>DEPLOYMENTS_DIR</code>), ignoré par Git. Il contient le réseau, le chain ID, la date, le bloc de déploiement, l&#39;administrateur, l&#39;opérateur éventuel, la trésorerie, les trois adresses, la key hash, l&#39;identifiant d&#39;abonnement et la configuration des tours. L&#39;oracle local le relit au démarrage.</p>
+<h2 id="l-oracle-local"><a class="anchor" href="#l-oracle-local" aria-hidden="true" tabindex="-1">#</a>L&#39;oracle local</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/local-vrf-responder.ts" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/local-vrf-responder.ts</code></a> joue le rôle du réseau Chainlink :</p>
+<ol>
+<li>il lit <code>deployments/localhost.json</code> ;</li>
+<li>toutes les <code>VRF_POLL_INTERVAL_MS</code> millisecondes (2 000 par défaut), il récupère les événements <code>RandomWordsRequested</code> du mock depuis le dernier bloc lu ;</li>
+<li>pour chaque requête qu&#39;il n&#39;a pas encore servie, il appelle <code>fulfillRandomWords(requestId, consumer)</code> sur le mock et attend la confirmation ;</li>
+<li>il journalise chaque réponse et continue en cas d&#39;erreur.</li>
+</ol>
+<p>Il signe avec le compte d&#39;index <code>VRF_ORACLE_ACCOUNT_INDEX</code>, 9 par défaut. Le compte est distinct de l&#39;opérateur pour que deux processus n&#39;envoient jamais de transactions avec le même compte : leurs nonces entreraient en conflit. Si l&#39;index demandé n&#39;existe pas, il se rabat sur le compte 0.</p>
+<p>L&#39;aléa fourni par le mock est <code>keccak256(abi.encode(requestId, 0))</code> : déterministe, prévisible, et donc uniquement acceptable en développement. Voir <a href="chainlink-vrf.html#en-local-le-mock-et-l-oracle-simule">Tirage Chainlink VRF</a>.</p>
+<h2 id="l-image-docker"><a class="anchor" href="#l-image-docker" aria-hidden="true" tabindex="-1">#</a>L&#39;image Docker</h2>
+<p>Étapes du <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/smart-contract/Dockerfile" class="external" target="_blank" rel="noopener noreferrer"><code>Dockerfile</code></a> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Base <code>node:22-bookworm-slim</code></td>
+<td>Modifiable par l&#39;argument <code>NODE_IMAGE</code></td>
+</tr>
+<tr>
+<td><code>npm ci</code> avec cache</td>
+<td>Dépendances figées par <code>package-lock.json</code></td>
+</tr>
+<tr>
+<td>Copie de <code>hardhat.config.ts</code>, <code>tsconfig.json</code>, <code>contracts/</code>, <code>scripts/</code>, <code>docker/start-local-chain.sh</code></td>
+<td>Les tests et les artefacts locaux sont exclus par <code>.dockerignore</code></td>
+</tr>
+<tr>
+<td><code>npx hardhat build</code></td>
+<td>Contrats compilés dans l&#39;image</td>
+</tr>
+<tr>
+<td><code>USER node</code></td>
+<td>Le conteneur ne tourne pas en root</td>
+</tr>
+<tr>
+<td><code>EXPOSE 8545</code></td>
+<td>Port RPC</td>
+</tr>
+<tr>
+<td><code>HEALTHCHECK</code></td>
+<td>Sain quand <code>/tmp/blockchain-ready</code> existe, vérifié toutes les 5 secondes, 60 secondes de grâce, 20 essais</td>
+</tr>
+</tbody></table></div>
+<p>Le script de démarrage <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/docker/start-local-chain.sh" class="external" target="_blank" rel="noopener noreferrer"><code>docker/start-local-chain.sh</code></a> :</p>
+<ol>
+<li>lance <code>hardhat node --hostname 0.0.0.0 --port 8545</code> en arrière-plan ;</li>
+<li>interroge <code>eth_chainId</code> chaque seconde jusqu&#39;à ce que le nœud réponde ;</li>
+<li>lance <code>deploy-local.ts</code>, puis crée <code>/tmp/blockchain-ready</code>, ce qui rend le conteneur sain ;</li>
+<li>lance l&#39;oracle local en arrière-plan ;</li>
+<li>attend la fin du nœud et arrête l&#39;oracle à la réception de <code>INT</code> ou <code>TERM</code>.</li>
+</ol>
+<p>Le service compose ajoute <code>cap_drop: [ALL]</code>, <code>no-new-privileges</code> et <code>restart: unless-stopped</code>. Cette image sert au développement et à la CI ; elle n&#39;est jamais déployée en production (voir <a href="../infrastructure/images.html">Images Docker</a>).</p>
+<h2 id="variables"><a class="anchor" href="#variables" aria-hidden="true" tabindex="-1">#</a>Variables</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Lue par</th>
+<th>Défaut</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>LOCAL_RPC_URL</code></td>
+<td><code>hardhat.config.ts</code></td>
+<td><code>http://127.0.0.1:8545</code></td>
+<td>URL du réseau <code>localhost</code></td>
+</tr>
+<tr>
+<td><code>OPERATOR_ADDRESS</code></td>
+<td><code>deploy-local.ts</code></td>
+<td>vide</td>
+<td>Opérateur à habiliter et approvisionner</td>
+</tr>
+<tr>
+<td><code>OPERATOR_PRIVATE_KEY</code></td>
+<td><code>deploy-local.ts</code></td>
+<td>vide</td>
+<td>Alternative : l&#39;adresse est dérivée de la clé</td>
+</tr>
+<tr>
+<td><code>OPERATOR_FUNDING_ETH</code></td>
+<td><code>deploy-local.ts</code></td>
+<td><code>1000</code></td>
+<td>Ethers envoyés à l&#39;opérateur</td>
+</tr>
+<tr>
+<td><code>POAP_BASE_URI</code></td>
+<td><code>deploy-local.ts</code></td>
+<td><code>http://localhost:2053/api/v1/lottery/poap/</code></td>
+<td>Préfixe des métadonnées des badges</td>
+</tr>
+<tr>
+<td><code>TICKET_PRICE_WEI</code></td>
+<td><code>lib/deployment.ts</code></td>
+<td><code>10000000000000000</code></td>
+<td>Prix du ticket</td>
+</tr>
+<tr>
+<td><code>MAX_TICKETS</code></td>
+<td><code>lib/deployment.ts</code></td>
+<td><code>10000</code></td>
+<td>Plafond de tickets par tour</td>
+</tr>
+<tr>
+<td><code>MIN_TICKETS_TO_DRAW</code></td>
+<td><code>lib/deployment.ts</code></td>
+<td><code>2</code></td>
+<td>Minimum pour tirer</td>
+</tr>
+<tr>
+<td><code>MAX_TICKETS_PER_PLAYER</code></td>
+<td><code>lib/deployment.ts</code></td>
+<td><code>100</code></td>
+<td>Plafond par participant</td>
+</tr>
+<tr>
+<td><code>ROUND_DURATION_SECONDS</code></td>
+<td><code>lib/deployment.ts</code></td>
+<td><code>1800</code> en local</td>
+<td>Durée d&#39;un tour</td>
+</tr>
+<tr>
+<td><code>MUNICIPALITY_FEE_BPS</code></td>
+<td><code>lib/deployment.ts</code></td>
+<td><code>1000</code></td>
+<td>Commission en points de base</td>
+</tr>
+<tr>
+<td><code>DEPLOYMENTS_DIR</code></td>
+<td><code>lib/deployment.ts</code></td>
+<td><code>smart-contract/deployments</code></td>
+<td>Dossier des fichiers de déploiement</td>
+</tr>
+<tr>
+<td><code>VRF_ORACLE_ACCOUNT_INDEX</code></td>
+<td><code>local-vrf-responder.ts</code></td>
+<td><code>9</code></td>
+<td>Compte signataire de l&#39;oracle</td>
+</tr>
+<tr>
+<td><code>VRF_POLL_INTERVAL_MS</code></td>
+<td><code>local-vrf-responder.ts</code></td>
+<td><code>2000</code></td>
+<td>Période de scrutation</td>
+</tr>
+</tbody></table></div>
+<p>Les variables numériques de <code>lib/deployment.ts</code>, sauf <code>TICKET_PRICE_WEI</code>, doivent être des entiers strictement positifs, sinon le script s&#39;arrête.</p>
+<p>Exemple : un tour de 5 minutes à 2 tickets minimum, pour une démonstration.</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">ROUND_DURATION_SECONDS=300 MIN_TICKETS_TO_DRAW=2 npm run deploy:<span class="hljs-built_in">local</span></code></pre></div>
+<h2 id="brancher-le-backend"><a class="anchor" href="#brancher-le-backend" aria-hidden="true" tabindex="-1">#</a>Brancher le backend</h2>
+<p>Le backend lit <code>RPC_URL</code>, <code>CHAIN_ID</code>, <code>LOTTERY_CONTRACT_ADDRESS</code>, <code>POAP_CONTRACT_ADDRESS</code> et <code>RELAYER_PRIVATE_KEY</code>. Leurs valeurs par défaut correspondent exactement à cette chaîne locale : <code>http://127.0.0.1:8545</code>, <code>31337</code>, les deux adresses ci-dessus et la clé du compte 0. Dans Docker Compose, <code>RPC_URL</code> vaut <code>http://blockchain:8545</code>. Voir <a href="../backend/variables-environnement.html">Variables d&#39;environnement</a> et <a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a>.</p>
+<h2 id="verifier-que-tout-fonctionne"><a class="anchor" href="#verifier-que-tout-fonctionne" aria-hidden="true" tabindex="-1">#</a>Vérifier que tout fonctionne</h2>
+<p>Depuis <code>smart-contract/</code>, la console Hardhat interroge directement le contrat déployé :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npx hardhat console --network localhost</code></pre></div>
+<div class="code-block"><div class="code-head"><span>JavaScript</span></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { ethers } = <span class="hljs-keyword">await</span> network.<span class="hljs-title function_">create</span>();
+<span class="hljs-keyword">const</span> lottery = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractAt</span>(<span class="hljs-string">&quot;BlockLucky&quot;</span>, <span class="hljs-string">&quot;0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9&quot;</span>);
+<span class="hljs-keyword">await</span> lottery.<span class="hljs-title function_">currentRoundId</span>();
+<span class="hljs-keyword">await</span> lottery.<span class="hljs-title function_">getRound</span>(<span class="hljs-keyword">await</span> lottery.<span class="hljs-title function_">currentRoundId</span>());</code></pre></div>
+<p>Les journaux du conteneur indiquent les adresses déployées et chaque réponse de l&#39;oracle :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose logs -f blockchain</code></pre></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="tests.html"><span>Précédent</span><strong>Tests, fuzzing et couverture</strong></a><a class="pager-next" href="sepolia.html"><span>Suivant</span><strong>Déploiement sur Sepolia</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/smart-contracts/blockchain-locale.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#vue-d-ensemble">Vue d&#39;ensemble</a></li><li class="toc-h2"><a href="#demarrer">Démarrer</a></li><li class="toc-h3"><a href="#avec-docker">Avec Docker</a></li><li class="toc-h3"><a href="#sans-docker">Sans Docker</a></li><li class="toc-h2"><a href="#le-n-ud-hardhat">Le nœud Hardhat</a></li><li class="toc-h2"><a href="#le-script-deploy-local-ts">Le script deploy-local.ts</a></li><li class="toc-h3"><a href="#pourquoi-les-adresses-sont-deterministes">Pourquoi les adresses sont déterministes</a></li><li class="toc-h3"><a href="#configuration-deployee">Configuration déployée</a></li><li class="toc-h3"><a href="#l-operateur-du-backend">L&#39;opérateur du backend</a></li><li class="toc-h3"><a href="#fichier-de-deploiement">Fichier de déploiement</a></li><li class="toc-h2"><a href="#l-oracle-local">L&#39;oracle local</a></li><li class="toc-h2"><a href="#l-image-docker">L&#39;image Docker</a></li><li class="toc-h2"><a href="#variables">Variables</a></li><li class="toc-h2"><a href="#brancher-le-backend">Brancher le backend</a></li><li class="toc-h2"><a href="#verifier-que-tout-fonctionne">Vérifier que tout fonctionne</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>
