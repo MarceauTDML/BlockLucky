@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vue d&#39;ensemble | Documentation BlockLucky</title>
+<meta name="description" content="Le cœur de BlockLucky est un vrai smart contract Solidity. Il reçoit les mises des citoyens, tire le gagnant avec Chainlink VRF et garde la cagnotte jusqu&#39;à son">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="index.html" aria-current="page">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>4. Smart contracts</span></div>
+    <article class="markdown">
+<h1>Vue d&#39;ensemble</h1>
+<p>Le cœur de BlockLucky est un vrai smart contract Solidity. Il reçoit les mises des citoyens, tire le gagnant avec Chainlink VRF et garde la cagnotte jusqu&#39;à son retrait. Un second contrat délivre un badge de participation non transférable. Le backend ne fait qu&#39;appeler ces contrats et indexer leurs événements : il ne choisit jamais le gagnant et ne détient jamais la cagnotte.</p>
+<p>Le projet Hardhat se trouve dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/smart-contract" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/</code></a>. Il a été écrit pour répondre au brief du kickoff : « créer un smart contract pour une loterie simple », avec des tickets achetés en ethers fictifs et un gagnant tiré au hasard après un certain nombre de participants ou une certaine durée. La décision et ses alternatives sont tracées dans l&#39;<a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">ADR 0004</a>.</p>
+<h2 id="les-deux-contrats"><a class="anchor" href="#les-deux-contrats" aria-hidden="true" tabindex="-1">#</a>Les deux contrats</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Contrat</th>
+<th>Fichier</th>
+<th>Rôle</th>
+<th>Hérite de</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>BlockLucky</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a></td>
+<td>Loterie par tours successifs : achat et cadeau de tickets en ethers, tirage Chainlink VRF, cagnotte et remboursements en retrait, commission de la Mairie, disjoncteur</td>
+<td><code>VRFConsumerBaseV2Plus</code>, <code>AccessControl</code>, <code>Pausable</code>, <code>ReentrancyGuard</code>, <code>AutomationCompatibleInterface</code></td>
+</tr>
+<tr>
+<td><code>BlockLuckyPOAP</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLuckyPOAP.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLuckyPOAP.sol</code></a></td>
+<td>Badge ERC-721 non transférable (« soulbound »), un par participant et par tour, frappé par l&#39;opérateur</td>
+<td><code>ERC721</code>, <code>AccessControl</code></td>
+</tr>
+</tbody></table></div>
+<p>Deux contrats supplémentaires, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/test/ReentrantPlayer.sol" class="external" target="_blank" rel="noopener noreferrer"><code>ReentrantPlayer.sol</code></a> et <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/test/RejectingPlayer.sol" class="external" target="_blank" rel="noopener noreferrer"><code>RejectingPlayer.sol</code></a>, ne servent qu&#39;aux tests : le premier tente une réentrance, le second refuse tout paiement. Ils ne sont jamais déployés hors des tests.</p>
+<p>Les deux contrats de production sont indépendants : <code>BlockLucky</code> ne connaît pas <code>BlockLuckyPOAP</code>. C&#39;est le backend qui frappe un badge après un achat, par sa <a href="../integration-blockchain/actions.html">file d&#39;actions on-chain</a>.</p>
+<h2 id="place-dans-l-architecture"><a class="anchor" href="#place-dans-l-architecture" aria-hidden="true" tabindex="-1">#</a>Place dans l&#39;architecture</h2>
+<div class="diagram"><pre class="mermaid">flowchart LR
+    citoyen[&quot;Portefeuille intégré du citoyen&quot;] --&gt;|&quot;buyTickets, claimPrize, claimRefund&quot;| lottery[&quot;BlockLucky&quot;]
+    operateur[&quot;Compte opérateur du backend&quot;] --&gt;|&quot;cancelRound, pause, withdrawFees&quot;| lottery
+    keeper[&quot;Keeper du backend ou Chainlink Automation&quot;] --&gt;|&quot;requestDraw, closeExpiredRound&quot;| lottery
+    lottery --&gt;|&quot;requestRandomWords&quot;| coord[&quot;Coordinateur Chainlink VRF v2.5&quot;]
+    coord --&gt;|&quot;rawFulfillRandomWords&quot;| lottery
+    operateur --&gt;|&quot;mintBadge&quot;| poap[&quot;BlockLuckyPOAP&quot;]
+    lottery -.-&gt;|&quot;événements&quot;| indexeur[&quot;Indexeur du backend&quot;]
+    lottery --&gt;|&quot;withdrawFees&quot;| tresor[&quot;Trésorerie de la Mairie&quot;]</pre></div>
+<p>Les achats sont signés par le portefeuille Ethereum que le backend crée pour chaque citoyen (voir <a href="../integration-blockchain/portefeuilles.html">les portefeuilles intégrés</a>). Les actions d&#39;exploitation sont signées par le compte opérateur (<code>RELAYER_PRIVATE_KEY</code>, voir <a href="../integration-blockchain/client-rpc.html">le client RPC</a>). Le <a href="../integration-blockchain/keeper.html">keeper</a> du backend surveille <code>isDrawReady</code> et <code>isExpiredWithoutDraw</code> et déclenche le tirage ou l&#39;annulation. L&#39;<a href="../integration-blockchain/indexeur.html">indexeur</a> reconstruit la base à partir des événements.</p>
+<h2 id="ce-que-garantit-le-contrat"><a class="anchor" href="#ce-que-garantit-le-contrat" aria-hidden="true" tabindex="-1">#</a>Ce que garantit le contrat</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Garantie</th>
+<th>Mécanisme</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Le gagnant n&#39;est choisi ni par la Mairie ni par le backend</td>
+<td>Mot aléatoire Chainlink VRF v2.5, <code>randomWords[0] % ticketCount</code></td>
+<td><a href="chainlink-vrf.html">Tirage Chainlink VRF</a></td>
+</tr>
+<tr>
+<td>Le tirage ne peut pas être bloqué par le backend</td>
+<td><code>requestDraw</code> et <code>closeExpiredRound</code> sont appelables par tous dès que les conditions sont remplies</td>
+<td><a href="cycle-tour.html">Cycle de vie d&#39;un tour</a></td>
+</tr>
+<tr>
+<td>Les fonds ne restent jamais bloqués</td>
+<td>Retrait de la cagnotte et des remboursements à l&#39;initiative du bénéficiaire, annulation avec remboursement intégral</td>
+<td><a href="blocklucky.html">Contrat BlockLucky</a></td>
+</tr>
+<tr>
+<td>La commission de la Mairie est bornée</td>
+<td>10 % par défaut, refus au-delà de 20 % (<code>MAX_FEE_BPS = 2000</code>)</td>
+<td><a href="blocklucky.html">Contrat BlockLucky</a></td>
+</tr>
+<tr>
+<td>La réentrance est impossible</td>
+<td>Checks-effects-interactions et <code>nonReentrant</code> sur chaque fonction qui déplace des fonds</td>
+<td><a href="securite.html">Sécurité du contrat</a></td>
+</tr>
+<tr>
+<td>Les droits sont séparés</td>
+<td><code>DEFAULT_ADMIN_ROLE</code>, <code>OPERATOR_ROLE</code>, <code>PAUSER_ROLE</code></td>
+<td><a href="exploitation.html">Exploitation du contrat</a></td>
+</tr>
+<tr>
+<td>Un oracle muet ne fige pas un tour</td>
+<td><code>retryDraw</code> après <code>drawTimeout</code>, ou <code>cancelRound</code></td>
+<td><a href="chainlink-vrf.html">Tirage Chainlink VRF</a></td>
+</tr>
+</tbody></table></div>
+<h2 id="chiffres-cles"><a class="anchor" href="#chiffres-cles" aria-hidden="true" tabindex="-1">#</a>Chiffres clés</h2>
+<p>Valeurs relevées dans le code et en lançant les commandes du projet.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Indicateur</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Compilateur</td>
+<td>Solidity 0.8.34, cible EVM <code>prague</code>, optimiseur activé à 200 exécutions</td>
+</tr>
+<tr>
+<td>Dépendances</td>
+<td><code>@openzeppelin/contracts</code> 5.6.1 et <code>@chainlink/contracts</code> 1.5.0</td>
+</tr>
+<tr>
+<td>Taille de <code>BlockLucky.sol</code></td>
+<td>415 lignes, 11 événements et 18 erreurs personnalisées propres</td>
+</tr>
+<tr>
+<td>Taille du bytecode</td>
+<td>12 474 octets pour <code>BlockLucky</code>, 5 909 pour <code>BlockLuckyPOAP</code> (limite EIP-170 : 24 576)</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>47 : 43 en TypeScript (Mocha et ethers) et 4 tests de fuzzing Solidity de 256 exécutions</td>
+</tr>
+<tr>
+<td>Couverture</td>
+<td>100 % des lignes des deux contrats (171 sur 171 et 19 sur 19)</td>
+</tr>
+<tr>
+<td>Analyse statique</td>
+<td>solhint sans avertissement, Slither bloquant dès le niveau Medium</td>
+</tr>
+<tr>
+<td>Paramètres par défaut d&#39;un tour</td>
+<td>0,01 ETH le ticket, 10 000 tickets, 2 tickets minimum, 100 par participant, 10 % de commission</td>
+</tr>
+</tbody></table></div>
+<h2 id="reseaux"><a class="anchor" href="#reseaux" aria-hidden="true" tabindex="-1">#</a>Réseaux</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Réseau</th>
+<th>Coordinateur VRF</th>
+<th>Usage</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Nœud Hardhat local (chain ID 31337)</td>
+<td><code>VRFCoordinatorV2_5Mock</code> et un oracle local</td>
+<td>Développement, CI, démonstration hors ligne</td>
+<td><a href="blockchain-locale.html">Blockchain locale</a></td>
+</tr>
+<tr>
+<td>Sepolia (chain ID 11155111)</td>
+<td>Coordinateur officiel <code>0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B</code></td>
+<td>Démonstration publique</td>
+<td><a href="sepolia.html">Déploiement sur Sepolia</a></td>
+</tr>
+<tr>
+<td>Remix</td>
+<td>Mock déployé à la main</td>
+<td>Lecture et démonstration interactive</td>
+<td><a href="remix.html">Utiliser Remix</a></td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-important"><p class="hint-title">Important</p>
+<p>À la date de rédaction, aucun déploiement Sepolia n&#39;est enregistré dans le dépôt : aucun fichier <code>smart-contract/deployments/sepolia.json</code> n&#39;est versionné. Le script de déploiement Sepolia existe et est documenté, mais ses étapes demandent des comptes personnels (faucet, abonnement Chainlink, clé Etherscan).</p>
+</div>
+<h2 id="commandes-du-projet"><a class="anchor" href="#commandes-du-projet" aria-hidden="true" tabindex="-1">#</a>Commandes du projet</h2>
+<p>Toutes se lancent depuis <code>smart-contract/</code> après <code>npm ci</code> (Node.js 22.12 ou plus récent, voir <code>engines</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>package.json</code></a>).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>npm run build</code></td>
+<td>Compile les contrats (<code>hardhat build</code>)</td>
+</tr>
+<tr>
+<td><code>npm run typecheck</code></td>
+<td>Compile puis vérifie le TypeScript des scripts et des tests</td>
+</tr>
+<tr>
+<td><code>npm run lint</code></td>
+<td>solhint sur <code>contracts/*.sol</code>, zéro avertissement toléré</td>
+</tr>
+<tr>
+<td><code>npm test</code></td>
+<td>Lance les tests Solidity puis Mocha</td>
+</tr>
+<tr>
+<td><code>npm run test:coverage</code> puis <code>npm run coverage:check</code></td>
+<td>Mesure la couverture et échoue sous 100 % des lignes</td>
+</tr>
+<tr>
+<td><code>npm run test:gas</code></td>
+<td>Coût en gaz de chaque fonction appelée par les tests</td>
+</tr>
+<tr>
+<td><code>npm run slither</code></td>
+<td>Slither 0.11.6 dans Docker</td>
+</tr>
+<tr>
+<td><code>npm run node</code></td>
+<td>Démarre un nœud Hardhat local</td>
+</tr>
+<tr>
+<td><code>npm run deploy:local</code></td>
+<td>Déploie sur le nœud local</td>
+</tr>
+<tr>
+<td><code>npm run deploy:sepolia</code></td>
+<td>Déploie sur Sepolia</td>
+</tr>
+<tr>
+<td><code>npm run export:abi</code></td>
+<td>Copie les ABI dans <code>backend/src/blockchain/abi/</code></td>
+</tr>
+</tbody></table></div>
+<h2 id="plan-de-cette-partie"><a class="anchor" href="#plan-de-cette-partie" aria-hidden="true" tabindex="-1">#</a>Plan de cette partie</h2>
+<ol>
+<li><a href="choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a> : les choix de plateforme et d&#39;outillage.</li>
+<li><a href="blocklucky.html">Contrat BlockLucky</a> puis <a href="cycle-tour.html">Cycle de vie d&#39;un tour</a> : le fonctionnement en profondeur.</li>
+<li><a href="reference-blocklucky.html">Référence de BlockLucky</a> et <a href="reference-poap.html">Référence de BlockLuckyPOAP</a> : chaque fonction, événement et erreur, générés depuis l&#39;ABI.</li>
+<li><a href="chainlink-vrf.html">Tirage Chainlink VRF</a>, <a href="automation.html">Chainlink Automation</a> et <a href="poap.html">Badge POAP</a>.</li>
+<li><a href="securite.html">Sécurité du contrat</a> et <a href="tests.html">Tests, fuzzing et couverture</a>.</li>
+<li><a href="blockchain-locale.html">Blockchain locale</a>, <a href="sepolia.html">Déploiement sur Sepolia</a> et <a href="remix.html">Utiliser Remix</a>.</li>
+<li><a href="exploitation.html">Exploitation du contrat</a> et <a href="limites.html">Limites connues</a>.</li>
+</ol>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="../architecture/conventions.html"><span>Précédent</span><strong>Conventions de code</strong></a><a class="pager-next" href="choix.html"><span>Suivant</span><strong>Pourquoi Ethereum, Hardhat et Chainlink</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/smart-contracts/index.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#les-deux-contrats">Les deux contrats</a></li><li class="toc-h2"><a href="#place-dans-l-architecture">Place dans l&#39;architecture</a></li><li class="toc-h2"><a href="#ce-que-garantit-le-contrat">Ce que garantit le contrat</a></li><li class="toc-h2"><a href="#chiffres-cles">Chiffres clés</a></li><li class="toc-h2"><a href="#reseaux">Réseaux</a></li><li class="toc-h2"><a href="#commandes-du-projet">Commandes du projet</a></li><li class="toc-h2"><a href="#plan-de-cette-partie">Plan de cette partie</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

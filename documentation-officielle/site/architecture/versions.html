@@ -1,0 +1,946 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Versions de la stack | Documentation BlockLucky</title>
+<meta name="description" content="Cette page liste les dépendances déclarées par chaque projet du monorepo et explique comment leurs versions sont choisies, figées et mises à jour. Les tableaux ">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="versions.html" aria-current="page">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>3. Architecture</span></div>
+    <article class="markdown">
+<h1>Versions de la stack</h1>
+<p>Cette page liste les dépendances déclarées par chaque projet du monorepo et explique comment leurs versions sont choisies, figées et mises à jour. Les tableaux en bas de page sont générés à chaque construction de la documentation depuis les fichiers <code>package.json</code> : ils sont toujours à jour avec le code.</p>
+<h2 id="politique-de-versions"><a class="anchor" href="#politique-de-versions" aria-hidden="true" tabindex="-1">#</a>Politique de versions</h2>
+<h3 id="moteur-node-js"><a class="anchor" href="#moteur-node-js" aria-hidden="true" tabindex="-1">#</a>Moteur Node.js</h3>
+<p>Tous les projets qui ont un <code>package.json</code> avec des dépendances déclarent le même moteur :</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;engines&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;node&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&gt;=22.12.0&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p>La version majeure de référence est fixée à la racine par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.nvmrc" class="external" target="_blank" rel="noopener noreferrer"><code>.nvmrc</code></a>, qui contient <code>22</code>. Tous les jobs Node.js de la CI lisent ce fichier (<code>node-version-file: .nvmrc</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/workflows/ci.yml" class="external" target="_blank" rel="noopener noreferrer"><code>.github/workflows/ci.yml</code></a>). Les images Docker partent de <code>node:22-bookworm-slim</code>, déclarée par <code>ARG NODE_IMAGE</code> dans les Dockerfile du backend, du frontend web et de la chaîne locale.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Où</th>
+<th>Version de Node.js</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Postes de développement</td>
+<td><code>nvm use</code> lit <code>.nvmrc</code> : Node.js 22</td>
+</tr>
+<tr>
+<td>CI GitHub Actions</td>
+<td><code>actions/setup-node</code> avec <code>.nvmrc</code></td>
+</tr>
+<tr>
+<td>Images Docker</td>
+<td><code>node:22-bookworm-slim</code></td>
+</tr>
+<tr>
+<td><code>package.json</code> de chaque projet</td>
+<td><code>&gt;=22.12.0</code></td>
+</tr>
+</tbody></table></div>
+<p>Aucun fichier <code>.npmrc</code> n&#39;active <code>engine-strict</code> : avec une version de Node.js plus ancienne, <code>npm</code> affiche un avertissement mais installe quand même.</p>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Le site de l&#39;Office de Tourisme n&#39;a aucune dépendance. Son <code>package.json</code> ne contient qu&#39;un script <code>dev</code> qui lance <code>npx --yes serve@14.2.7</code>, avec une version figée dans la commande elle-même.</p>
+</div>
+<h3 id="plages-declarees-et-epinglage"><a class="anchor" href="#plages-declarees-et-epinglage" aria-hidden="true" tabindex="-1">#</a>Plages déclarées et épinglage</h3>
+<p>Les projets n&#39;appliquent pas tous la même règle dans <code>package.json</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Projet</th>
+<th>Règle observée</th>
+<th>Exemples</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>smart-contract/</code></td>
+<td>Plages <code>^</code> (mineures et correctifs acceptés), TypeScript en <code>~</code></td>
+<td><code>&quot;hardhat&quot;: &quot;^3.21.2&quot;</code>, <code>&quot;typescript&quot;: &quot;~6.0.3&quot;</code></td>
+</tr>
+<tr>
+<td><code>backend/</code></td>
+<td>Plages <code>^</code> pour toutes les dépendances</td>
+<td><code>&quot;express&quot;: &quot;^5.3.0&quot;</code>, <code>&quot;@prisma/client&quot;: &quot;^7.10.1&quot;</code></td>
+</tr>
+<tr>
+<td><code>frontend-web/</code></td>
+<td>Versions exactes, TypeScript en <code>~</code></td>
+<td><code>&quot;next&quot;: &quot;16.4.5&quot;</code>, <code>&quot;react&quot;: &quot;19.3.1&quot;</code></td>
+</tr>
+<tr>
+<td><code>mobile-app/</code></td>
+<td><code>^</code> pour les bibliothèques JavaScript, <code>~</code> pour les modules liés au SDK Expo, exact pour React, React Native et <code>react-native-svg</code></td>
+<td><code>&quot;expo-secure-store&quot;: &quot;~58.0.2&quot;</code>, <code>&quot;react-native&quot;: &quot;0.88.1&quot;</code></td>
+</tr>
+<tr>
+<td><code>documentation-officielle/</code></td>
+<td>Versions exactes</td>
+<td><code>&quot;marked&quot;: &quot;18.2.0&quot;</code>, <code>&quot;mermaid&quot;: &quot;12.3.0&quot;</code></td>
+</tr>
+</tbody></table></div>
+<p>Quelle que soit la plage déclarée, la version réellement installée est figée par le fichier <code>package-lock.json</code> versionné dans chaque projet. La CI et les Dockerfile installent avec <code>npm ci</code>, qui refuse de modifier le lockfile et échoue s&#39;il ne correspond plus au <code>package.json</code>. Une plage <code>^</code> ne change donc rien en CI ou en production tant que le lockfile n&#39;est pas régénéré : elle indique seulement jusqu&#39;où <code>npm install</code> ou Dependabot peuvent monter.</p>
+<div class="hint hint-important"><p class="hint-title">Important</p>
+<p>Après toute modification d&#39;un <code>package.json</code>, lancer <code>npm install</code> dans le dossier du projet et versionner le <code>package-lock.json</code> mis à jour dans la même pull request. Sinon <code>npm ci</code> échoue en CI.</p>
+</div>
+<h3 id="autres-versions-figees"><a class="anchor" href="#autres-versions-figees" aria-hidden="true" tabindex="-1">#</a>Autres versions figées</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Où</th>
+<th>Mode d&#39;épinglage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Compilateur Solidity</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/hardhat.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/hardhat.config.ts</code></a></td>
+<td>Version exacte <code>0.8.34</code>, EVM <code>prague</code>. Les sources déclarent <code>pragma solidity ^0.8.28</code>, et solhint impose cette borne (<code>compiler-version</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/.solhint.json" class="external" target="_blank" rel="noopener noreferrer"><code>.solhint.json</code></a>)</td>
+</tr>
+<tr>
+<td>Images d&#39;infrastructure</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker-compose.yml" class="external" target="_blank" rel="noopener noreferrer"><code>docker-compose.yml</code></a></td>
+<td>Étiquettes de version : <code>postgres:15-alpine</code>, <code>redis:7.4-alpine</code>, <code>axllent/mailpit:v1.31.4</code></td>
+</tr>
+<tr>
+<td>Image de l&#39;Office de Tourisme</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme/Dockerfile" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/Dockerfile</code></a></td>
+<td><code>nginxinc/nginx-unprivileged:1.30-alpine</code></td>
+</tr>
+<tr>
+<td>Actions GitHub</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/workflows/ci.yml" class="external" target="_blank" rel="noopener noreferrer"><code>.github/workflows/ci.yml</code></a></td>
+<td>Épinglées par empreinte de commit complète, par exemple <code>actions/checkout@11d5960a...</code></td>
+</tr>
+<tr>
+<td>Outils lancés en conteneur par la CI</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/workflows/ci.yml" class="external" target="_blank" rel="noopener noreferrer"><code>.github/workflows/ci.yml</code></a></td>
+<td>Étiquettes exactes : <code>zricethezav/gitleaks:v8.30.1</code>, <code>aquasec/trivy:0.76.2</code></td>
+</tr>
+<tr>
+<td><code>forge-std</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/package.json</code></a></td>
+<td>Archive d&#39;une étiquette précise (<code>v1.17.0</code>)</td>
+</tr>
+</tbody></table></div>
+<h2 id="mises-a-jour-automatiques-avec-dependabot"><a class="anchor" href="#mises-a-jour-automatiques-avec-dependabot" aria-hidden="true" tabindex="-1">#</a>Mises à jour automatiques avec Dependabot</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/dependabot.yml" class="external" target="_blank" rel="noopener noreferrer"><code>.github/dependabot.yml</code></a> ouvre des pull requests de mise à jour. Chacune passe par la CI comme n&#39;importe quel changement.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Écosystème</th>
+<th>Dossiers</th>
+<th>Fréquence</th>
+<th>Particularités</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>npm</td>
+<td><code>/backend</code>, <code>/smart-contract</code>, <code>/frontend-web</code></td>
+<td>Hebdomadaire, le lundi</td>
+<td>5 pull requests ouvertes au plus, mineures et correctifs regroupés en une seule pull request par projet</td>
+</tr>
+<tr>
+<td>npm</td>
+<td><code>/mobile-app</code></td>
+<td>Hebdomadaire, le lundi</td>
+<td>Même regroupement, et mises à jour majeures de <code>expo*</code> et <code>react-native*</code> ignorées</td>
+</tr>
+<tr>
+<td>npm</td>
+<td><code>/documentation-officielle</code></td>
+<td>Mensuelle</td>
+<td>Toutes les dépendances dans un seul groupe, 3 pull requests au plus</td>
+</tr>
+<tr>
+<td>docker</td>
+<td><code>/backend</code>, <code>/frontend-web</code>, <code>/frontend-office-tourisme</code>, <code>/smart-contract</code></td>
+<td>Hebdomadaire</td>
+<td>Images de base des Dockerfile</td>
+</tr>
+<tr>
+<td>docker-compose</td>
+<td><code>/</code></td>
+<td>Hebdomadaire</td>
+<td>Images de <code>docker-compose.yml</code></td>
+</tr>
+<tr>
+<td>github-actions</td>
+<td><code>/</code></td>
+<td>Hebdomadaire</td>
+<td>Toutes les actions dans un seul groupe</td>
+</tr>
+</tbody></table></div>
+<p>Toutes les entrées npm ont un délai de carence (<code>cooldown</code>) de 5 jours : Dependabot ne propose pas une version publiée depuis moins de 5 jours, ce qui laisse le temps à une version compromise ou défectueuse d&#39;être retirée.</p>
+<h3 id="pourquoi-les-majeures-d-expo-sont-exclues"><a class="anchor" href="#pourquoi-les-majeures-d-expo-sont-exclues" aria-hidden="true" tabindex="-1">#</a>Pourquoi les majeures d&#39;Expo sont exclues</h3>
+<p>Une version d&#39;Expo SDK impose les versions de React Native, de React et de chaque module <code>expo-*</code>. Monter l&#39;un sans les autres casse la compilation native. Un changement de SDK se fait à la main, en suivant le guide de migration d&#39;Expo, puis en vérifiant la configuration avec <code>npx expo config --type public</code> (lancé par la CI). Voir <a href="../mobile/builds-publication.html">Builds et publication</a>.</p>
+<h3 id="controles-de-securite-des-dependances"><a class="anchor" href="#controles-de-securite-des-dependances" aria-hidden="true" tabindex="-1">#</a>Contrôles de sécurité des dépendances</h3>
+<p>La CI lance <code>npm audit --omit=dev</code> sur les dépendances de production :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Projet</th>
+<th>Seuil bloquant</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>backend/</code>, <code>frontend-web/</code>, <code>mobile-app/</code></td>
+<td><code>--audit-level=high</code></td>
+</tr>
+<tr>
+<td><code>smart-contract/</code></td>
+<td><code>--audit-level=critical</code>, justifié dans l&#39;<a href="adr/0004-smart-contract-portefeuille-integre.html">ADR 0004</a></td>
+</tr>
+</tbody></table></div>
+<p>Les images de production (backend, web, tourisme) sont en plus analysées par Trivy, bloquant sur les vulnérabilités <code>CRITICAL</code> et <code>HIGH</code> corrigeables. La procédure complète est dans <a href="../contribuer/dependances.html">Dépendances</a> et <a href="../securite/chaine-logicielle.html">Chaîne logicielle</a>.</p>
+<h2 id="versions-cles"><a class="anchor" href="#versions-cles" aria-hidden="true" tabindex="-1">#</a>Versions clés</h2>
+<p>Les briques présentées dans <a href="choix-techniques.html">Choix techniques</a> correspondent aux déclarations suivantes :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Brique</th>
+<th>Paquet</th>
+<th>Projet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Express 5</td>
+<td><code>express</code></td>
+<td>backend</td>
+</tr>
+<tr>
+<td>Prisma 7</td>
+<td><code>prisma</code>, <code>@prisma/client</code>, <code>@prisma/adapter-pg</code></td>
+<td>backend</td>
+</tr>
+<tr>
+<td>BullMQ</td>
+<td><code>bullmq</code></td>
+<td>backend</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td><code>ioredis</code></td>
+<td>backend</td>
+</tr>
+<tr>
+<td>Socket.IO</td>
+<td><code>socket.io</code>, <code>socket.io-client</code></td>
+<td>backend, web, mobile</td>
+</tr>
+<tr>
+<td>ethers v6</td>
+<td><code>ethers</code></td>
+<td>backend, smart-contract</td>
+</tr>
+<tr>
+<td>Hardhat 3</td>
+<td><code>hardhat</code>, <code>@nomicfoundation/hardhat-toolbox-mocha-ethers</code></td>
+<td>smart-contract</td>
+</tr>
+<tr>
+<td>OpenZeppelin 5</td>
+<td><code>@openzeppelin/contracts</code></td>
+<td>smart-contract</td>
+</tr>
+<tr>
+<td>Chainlink</td>
+<td><code>@chainlink/contracts</code></td>
+<td>smart-contract</td>
+</tr>
+<tr>
+<td>Next.js 16, React 19</td>
+<td><code>next</code>, <code>react</code>, <code>react-dom</code></td>
+<td>web</td>
+</tr>
+<tr>
+<td>Tailwind 4</td>
+<td><code>tailwindcss</code>, <code>@tailwindcss/postcss</code></td>
+<td>web</td>
+</tr>
+<tr>
+<td>Redux Toolkit et RTK Query</td>
+<td><code>@reduxjs/toolkit</code>, <code>react-redux</code></td>
+<td>web, mobile</td>
+</tr>
+<tr>
+<td>Expo et React Native</td>
+<td><code>expo</code>, <code>react-native</code></td>
+<td>mobile</td>
+</tr>
+<tr>
+<td>Zod</td>
+<td><code>zod</code></td>
+<td>backend</td>
+</tr>
+<tr>
+<td>TypeScript</td>
+<td><code>typescript</code></td>
+<td>tous les projets TypeScript</td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Le backend déclare aussi le paquet <code>redis</code> en dépendance de production alors que le code n&#39;importe que <code>ioredis</code>. Les dépendances de développement <code>nodemon</code> et <code>ts-node</code> ne servent qu&#39;à <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/nodemon.json" class="external" target="_blank" rel="noopener noreferrer"><code>backend/nodemon.json</code></a>, qui exécute lui-même <code>tsx</code> ; les scripts <code>npm run dev</code> et <code>npm run dev:worker</code> utilisent directement <code>tsx watch</code>.</p>
+</div>
+<h2 id="dependances-declarees-par-projet"><a class="anchor" href="#dependances-declarees-par-projet" aria-hidden="true" tabindex="-1">#</a>Dépendances déclarées par projet</h2>
+<p>Colonne « Version demandée » : la plage écrite dans <code>package.json</code>. La version installée exacte est dans le <code>package-lock.json</code> du projet.</p>
+<h3 id="smart-contracts"><a class="anchor" href="#smart-contracts" aria-hidden="true" tabindex="-1">#</a>Smart contracts</h3>
+<p>Fichier : <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/package.json</code></a>, Node.js <code>&gt;=22.12.0</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paquet</th>
+<th>Version demandée</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@chainlink/contracts</code></td>
+<td><code>^1.5.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>@openzeppelin/contracts</code></td>
+<td><code>^5.6.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>@nomicfoundation/hardhat-toolbox-mocha-ethers</code></td>
+<td><code>^4.0.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/chai</code></td>
+<td><code>^5.2.3</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/chai-as-promised</code></td>
+<td><code>^8.0.2</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/mocha</code></td>
+<td><code>^10.0.10</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/node</code></td>
+<td><code>^22.20.5</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>chai</code></td>
+<td><code>^6.3.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>ethers</code></td>
+<td><code>^6.17.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>forge-std</code></td>
+<td><code>https://github.com/foundry-rs/forge-std/archive/refs/tags/v1.17.0.tar.gz</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>hardhat</code></td>
+<td><code>^3.21.2</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>mocha</code></td>
+<td><code>^12.0.3</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>solhint</code></td>
+<td><code>^6.2.5</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>typescript</code></td>
+<td><code>~6.0.3</code></td>
+<td>développement</td>
+</tr>
+</tbody></table></div>
+<h3 id="backend"><a class="anchor" href="#backend" aria-hidden="true" tabindex="-1">#</a>Backend</h3>
+<p>Fichier : <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>backend/package.json</code></a>, Node.js <code>&gt;=22.12.0</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paquet</th>
+<th>Version demandée</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@aws-sdk/client-s3</code></td>
+<td><code>^3.1161.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>@aws-sdk/s3-request-presigner</code></td>
+<td><code>^3.1161.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>@prisma/adapter-pg</code></td>
+<td><code>^7.10.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>@prisma/client</code></td>
+<td><code>^7.10.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>bcryptjs</code></td>
+<td><code>^3.0.3</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>bullmq</code></td>
+<td><code>^6.5.4</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>cors</code></td>
+<td><code>^2.8.6</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>dotenv</code></td>
+<td><code>^18.0.9</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>ethers</code></td>
+<td><code>^6.17.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>express</code></td>
+<td><code>^5.3.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>express-rate-limit</code></td>
+<td><code>^8.7.3</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>helmet</code></td>
+<td><code>^8.3.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>ioredis</code></td>
+<td><code>^6.0.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>jsonwebtoken</code></td>
+<td><code>^9.0.3</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>nodemailer</code></td>
+<td><code>^10.3.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>otplib</code></td>
+<td><code>^13.6.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>pg</code></td>
+<td><code>^8.23.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>prom-client</code></td>
+<td><code>^15.1.3</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>qrcode</code></td>
+<td><code>^1.5.4</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>rate-limit-redis</code></td>
+<td><code>^6.0.2</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>redis</code></td>
+<td><code>^6.3.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>socket.io</code></td>
+<td><code>^4.8.4</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>swagger-jsdoc</code></td>
+<td><code>^6.3.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>swagger-ui-express</code></td>
+<td><code>^5.0.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>winston</code></td>
+<td><code>^3.19.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>zod</code></td>
+<td><code>^4.6.7</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>@eslint/js</code></td>
+<td><code>^10.0.1</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/bcryptjs</code></td>
+<td><code>^3.0.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/cors</code></td>
+<td><code>^2.8.19</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/express</code></td>
+<td><code>^5.0.6</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/jest</code></td>
+<td><code>^30.0.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/jsonwebtoken</code></td>
+<td><code>^9.0.10</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/node</code></td>
+<td><code>^26.6.6</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/nodemailer</code></td>
+<td><code>^8.0.2</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/pg</code></td>
+<td><code>^8.23.1</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/qrcode</code></td>
+<td><code>^1.5.6</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/supertest</code></td>
+<td><code>^7.2.1</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/swagger-jsdoc</code></td>
+<td><code>^6.0.4</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/swagger-ui-express</code></td>
+<td><code>^4.1.8</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>eslint</code></td>
+<td><code>^10.14.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>globals</code></td>
+<td><code>^17.14.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>jest</code></td>
+<td><code>^30.5.2</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>nodemon</code></td>
+<td><code>^3.1.14</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>prisma</code></td>
+<td><code>^7.10.1</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>supertest</code></td>
+<td><code>^7.3.1</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>ts-jest</code></td>
+<td><code>^29.4.15</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>ts-node</code></td>
+<td><code>^10.9.2</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>tsx</code></td>
+<td><code>^4.23.15</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>typescript</code></td>
+<td><code>^6.0.3</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>typescript-eslint</code></td>
+<td><code>^8.72.2</code></td>
+<td>développement</td>
+</tr>
+</tbody></table></div>
+<h3 id="frontend-web"><a class="anchor" href="#frontend-web" aria-hidden="true" tabindex="-1">#</a>Frontend web</h3>
+<p>Fichier : <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/package.json</code></a>, Node.js <code>&gt;=22.12.0</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paquet</th>
+<th>Version demandée</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@reduxjs/toolkit</code></td>
+<td><code>2.14.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>next</code></td>
+<td><code>16.4.5</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>react</code></td>
+<td><code>19.3.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>react-dom</code></td>
+<td><code>19.3.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>react-redux</code></td>
+<td><code>9.3.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>socket.io-client</code></td>
+<td><code>4.8.4</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>@tailwindcss/postcss</code></td>
+<td><code>4.3.5</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@testing-library/jest-dom</code></td>
+<td><code>7.0.1</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@testing-library/react</code></td>
+<td><code>16.3.3</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/node</code></td>
+<td><code>26.6.6</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/react</code></td>
+<td><code>19.3.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/react-dom</code></td>
+<td><code>19.3.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@vitejs/plugin-react</code></td>
+<td><code>6.3.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>eslint</code></td>
+<td><code>10.14.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>eslint-config-next</code></td>
+<td><code>16.4.5</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>jsdom</code></td>
+<td><code>31.0.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>tailwindcss</code></td>
+<td><code>4.3.5</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>typescript</code></td>
+<td><code>~6.0.3</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>vitest</code></td>
+<td><code>5.1.0</code></td>
+<td>développement</td>
+</tr>
+</tbody></table></div>
+<h3 id="application-mobile"><a class="anchor" href="#application-mobile" aria-hidden="true" tabindex="-1">#</a>Application mobile</h3>
+<p>Fichier : <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/package.json</code></a>, Node.js <code>&gt;=22.12.0</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paquet</th>
+<th>Version demandée</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@react-navigation/bottom-tabs</code></td>
+<td><code>^7.21.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>@react-navigation/native</code></td>
+<td><code>^7.5.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>@react-navigation/native-stack</code></td>
+<td><code>^7.21.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>@reduxjs/toolkit</code></td>
+<td><code>^2.11.2</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>axios</code></td>
+<td><code>^1.9.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>expo</code></td>
+<td><code>^58.0.22</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>expo-clipboard</code></td>
+<td><code>~58.0.4</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>expo-font</code></td>
+<td><code>~58.0.11</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>expo-notifications</code></td>
+<td><code>~58.1.7</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>expo-secure-store</code></td>
+<td><code>~58.0.2</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>expo-status-bar</code></td>
+<td><code>~58.0.4</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>lottie-react-native</code></td>
+<td><code>^7.2.2</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>react</code></td>
+<td><code>19.3.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>react-native</code></td>
+<td><code>0.88.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>react-native-gesture-handler</code></td>
+<td><code>~3.3.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>react-native-safe-area-context</code></td>
+<td><code>~5.10.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>react-native-screens</code></td>
+<td><code>~4.30.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>react-native-svg</code></td>
+<td><code>15.16.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>react-redux</code></td>
+<td><code>^9.2.0</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>socket.io-client</code></td>
+<td><code>^4.8.1</code></td>
+<td>exécution</td>
+</tr>
+<tr>
+<td><code>@babel/core</code></td>
+<td><code>^7.26.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>@types/react</code></td>
+<td><code>~19.3.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>eslint</code></td>
+<td><code>^8.57.1</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>eslint-config-universe</code></td>
+<td><code>^12.1.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>typescript</code></td>
+<td><code>~6.0.3</code></td>
+<td>développement</td>
+</tr>
+</tbody></table></div>
+<h3 id="documentation-officielle"><a class="anchor" href="#documentation-officielle" aria-hidden="true" tabindex="-1">#</a>Documentation officielle</h3>
+<p>Fichier : <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>documentation-officielle/package.json</code></a>, Node.js <code>&gt;=22.12.0</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paquet</th>
+<th>Version demandée</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>highlight.js</code></td>
+<td><code>11.12.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>marked</code></td>
+<td><code>18.2.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>mermaid</code></td>
+<td><code>12.3.0</code></td>
+<td>développement</td>
+</tr>
+<tr>
+<td><code>yaml</code></td>
+<td><code>2.8.1</code></td>
+<td>développement</td>
+</tr>
+</tbody></table></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="choix-techniques.html"><span>Précédent</span><strong>Choix techniques</strong></a><a class="pager-next" href="adr/index.html"><span>Suivant</span><strong>Décisions d&#39;architecture</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/architecture/versions.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#politique-de-versions">Politique de versions</a></li><li class="toc-h3"><a href="#moteur-node-js">Moteur Node.js</a></li><li class="toc-h3"><a href="#plages-declarees-et-epinglage">Plages déclarées et épinglage</a></li><li class="toc-h3"><a href="#autres-versions-figees">Autres versions figées</a></li><li class="toc-h2"><a href="#mises-a-jour-automatiques-avec-dependabot">Mises à jour automatiques avec Dependabot</a></li><li class="toc-h3"><a href="#pourquoi-les-majeures-d-expo-sont-exclues">Pourquoi les majeures d&#39;Expo sont exclues</a></li><li class="toc-h3"><a href="#controles-de-securite-des-dependances">Contrôles de sécurité des dépendances</a></li><li class="toc-h2"><a href="#versions-cles">Versions clés</a></li><li class="toc-h2"><a href="#dependances-declarees-par-projet">Dépendances déclarées par projet</a></li><li class="toc-h3"><a href="#smart-contracts">Smart contracts</a></li><li class="toc-h3"><a href="#backend">Backend</a></li><li class="toc-h3"><a href="#frontend-web">Frontend web</a></li><li class="toc-h3"><a href="#application-mobile">Application mobile</a></li><li class="toc-h3"><a href="#documentation-officielle">Documentation officielle</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

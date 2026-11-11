@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Migrations | Documentation BlockLucky</title>
+<meta name="description" content="Le schéma de la base évolue uniquement par des migrations Prisma Migrate versionnées dans backend/prisma/migrations/. Chaque migration est un dossier &lt;horodatag">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="migrations.html" aria-current="page">Migrations</a></div></li><li><div class="nav-row"><a href="seed.html">Seed</a></div></li><li><div class="nav-row"><a href="reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>6. Base de données</span></div>
+    <article class="markdown">
+<h1>Migrations</h1>
+<p>Le schéma de la base évolue uniquement par des migrations Prisma Migrate versionnées dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/migrations/migration_lock.toml" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/migrations/</code></a>. Chaque migration est un dossier <code>&lt;horodatage&gt;_&lt;nom&gt;</code> contenant un fichier <code>migration.sql</code>. Le fichier <code>migration_lock.toml</code> fixe le fournisseur à <code>postgresql</code>. Prisma enregistre les migrations appliquées dans la table <code>_prisma_migrations</code> de la base.</p>
+<p>Les règles de cette page reprennent la décision d&#39;architecture du 10 novembre 2026 sur les migrations : migrations exécutées une seule fois par un job dédié, compatibles avec la version précédente du code, et invariants garantis par la base.</p>
+<h2 id="historique"><a class="anchor" href="#historique" aria-hidden="true" tabindex="-1">#</a>Historique</h2>
+<p>Le tableau suivant est généré depuis le contenu du dossier des migrations.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Migration</th>
+<th>Date</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/migrations/20261102182348_init/migration.sql" class="external" target="_blank" rel="noopener noreferrer"><code>20261102182348_init</code></a></td>
+<td>02/11/2026 18:23</td>
+<td>Schéma initial : énumérations <code>Role</code>, <code>TwoFactorMethod</code>, <code>TokenType</code> et <code>Status</code> ; tables <code>User</code>, <code>Token</code>, <code>LotteryRound</code>, <code>Ticket</code>, <code>PointTransaction</code>, <code>Partner</code>, <code>RewardCatalog</code>, <code>ClaimedReward</code> et <code>Analytics</code> avec horodatages <code>TIMESTAMP(3)</code> ; index uniques sur l&#39;adresse, l&#39;email et le code de parrainage du compte, le jeton, le numéro de tour, le hachage de transaction du ticket et le code promo ; clés étrangères (cascade pour <code>Token</code>, <code>SET NULL</code> pour le parrain et <code>Analytics</code>, <code>RESTRICT</code> ailleurs).</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/migrations/20261109213843_infra_indexes_timestamptz_checks/migration.sql" class="external" target="_blank" rel="noopener noreferrer"><code>20261109213843_infra_indexes_timestamptz_checks</code></a></td>
+<td>09/11/2026 21:38</td>
+<td>Durcissement : <code>lock_timeout</code> de 5 s ; conversion de toutes les colonnes de date en <code>TIMESTAMPTZ(3)</code> en les interprétant comme UTC ; onze index sur les clés étrangères et les colonnes de tri ou de filtre ; cinq contraintes CHECK (solde d&#39;EtherPoints, stocks et cagnotte non négatifs, coût en points positif) ajoutées en <code>NOT VALID</code> puis validées.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/migrations/20261110004931_security_backup_codes_partner_owner/migration.sql" class="external" target="_blank" rel="noopener noreferrer"><code>20261110004931_security_backup_codes_partner_owner</code></a></td>
+<td>10/11/2026 00:49</td>
+<td>Ajout de <code>Partner.ownerId</code> (compte gestionnaire du commerce, index et clé étrangère <code>SET NULL</code> ajoutée en <code>NOT VALID</code> puis validée) et de <code>User.twoFactorBackupCodes</code> (tableau de textes, vide par défaut).</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/migrations/20261111150000_onchain_wallets_tickets_indexer/migration.sql" class="external" target="_blank" rel="noopener noreferrer"><code>20261111150000_onchain_wallets_tickets_indexer</code></a></td>
+<td>11/11/2026 15:00</td>
+<td>Passage au mode onchain : portefeuille intégré (<code>walletEncryptedKey</code>, <code>welcomeGrantTxHash</code>) sur <code>User</code> ; colonnes de projection du contrat sur <code>LotteryRound</code> (<code>ticketPriceWei</code>, <code>endsAt</code>, <code>drawRequestedAt</code>, <code>winningTicket</code>, <code>prizeWei</code>, <code>prizeClaimedAt</code>) ; <code>ticketIndex</code> et <code>payerWallet</code> sur <code>Ticket</code> ; table <code>ChainCursor</code> ; l&#39;index unique sur <code>Ticket.transactionHash</code> devient un index simple et l&#39;unicité passe sur <code>(lotteryId, ticketIndex)</code>.</td>
+</tr>
+</tbody></table></div>
+<p>Le détail de ce que chaque migration crée (index, contraintes) est sur la page <a href="index-contraintes.html">Index et contraintes</a>.</p>
+<h2 id="procedure"><a class="anchor" href="#procedure" aria-hidden="true" tabindex="-1">#</a>Procédure</h2>
+<h3 id="creer-une-migration-en-developpement"><a class="anchor" href="#creer-une-migration-en-developpement" aria-hidden="true" tabindex="-1">#</a>Créer une migration en développement</h3>
+<p>Depuis <code>backend/</code>, avec la base locale démarrée (<code>docker compose up -d --wait</code> à la racine) :</p>
+<ol>
+<li>modifier <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/schema.prisma" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/schema.prisma</code></a> ;</li>
+<li>générer et appliquer la migration :</li>
+</ol>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npm run prisma:migrate -- --name ajout_colonne_exemple</code></pre></div>
+<p>Le script lance <code>prisma migrate dev</code>, qui compare le schéma à la base, écrit <code>prisma/migrations/&lt;horodatage&gt;_ajout_colonne_exemple/migration.sql</code>, l&#39;applique et régénère le client Prisma.</p>
+<ol start="3">
+<li>relire le SQL produit et l&#39;adapter aux règles ci-dessous : ajouter <code>SET lock_timeout = &#39;5s&#39;;</code> en tête, transformer un ajout de contrainte en <code>NOT VALID</code> suivi de <code>VALIDATE CONSTRAINT</code>, ajouter les contraintes CHECK que Prisma ne sait pas générer ;</li>
+<li>mettre à jour les descriptions de la documentation : nouvelle entrée dans <code>documentation-officielle/content/_data/migrations.json</code> et nouveaux champs dans <code>modele-donnees.json</code> (voir <a href="dictionnaire.html#mise-a-jour-de-cette-page">Dictionnaire de données</a>) ;</li>
+<li>lancer <code>npm run typecheck</code> et <code>npm test</code>.</li>
+</ol>
+<p>Pour une contrainte CHECK seule, sans changement du schéma Prisma, on crée une migration vide avec <code>npm run prisma:migrate -- --create-only --name …</code> et on écrit le SQL à la main.</p>
+<h3 id="appliquer-les-migrations"><a class="anchor" href="#appliquer-les-migrations" aria-hidden="true" tabindex="-1">#</a>Appliquer les migrations</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Contexte</th>
+<th>Commande</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Développement, base existante</td>
+<td><code>npx prisma migrate deploy</code> ou <code>npm run prisma:deploy</code></td>
+<td>Applique les migrations manquantes, sans rien générer</td>
+</tr>
+<tr>
+<td>État des migrations</td>
+<td><code>npm run prisma:status</code></td>
+<td>Liste les migrations appliquées et en attente</td>
+</tr>
+<tr>
+<td>Réinitialisation complète</td>
+<td><code>npm run prisma:reset</code></td>
+<td>Supprime toutes les données, réapplique toutes les migrations ; destructif. Le seed n&#39;est pas lancé : il faut ensuite <code>npm run prisma:seed</code> (voir <a href="seed.html#lancer-le-seed">Seed</a>)</td>
+</tr>
+<tr>
+<td>Docker Compose</td>
+<td>service <code>migrate</code></td>
+<td>Lancé avant <code>backend</code> et <code>worker</code></td>
+</tr>
+<tr>
+<td>CI</td>
+<td><code>npx prisma migrate deploy</code></td>
+<td>Sur une base PostgreSQL vierge</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;API n&#39;applique jamais les migrations elle-même. Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker-compose.yml" class="external" target="_blank" rel="noopener noreferrer"><code>docker-compose.yml</code></a>, le service <code>migrate</code> (profil <code>app</code>) construit la cible <code>migrator</code> de <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/Dockerfile" class="external" target="_blank" rel="noopener noreferrer"><code>backend/Dockerfile</code></a>, dont la commande est <code>npx prisma migrate deploy</code>. Les services <code>backend</code> et <code>worker</code> attendent qu&#39;il se termine avec succès (<code>condition: service_completed_successfully</code>). Avec plusieurs instances d&#39;API, appliquer les migrations au démarrage de chacune provoquerait des exécutions concurrentes ; le job unique l&#39;évite.</p>
+<p><code>prisma migrate reset</code> et <code>prisma migrate dev</code> ne doivent jamais être lancés sur une base de production : le premier efface les données, le second peut proposer de le faire en cas de dérive.</p>
+<h2 id="regle-expand-et-contract"><a class="anchor" href="#regle-expand-et-contract" aria-hidden="true" tabindex="-1">#</a>Règle expand et contract</h2>
+<p>Pendant un déploiement, l&#39;ancienne version du code tourne encore quelques instants avec le nouveau schéma. Chaque migration doit donc rester compatible avec la version N-1 du code. Un changement cassant est découpé en étapes déployées séparément :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Exemple pour renommer <code>prizePool</code> en <code>prizePoolEth</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Expansion</td>
+<td>Migration qui ajoute <code>prizePoolEth</code>, nullable ou avec un défaut</td>
+</tr>
+<tr>
+<td>Double écriture</td>
+<td>Version du code qui écrit les deux colonnes et lit l&#39;ancienne</td>
+</tr>
+<tr>
+<td>Rattrapage</td>
+<td>Copie des valeurs existantes par lots, hors migration</td>
+</tr>
+<tr>
+<td>Bascule</td>
+<td>Version du code qui lit la nouvelle colonne</td>
+</tr>
+<tr>
+<td>Contraction</td>
+<td>Migration ultérieure qui supprime <code>prizePool</code></td>
+</tr>
+</tbody></table></div>
+<p>Un renommage demande ainsi trois déploiements au minimum. Opérations sûres en une seule migration : ajout de table, ajout de colonne nullable ou avec défaut, ajout d&#39;index, ajout de contrainte que les données existantes respectent.</p>
+<p>Application aux migrations existantes :</p>
+<ul>
+<li><code>20261110004931</code> et <code>20261111150000</code> n&#39;ajoutent que des colonnes nullables (ou à défaut constant), une table et des index : compatibles avec la version précédente ;</li>
+<li><code>20261111150000</code> supprime aussi l&#39;index unique <code>Ticket_transactionHash_key</code>. C&#39;est une contraction, faite dans la même migration que l&#39;expansion. Elle est sans risque ici : l&#39;ancien code vérifie l&#39;existence d&#39;un ticket par <code>findFirst</code> sur le hachage avant d&#39;écrire, et l&#39;index simple créé juste avant garde cette recherche rapide ;</li>
+<li><code>20261109213843</code> change le type des colonnes de date de <code>TIMESTAMP(3)</code> vers <code>TIMESTAMPTZ(3)</code>. Le code lit les deux types de la même façon ; le changement réécrit en revanche les tables concernées (voir plus bas).</li>
+</ul>
+<h2 id="verrous"><a class="anchor" href="#verrous" aria-hidden="true" tabindex="-1">#</a>Verrous</h2>
+<h3 id="lock-timeout"><a class="anchor" href="#lock-timeout" aria-hidden="true" tabindex="-1">#</a>lock_timeout</h3>
+<p>Les trois migrations postérieures à <code>init</code> commencent par :</p>
+<div class="code-block"><div class="code-head"><span>SQL</span></div><pre><code class="hljs language-sql"><span class="hljs-keyword">SET</span> lock_timeout <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;5s&#x27;</span>;</code></pre></div>
+<p>Une instruction <code>ALTER TABLE</code> demande un verrou exclusif sur la table. Si une longue transaction de l&#39;application tient déjà un verrou sur cette table, l&#39;<code>ALTER TABLE</code> attend, et toutes les requêtes suivantes sur la table attendent derrière lui : l&#39;application se fige. Avec <code>lock_timeout</code>, la migration abandonne au bout de 5 s au lieu de bloquer, et peut être relancée à un moment plus calme. L&#39;application elle-même se connecte avec <code>lock_timeout</code> à 5 s (voir <a href="performance-sauvegardes.html#delais-par-connexion">Performance et sauvegardes</a>).</p>
+<h3 id="contraintes-ajoutees-sans-bloquer"><a class="anchor" href="#contraintes-ajoutees-sans-bloquer" aria-hidden="true" tabindex="-1">#</a>Contraintes ajoutées sans bloquer</h3>
+<p>Les clés étrangères et contraintes CHECK ajoutées après <code>init</code> suivent le motif :</p>
+<div class="code-block"><div class="code-head"><span>SQL</span></div><pre><code class="hljs language-sql"><span class="hljs-keyword">ALTER TABLE</span> &quot;User&quot; <span class="hljs-keyword">ADD CONSTRAINT</span> &quot;User_pointsBalance_non_negative&quot; <span class="hljs-keyword">CHECK</span> (&quot;pointsBalance&quot; <span class="hljs-operator">&gt;=</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">NOT</span> VALID;
+<span class="hljs-keyword">ALTER TABLE</span> &quot;User&quot; VALIDATE <span class="hljs-keyword">CONSTRAINT</span> &quot;User_pointsBalance_non_negative&quot;;</code></pre></div>
+<p><code>NOT VALID</code> ajoute la contrainte pour les nouvelles écritures sans vérifier les lignes existantes, ce qui est immédiat. <code>VALIDATE CONSTRAINT</code> vérifie ensuite les lignes existantes avec un verrou plus faible, qui laisse passer les lectures et les écritures.</p>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Prisma envoie chaque fichier <code>migration.sql</code> en un seul bloc, exécuté par PostgreSQL dans une transaction implicite. Le verrou exclusif pris par <code>ADD CONSTRAINT … NOT VALID</code> est alors conservé jusqu&#39;à la fin de la transaction, donc pendant <code>VALIDATE CONSTRAINT</code>. Dans les migrations actuelles, le motif n&#39;apporte donc pas le gain attendu. Pour qu&#39;il soit effectif sur une grosse table, la validation doit être placée dans une migration séparée. Aux volumes du projet, la différence n&#39;est pas mesurable.</p>
+</div>
+<h3 id="index-sans-concurrently"><a class="anchor" href="#index-sans-concurrently" aria-hidden="true" tabindex="-1">#</a>Index sans CONCURRENTLY</h3>
+<p><code>CREATE INDEX CONCURRENTLY</code> construit un index sans bloquer les écritures, mais il est interdit dans une transaction. Pour la même raison de transaction implicite, les index des migrations sont créés sans <code>CONCURRENTLY</code> et bloquent les écritures sur la table pendant leur construction. Sur une grosse table, il faudra une migration ne contenant que l&#39;instruction <code>CREATE INDEX CONCURRENTLY</code>.</p>
+<h3 id="reecriture-de-table"><a class="anchor" href="#reecriture-de-table" aria-hidden="true" tabindex="-1">#</a>Réécriture de table</h3>
+<p>La conversion <code>ALTER COLUMN … SET DATA TYPE TIMESTAMPTZ(3) USING … AT TIME ZONE &#39;UTC&#39;</code> de la migration <code>20261109213843</code> réécrit chaque table concernée sous verrou exclusif. Aux volumes du projet, c&#39;est instantané. Une conversion de ce type sur une table volumineuse passerait par une nouvelle colonne et un rattrapage par lots.</p>
+<h2 id="controle-de-derive-en-ci"><a class="anchor" href="#controle-de-derive-en-ci" aria-hidden="true" tabindex="-1">#</a>Contrôle de dérive en CI</h2>
+<p>Le job <code>backend</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/workflows/ci.yml" class="external" target="_blank" rel="noopener noreferrer"><code>.github/workflows/ci.yml</code></a> contient deux étapes sur une base PostgreSQL 15 vierge :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npx prisma migrate deploy
+npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code</code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Ce qu&#39;elle détecte</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>« Migrations appliquées sur une base vierge »</td>
+<td>Une migration qui ne s&#39;applique pas : erreur SQL, ordre incorrect, dépendance à des données</td>
+</tr>
+<tr>
+<td>« Absence de dérive entre le schéma Prisma et les migrations »</td>
+<td>Un schéma modifié sans migration, ou une migration modifiée à la main de façon incompatible avec le schéma</td>
+</tr>
+</tbody></table></div>
+<p><code>migrate diff</code> compare la base obtenue (lue par la source de données de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma.config.ts</code></a>, donc <code>DATABASE_URL</code>) au fichier <code>schema.prisma</code>. Avec <code>--exit-code</code>, la commande renvoie un code non nul s&#39;il existe une différence, ce qui fait échouer le job. Les contraintes CHECK écrites à la main ne déclenchent pas de dérive, car Prisma ne les représente pas dans le schéma.</p>
+<p>Le job <code>chain</code> applique aussi toutes les migrations sur une base vierge avant le test d&#39;intégration blockchain (voir <a href="../integration-blockchain/tests.html#job-ci-chain">Tests sur une vraie chaîne</a>).</p>
+<h2 id="revenir-en-arriere"><a class="anchor" href="#revenir-en-arriere" aria-hidden="true" tabindex="-1">#</a>Revenir en arrière</h2>
+<p>Prisma Migrate ne génère pas de migration inverse. Revenir à une version précédente du code n&#39;est sûr que si la dernière migration est compatible avec cette version, ce que garantit la règle expand et contract. Si ce n&#39;est pas le cas, il faut écrire une migration corrective, ou restaurer une sauvegarde ; voir <a href="performance-sauvegardes.html#sauvegardes">Performance et sauvegardes</a> et les <a href="../infrastructure/runbooks.html">runbooks</a>.</p>
+<p>Une migration déjà appliquée quelque part ne doit jamais être modifiée : Prisma vérifie la somme de contrôle de chaque fichier et signale toute modification.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="redis.html"><span>Précédent</span><strong>Données Redis</strong></a><a class="pager-next" href="seed.html"><span>Suivant</span><strong>Seed</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/base-de-donnees/migrations.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#historique">Historique</a></li><li class="toc-h2"><a href="#procedure">Procédure</a></li><li class="toc-h3"><a href="#creer-une-migration-en-developpement">Créer une migration en développement</a></li><li class="toc-h3"><a href="#appliquer-les-migrations">Appliquer les migrations</a></li><li class="toc-h2"><a href="#regle-expand-et-contract">Règle expand et contract</a></li><li class="toc-h2"><a href="#verrous">Verrous</a></li><li class="toc-h3"><a href="#lock-timeout">lock_timeout</a></li><li class="toc-h3"><a href="#contraintes-ajoutees-sans-bloquer">Contraintes ajoutées sans bloquer</a></li><li class="toc-h3"><a href="#index-sans-concurrently">Index sans CONCURRENTLY</a></li><li class="toc-h3"><a href="#reecriture-de-table">Réécriture de table</a></li><li class="toc-h2"><a href="#controle-de-derive-en-ci">Contrôle de dérive en CI</a></li><li class="toc-h2"><a href="#revenir-en-arriere">Revenir en arrière</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

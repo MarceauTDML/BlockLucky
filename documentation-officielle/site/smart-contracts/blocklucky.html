@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contrat BlockLucky | Documentation BlockLucky</title>
+<meta name="description" content="BlockLucky est la loterie elle-même. Il enchaîne des tours numérotés à partir de 1. Chaque tour vend des tickets à prix fixe, se clôt quand il est complet ou qu">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="blocklucky.html" aria-current="page">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>4. Smart contracts</span></div>
+    <article class="markdown">
+<h1>Contrat BlockLucky</h1>
+<p><code>BlockLucky</code> est la loterie elle-même. Il enchaîne des tours numérotés à partir de 1. Chaque tour vend des tickets à prix fixe, se clôt quand il est complet ou que sa durée est écoulée, puis est tiré au sort par Chainlink VRF ou annulé. Un nouveau tour s&#39;ouvre aussitôt. Source : <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a>.</p>
+<p>Cette page décrit les structures, l&#39;état stocké, les rôles, les paramètres et les calculs. Les transitions d&#39;état sont détaillées dans <a href="cycle-tour.html">Cycle de vie d&#39;un tour</a>, la liste exhaustive des fonctions dans <a href="reference-blocklucky.html">Référence de BlockLucky</a>.</p>
+<h2 id="heritage"><a class="anchor" href="#heritage" aria-hidden="true" tabindex="-1">#</a>Héritage</h2>
+<div class="code-block"><div class="code-head"><span>Solidity</span></div><pre><code class="hljs language-solidity">contract BlockLucky is VRFConsumerBaseV2Plus, AccessControl, Pausable, ReentrancyGuard, AutomationCompatibleInterface {</code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Parent</th>
+<th>Origine</th>
+<th>Apport</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>VRFConsumerBaseV2Plus</code></td>
+<td>Chainlink 1.5.0</td>
+<td>Adresse du coordinateur (<code>s_vrfCoordinator</code>), point d&#39;entrée <code>rawFulfillRandomWords</code> réservé au coordinateur, propriétaire <code>ConfirmedOwner</code></td>
+</tr>
+<tr>
+<td><code>AccessControl</code></td>
+<td>OpenZeppelin 5.6.1</td>
+<td>Rôles et modificateur <code>onlyRole</code></td>
+</tr>
+<tr>
+<td><code>Pausable</code></td>
+<td>OpenZeppelin 5.6.1</td>
+<td><code>paused()</code>, modificateur <code>whenNotPaused</code></td>
+</tr>
+<tr>
+<td><code>ReentrancyGuard</code></td>
+<td>OpenZeppelin 5.6.1</td>
+<td>Modificateur <code>nonReentrant</code></td>
+</tr>
+<tr>
+<td><code>AutomationCompatibleInterface</code></td>
+<td>Chainlink 1.5.0</td>
+<td>Signatures <code>checkUpkeep</code> et <code>performUpkeep</code></td>
+</tr>
+</tbody></table></div>
+<p><code>VRFConsumerBaseV2Plus</code> hérite lui-même de <code>ConfirmedOwner</code>. Le contrat a donc, en plus des rôles, un propriétaire : le compte qui l&#39;a déployé. Ce propriétaire peut appeler <code>setCoordinator</code> et <code>transferOwnership</code>. Les conséquences sont analysées dans <a href="securite.html#abus-de-l-administrateur">Sécurité du contrat</a>.</p>
+<h2 id="constantes"><a class="anchor" href="#constantes" aria-hidden="true" tabindex="-1">#</a>Constantes</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Constante</th>
+<th>Valeur</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>OPERATOR_ROLE</code></td>
+<td><code>keccak256(&quot;OPERATOR_ROLE&quot;)</code></td>
+<td>Exploitation courante par le backend</td>
+</tr>
+<tr>
+<td><code>PAUSER_ROLE</code></td>
+<td><code>keccak256(&quot;PAUSER_ROLE&quot;)</code></td>
+<td>Disjoncteur</td>
+</tr>
+<tr>
+<td><code>MAX_FEE_BPS</code></td>
+<td><code>2000</code></td>
+<td>Plafond de commission : 20 %</td>
+</tr>
+<tr>
+<td><code>BPS_DENOMINATOR</code></td>
+<td><code>10000</code></td>
+<td>Base des points de base : 10 000 = 100 %</td>
+</tr>
+</tbody></table></div>
+<h2 id="structures"><a class="anchor" href="#structures" aria-hidden="true" tabindex="-1">#</a>Structures</h2>
+<h3 id="roundstatus"><a class="anchor" href="#roundstatus" aria-hidden="true" tabindex="-1">#</a>RoundStatus</h3>
+<div class="code-block"><div class="code-head"><span>Solidity</span></div><pre><code class="hljs language-solidity">enum RoundStatus {
+    Open,
+    Drawing,
+    Completed,
+    Cancelled
+}</code></pre></div>
+<p>Les valeurs numériques renvoyées par l&#39;ABI sont 0, 1, 2 et 3. Les tests les reprennent dans <code>RoundStatus</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/test/fixtures.ts" class="external" target="_blank" rel="noopener noreferrer"><code>test/fixtures.ts</code></a>.</p>
+<h3 id="roundconfig"><a class="anchor" href="#roundconfig" aria-hidden="true" tabindex="-1">#</a>RoundConfig</h3>
+<p>Paramètres des tours à venir, modifiables par l&#39;administrateur.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Contrainte de validation</th>
+<th>Défaut des scripts</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ticketPrice</code></td>
+<td><code>uint256</code></td>
+<td>Non nul</td>
+<td><code>10000000000000000</code> wei (0,01 ETH)</td>
+</tr>
+<tr>
+<td><code>maxTickets</code></td>
+<td><code>uint32</code></td>
+<td>Non nul</td>
+<td>10 000</td>
+</tr>
+<tr>
+<td><code>minTicketsToDraw</code></td>
+<td><code>uint32</code></td>
+<td>Non nul et au plus <code>maxTickets</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>maxTicketsPerPlayer</code></td>
+<td><code>uint32</code></td>
+<td>Non nul et au plus <code>maxTickets</code></td>
+<td>100</td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td><code>uint64</code></td>
+<td>Non nul, en secondes</td>
+<td>1 800 (30 min) en local, 172 800 (48 h) sur Sepolia</td>
+</tr>
+<tr>
+<td><code>feeBps</code></td>
+<td><code>uint16</code></td>
+<td>Au plus <code>MAX_FEE_BPS</code></td>
+<td>1 000 (10 %)</td>
+</tr>
+</tbody></table></div>
+<p>Les défauts viennent de <code>roundConfigFromEnv</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/lib/deployment.ts" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/lib/deployment.ts</code></a> et se remplacent par les variables <code>TICKET_PRICE_WEI</code>, <code>MAX_TICKETS</code>, <code>MIN_TICKETS_TO_DRAW</code>, <code>MAX_TICKETS_PER_PLAYER</code>, <code>ROUND_DURATION_SECONDS</code> et <code>MUNICIPALITY_FEE_BPS</code>. Une commission nulle est acceptée par le contrat, mais pas par le script, qui exige des entiers strictement positifs.</p>
+<h3 id="vrfconfig"><a class="anchor" href="#vrfconfig" aria-hidden="true" tabindex="-1">#</a>VrfConfig</h3>
+<p>Paramètres des requêtes Chainlink VRF, modifiables par l&#39;administrateur.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Contrainte de validation</th>
+<th>Local</th>
+<th>Sepolia</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>keyHash</code></td>
+<td><code>bytes32</code></td>
+<td>Non nul</td>
+<td><code>0x787d74ca…677ae</code></td>
+<td>Même valeur par défaut, vérifiée sur le coordinateur</td>
+</tr>
+<tr>
+<td><code>subscriptionId</code></td>
+<td><code>uint256</code></td>
+<td>Aucune</td>
+<td>Créé par le script</td>
+<td><code>SEPOLIA_VRF_SUBSCRIPTION_ID</code></td>
+</tr>
+<tr>
+<td><code>callbackGasLimit</code></td>
+<td><code>uint32</code></td>
+<td>Au moins 100 000</td>
+<td>500 000</td>
+<td>500 000</td>
+</tr>
+<tr>
+<td><code>requestConfirmations</code></td>
+<td><code>uint16</code></td>
+<td>Non nul</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>nativePayment</code></td>
+<td><code>bool</code></td>
+<td>Aucune</td>
+<td><code>false</code></td>
+<td><code>true</code> si l&#39;abonnement n&#39;a pas de LINK</td>
+</tr>
+<tr>
+<td><code>drawTimeout</code></td>
+<td><code>uint64</code></td>
+<td>Non nul, en secondes</td>
+<td>600 (10 min)</td>
+<td>86 400 (24 h)</td>
+</tr>
+</tbody></table></div>
+<h3 id="round"><a class="anchor" href="#round" aria-hidden="true" tabindex="-1">#</a>Round</h3>
+<p>État complet d&#39;un tour, renvoyé par <code>getRound(roundId)</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ticketPrice</code></td>
+<td><code>uint256</code></td>
+<td>Prix copié de <code>roundConfig</code> à l&#39;ouverture</td>
+</tr>
+<tr>
+<td><code>totalCollected</code></td>
+<td><code>uint256</code></td>
+<td>Somme des <code>msg.value</code> reçus pour ce tour</td>
+</tr>
+<tr>
+<td><code>prize</code></td>
+<td><code>uint256</code></td>
+<td>Cagnotte nette, fixée au tirage</td>
+</tr>
+<tr>
+<td><code>vrfRequestId</code></td>
+<td><code>uint256</code></td>
+<td>Identifiant de la dernière requête VRF</td>
+</tr>
+<tr>
+<td><code>winner</code></td>
+<td><code>address</code></td>
+<td>Gagnant, adresse nulle tant que le tour n&#39;est pas tiré</td>
+</tr>
+<tr>
+<td><code>startTime</code></td>
+<td><code>uint64</code></td>
+<td>Horodatage d&#39;ouverture</td>
+</tr>
+<tr>
+<td><code>endTime</code></td>
+<td><code>uint64</code></td>
+<td><code>startTime + duration</code></td>
+</tr>
+<tr>
+<td><code>drawRequestedAt</code></td>
+<td><code>uint64</code></td>
+<td>Horodatage de la dernière demande de tirage</td>
+</tr>
+<tr>
+<td><code>ticketCount</code></td>
+<td><code>uint32</code></td>
+<td>Tickets vendus</td>
+</tr>
+<tr>
+<td><code>maxTickets</code></td>
+<td><code>uint32</code></td>
+<td>Copié de <code>roundConfig</code></td>
+</tr>
+<tr>
+<td><code>minTicketsToDraw</code></td>
+<td><code>uint32</code></td>
+<td>Copié de <code>roundConfig</code></td>
+</tr>
+<tr>
+<td><code>maxTicketsPerPlayer</code></td>
+<td><code>uint32</code></td>
+<td>Copié de <code>roundConfig</code></td>
+</tr>
+<tr>
+<td><code>winningTicket</code></td>
+<td><code>uint32</code></td>
+<td>Index du ticket gagnant, à partir de 0</td>
+</tr>
+<tr>
+<td><code>feeBps</code></td>
+<td><code>uint16</code></td>
+<td>Copié de <code>roundConfig</code></td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td><code>RoundStatus</code></td>
+<td>État du tour</td>
+</tr>
+<tr>
+<td><code>prizeClaimed</code></td>
+<td><code>bool</code></td>
+<td>Cagnotte retirée</td>
+</tr>
+</tbody></table></div>
+<p>Les champs sont ordonnés pour que le compilateur les regroupe : les quatre <code>uint256</code>, puis l&#39;adresse avec <code>startTime</code>, puis les autres petits entiers. Le tour tient en sept emplacements de stockage.</p>
+<p>Chaque tour copie les paramètres de <code>roundConfig</code> à son ouverture. C&#39;est ce qui permet de modifier la configuration sans toucher au tour en cours : la nouvelle valeur s&#39;applique au tour suivant.</p>
+<h2 id="etat-stocke"><a class="anchor" href="#etat-stocke" aria-hidden="true" tabindex="-1">#</a>État stocké</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Visibilité</th>
+<th>Type</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>currentRoundId</code></td>
+<td>publique</td>
+<td><code>uint256</code></td>
+<td>Numéro du tour en cours, 1 au déploiement</td>
+</tr>
+<tr>
+<td><code>accruedFees</code></td>
+<td>publique</td>
+<td><code>uint256</code></td>
+<td>Commissions cumulées non encore versées à la trésorerie</td>
+</tr>
+<tr>
+<td><code>treasury</code></td>
+<td>publique</td>
+<td><code>address</code></td>
+<td>Destinataire de <code>withdrawFees</code></td>
+</tr>
+<tr>
+<td><code>roundConfig</code></td>
+<td>publique</td>
+<td><code>RoundConfig</code></td>
+<td>Paramètres du prochain tour</td>
+</tr>
+<tr>
+<td><code>vrfConfig</code></td>
+<td>publique</td>
+<td><code>VrfConfig</code></td>
+<td>Paramètres des prochaines requêtes VRF</td>
+</tr>
+<tr>
+<td><code>rounds</code></td>
+<td>privée</td>
+<td><code>uint256 =&gt; Round</code></td>
+<td>Tous les tours, lus par <code>getRound</code></td>
+</tr>
+<tr>
+<td><code>ticketOwners</code></td>
+<td>privée</td>
+<td><code>uint256 =&gt; address[]</code></td>
+<td>Pour chaque tour, le bénéficiaire de chaque ticket, dans l&#39;ordre d&#39;achat ; lu par <code>ticketOwner</code></td>
+</tr>
+<tr>
+<td><code>ticketsByPlayer</code></td>
+<td>privée</td>
+<td><code>uint256 =&gt; address =&gt; uint32</code></td>
+<td>Tickets détenus par bénéficiaire ; lu par <code>ticketsOf</code></td>
+</tr>
+<tr>
+<td><code>contributions</code></td>
+<td>privée</td>
+<td><code>uint256 =&gt; address =&gt; uint256</code></td>
+<td>Ethers versés par payeur ; lu par <code>contributionOf</code></td>
+</tr>
+<tr>
+<td><code>roundByRequestId</code></td>
+<td>publique</td>
+<td><code>uint256 =&gt; uint256</code></td>
+<td>Tour associé à une requête VRF en attente</td>
+</tr>
+</tbody></table></div>
+<p>Le contrat ne stocke aucune donnée personnelle : seulement des adresses, des montants et des compteurs. Le lien entre une adresse et un citoyen reste dans la base du backend (voir <a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a>).</p>
+<h3 id="beneficiaire-et-payeur"><a class="anchor" href="#beneficiaire-et-payeur" aria-hidden="true" tabindex="-1">#</a>Bénéficiaire et payeur</h3>
+<p><code>buyTicketsFor(player, quantity)</code> permet d&#39;offrir des tickets. Le contrat distingue alors deux adresses :</p>
+<ul>
+<li><strong>le bénéficiaire</strong> (<code>player</code>) détient les tickets : il est inscrit dans <code>ticketOwners</code> et <code>ticketsByPlayer</code>, son plafond par participant est décompté, et c&#39;est lui qui peut gagner ;</li>
+<li><strong>le payeur</strong> (<code>msg.sender</code>) a versé les ethers : sa mise est inscrite dans <code>contributions</code>, et c&#39;est lui qui sera remboursé si le tour est annulé.</li>
+</ul>
+<p>L&#39;événement <code>TicketsPurchased</code> porte les deux adresses (<code>player</code> et <code>payer</code>). Pour un achat simple, elles sont identiques. Le test « permet d&#39;offrir des tickets : le bénéficiaire les détient, le payeur est remboursable » vérifie ce partage.</p>
+<h2 id="roles"><a class="anchor" href="#roles" aria-hidden="true" tabindex="-1">#</a>Rôles</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rôle</th>
+<th>Titulaire prévu</th>
+<th>Fonctions</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DEFAULT_ADMIN_ROLE</code></td>
+<td>Mairie (<code>admin</code> du constructeur)</td>
+<td><code>setTreasury</code>, <code>setRoundConfig</code>, <code>setVrfConfig</code>, <code>grantRole</code>, <code>revokeRole</code></td>
+</tr>
+<tr>
+<td><code>OPERATOR_ROLE</code></td>
+<td>Mairie et compte opérateur du backend</td>
+<td><code>retryDraw</code>, <code>cancelRound</code>, <code>withdrawFees</code></td>
+</tr>
+<tr>
+<td><code>PAUSER_ROLE</code></td>
+<td>Mairie et compte opérateur du backend</td>
+<td><code>pause</code>, <code>unpause</code></td>
+</tr>
+<tr>
+<td>Propriétaire <code>ConfirmedOwner</code></td>
+<td>Compte qui déploie</td>
+<td><code>setCoordinator</code>, <code>transferOwnership</code></td>
+</tr>
+<tr>
+<td>Coordinateur VRF</td>
+<td>Contrat Chainlink</td>
+<td><code>rawFulfillRandomWords</code>, <code>setCoordinator</code></td>
+</tr>
+<tr>
+<td>Tout le monde</td>
+<td>Citoyens, keeper, Chainlink Automation</td>
+<td><code>buyTickets</code>, <code>buyTicketsFor</code>, <code>requestDraw</code>, <code>closeExpiredRound</code>, <code>claimPrize</code>, <code>claimRefund</code>, <code>performUpkeep</code></td>
+</tr>
+</tbody></table></div>
+<p>Le constructeur accorde les trois rôles à <code>admin</code>. Les scripts de déploiement accordent ensuite <code>OPERATOR_ROLE</code> et <code>PAUSER_ROLE</code> à l&#39;opérateur du backend s&#39;il est distinct (voir <a href="exploitation.html">Exploitation du contrat</a>). <code>DEFAULT_ADMIN_ROLE</code> est l&#39;administrateur de tous les rôles : seul son titulaire peut en accorder ou en retirer.</p>
+<h2 id="constructeur"><a class="anchor" href="#constructeur" aria-hidden="true" tabindex="-1">#</a>Constructeur</h2>
+<div class="code-block"><div class="code-head"><span>Solidity</span></div><pre><code class="hljs language-solidity">constructor(
+    address vrfCoordinator,
+    address admin,
+    address treasury_,
+    RoundConfig memory initialRoundConfig,
+    VrfConfig memory initialVrfConfig
+) VRFConsumerBaseV2Plus(vrfCoordinator)</code></pre></div>
+<p>Dans l&#39;ordre, il :</p>
+<ol>
+<li>enregistre le coordinateur (<code>ZeroAddress</code> de Chainlink s&#39;il est nul) et fait du déployeur le propriétaire ;</li>
+<li>refuse un <code>admin</code> ou un <code>treasury_</code> nul (<code>ZeroAddressNotAllowed</code>) ;</li>
+<li>valide les deux configurations (<code>InvalidConfiguration</code>) ;</li>
+<li>accorde <code>DEFAULT_ADMIN_ROLE</code>, <code>OPERATOR_ROLE</code> et <code>PAUSER_ROLE</code> à <code>admin</code> ;</li>
+<li>enregistre la trésorerie et les configurations ;</li>
+<li>ouvre le tour 1 (<code>RoundOpened</code>).</li>
+</ol>
+<p>Le contrat est donc utilisable dès son déploiement, à une condition : être ajouté comme consommateur de l&#39;abonnement VRF avant le premier tirage.</p>
+<h2 id="achat-de-tickets"><a class="anchor" href="#achat-de-tickets" aria-hidden="true" tabindex="-1">#</a>Achat de tickets</h2>
+<p><code>buyTickets(quantity)</code> et <code>buyTicketsFor(player, quantity)</code> sont <code>payable</code>, <code>whenNotPaused</code> et <code>nonReentrant</code>. Elles délèguent à <code>_buyTickets</code>, qui contrôle dans cet ordre :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Contrôle</th>
+<th>Erreur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Le tour en cours est <code>Open</code></td>
+<td><code>RoundNotOpen(roundId)</code></td>
+</tr>
+<tr>
+<td><code>block.timestamp &lt; endTime</code></td>
+<td><code>RoundExpired(roundId)</code></td>
+</tr>
+<tr>
+<td><code>quantity &gt; 0</code></td>
+<td><code>InvalidQuantity()</code></td>
+</tr>
+<tr>
+<td><code>quantity &lt;= maxTickets - ticketCount</code></td>
+<td><code>RoundSoldOut(roundId, remaining)</code></td>
+</tr>
+<tr>
+<td><code>ticketsOf(player) + quantity &lt;= maxTicketsPerPlayer</code></td>
+<td><code>PlayerLimitReached(owned, limit)</code></td>
+</tr>
+<tr>
+<td><code>msg.value == ticketPrice * quantity</code> exactement</td>
+<td><code>IncorrectPayment(expected, received)</code></td>
+</tr>
+</tbody></table></div>
+<p>Le paiement doit être exact : un excédent n&#39;est pas rendu, il est refusé. Ensuite, le contrat ajoute <code>quantity</code> fois l&#39;adresse du bénéficiaire à <code>ticketOwners[roundId]</code>, met à jour <code>ticketCount</code>, <code>totalCollected</code>, <code>ticketsByPlayer</code> et <code>contributions</code>, puis émet <code>TicketsPurchased</code> avec l&#39;index du premier ticket acheté (<code>firstTicketIndex</code>) et le total vendu.</p>
+<p>La boucle d&#39;inscription est bornée par <code>maxTicketsPerPlayer</code>. Son coût croît avec la quantité, de l&#39;ordre de 25 000 gaz par ticket supplémentaire : le <a href="tests.html#rapport-de-gaz">rapport de gaz</a> relève 119 577 gaz au minimum et 356 745 gaz au maximum, pour un achat de dix tickets.</p>
+<p>Les tickets sont numérotés à partir de 0. Si Alice achète 3 tickets puis Bob 5, Alice détient les index 0 à 2 et Bob les index 3 à 7. <code>ticketOwner(roundId, 5)</code> renvoie l&#39;adresse de Bob.</p>
+<h2 id="calcul-de-la-commission-et-de-la-cagnotte"><a class="anchor" href="#calcul-de-la-commission-et-de-la-cagnotte" aria-hidden="true" tabindex="-1">#</a>Calcul de la commission et de la cagnotte</h2>
+<p>Au tirage, dans <code>fulfillRandomWords</code> :</p>
+<div class="code-block"><div class="code-head"><span>Solidity</span></div><pre><code class="hljs language-solidity">uint256 fee = (round.totalCollected * round.feeBps) / BPS_DENOMINATOR;
+uint256 prize = round.totalCollected - fee;</code></pre></div>
+<ul>
+<li>La commission est arrondie à l&#39;inférieur par la division entière ; l&#39;arrondi profite au gagnant.</li>
+<li><code>prize + fee == totalCollected</code> exactement : aucun wei n&#39;est perdu. Le test de fuzzing <code>testFuzz_PrizeAndFeeMatchCollectedFunds</code> le vérifie sur 256 jeux de données.</li>
+<li>La commission s&#39;ajoute à <code>accruedFees</code> ; la cagnotte est inscrite dans <code>round.prize</code>. Aucun transfert n&#39;a lieu à ce moment.</li>
+<li>Le taux est celui du tour (<code>round.feeBps</code>), copié à son ouverture : changer <code>feeBps</code> en cours de tour n&#39;a pas d&#39;effet rétroactif.</li>
+</ul>
+<p>Exemple tiré des tests : 10 tickets à 0,01 ETH donnent <code>totalCollected</code> = 0,1 ETH. Avec <code>feeBps</code> = 1 000, la commission vaut 0,01 ETH et la cagnotte 0,09 ETH.</p>
+<p>Un tour annulé ne prélève aucune commission : chaque payeur récupère l&#39;intégralité de sa mise.</p>
+<h2 id="tirage-du-gagnant"><a class="anchor" href="#tirage-du-gagnant" aria-hidden="true" tabindex="-1">#</a>Tirage du gagnant</h2>
+<div class="code-block"><div class="code-head"><span>Solidity</span></div><pre><code class="hljs language-solidity">uint32 winningTicket = uint32(randomWords[0] % round.ticketCount);
+address winner = ticketOwners[roundId][winningTicket];</code></pre></div>
+<p>Le mot aléatoire de Chainlink, un entier de 256 bits, est réduit modulo le nombre de tickets vendus. Le résultat est l&#39;index d&#39;un ticket ; son bénéficiaire est le gagnant. Chaque ticket a donc la même chance, et un participant qui détient 5 tickets sur 10 a une chance sur deux.</p>
+<ul>
+<li><code>ticketCount</code> est au moins égal à <code>minTicketsToDraw</code>, lui-même au moins 1 : la division par zéro est impossible.</li>
+<li>Le biais du modulo est négligeable : <code>ticketCount</code> tient sur 32 bits, l&#39;aléa sur 256 bits.</li>
+<li>Le test « tire le gagnant parmi les tickets vendus quel que soit l&#39;aléa » utilise <code>ethers.MaxUint256</code> comme mot aléatoire et vérifie que l&#39;index obtenu est <code>MaxUint256 % 10</code>.</li>
+</ul>
+<p>Le mécanisme complet de la requête et de la réponse est sur la page <a href="chainlink-vrf.html">Tirage Chainlink VRF</a>.</p>
+<h2 id="retraits-a-l-initiative-du-beneficiaire"><a class="anchor" href="#retraits-a-l-initiative-du-beneficiaire" aria-hidden="true" tabindex="-1">#</a>Retraits à l&#39;initiative du bénéficiaire</h2>
+<p>Le contrat n&#39;envoie jamais d&#39;ethers de lui-même lors d&#39;un tirage ou d&#39;une annulation. Il inscrit des droits, que chaque bénéficiaire retire ensuite (« pull payment ») :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fonction</th>
+<th>Qui</th>
+<th>Montant</th>
+<th>Protection contre le double retrait</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>claimPrize(roundId)</code></td>
+<td>Le gagnant du tour</td>
+<td><code>round.prize</code></td>
+<td><code>prizeClaimed</code> passe à <code>true</code> avant le transfert</td>
+</tr>
+<tr>
+<td><code>claimRefund(roundId)</code></td>
+<td>Chaque payeur d&#39;un tour annulé</td>
+<td><code>contributions[roundId][msg.sender]</code></td>
+<td>La contribution est remise à zéro avant le transfert</td>
+</tr>
+<tr>
+<td><code>withdrawFees()</code></td>
+<td><code>OPERATOR_ROLE</code>, vers <code>treasury</code></td>
+<td><code>accruedFees</code></td>
+<td><code>accruedFees</code> est remis à zéro avant le transfert</td>
+</tr>
+</tbody></table></div>
+<p>Ce choix a trois effets :</p>
+<ol>
+<li><strong>Un destinataire défaillant ne bloque personne.</strong> Si un contrat gagnant refuse les ethers, seul son retrait échoue (<code>TransferFailed</code>), et l&#39;état est restauré par le revert : il peut réessayer. Le tour suivant est déjà ouvert.</li>
+<li><strong>Le tirage reste bon marché et prévisible en gaz.</strong> Le callback VRF ne fait aucun transfert, ce qui borne sa consommation (voir <a href="securite.html">Sécurité du contrat</a>).</li>
+<li><strong>Les fonds restent disponibles même en pause.</strong> <code>claimPrize</code>, <code>claimRefund</code> et <code>withdrawFees</code> n&#39;ont pas <code>whenNotPaused</code>.</li>
+</ol>
+<p>Les citoyens n&#39;appellent pas ces fonctions à la main : la <a href="../integration-blockchain/actions.html">file d&#39;actions on-chain</a> du backend signe <code>claimPrize</code> et <code>claimRefund</code> avec leur portefeuille intégré.</p>
+<p>Les retraits ne sont pas limités dans le temps : une cagnotte non réclamée reste due indéfiniment au gagnant.</p>
+<h2 id="absence-de-fonction-receive"><a class="anchor" href="#absence-de-fonction-receive" aria-hidden="true" tabindex="-1">#</a>Absence de fonction receive</h2>
+<p>Le contrat ne déclare ni <code>receive</code> ni <code>fallback</code>. Un envoi d&#39;ethers direct, hors <code>buyTickets</code> ou <code>buyTicketsFor</code>, est rejeté par l&#39;EVM. Le test « refuse tout envoi direct d&#39;ethers hors achat » le vérifie.</p>
+<p>Conséquence : le solde du contrat est égal, à tout instant, à la somme des mises des tours ouverts ou en tirage, des cagnottes non réclamées, des remboursements non réclamés et de <code>accruedFees</code>. Les tests de fuzzing <code>testFuzz_ClaimsEmptyTheContractExactly</code> et <code>testFuzz_RefundsReturnEveryContribution</code> vérifient que tous les retraits vident le contrat exactement à zéro.</p>
+<p>Seul un envoi forcé (par exemple un <code>selfdestruct</code> d&#39;un autre contrat) pourrait ajouter des ethers ; ils ne seraient alors comptés nulle part et resteraient bloqués, sans perturber la comptabilité.</p>
+<h2 id="fonctions-de-lecture"><a class="anchor" href="#fonctions-de-lecture" aria-hidden="true" tabindex="-1">#</a>Fonctions de lecture</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fonction</th>
+<th>Renvoie</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getRound(roundId)</code></td>
+<td>La structure <code>Round</code> complète</td>
+</tr>
+<tr>
+<td><code>ticketOwner(roundId, ticketIndex)</code></td>
+<td>Le bénéficiaire du ticket ; revert si l&#39;index dépasse <code>ticketCount - 1</code></td>
+</tr>
+<tr>
+<td><code>ticketsOf(roundId, player)</code></td>
+<td>Le nombre de tickets du bénéficiaire</td>
+</tr>
+<tr>
+<td><code>contributionOf(roundId, player)</code></td>
+<td>Les ethers versés par ce payeur et non remboursés</td>
+</tr>
+<tr>
+<td><code>isDrawReady()</code></td>
+<td>Vrai si le tour en cours peut être tiré</td>
+</tr>
+<tr>
+<td><code>isExpiredWithoutDraw()</code></td>
+<td>Vrai si le tour en cours peut être annulé faute de participants</td>
+</tr>
+<tr>
+<td><code>checkUpkeep(bytes)</code></td>
+<td>L&#39;action à effectuer pour Chainlink Automation</td>
+</tr>
+</tbody></table></div>
+<p>Un tour qui n&#39;existe pas renvoie une structure vide : <code>getRound(999)</code> ne revert pas, son <code>status</code> vaut 0 (<code>Open</code>) et <code>endTime</code> vaut 0. Il faut donc toujours comparer <code>roundId</code> à <code>currentRoundId</code> avant d&#39;interpréter le statut.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="choix.html"><span>Précédent</span><strong>Pourquoi Ethereum, Hardhat et Chainlink</strong></a><a class="pager-next" href="cycle-tour.html"><span>Suivant</span><strong>Cycle de vie d&#39;un tour</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/smart-contracts/blocklucky.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#heritage">Héritage</a></li><li class="toc-h2"><a href="#constantes">Constantes</a></li><li class="toc-h2"><a href="#structures">Structures</a></li><li class="toc-h3"><a href="#roundstatus">RoundStatus</a></li><li class="toc-h3"><a href="#roundconfig">RoundConfig</a></li><li class="toc-h3"><a href="#vrfconfig">VrfConfig</a></li><li class="toc-h3"><a href="#round">Round</a></li><li class="toc-h2"><a href="#etat-stocke">État stocké</a></li><li class="toc-h3"><a href="#beneficiaire-et-payeur">Bénéficiaire et payeur</a></li><li class="toc-h2"><a href="#roles">Rôles</a></li><li class="toc-h2"><a href="#constructeur">Constructeur</a></li><li class="toc-h2"><a href="#achat-de-tickets">Achat de tickets</a></li><li class="toc-h2"><a href="#calcul-de-la-commission-et-de-la-cagnotte">Calcul de la commission et de la cagnotte</a></li><li class="toc-h2"><a href="#tirage-du-gagnant">Tirage du gagnant</a></li><li class="toc-h2"><a href="#retraits-a-l-initiative-du-beneficiaire">Retraits à l&#39;initiative du bénéficiaire</a></li><li class="toc-h2"><a href="#absence-de-fonction-receive">Absence de fonction receive</a></li><li class="toc-h2"><a href="#fonctions-de-lecture">Fonctions de lecture</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

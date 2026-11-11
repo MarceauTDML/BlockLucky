@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Temps réel | Documentation BlockLucky</title>
+<meta name="description" content="Le frontend web reçoit quatre types d&#39;événements du serveur Socket.IO du backend : la fréquentation de la salle de tirage, les messages de discussion, l&#39;annonce">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="temps-reel.html" aria-current="page">Temps réel</a></div></li><li><div class="nav-row"><a href="design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>8. Frontend web</span></div>
+    <article class="markdown">
+<h1>Temps réel</h1>
+<p>Le frontend web reçoit quatre types d&#39;événements du serveur Socket.IO du backend : la fréquentation de la salle de tirage, les messages de discussion, l&#39;annonce du gagnant et les points attribués. Il en envoie trois : entrer dans la salle, en sortir, écrire un message. Le reste de l&#39;interface se met à jour par RTK Query (requêtes et <code>pollingInterval</code>), décrit dans <a href="etat-api.html">État et appels API</a>.</p>
+<p>La liste complète des événements du serveur, avec leurs charges utiles, est dans <a href="../backend/socket-io.html">Temps réel Socket.IO</a>. Le relais entre le worker et le serveur web passe par Redis, voir <a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a>.</p>
+<h2 id="le-client-socket-io"><a class="anchor" href="#le-client-socket-io" aria-hidden="true" tabindex="-1">#</a>Le client Socket.IO</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/lib/socket.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/lib/socket.ts</code></a> définit un singleton <code>socketClient</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Méthode</th>
+<th>Comportement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>connect(token)</code></td>
+<td>Renvoie la connexion existante si le jeton est le même ; sinon ferme l&#39;ancienne et en ouvre une nouvelle vers <code>WS_BASE_URL</code></td>
+</tr>
+<tr>
+<td><code>getSocket()</code></td>
+<td>Connexion courante ou <code>null</code></td>
+</tr>
+<tr>
+<td><code>disconnect()</code></td>
+<td>Retire tous les écouteurs, ferme la connexion, oublie le jeton</td>
+</tr>
+</tbody></table></div>
+<p>Options passées à <code>io()</code> :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-title function_">io</span>(<span class="hljs-variable constant_">WS_BASE_URL</span>, {
+  <span class="hljs-attr">transports</span>: [<span class="hljs-string">&#x27;websocket&#x27;</span>, <span class="hljs-string">&#x27;polling&#x27;</span>],
+  <span class="hljs-attr">autoConnect</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">reconnectionAttempts</span>: <span class="hljs-number">5</span>,
+  <span class="hljs-attr">auth</span>: token ? { token } : {},
+});</code></pre></div>
+<p>Le WebSocket est tenté en premier, avec repli en long polling HTTP. Après cinq échecs de reconnexion, le client abandonne jusqu&#39;au prochain appel de <code>connect</code>, c&#39;est-à-dire au prochain montage d&#39;une page qui utilise <code>useSocket</code> ou au changement de jeton.</p>
+<p><code>WS_BASE_URL</code> vient de <code>NEXT_PUBLIC_WS_URL</code> (par défaut <code>http://localhost:2053</code>). Son origine, en <code>http</code> et en <code>ws</code>, est ajoutée à la directive <code>connect-src</code> de la CSP (voir <a href="securite-navigateur.html">Sécurité du navigateur</a>).</p>
+<h3 id="authentification-de-la-connexion"><a class="anchor" href="#authentification-de-la-connexion" aria-hidden="true" tabindex="-1">#</a>Authentification de la connexion</h3>
+<p>Le jeton est transmis dans <code>auth.token</code> du handshake. Le middleware <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/socket/socket.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/socket/socket.middleware.ts</code></a> se comporte ainsi :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cas</th>
+<th>Résultat</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pas de jeton</td>
+<td>Connexion acceptée en invité (<code>walletAddress</code> fictive <code>0xGuest...</code>)</td>
+</tr>
+<tr>
+<td>Jeton valide et non révoqué</td>
+<td>Connexion associée au compte</td>
+</tr>
+<tr>
+<td>Jeton invalide ou révoqué</td>
+<td>Connexion refusée avec l&#39;erreur « Invalid authentication token for Socket.IO »</td>
+</tr>
+</tbody></table></div>
+<p>Un visiteur non connecté peut donc écouter les annonces publiques, mais les messages qu&#39;il écrit portent l&#39;adresse invité.</p>
+<h2 id="le-hook-usesocket"><a class="anchor" href="#le-hook-usesocket" aria-hidden="true" tabindex="-1">#</a>Le hook useSocket</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/hooks/useSocket.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/hooks/useSocket.ts</code></a> branche le client sur le store. Il prend un identifiant de tour optionnel.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Appel</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/tirage</code></td>
+<td><code>useSocket(round?.id)</code> : rejoint la salle du tour et active la discussion</td>
+</tr>
+<tr>
+<td><code>/mairie/securite</code></td>
+<td><code>useSocket()</code> : écoute l&#39;annonce du gagnant après un tirage lancé par la Mairie</td>
+</tr>
+</tbody></table></div>
+<p>Aucune autre page n&#39;ouvre de connexion. Le client reste ouvert après avoir quitté ces pages (le nettoyage retire seulement les écouteurs) et n&#39;est fermé qu&#39;à la déconnexion par <code>endSession</code>.</p>
+<h3 id="evenements-ecoutes"><a class="anchor" href="#evenements-ecoutes" aria-hidden="true" tabindex="-1">#</a>Événements écoutés</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Événement</th>
+<th>Charge utile</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>connect</code></td>
+<td>aucune</td>
+<td><code>setSocketConnected(true)</code> puis émission de <code>draw:join</code> si un tour est connu</td>
+</tr>
+<tr>
+<td><code>disconnect</code></td>
+<td>aucune</td>
+<td><code>setSocketConnected(false)</code></td>
+</tr>
+<tr>
+<td><code>draw:waiting-room</code></td>
+<td><code>{ active, onlineUsers }</code></td>
+<td><code>setWaitingRoomOnlineCount(onlineUsers)</code></td>
+</tr>
+<tr>
+<td><code>chat:message</code></td>
+<td><code>{ id, senderWallet, message, emoji?, timestamp }</code></td>
+<td><code>addLiveChatMessage</code>, ignoré si l&#39;<code>id</code> existe déjà ; 100 messages gardés</td>
+</tr>
+<tr>
+<td><code>draw:winner</code></td>
+<td><code>{ roundId, contractRoundId, winnerWallet, prizePool, vrfProofHash, timestamp }</code></td>
+<td><code>setWinnerAnnouncement</code> (arrête la roue), puis invalidation des tags <code>Lottery</code>, <code>Wallet</code> et <code>Admin</code></td>
+</tr>
+<tr>
+<td><code>points:awarded</code></td>
+<td><code>{ userId, amount, reason }</code></td>
+<td>Feuille « Points crédités » si <code>userId</code> est celui du compte connecté</td>
+</tr>
+</tbody></table></div>
+<h3 id="evenements-emis"><a class="anchor" href="#evenements-emis" aria-hidden="true" tabindex="-1">#</a>Événements émis</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Événement</th>
+<th>Quand</th>
+<th>Charge utile</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>draw:join</code></td>
+<td>À la connexion, si <code>roundId</code> est fourni</td>
+<td>identifiant du tour en base</td>
+</tr>
+<tr>
+<td><code>draw:leave</code></td>
+<td>Au démontage, si la connexion est active</td>
+<td>identifiant du tour</td>
+</tr>
+<tr>
+<td><code>chat:send</code></td>
+<td><code>sendChatMessage(message, emoji)</code> depuis <code>ChatBox</code></td>
+<td><code>{ message, emoji }</code></td>
+</tr>
+</tbody></table></div>
+<p>Le serveur place chaque client dans la salle <code>draw:&lt;roundId&gt;</code> et renvoie à toute la salle le nouveau nombre de membres. Les messages de discussion sont tronqués à 280 caractères, l&#39;adresse de l&#39;auteur est anonymisée par le serveur, puis le message est diffusé à tous les clients connectés.</p>
+<p>Si la connexion est coupée au moment de l&#39;envoi, <code>sendChatMessage</code> ajoute le message localement avec l&#39;auteur « Vous (hors ligne) ». Il n&#39;est pas renvoyé plus tard.</p>
+<h2 id="sequence-d-un-tirage-vu-du-navigateur"><a class="anchor" href="#sequence-d-un-tirage-vu-du-navigateur" aria-hidden="true" tabindex="-1">#</a>Séquence d&#39;un tirage vu du navigateur</h2>
+<div class="diagram"><pre class="mermaid">sequenceDiagram
+  participant N as Navigateur sur /tirage
+  participant S as Serveur Socket.IO
+  participant I as Indexeur ou service de loterie
+  participant A as API REST
+  N-&gt;&gt;S: handshake avec auth.token
+  S--&gt;&gt;N: connect
+  N-&gt;&gt;S: draw:join roundId
+  S--&gt;&gt;N: draw:waiting-room onlineUsers
+  loop toutes les 15 s
+    N-&gt;&gt;A: GET /lottery/status
+  end
+  I-&gt;&gt;S: draw:winner
+  S--&gt;&gt;N: draw:winner
+  N-&gt;&gt;N: setWinnerAnnouncement, invalidation Lottery Wallet Admin
+  N-&gt;&gt;A: GET /lottery/status et GET /lottery/wallet
+  N-&gt;&gt;N: WinnerClaimCard si le compte a gagné</pre></div>
+<p>En mode onchain, <code>draw:winner</code> et <code>points:awarded</code> sont émis par l&#39;indexeur d&#39;événements du contrat (<a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a>). En mode simulé, <code>draw:winner</code> est émis directement par le service de loterie après le tirage simulé.</p>
+<h2 id="ce-qui-n-est-pas-branche"><a class="anchor" href="#ce-qui-n-est-pas-branche" aria-hidden="true" tabindex="-1">#</a>Ce qui n&#39;est pas branché</h2>
+<p>Le fichier <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/types/socket.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/types/socket.types.ts</code></a> déclare d&#39;autres événements que le web n&#39;écoute pas :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Événement</th>
+<th>Situation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>chat:react</code> (client vers serveur) et <code>chat:reaction</code></td>
+<td>Gérés par le serveur, non utilisés par le web : les « réactions » de <code>ChatBox</code> sont envoyées comme texte de message</td>
+</tr>
+<tr>
+<td><code>draw:countdown</code>, <code>draw:started</code></td>
+<td>Déclarés, jamais émis par le backend ; le compte à rebours est calculé dans le navigateur à partir de <code>drawTargetTime</code></td>
+</tr>
+<tr>
+<td><code>queue:position</code></td>
+<td>Déclaré, jamais émis ; la feuille de file d&#39;attente affiche une position fixe</td>
+</tr>
+<tr>
+<td><code>network:fallback</code></td>
+<td>Déclaré, jamais émis ; l&#39;état du nœud vient de <code>GET /lottery/status</code></td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<code>points:awarded</code> est diffusé à tous les clients connectés (<code>io.emit</code>), avec l&#39;identifiant interne du compte et le montant. Le filtrage par <code>userId</code> est fait dans le navigateur. N&#39;importe quel client peut donc observer les attributions de points des autres comptes. Un envoi ciblé (salle par utilisateur) serait préférable.</p>
+</div>
+<h2 id="compte-a-rebours"><a class="anchor" href="#compte-a-rebours" aria-hidden="true" tabindex="-1">#</a>Compte à rebours</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/lottery/CountdownTimer.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/components/lottery/CountdownTimer.tsx</code></a> ne dépend pas du temps réel : un <code>setInterval</code> d&#39;une seconde recalcule le temps restant à partir de <code>round.drawTargetTime</code>, ou décrémente <code>remainingSeconds</code> si la date est absente. La valeur affichée porte <code>aria-live=&quot;off&quot;</code> pour ne pas être annoncée chaque seconde par les lecteurs d&#39;écran. Le statut est rechargé par RTK Query pour corriger une éventuelle dérive.</p>
+<h2 id="notifications"><a class="anchor" href="#notifications" aria-hidden="true" tabindex="-1">#</a>Notifications</h2>
+<p>Les notifications du tiroir « Alertes » ne passent pas par Socket.IO. <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/hooks/usePushNotifications.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/hooks/usePushNotifications.ts</code></a> lit <code>GET /user/notifications</code> à la connexion, sans rafraîchissement automatique. Le backend renvoie aujourd&#39;hui une liste fixe de trois notifications codées dans <code>UserService.getPushNotificationsHistory</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a>) : le compteur « Alertes » affiche donc toujours le même nombre de non lues. Le web n&#39;utilise ni l&#39;API Notification du navigateur ni service worker : le bouton « Simuler une notification » de <code>/profil/aide</code> affiche seulement un bandeau dans la page pendant 4,5 secondes.</p>
+<p>Pour ajouter un événement, suivre <a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a>.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="portefeuille-loterie.html"><span>Précédent</span><strong>Portefeuille et loterie</strong></a><a class="pager-next" href="design-system.html"><span>Suivant</span><strong>Design system</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/web/temps-reel.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#le-client-socket-io">Le client Socket.IO</a></li><li class="toc-h3"><a href="#authentification-de-la-connexion">Authentification de la connexion</a></li><li class="toc-h2"><a href="#le-hook-usesocket">Le hook useSocket</a></li><li class="toc-h3"><a href="#evenements-ecoutes">Événements écoutés</a></li><li class="toc-h3"><a href="#evenements-emis">Événements émis</a></li><li class="toc-h2"><a href="#sequence-d-un-tirage-vu-du-navigateur">Séquence d&#39;un tirage vu du navigateur</a></li><li class="toc-h2"><a href="#ce-qui-n-est-pas-branche">Ce qui n&#39;est pas branché</a></li><li class="toc-h2"><a href="#compte-a-rebours">Compte à rebours</a></li><li class="toc-h2"><a href="#notifications">Notifications</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

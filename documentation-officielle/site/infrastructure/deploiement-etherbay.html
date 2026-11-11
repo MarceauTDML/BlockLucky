@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Déploiement sur etherbay.tech | Documentation BlockLucky</title>
+<meta name="description" content="La démonstration publique de BlockLucky est hébergée sous le domaine etherbay.tech, sur une machine virtuelle Azure. Cette page décrit ce qui est en place, la p">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="deploiement-etherbay.html" aria-current="page">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>13. Infrastructure et exploitation</span></div>
+    <article class="markdown">
+<h1>Déploiement sur etherbay.tech</h1>
+<p>La démonstration publique de BlockLucky est hébergée sous le domaine <code>etherbay.tech</code>, sur une machine virtuelle Azure. Cette page décrit ce qui est en place, la procédure prévue pour déployer l&#39;application et ce qui reste à faire.</p>
+<div class="hint hint-important"><p class="hint-title">Important</p>
+<p>À la date de rédaction (novembre 2026), la machine virtuelle, le pare-feu et le proxy Caddy sont opérationnels, et la documentation est publiée sur <code>docs.etherbay.tech</code>. L&#39;application elle-même n&#39;est <strong>pas encore déployée</strong> : <code>etherbay.tech</code>, <code>api.etherbay.tech</code> et <code>tourisme.etherbay.tech</code> renvoient une page « Bientôt en ligne » avec le statut 503. Les étapes marquées « à faire » ci-dessous n&#39;ont pas été exécutées.</p>
+</div>
+<h2 id="ressources"><a class="anchor" href="#ressources" aria-hidden="true" tabindex="-1">#</a>Ressources</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ressource</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Domaine</td>
+<td><code>etherbay.tech</code>, acheté chez get.tech avec le GitHub Student Pack</td>
+</tr>
+<tr>
+<td>Validité du domaine</td>
+<td>jusqu&#39;au 11 novembre 2027, renouvellement automatique désactivé</td>
+</tr>
+<tr>
+<td>Abonnement</td>
+<td>Azure for Students</td>
+</tr>
+<tr>
+<td>Groupe de ressources</td>
+<td><code>rg-etherbay</code></td>
+</tr>
+<tr>
+<td>Machine virtuelle</td>
+<td><code>vm-etherbay</code>, région Denmark East</td>
+</tr>
+<tr>
+<td>Taille</td>
+<td>Standard_B4as_v2 : 4 vCPU, 16 Go de mémoire</td>
+</tr>
+<tr>
+<td>Système</td>
+<td>Ubuntu 24.04</td>
+</tr>
+<tr>
+<td>Compte</td>
+<td><code>etherbay</code>, connexion SSH par clé uniquement</td>
+</tr>
+<tr>
+<td>Fin de vie prévue</td>
+<td>suppression de la VM après la soutenance, vers le 18 novembre 2026</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;adresse IP publique et la clé SSH ne sont pas consignées dans la documentation. La connexion se fait par le nom de domaine :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">ssh etherbay@etherbay.tech</code></pre></div>
+<h2 id="architecture-cible"><a class="anchor" href="#architecture-cible" aria-hidden="true" tabindex="-1">#</a>Architecture cible</h2>
+<div class="diagram"><pre class="mermaid">flowchart LR
+    U[&quot;Navigateur ou application mobile&quot;] --&gt;|&quot;HTTPS 443&quot;| C[&quot;Caddy, projet edge, network_mode host&quot;]
+    C --&gt;|&quot;etherbay.tech&quot;| W[&quot;web, 127.0.0.1:3000&quot;]
+    C --&gt;|&quot;api.etherbay.tech&quot;| A[&quot;backend, 127.0.0.1:2053&quot;]
+    C --&gt;|&quot;tourisme.etherbay.tech&quot;| T[&quot;tourisme, 127.0.0.1:4000&quot;]
+    C --&gt;|&quot;docs.etherbay.tech&quot;| D[&quot;fichiers statiques /srv/docs&quot;]
+    A --&gt; PG[&quot;postgres&quot;]
+    A --&gt; R[&quot;redis&quot;]
+    A --&gt; BC[&quot;blockchain, nœud Hardhat&quot;]
+    K[&quot;worker&quot;] --&gt; PG
+    K --&gt; R
+    K --&gt; BC</pre></div>
+<p>Deux projets Compose cohabitent sur la VM :</p>
+<ul>
+<li><code>edge</code>, dans <code>/opt/edge</code> : Caddy seul, en <code>network_mode: host</code>, qui écoute sur les ports 80 et 443 de l&#39;hôte et obtient les certificats Let&#39;s Encrypt ;</li>
+<li><code>blocklucky</code> : la stack du dépôt avec le profil <code>app</code>, dont les ports applicatifs sont publiés sur <code>127.0.0.1</code>.</li>
+</ul>
+<p>Le nœud Hardhat tourne sur la VM, dans le service <code>blockchain</code> de la stack. La démonstration n&#39;utilise pas Sepolia : elle reste indépendante des robinets et du financement d&#39;un abonnement Chainlink.</p>
+<h2 id="ce-qui-est-en-place"><a class="anchor" href="#ce-qui-est-en-place" aria-hidden="true" tabindex="-1">#</a>Ce qui est en place</h2>
+<h3 id="preparation-de-la-machine"><a class="anchor" href="#preparation-de-la-machine" aria-hidden="true" tabindex="-1">#</a>Préparation de la machine</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>État</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Docker Engine et le plugin Compose</td>
+<td>installés</td>
+</tr>
+<tr>
+<td>Pare-feu <code>ufw</code></td>
+<td>ouvert sur 22 (SSH), 80 et 443 uniquement</td>
+</tr>
+<tr>
+<td><code>fail2ban</code></td>
+<td>installé, protège SSH contre la force brute</td>
+</tr>
+<tr>
+<td>Swap</td>
+<td>4 Go</td>
+</tr>
+<tr>
+<td>DNS de la machine</td>
+<td>serveurs DNS publics ajoutés, car le résolveur Azure renvoyait <code>SERVFAIL</code> pour <code>archive.ubuntu.com</code> et bloquait <code>apt</code></td>
+</tr>
+</tbody></table></div>
+<h3 id="proxy-caddy"><a class="anchor" href="#proxy-caddy" aria-hidden="true" tabindex="-1">#</a>Proxy Caddy</h3>
+<p>Caddy route chaque nom vers sa cible et gère HTTPS de bout en bout :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Nom</th>
+<th>Comportement actuel</th>
+<th>Comportement cible</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>etherbay.tech</code></td>
+<td>page « Bientôt en ligne », statut 503</td>
+<td>proxy vers le web, port 3000</td>
+</tr>
+<tr>
+<td><code>www.etherbay.tech</code></td>
+<td>redirection vers <code>etherbay.tech</code></td>
+<td>inchangé</td>
+</tr>
+<tr>
+<td><code>api.etherbay.tech</code></td>
+<td>page « Bientôt en ligne », statut 503</td>
+<td>proxy vers <code>127.0.0.1:2053</code> (REST et Socket.IO)</td>
+</tr>
+<tr>
+<td><code>tourisme.etherbay.tech</code></td>
+<td>page « Bientôt en ligne », statut 503</td>
+<td>proxy vers le port 4000</td>
+</tr>
+<tr>
+<td><code>docs.etherbay.tech</code></td>
+<td>documentation statique</td>
+<td>inchangé, voir <a href="publier-documentation.html">Publier la documentation</a></td>
+</tr>
+</tbody></table></div>
+<p>Le statut 503 signale aux robots d&#39;indexation une indisponibilité temporaire et non une page définitive.</p>
+<p>Le Caddyfile de <code>/opt/edge</code> n&#39;est pas versionné dans le dépôt, à l&#39;exception du bloc de la documentation (<a href="https://github.com/MarceauTDML/BlockLucky/tree/main/documentation-officielle/deploiement/Caddyfile" class="external" target="_blank" rel="noopener noreferrer"><code>documentation-officielle/deploiement/Caddyfile</code></a>).</p>
+<h2 id="procedure-de-deploiement-prevue"><a class="anchor" href="#procedure-de-deploiement-prevue" aria-hidden="true" tabindex="-1">#</a>Procédure de déploiement prévue</h2>
+<p>Les commandes s&#39;exécutent sur la VM, sous le compte <code>etherbay</code>, depuis la racine d&#39;un clone du dépôt.</p>
+<h3 id="1-recuperer-le-code"><a class="anchor" href="#1-recuperer-le-code" aria-hidden="true" tabindex="-1">#</a>1. Récupérer le code</h3>
+<p>Cloner le dépôt <code>MarceauTDML/BlockLucky</code> et se placer sur la branche ou le commit à présenter. Noter le SHA du commit déployé : c&#39;est la référence pour un retour arrière.</p>
+<h3 id="2-creer-les-secrets"><a class="anchor" href="#2-creer-les-secrets" aria-hidden="true" tabindex="-1">#</a>2. Créer les secrets</h3>
+<p>Créer un fichier <code>.env</code> à la racine du clone, lisible par le seul compte <code>etherbay</code> :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">umask</span> 077
+<span class="hljs-built_in">cat</span> &gt; .<span class="hljs-built_in">env</span> &lt;&lt;<span class="hljs-string">EOF
+JWT_SECRET=$(openssl rand -hex 32)
+ENCRYPTION_KEY=$(openssl rand -hex 32)
+RELAYER_PRIVATE_KEY=0x$(openssl rand -hex 32)
+WEBHOOK_SECRET=$(openssl rand -hex 24)
+METRICS_TOKEN=$(openssl rand -hex 24)
+EOF</span></code></pre></div>
+<p>Ces cinq variables sont exigées par le schéma de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/env.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>env.config.ts</code></a> dès que <code>NODE_ENV=production</code> (voir <a href="docker-compose.html#secrets-obligatoires">Docker Compose</a>). Une clé <code>RELAYER_PRIVATE_KEY</code> aléatoire convient : le service <code>blockchain</code> habilite et approvisionne automatiquement le compte qui en dérive. Conserver une copie de <code>ENCRYPTION_KEY</code> hors de la VM tant que la démonstration dure : sans elle, les portefeuilles intégrés ne peuvent plus être déchiffrés.</p>
+<h3 id="3-adapter-la-configuration-aux-url-publiques-a-faire"><a class="anchor" href="#3-adapter-la-configuration-aux-url-publiques-a-faire" aria-hidden="true" tabindex="-1">#</a>3. Adapter la configuration aux URL publiques (à faire)</h3>
+<p>Le fichier <code>docker-compose.yml</code> vise <code>localhost</code>. Plusieurs valeurs y sont écrites en dur et doivent être remplacées. La solution prévue est un fichier de surcharge propre à la VM, par exemple <code>docker-compose.etherbay.yml</code>, non commité, chargé après le fichier principal.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable ou réglage</th>
+<th>Valeur actuelle</th>
+<th>Valeur pour etherbay.tech</th>
+<th>Où elle est lue</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>FRONTEND_URL</code></td>
+<td><code>http://localhost:3000</code></td>
+<td><code>https://etherbay.tech</code></td>
+<td>liens des emails RGPD, lien de parrainage, <code>external_url</code> des métadonnées POAP, origine CORS</td>
+</tr>
+<tr>
+<td><code>CORS_ORIGINS</code></td>
+<td><code>http://localhost:3000,http://localhost:8081</code></td>
+<td><code>https://etherbay.tech</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>app.ts</code></a> et <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/socket/socket.handler.ts" class="external" target="_blank" rel="noopener noreferrer"><code>socket.handler.ts</code></a>, via <code>corsOrigins</code></td>
+</tr>
+<tr>
+<td><code>TRUST_PROXY</code></td>
+<td>absente, donc <code>false</code></td>
+<td><code>1</code></td>
+<td><code>app.set(&#39;trust proxy&#39;, …)</code> dans <code>app.ts</code></td>
+</tr>
+<tr>
+<td>argument <code>NEXT_PUBLIC_API_URL</code> du service <code>web</code></td>
+<td><code>http://localhost:2053/api</code></td>
+<td><code>https://api.etherbay.tech/api</code></td>
+<td>figé dans le bundle et dans la CSP au build</td>
+</tr>
+<tr>
+<td>argument <code>NEXT_PUBLIC_WS_URL</code> du service <code>web</code></td>
+<td><code>http://localhost:2053</code></td>
+<td><code>https://api.etherbay.tech</code></td>
+<td>client Socket.IO, figé au build</td>
+</tr>
+<tr>
+<td><code>POAP_BASE_URI</code> du service <code>blockchain</code></td>
+<td><code>http://localhost:2053/api/v1/lottery/poap/</code></td>
+<td><code>https://api.etherbay.tech/api/v1/lottery/poap/</code></td>
+<td><code>tokenURI</code> des badges, fixé au déploiement du contrat</td>
+</tr>
+<tr>
+<td>ports <code>2053</code>, <code>3000</code>, <code>4000</code></td>
+<td>toutes les interfaces</td>
+<td><code>127.0.0.1</code> seulement</td>
+<td>Docker contourne <code>ufw</code></td>
+</tr>
+<tr>
+<td><code>lotteryAppUrl</code> du site de l&#39;Office de Tourisme</td>
+<td><code>http://localhost:3000</code></td>
+<td><code>https://etherbay.tech</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/data/site.js" class="external" target="_blank" rel="noopener noreferrer"><code>site.js</code></a>, copié dans l&#39;image : modifier le fichier avant la construction</td>
+</tr>
+</tbody></table></div>
+<p>Pourquoi chaque point compte :</p>
+<ul>
+<li><strong><code>TRUST_PROXY</code>.</strong> Derrière Caddy, toutes les requêtes arrivent au conteneur depuis la même adresse interne. Sans <code>TRUST_PROXY=1</code>, Express ignore l&#39;en-tête <code>X-Forwarded-For</code> posé par Caddy : tous les visiteurs partagent alors le même compteur du rate limiter global (300 requêtes par 15 minutes) et du limiteur d&#39;authentification (30 tentatives par 10 minutes), et la démonstration se bloque en quelques minutes. La valeur <code>1</code> fait confiance à un seul saut, Caddy. La lecture de la variable est faite dans <code>trustProxy</code> de <code>env.config.ts</code>, qui convertit un entier en nombre de sauts.</li>
+<li><strong><code>NEXT_PUBLIC_*</code>.</strong> Ces valeurs sont des arguments de build. Après modification, l&#39;image <code>web</code> doit être reconstruite (<code>--build</code>), sinon le navigateur continue d&#39;appeler <code>localhost</code> et la CSP bloque les appels vers <code>api.etherbay.tech</code>.</li>
+<li><strong><code>POAP_BASE_URI</code>.</strong> Le préfixe est passé au constructeur de <code>BlockLuckyPOAP</code> par <code>deploy-local.ts</code>. Il ne change qu&#39;au prochain démarrage du service <code>blockchain</code>, qui redéploie les contrats, ou par un appel à <code>setBaseUri</code> signé par un détenteur de <code>DEFAULT_ADMIN_ROLE</code> (le compte Hardhat n° 0 en local).</li>
+<li><strong>Ports.</strong> Docker écrit ses propres règles iptables pour les ports publiés, en amont de <code>ufw</code>. Un port publié sur toutes les interfaces est joignable depuis Internet malgré le pare-feu, sauf si le groupe de sécurité réseau Azure le bloque. Lier les ports à <code>127.0.0.1</code> laisse Caddy seul exposé.</li>
+</ul>
+<p>Exemple de fichier de surcharge :</p>
+<div class="code-block"><div class="code-head"><span>YAML</span></div><pre><code class="hljs language-yaml"><span class="hljs-attr">services:</span>
+  <span class="hljs-attr">backend:</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-attr">FRONTEND_URL:</span> <span class="hljs-string">https://etherbay.tech</span>
+      <span class="hljs-attr">CORS_ORIGINS:</span> <span class="hljs-string">https://etherbay.tech</span>
+      <span class="hljs-attr">TRUST_PROXY:</span> <span class="hljs-string">&quot;1&quot;</span>
+    <span class="hljs-attr">ports:</span> <span class="hljs-type">!override</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;127.0.0.1:2053:2053&quot;</span>
+  <span class="hljs-attr">worker:</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-attr">FRONTEND_URL:</span> <span class="hljs-string">https://etherbay.tech</span>
+      <span class="hljs-attr">CORS_ORIGINS:</span> <span class="hljs-string">https://etherbay.tech</span>
+      <span class="hljs-attr">TRUST_PROXY:</span> <span class="hljs-string">&quot;1&quot;</span>
+  <span class="hljs-attr">web:</span>
+    <span class="hljs-attr">build:</span>
+      <span class="hljs-attr">args:</span>
+        <span class="hljs-attr">NEXT_PUBLIC_API_URL:</span> <span class="hljs-string">https://api.etherbay.tech/api</span>
+        <span class="hljs-attr">NEXT_PUBLIC_WS_URL:</span> <span class="hljs-string">https://api.etherbay.tech</span>
+    <span class="hljs-attr">ports:</span> <span class="hljs-type">!override</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;127.0.0.1:3000:3000&quot;</span>
+  <span class="hljs-attr">tourisme:</span>
+    <span class="hljs-attr">ports:</span> <span class="hljs-type">!override</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;127.0.0.1:4000:8080&quot;</span>
+  <span class="hljs-attr">blockchain:</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-attr">POAP_BASE_URI:</span> <span class="hljs-string">https://api.etherbay.tech/api/v1/lottery/poap/</span></code></pre></div>
+<p>Les clés <code>environment</code> et <code>build.args</code> se fusionnent clé par clé avec le fichier principal. Les listes <code>ports</code>, elles, s&#39;additionnent : la balise <code>!override</code> de Compose remplace la liste au lieu de la compléter. Avant tout démarrage, contrôler le résultat :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose -f docker-compose.yml -f docker-compose.etherbay.yml --profile app config</code></pre></div>
+<p>Vérifier dans la sortie que chaque port applicatif commence par <code>127.0.0.1</code> et que les URL sont en <code>https://</code>.</p>
+<h3 id="4-construire-et-demarrer-a-faire"><a class="anchor" href="#4-construire-et-demarrer-a-faire" aria-hidden="true" tabindex="-1">#</a>4. Construire et démarrer (à faire)</h3>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose -f docker-compose.yml -f docker-compose.etherbay.yml --profile app up -d --build --<span class="hljs-built_in">wait</span></code></pre></div>
+<p>L&#39;ordre de démarrage est géré par Compose : PostgreSQL, Redis et la blockchain, puis les migrations, puis l&#39;API et le worker, puis le web (voir <a href="docker-compose.html#ordre-de-demarrage">Docker Compose</a>). Le premier démarrage de <code>blockchain</code> compile et déploie les contrats, ce qui peut prendre une minute.</p>
+<h3 id="5-basculer-caddy-vers-l-application-a-faire"><a class="anchor" href="#5-basculer-caddy-vers-l-application-a-faire" aria-hidden="true" tabindex="-1">#</a>5. Basculer Caddy vers l&#39;application (à faire)</h3>
+<p>Dans le Caddyfile de <code>/opt/edge</code>, remplacer la réponse 503 de chaque nom par un proxy :</p>
+<div class="code-block"><div class="code-head"><span>Caddyfile</span></div><pre><code class="hljs language-caddyfile">etherbay.tech {
+	reverse_proxy 127.0.0.1:3000
+}
+
+api.etherbay.tech {
+	reverse_proxy 127.0.0.1:2053
+}
+
+tourisme.etherbay.tech {
+	reverse_proxy 127.0.0.1:4000
+}</code></pre></div>
+<p><code>reverse_proxy</code> relaie aussi les connexions WebSocket de Socket.IO, sans réglage supplémentaire. Caddy ajoute <code>X-Forwarded-For</code>, <code>X-Forwarded-Proto</code> et <code>X-Forwarded-Host</code>. Le frontend web et le site de l&#39;Office de Tourisme envoient déjà leurs propres en-têtes de sécurité. Recharger Caddy depuis <code>/opt/edge</code> après modification.</p>
+<p>Il est recommandé de ne pas exposer <code>/metrics</code> publiquement, même s&#39;il est protégé par <code>METRICS_TOKEN</code>, par exemple avec un bloc <code>respond /metrics 404</code> dans le site <code>api.etherbay.tech</code>.</p>
+<h3 id="6-decider-du-contenu-de-demonstration-a-faire"><a class="anchor" href="#6-decider-du-contenu-de-demonstration-a-faire" aria-hidden="true" tabindex="-1">#</a>6. Décider du contenu de démonstration (à faire)</h3>
+<p>Le service <code>migrate</code> applique les migrations mais ne lance aucun seed : la base démarre vide, sans compte administrateur, sans partenaire ni récompense. Pour présenter l&#39;espace Mairie et la boutique, il faut charger les données de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/seed.ts" class="external" target="_blank" rel="noopener noreferrer"><code>prisma/seed.ts</code></a>. L&#39;image <code>runtime</code> ne contient pas <code>tsx</code> ; l&#39;image <code>migrator</code> contient toutes les dépendances de développement et le dossier <code>prisma/</code>. Le chargement depuis cette image, et la façon dont l&#39;administrateur obtient ensuite sa double authentification, restent à valider sur la stack Docker locale avant la VM. Voir <a href="../base-de-donnees/seed.html">Seed</a> et <a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a>.</p>
+<h3 id="7-decider-de-l-envoi-des-emails-a-faire"><a class="anchor" href="#7-decider-de-l-envoi-des-emails-a-faire" aria-hidden="true" tabindex="-1">#</a>7. Décider de l&#39;envoi des emails (à faire)</h3>
+<p>En production, la connexion exige un code envoyé par email (<code>LOGIN_EMAIL_CODE_REQUIRED</code> ne peut pas être désactivé quand <code>NODE_ENV=production</code>). Dans la stack, <code>SMTP_HOST</code> vaut <code>mailpit</code> : les codes sont capturés par Mailpit et n&#39;atteignent pas les boîtes des visiteurs. Deux options :</p>
+<ul>
+<li><p><strong>Démonstration encadrée</strong> : garder Mailpit et lire les codes dans son interface, liée à <code>127.0.0.1:8025</code> sur la VM, par un tunnel SSH :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">ssh -L 8025:127.0.0.1:8025 etherbay@etherbay.tech</code></pre></div>
+<p>puis ouvrir <code>http://localhost:8025</code> sur le poste. Seules les personnes ayant la clé SSH peuvent se connecter.</p>
+</li>
+<li><p><strong>Démonstration ouverte</strong> : configurer un vrai relais SMTP. <code>SMTP_HOST</code> et <code>SMTP_PORT</code> sont écrits en dur dans <code>x-backend-env</code> et <code>SMTP_USER</code>, <code>SMTP_PASS</code>, <code>SMTP_FROM</code> n&#39;y figurent pas : il faut les ajouter dans la surcharge pour <code>backend</code> et <code>worker</code>. Le port 465 active TLS (<code>secure</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/mailer.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mailer.config.ts</code></a>). Le domaine d&#39;expédition doit alors être autorisé par le relais (SPF, DKIM).</p>
+</li>
+</ul>
+<h3 id="8-verifier"><a class="anchor" href="#8-verifier" aria-hidden="true" tabindex="-1">#</a>8. Vérifier</h3>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -fsS https://api.etherbay.tech/health/ready</code></pre></div>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -fsS https://api.etherbay.tech/api/config</code></pre></div>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -fsS -H <span class="hljs-string">&quot;Authorization: Bearer <span class="hljs-variable">$METRICS_TOKEN</span>&quot;</span> https://api.etherbay.tech/health/deep</code></pre></div>
+<p>Puis, dans un navigateur : ouverture de <code>https://etherbay.tech</code>, absence d&#39;erreur CSP dans la console, inscription, réception du code, achat d&#39;un ticket et apparition du tirage en direct. Le scénario complet de démonstration est dans <a href="../guides/soutenance.html">Préparer la soutenance</a>. Un test de fumée k6 peut compléter (voir <a href="tests-charge.html">Tests de charge</a>).</p>
+<h3 id="9-application-mobile-a-faire"><a class="anchor" href="#9-application-mobile-a-faire" aria-hidden="true" tabindex="-1">#</a>9. Application mobile (à faire)</h3>
+<p>Pour qu&#39;un téléphone utilise la démonstration, construire l&#39;application avec <code>EXPO_PUBLIC_API_URL=https://api.etherbay.tech/api</code> et <code>EXPO_PUBLIC_WS_URL=https://api.etherbay.tech</code>. Ces variables sont lues par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/services/api.client.ts" class="external" target="_blank" rel="noopener noreferrer"><code>api.client.ts</code></a> et <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/services/socket.client.ts" class="external" target="_blank" rel="noopener noreferrer"><code>socket.client.ts</code></a>. Les applications natives n&#39;envoient pas d&#39;en-tête <code>Origin</code> et ne sont donc pas concernées par <code>CORS_ORIGINS</code>.</p>
+<h2 id="exploitation-pendant-la-demonstration"><a class="anchor" href="#exploitation-pendant-la-demonstration" aria-hidden="true" tabindex="-1">#</a>Exploitation pendant la démonstration</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Sujet</th>
+<th>Point d&#39;attention</th>
+<th>Référence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Redémarrage de la VM ou du conteneur <code>blockchain</code></td>
+<td>la chaîne Hardhat repart de zéro, la base garde l&#39;ancien état</td>
+<td><a href="runbooks-blockchain.html#chaine-locale-reinitialisee">Runbooks blockchain</a></td>
+</tr>
+<tr>
+<td>Tirage bloqué</td>
+<td>l&#39;oracle VRF local est un processus du conteneur <code>blockchain</code></td>
+<td><a href="runbooks-blockchain.html#oracle-vrf-muet">Runbooks blockchain</a></td>
+</tr>
+<tr>
+<td>Incident applicatif</td>
+<td>sondes, journaux, files</td>
+<td><a href="runbooks.html">Runbooks</a></td>
+</tr>
+<tr>
+<td>Sauvegarde avant soutenance</td>
+<td><code>pg_dump</code> de la base</td>
+<td><a href="sauvegardes.html">Sauvegardes et reprise</a></td>
+</tr>
+<tr>
+<td>Mise à jour du code</td>
+<td><code>git pull</code> puis la commande de l&#39;étape 4 ; les migrations s&#39;appliquent seules</td>
+<td><a href="runbooks.html#revenir-a-la-version-precedente">Runbooks</a></td>
+</tr>
+<tr>
+<td>Swagger</td>
+<td><code>/api/docs</code> annonce <code>http://localhost:2053</code> comme serveur, le bouton d&#39;essai ne vise pas la démonstration</td>
+<td><a href="../annexes/dette-technique.html">Dette technique et limites</a></td>
+</tr>
+</tbody></table></div>
+<p>Les journaux se lisent depuis le clone :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose --profile app logs -f --since 10m backend worker</code></pre></div>
+<h2 id="fin-de-vie"><a class="anchor" href="#fin-de-vie" aria-hidden="true" tabindex="-1">#</a>Fin de vie</h2>
+<p>Après la soutenance, vers le 18 novembre 2026 :</p>
+<ol>
+<li><p>sauvegarder ce qui doit l&#39;être (aucune donnée réelle n&#39;est traitée, une sauvegarde n&#39;est utile que pour rejouer la démonstration) ;</p>
+</li>
+<li><p>supprimer le groupe de ressources, ce qui supprime la VM, son disque, son adresse IP et son groupe de sécurité réseau :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">az group delete --name rg-etherbay</code></pre></div>
+</li>
+<li><p>retirer ou rediriger les enregistrements DNS chez get.tech, pour qu&#39;aucun sous-domaine ne pointe vers une adresse IP réattribuée à un tiers.</p>
+</li>
+</ol>
+<p>Le domaine reste enregistré jusqu&#39;au 11 novembre 2027 et ne sera pas renouvelé automatiquement.</p>
+<h2 id="recapitulatif-de-ce-qui-reste-a-faire"><a class="anchor" href="#recapitulatif-de-ce-qui-reste-a-faire" aria-hidden="true" tabindex="-1">#</a>Récapitulatif de ce qui reste à faire</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>État</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VM, Docker, <code>ufw</code>, <code>fail2ban</code>, swap, DNS de la machine</td>
+<td>fait</td>
+</tr>
+<tr>
+<td>Caddy et certificats Let&#39;s Encrypt pour tous les noms</td>
+<td>fait</td>
+</tr>
+<tr>
+<td>Documentation sur <code>docs.etherbay.tech</code></td>
+<td>fait</td>
+</tr>
+<tr>
+<td>Clone du dépôt et fichier <code>.env</code></td>
+<td>à faire</td>
+</tr>
+<tr>
+<td>Fichier de surcharge (URL publiques, <code>TRUST_PROXY</code>, ports locaux, <code>POAP_BASE_URI</code>)</td>
+<td>à faire</td>
+</tr>
+<tr>
+<td>Lien <code>lotteryAppUrl</code> du site de l&#39;Office de Tourisme vers <code>https://etherbay.tech</code></td>
+<td>à faire</td>
+</tr>
+<tr>
+<td>Construction et démarrage de la stack avec le profil <code>app</code></td>
+<td>à faire</td>
+</tr>
+<tr>
+<td>Bascule des blocs Caddy de 503 vers <code>reverse_proxy</code></td>
+<td>à faire</td>
+</tr>
+<tr>
+<td>Données de démonstration (seed)</td>
+<td>à décider puis à faire</td>
+</tr>
+<tr>
+<td>Envoi des emails (Mailpit par tunnel ou relais SMTP)</td>
+<td>à décider</td>
+</tr>
+<tr>
+<td>Build mobile pointé vers <code>api.etherbay.tech</code></td>
+<td>à faire si une démonstration mobile est prévue</td>
+</tr>
+<tr>
+<td>Suppression du groupe <code>rg-etherbay</code></td>
+<td>après la soutenance</td>
+</tr>
+</tbody></table></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="ci.html"><span>Précédent</span><strong>Intégration continue</strong></a><a class="pager-next" href="publier-documentation.html"><span>Suivant</span><strong>Publier la documentation</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/infrastructure/deploiement-etherbay.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#ressources">Ressources</a></li><li class="toc-h2"><a href="#architecture-cible">Architecture cible</a></li><li class="toc-h2"><a href="#ce-qui-est-en-place">Ce qui est en place</a></li><li class="toc-h3"><a href="#preparation-de-la-machine">Préparation de la machine</a></li><li class="toc-h3"><a href="#proxy-caddy">Proxy Caddy</a></li><li class="toc-h2"><a href="#procedure-de-deploiement-prevue">Procédure de déploiement prévue</a></li><li class="toc-h3"><a href="#1-recuperer-le-code">1. Récupérer le code</a></li><li class="toc-h3"><a href="#2-creer-les-secrets">2. Créer les secrets</a></li><li class="toc-h3"><a href="#3-adapter-la-configuration-aux-url-publiques-a-faire">3. Adapter la configuration aux URL publiques (à faire)</a></li><li class="toc-h3"><a href="#4-construire-et-demarrer-a-faire">4. Construire et démarrer (à faire)</a></li><li class="toc-h3"><a href="#5-basculer-caddy-vers-l-application-a-faire">5. Basculer Caddy vers l&#39;application (à faire)</a></li><li class="toc-h3"><a href="#6-decider-du-contenu-de-demonstration-a-faire">6. Décider du contenu de démonstration (à faire)</a></li><li class="toc-h3"><a href="#7-decider-de-l-envoi-des-emails-a-faire">7. Décider de l&#39;envoi des emails (à faire)</a></li><li class="toc-h3"><a href="#8-verifier">8. Vérifier</a></li><li class="toc-h3"><a href="#9-application-mobile-a-faire">9. Application mobile (à faire)</a></li><li class="toc-h2"><a href="#exploitation-pendant-la-demonstration">Exploitation pendant la démonstration</a></li><li class="toc-h2"><a href="#fin-de-vie">Fin de vie</a></li><li class="toc-h2"><a href="#recapitulatif-de-ce-qui-reste-a-faire">Récapitulatif de ce qui reste à faire</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

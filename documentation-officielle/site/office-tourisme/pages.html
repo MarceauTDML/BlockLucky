@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages et parcours | Documentation BlockLucky</title>
+<meta name="description" content="Le site compte 14 pages HTML, toutes à la racine de frontend-office-tourisme/. Chaque page est une coquille : elle contient le &lt;head&gt;, le lien d&#39;évitement, les ">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="pages.html" aria-current="page">Pages et parcours</a></div></li><li><div class="nav-row"><a href="architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>10. Office de Tourisme</span></div>
+    <article class="markdown">
+<h1>Pages et parcours</h1>
+<p>Le site compte 14 pages HTML, toutes à la racine de <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/</code></a>. Chaque page est une coquille : elle contient le <code>&lt;head&gt;</code>, le lien d&#39;évitement, les conteneurs vides de l&#39;en-tête et du pied de page, et le contenu propre à la page. Le JavaScript remplit le reste au chargement (voir <a href="architecture.html">Architecture JavaScript</a>).</p>
+<h2 id="gabarit-commun"><a class="anchor" href="#gabarit-commun" aria-hidden="true" tabindex="-1">#</a>Gabarit commun</h2>
+<p>Toutes les pages partagent la même structure :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;html lang=&quot;fr&quot;&gt;</code>, <code>&lt;meta name=&quot;viewport&quot;&gt;</code>, <code>&lt;title&gt;</code>, <code>&lt;meta name=&quot;description&quot;&gt;</code></td>
+<td>Langue, affichage mobile, référencement</td>
+</tr>
+<tr>
+<td><code>&lt;link rel=&quot;preload&quot;&gt;</code> de <code>inter-latin-400-normal.woff2</code> et <code>jost-latin-600-normal.woff2</code></td>
+<td>Chargement anticipé des deux polices les plus utilisées</td>
+</tr>
+<tr>
+<td><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/main.css&quot;&gt;</code></td>
+<td>Point d&#39;entrée CSS unique, qui importe les autres feuilles</td>
+</tr>
+<tr>
+<td><code>&lt;script type=&quot;module&quot; src=&quot;assets/js/main.js&quot;&gt;</code></td>
+<td>Point d&#39;entrée JavaScript unique</td>
+</tr>
+<tr>
+<td><code>&lt;a class=&quot;skip-link&quot; href=&quot;#contenu&quot;&gt;</code></td>
+<td>Lien d&#39;évitement vers le contenu principal</td>
+</tr>
+<tr>
+<td><code>&lt;div id=&quot;preheader&quot;&gt;</code>, <code>&lt;header id=&quot;site-header&quot;&gt;</code>, <code>&lt;footer id=&quot;site-footer&quot;&gt;</code></td>
+<td>Conteneurs remplis par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/modules/layout.js" class="external" target="_blank" rel="noopener noreferrer"><code>modules/layout.js</code></a></td>
+</tr>
+<tr>
+<td><code>&lt;body data-page=&quot;...&quot; data-nav=&quot;...&quot; data-overlay=&quot;true&quot;&gt;</code></td>
+<td>Module de page à charger, entrée de menu à marquer active, en-tête transparent sur le hero</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;attribut <code>data-page</code> sélectionne le module JavaScript de la page. <code>data-nav</code> force l&#39;entrée de menu marquée <code>aria-current=&quot;page&quot;</code> quand elle diffère de <code>data-page</code> : un article est rattaché à « Découvrir », la commande à « Billetterie ». <code>data-overlay=&quot;true&quot;</code>, présent sur l&#39;accueil seulement, pose l&#39;en-tête en surimpression du hero.</p>
+<h2 id="les-14-pages"><a class="anchor" href="#les-14-pages" aria-hidden="true" tabindex="-1">#</a>Les 14 pages</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th><code>data-page</code></th>
+<th>Module chargé</th>
+<th>Paramètres d&#39;URL</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/index.html" class="external" target="_blank" rel="noopener noreferrer"><code>index.html</code></a></td>
+<td><code>home</code></td>
+<td><code>pages/home.js</code></td>
+<td>aucun</td>
+<td>Accueil : hero, bandeau « Nouveauté » de la loterie, incontournables, agenda filtrable, « Planifiez votre séjour », groupes, thématiques, #visitetherbay, Greeters, espace partenaires</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/decouvrir.html" class="external" target="_blank" rel="noopener noreferrer"><code>decouvrir.html</code></a></td>
+<td><code>decouvrir</code></td>
+<td><code>pages/decouvrir.js</code></td>
+<td>aucun</td>
+<td>12 thématiques en tuiles et carrousel des 8 lieux emblématiques</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/sortir.html" class="external" target="_blank" rel="noopener noreferrer"><code>sortir.html</code></a></td>
+<td><code>sortir</code></td>
+<td><code>pages/sortir.js</code></td>
+<td>aucun</td>
+<td>Agenda complet : filtre de date, catégories, recherche, puis salles de sortie</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/manger.html" class="external" target="_blank" rel="noopener noreferrer"><code>manger.html</code></a></td>
+<td><code>manger</code></td>
+<td><code>pages/listing.js</code></td>
+<td><code>filtre</code></td>
+<td>14 restaurants : bons plans, filtres rapides, filtres multicritères, recherche, pagination</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/dormir.html" class="external" target="_blank" rel="noopener noreferrer"><code>dormir.html</code></a></td>
+<td><code>dormir</code></td>
+<td><code>pages/listing.js</code></td>
+<td><code>filtre</code></td>
+<td>10 hébergements, même moteur que Manger</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/fiche.html" class="external" target="_blank" rel="noopener noreferrer"><code>fiche.html</code></a></td>
+<td><code>fiche</code></td>
+<td><code>pages/fiche.js</code></td>
+<td><code>id</code> ou <code>event</code></td>
+<td>Fiche d&#39;un lieu ou d&#39;un événement, suggestions, encart de localisation</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/article.html" class="external" target="_blank" rel="noopener noreferrer"><code>article.html</code></a></td>
+<td><code>article</code></td>
+<td><code>pages/article.js</code></td>
+<td><code>id</code></td>
+<td>Article du magazine et carrousel « À lire aussi »</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/billetterie.html" class="external" target="_blank" rel="noopener noreferrer"><code>billetterie.html</code></a></td>
+<td><code>billetterie</code></td>
+<td><code>pages/billetterie.js</code></td>
+<td>ancre <code>#&lt;billet&gt;</code></td>
+<td>11 offres en trois groupes, sélection des quantités</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/commande.html" class="external" target="_blank" rel="noopener noreferrer"><code>commande.html</code></a></td>
+<td><code>commande</code></td>
+<td><code>pages/commande.js</code></td>
+<td><code>ajout</code>, <code>commande</code>, ancre d&#39;étape</td>
+<td>Tunnel de commande simulé en quatre étapes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/favoris.html" class="external" target="_blank" rel="noopener noreferrer"><code>favoris.html</code></a></td>
+<td><code>favoris</code></td>
+<td><code>pages/favoris.js</code></td>
+<td>aucun</td>
+<td>Lieux et événements mis en favoris</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/bientot.html" class="external" target="_blank" rel="noopener noreferrer"><code>bientot.html</code></a></td>
+<td><code>bientot</code></td>
+<td><code>pages/bientot.js</code></td>
+<td><code>reseau</code></td>
+<td>Page d&#39;attente des réseaux sociaux</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/infos-pratiques.html" class="external" target="_blank" rel="noopener noreferrer"><code>infos-pratiques.html</code></a></td>
+<td><code>infos</code></td>
+<td>aucun</td>
+<td>ancres</td>
+<td>Office, venir, se déplacer, groupes, partenaires, congrès, presse, Greeters, contact, loterie</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/mentions-legales.html" class="external" target="_blank" rel="noopener noreferrer"><code>mentions-legales.html</code></a></td>
+<td><code>legal</code></td>
+<td>aucun</td>
+<td>ancres</td>
+<td>Éditeur, crédits, CGU, CGV, accessibilité, éco-responsabilité, données personnelles</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/404.html" class="external" target="_blank" rel="noopener noreferrer"><code>404.html</code></a></td>
+<td><code>404</code></td>
+<td>aucun</td>
+<td>aucun</td>
+<td>Page d&#39;erreur servie par nginx</td>
+</tr>
+</tbody></table></div>
+<p>Les trois dernières pages sont statiques : <code>main.js</code> ne trouve pas de module pour leur <code>data-page</code> et se contente de poser l&#39;en-tête, le pied de page et les comportements communs.</p>
+<h2 id="parametres-d-url"><a class="anchor" href="#parametres-d-url" aria-hidden="true" tabindex="-1">#</a>Paramètres d&#39;URL</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Effet</th>
+<th>Comportement si la valeur est inconnue</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>fiche.html?id=boulangerie-du-port</code></td>
+<td>Fiche du lieu dont l&#39;identifiant est donné (restaurant, hébergement ou lieu)</td>
+<td>Message « Fiche introuvable » dans la page, code HTTP 200</td>
+</tr>
+<tr>
+<td><code>fiche.html?event=jazz-a-la-baie</code></td>
+<td>Fiche de l&#39;événement</td>
+<td>Même message</td>
+</tr>
+<tr>
+<td><code>article.html?id=loterie-mode-emploi</code></td>
+<td>Article du magazine</td>
+<td>Le premier article de la liste est affiché à la place</td>
+</tr>
+<tr>
+<td><code>manger.html?filtre=Crêperie#resultats</code></td>
+<td>Pré-coche la valeur dans le premier groupe de filtres qui la contient</td>
+<td>Aucun filtre appliqué</td>
+</tr>
+<tr>
+<td><code>bientot.html?reseau=instagram</code></td>
+<td>Nom du réseau dans le titre et le texte</td>
+<td>Texte générique de la page</td>
+</tr>
+<tr>
+<td><code>billetterie.html#pass-24</code></td>
+<td>Fait défiler jusqu&#39;à l&#39;offre et la met en surbrillance 2,4 s</td>
+<td>Rien</td>
+</tr>
+<tr>
+<td><code>commande.html?ajout=visite-opera</code></td>
+<td>Ajoute un billet de l&#39;offre au panier puis réécrit l&#39;URL en <code>commande.html#panier</code></td>
+<td>Aucun ajout (offre inconnue ignorée)</td>
+</tr>
+<tr>
+<td><code>commande.html?commande=EB-2026-XXXXXX</code></td>
+<td>Réaffiche la confirmation et les billets d&#39;une commande passée sur ce navigateur</td>
+<td>Retour au panier</td>
+</tr>
+</tbody></table></div>
+<p>Les paramètres sont lus par <code>params()</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/modules/utils.js" class="external" target="_blank" rel="noopener noreferrer"><code>modules/utils.js</code></a> et ne sont jamais injectés tels quels dans le HTML : les identifiants servent de clé de recherche dans les tableaux de données, et les textes affichés passent par <code>escapeHtml</code>.</p>
+<h2 id="navigation"><a class="anchor" href="#navigation" aria-hidden="true" tabindex="-1">#</a>Navigation</h2>
+<p>L&#39;en-tête est construit à partir de trois tableaux de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/data/site.js" class="external" target="_blank" rel="noopener noreferrer"><code>data/site.js</code></a> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Zone</th>
+<th>Tableau</th>
+<th>Entrées</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pré-header</td>
+<td><code>PRE_HEADER</code></td>
+<td>Pros, Presse, Groupes, Bureau des congrès, Accessibilité</td>
+</tr>
+<tr>
+<td>Menu principal</td>
+<td><code>MAIN_NAV</code></td>
+<td>Découvrir, Sortir, Manger, Dormir, Infos pratiques</td>
+</tr>
+<tr>
+<td>Actions</td>
+<td>codées dans <code>layout.js</code></td>
+<td>bouton Billetterie, panier avec compteur, favoris avec compteur, menu mobile</td>
+</tr>
+</tbody></table></div>
+<p>Le pied de page reprend <code>FOOTER_TOP</code>, <code>FOOTER_LINKS</code>, <code>FOOTER_BOTTOM</code>, <code>OPENING_HOURS</code>, <code>SOCIALS</code> et <code>LABELS</code> du même fichier. Modifier un lien du menu ou du pied de page se fait donc à un seul endroit, pour les 14 pages.</p>
+<h2 id="parcours-types"><a class="anchor" href="#parcours-types" aria-hidden="true" tabindex="-1">#</a>Parcours types</h2>
+<h3 id="preparer-une-sortie"><a class="anchor" href="#preparer-une-sortie" aria-hidden="true" tabindex="-1">#</a>Préparer une sortie</h3>
+<div class="diagram"><pre class="mermaid">flowchart LR
+    A[&quot;Accueil, agenda Aujourd&#39;hui&quot;] --&gt; B[&quot;sortir.html, filtres et recherche&quot;]
+    B --&gt; C[&quot;fiche.html?event=...&quot;]
+    C --&gt;|&quot;événement payant&quot;| D[&quot;commande.html?ajout=...&quot;]
+    C --&gt;|&quot;événement gratuit&quot;| E[&quot;Fichier .ics téléchargé&quot;]
+    C --&gt;|&quot;Grande Loterie citoyenne&quot;| F[&quot;Frontend web BlockLucky&quot;]
+    C --&gt; G[&quot;Favoris&quot;]</pre></div>
+<p>L&#39;agenda de l&#39;accueil s&#39;ouvre sur le filtre « Aujourd&#39;hui ». S&#39;il ne trouve aucun événement à la date du jour, il affiche tous les événements plutôt qu&#39;une liste vide (fonction <code>renderAgenda</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/pages/home.js" class="external" target="_blank" rel="noopener noreferrer"><code>pages/home.js</code></a>). La page Sortir, elle, affiche « Aucune sortie pour cette sélection » : les deux pages partagent la fonction <code>filterAgenda</code> mais pas ce repli.</p>
+<p>Le bouton d&#39;action d&#39;une fiche événement dépend des données, dans cet ordre (fonction <code>eventAction</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/pages/fiche.js" class="external" target="_blank" rel="noopener noreferrer"><code>pages/fiche.js</code></a>) :</p>
+<ol>
+<li>l&#39;événement porte <code>lottery: true</code> : lien « Accéder à la loterie » vers <code>SITE.lotteryAppUrl</code>, dans un nouvel onglet ;</li>
+<li>une offre de la billetterie référence l&#39;événement (<code>event</code>) : lien « Réserver » vers <code>commande.html?ajout=&lt;offre&gt;</code> ;</li>
+<li>sinon : bouton « Ajouter à mon agenda », qui génère un fichier <code>.ics</code>.</li>
+</ol>
+<h3 id="trouver-un-restaurant-ou-un-hebergement"><a class="anchor" href="#trouver-un-restaurant-ou-un-hebergement" aria-hidden="true" tabindex="-1">#</a>Trouver un restaurant ou un hébergement</h3>
+<p>Les pages Manger et Dormir partagent le module <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/pages/listing.js" class="external" target="_blank" rel="noopener noreferrer"><code>pages/listing.js</code></a>, configuré par l&#39;objet <code>CONFIG</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Réglage</th>
+<th>Manger</th>
+<th>Dormir</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Données</td>
+<td><code>RESTAURANTS</code> (14)</td>
+<td><code>HEBERGEMENTS</code> (10)</td>
+</tr>
+<tr>
+<td>Bons plans</td>
+<td><code>BONS_PLANS_FOOD</code> (6 tuiles)</td>
+<td><code>BONS_PLANS_DODO</code> (4 tuiles)</td>
+</tr>
+<tr>
+<td>Groupes de filtres</td>
+<td>Type, Accès, Jour d&#39;ouverture, Heures d&#39;ouverture, Public, Labels et offres spéciales</td>
+<td>Type d&#39;hébergement, Quartier, Accès, Public, Labels et offres spéciales</td>
+</tr>
+</tbody></table></div>
+<p>Communs aux deux pages :</p>
+<ul>
+<li>trois filtres rapides : Best-sellers (<code>bestSeller</code>), Testé et approuvé (<code>tested</code>), Tourisme éco-responsable (<code>eco</code>) ;</li>
+<li>recherche plein texte sans accents (<code>normalize</code>) sur le nom, le type, le quartier et la description ;</li>
+<li>9 résultats par page (<code>PAGE_SIZE</code>) ;</li>
+<li>au-delà de 8 options, un groupe de filtres se replie derrière « Voir N plus » (<code>VISIBLE_OPTIONS</code>) ;</li>
+<li>les valeurs et compteurs des filtres sont calculés à partir des données : ajouter un restaurant d&#39;un nouveau type crée l&#39;option sans toucher au code.</li>
+</ul>
+<p>Les options d&#39;un même groupe se combinent par « ou », les groupes entre eux par « et ».</p>
+<h3 id="reserver-un-billet"><a class="anchor" href="#reserver-un-billet" aria-hidden="true" tabindex="-1">#</a>Réserver un billet</h3>
+<p>Le parcours billetterie, du choix des quantités jusqu&#39;aux billets imprimables, est décrit dans <a href="billetterie.html">Billetterie et commande</a>.</p>
+<h3 id="garder-des-favoris"><a class="anchor" href="#garder-des-favoris" aria-hidden="true" tabindex="-1">#</a>Garder des favoris</h3>
+<p>Chaque carte de lieu ou d&#39;événement porte un bouton cœur (<code>data-fav=&quot;place:&lt;id&gt;&quot;</code> ou <code>data-fav=&quot;event:&lt;id&gt;&quot;</code>). Un seul écouteur délégué sur le document gère tous les cœurs du site (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/modules/favorites.js" class="external" target="_blank" rel="noopener noreferrer"><code>modules/favorites.js</code></a>). La page Favoris relit la liste et se met à jour à chaque événement <code>favorites:change</code>.</p>
+<h2 id="pages-statiques"><a class="anchor" href="#pages-statiques" aria-hidden="true" tabindex="-1">#</a>Pages statiques</h2>
+<p><code>infos-pratiques.html</code> et <code>mentions-legales.html</code> sont rédigées directement en HTML. Leurs sections portent des identifiants utilisés comme ancres par les menus :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Ancres</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>infos-pratiques.html</code></td>
+<td><code>office</code>, <code>venir</code>, <code>groupes</code>, <code>professionnels</code>, <code>congres</code>, <code>presse</code>, <code>greeters</code>, <code>contact</code></td>
+</tr>
+<tr>
+<td><code>mentions-legales.html</code></td>
+<td><code>cgu</code>, <code>cgv</code>, <code>accessibilite</code>, <code>eco</code></td>
+</tr>
+</tbody></table></div>
+<p>Les boutons de contact des infos pratiques ouvrent des liens <code>mailto:</code> vers des adresses fictives (<code>contact@</code>, <code>groupes@</code>, <code>partenaires@tourisme-etherbay.fr</code>). Aucun formulaire du site n&#39;envoie de données.</p>
+<p>La page <code>404.html</code> est servie par nginx pour toute ressource introuvable (<code>error_page 404 /404.html</code>, voir <a href="deploiement.html">Servir et déployer</a>). Elle référence ses feuilles de style par des chemins relatifs (<code>assets/css/main.css</code>) : pour une URL inexistante située dans un sous-dossier, comme <code>/a/b</code>, le navigateur cherche alors <code>/a/assets/css/main.css</code> et la page s&#39;affiche sans mise en forme. Les URL à la racine ne sont pas concernées.</p>
+<h2 id="ajouter-une-page"><a class="anchor" href="#ajouter-une-page" aria-hidden="true" tabindex="-1">#</a>Ajouter une page</h2>
+<ol>
+<li>Copier une page statique existante, par exemple <code>favoris.html</code>, pour conserver le gabarit commun.</li>
+<li>Changer <code>&lt;title&gt;</code>, <code>&lt;meta name=&quot;description&quot;&gt;</code> et <code>data-page</code>.</li>
+<li>Si la page a de la logique, créer <code>assets/js/pages/&lt;nom&gt;.js</code> exportant une fonction par défaut, puis l&#39;enregistrer dans l&#39;objet <code>PAGES</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/main.js" class="external" target="_blank" rel="noopener noreferrer"><code>main.js</code></a>.</li>
+<li>Ajouter le lien dans <code>MAIN_NAV</code>, <code>FOOTER_LINKS</code> ou le tableau voulu de <code>data/site.js</code>.</li>
+<li>Copier le fichier dans l&#39;image Docker : le <code>Dockerfile</code> copie déjà <code>*.html</code>, rien à faire.</li>
+<li>Lancer la vérification des liens de la CI : <code>node ../.github/scripts/check-static-links.mjs .</code> depuis le dossier du site (voir <a href="deploiement.html#verifications-de-la-ci">Servir et déployer</a>).</li>
+</ol>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="role.html"><span>Précédent</span><strong>Rôle dans le projet</strong></a><a class="pager-next" href="architecture.html"><span>Suivant</span><strong>Architecture JavaScript</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/office-tourisme/pages.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#gabarit-commun">Gabarit commun</a></li><li class="toc-h2"><a href="#les-14-pages">Les 14 pages</a></li><li class="toc-h2"><a href="#parametres-d-url">Paramètres d&#39;URL</a></li><li class="toc-h2"><a href="#navigation">Navigation</a></li><li class="toc-h2"><a href="#parcours-types">Parcours types</a></li><li class="toc-h3"><a href="#preparer-une-sortie">Préparer une sortie</a></li><li class="toc-h3"><a href="#trouver-un-restaurant-ou-un-hebergement">Trouver un restaurant ou un hébergement</a></li><li class="toc-h3"><a href="#reserver-un-billet">Réserver un billet</a></li><li class="toc-h3"><a href="#garder-des-favoris">Garder des favoris</a></li><li class="toc-h2"><a href="#pages-statiques">Pages statiques</a></li><li class="toc-h2"><a href="#ajouter-une-page">Ajouter une page</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

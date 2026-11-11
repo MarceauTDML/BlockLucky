@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Licences | Documentation BlockLucky</title>
+<meta name="description" content="Cette page recense la licence du code de BlockLucky lui-même, puis celles des dépendances principales, des polices, de la bibliothèque embarquée et des photogra">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="licences.html" aria-current="page">Licences</a></div></li><li><div class="nav-row"><a href="registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>12. Juridique et conformité</span></div>
+    <article class="markdown">
+<h1>Licences</h1>
+<p>Cette page recense la licence du code de BlockLucky lui-même, puis celles des dépendances principales, des polices, de la bibliothèque embarquée et des photographies. Les versions et licences des dépendances ont été relevées dans les fichiers <code>package.json</code> des paquets installés (<code>node_modules</code>). La liste n&#39;est pas exhaustive pour les dépendances transitives ; un inventaire complet demande un outil dédié (voir <a href="#produire-un-inventaire-complet">Produire un inventaire complet</a>). Elle ne constitue pas un avis juridique.</p>
+<h2 id="licence-du-depot"><a class="anchor" href="#licence-du-depot" aria-hidden="true" tabindex="-1">#</a>Licence du dépôt</h2>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le dépôt ne contient <strong>aucun fichier <code>LICENSE</code></strong> à sa racine ni dans ses sous-projets. Sans licence explicite, le code est par défaut protégé par le droit d&#39;auteur : nul ne peut le réutiliser, le modifier ni le redistribuer sans autorisation des auteurs. Les mentions éparses ci-dessous ne remplacent pas un choix de licence global.</p>
+</div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Emplacement</th>
+<th>Mention</th>
+<th>Commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>backend/package.json</code></a></td>
+<td><code>&quot;license&quot;: &quot;ISC&quot;</code></td>
+<td>Valeur par défaut écrite par <code>npm init</code>, probablement non choisie ; contradictoire avec l&#39;absence de fichier de licence</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/package.json</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/package.json</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/package.json</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/package.json</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>documentation-officielle/package.json</code></a></td>
+<td><code>&quot;private&quot;: true</code>, pas de champ <code>license</code></td>
+<td><code>private</code> empêche seulement la publication sur npm</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLuckyPOAP.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLuckyPOAP.sol</code></a> et les deux contrats de test</td>
+<td><code>// SPDX-License-Identifier: MIT</code></td>
+<td>Le code source vérifié sur Etherscan sera affiché sous cette mention</td>
+</tr>
+</tbody></table></div>
+<p>Le choix d&#39;une licence revient aux auteurs et, le cas échéant, à l&#39;école et à la Ville, selon les règles de propriété intellectuelle applicables à un projet pédagogique. Il est repris dans <a href="points-a-valider.html">Points à valider</a>. Un choix cohérent avec les mentions existantes serait une licence MIT pour l&#39;ensemble, avec un fichier <code>LICENSE</code> à la racine et le champ <code>license</code> harmonisé dans chaque <code>package.json</code>.</p>
+<h2 id="smart-contracts"><a class="anchor" href="#smart-contracts" aria-hidden="true" tabindex="-1">#</a>Smart contracts</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paquet</th>
+<th>Version</th>
+<th>Licence du paquet</th>
+<th>Fichiers effectivement compilés</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@openzeppelin/contracts</code></td>
+<td>5.6.1</td>
+<td>MIT</td>
+<td><code>AccessControl</code>, <code>Pausable</code>, <code>ReentrancyGuard</code>, <code>ERC721</code>, <code>Strings</code> et leurs dépendances, tous MIT</td>
+</tr>
+<tr>
+<td><code>@chainlink/contracts</code></td>
+<td>1.5.0</td>
+<td><strong>BUSL-1.1</strong></td>
+<td><code>VRFConsumerBaseV2Plus</code>, <code>VRFV2PlusClient</code>, <code>AutomationCompatibleInterface</code>, <code>ConfirmedOwner</code> et les interfaces associées, ainsi que <code>VRFCoordinatorV2_5Mock</code> pour les tests : chacun porte l&#39;en-tête <code>SPDX-License-Identifier: MIT</code></td>
+</tr>
+<tr>
+<td><code>forge-std</code> (développement)</td>
+<td>1.17.0</td>
+<td>Apache-2.0 ou MIT</td>
+<td>Tests Solidity</td>
+</tr>
+<tr>
+<td><code>hardhat</code> (développement)</td>
+<td>3.21.2</td>
+<td>MIT</td>
+<td>Outillage</td>
+</tr>
+<tr>
+<td><code>solhint</code> (développement)</td>
+<td>6.2.5</td>
+<td>MIT</td>
+<td>Outillage</td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Le paquet <code>@chainlink/contracts</code> est publié sous la Business Source License 1.1, qui restreint certains usages en production. Les fichiers que BlockLucky compile portent néanmoins tous un en-tête MIT, relevé dans les sources embarquées par le compilateur (<code>artifacts/build-info</code>). Le bytecode déployé ne contient donc que du code sous licence MIT. Cette lecture fichier par fichier est à confirmer par un juriste avant une exploitation commerciale.</p>
+</div>
+<h2 id="backend"><a class="anchor" href="#backend" aria-hidden="true" tabindex="-1">#</a>Backend</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paquet</th>
+<th>Version</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>express</code></td>
+<td>5.3.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>@prisma/client</code>, <code>@prisma/adapter-pg</code></td>
+<td>7.10.1</td>
+<td>Apache-2.0</td>
+</tr>
+<tr>
+<td><code>pg</code></td>
+<td>8.23.1</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>ethers</code></td>
+<td>6.17.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>ioredis</code></td>
+<td>6.0.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>redis</code></td>
+<td>6.3.1</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>bullmq</code></td>
+<td>6.7.2</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>socket.io</code></td>
+<td>4.8.4</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>zod</code></td>
+<td>4.6.7</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>jsonwebtoken</code></td>
+<td>9.0.3</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>bcryptjs</code></td>
+<td>3.0.3</td>
+<td>BSD-3-Clause</td>
+</tr>
+<tr>
+<td><code>helmet</code></td>
+<td>8.3.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>cors</code></td>
+<td>2.8.6</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>express-rate-limit</code></td>
+<td>8.7.4</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>rate-limit-redis</code></td>
+<td>6.0.2</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>nodemailer</code></td>
+<td>10.4.0</td>
+<td>MIT-0</td>
+</tr>
+<tr>
+<td><code>@aws-sdk/client-s3</code>, <code>@aws-sdk/s3-request-presigner</code></td>
+<td>3.1165.0</td>
+<td>Apache-2.0</td>
+</tr>
+<tr>
+<td><code>prom-client</code></td>
+<td>15.1.3</td>
+<td>Apache-2.0</td>
+</tr>
+<tr>
+<td><code>winston</code></td>
+<td>3.19.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>qrcode</code></td>
+<td>1.5.4</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>otplib</code></td>
+<td>13.6.0</td>
+<td>MIT (installé mais non importé par le code)</td>
+</tr>
+<tr>
+<td><code>swagger-jsdoc</code></td>
+<td>6.3.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>swagger-ui-express</code></td>
+<td>5.0.1</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>dotenv</code></td>
+<td>18.0.9</td>
+<td>BSD-2-Clause</td>
+</tr>
+</tbody></table></div>
+<h2 id="frontend-web"><a class="anchor" href="#frontend-web" aria-hidden="true" tabindex="-1">#</a>Frontend web</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paquet</th>
+<th>Version</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>next</code></td>
+<td>16.4.5</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>react</code>, <code>react-dom</code></td>
+<td>19.3.1</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>@reduxjs/toolkit</code></td>
+<td>2.14.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>react-redux</code></td>
+<td>9.3.1</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>socket.io-client</code></td>
+<td>4.8.4</td>
+<td>MIT</td>
+</tr>
+</tbody></table></div>
+<p>Le web n&#39;embarque aucune police : il utilise la pile de polices du système.</p>
+<h2 id="application-mobile"><a class="anchor" href="#application-mobile" aria-hidden="true" tabindex="-1">#</a>Application mobile</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paquet</th>
+<th>Version</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>expo</code> et modules <code>expo-*</code></td>
+<td>58.x</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>react-native</code></td>
+<td>0.88.1</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>react</code></td>
+<td>19.3.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>@react-navigation/*</code></td>
+<td>7.x</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>@reduxjs/toolkit</code></td>
+<td>2.13.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>axios</code></td>
+<td>1.21.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>lottie-react-native</code></td>
+<td>7.5.0</td>
+<td>Apache-2.0</td>
+</tr>
+<tr>
+<td><code>react-native-svg</code>, <code>react-native-screens</code>, <code>react-native-gesture-handler</code>, <code>react-native-safe-area-context</code></td>
+<td>voir <code>package.json</code></td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>socket.io-client</code></td>
+<td>4.8.4</td>
+<td>MIT</td>
+</tr>
+</tbody></table></div>
+<p>Ressources embarquées :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ressource</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Polices <code>Inter-Regular.ttf</code>, <code>Inter-Medium.ttf</code>, <code>Inter-Bold.ttf</code> dans <code>mobile-app/assets/fonts</code></td>
+<td>SIL Open Font License 1.1 (police Inter). <strong>Le fichier de licence n&#39;est pas joint</strong> dans ce dossier, alors que l&#39;OFL impose de le distribuer avec la police.</td>
+</tr>
+<tr>
+<td>Animations Lottie <code>confetti.json</code>, <code>loading-spinner.json</code>, <code>roulette-spin.json</code></td>
+<td>Origine non documentée dans le dépôt</td>
+</tr>
+<tr>
+<td>Icônes et écran de démarrage (<code>mobile-app/assets/images</code>)</td>
+<td>Origine non documentée</td>
+</tr>
+</tbody></table></div>
+<h2 id="site-de-l-office-de-tourisme"><a class="anchor" href="#site-de-l-office-de-tourisme" aria-hidden="true" tabindex="-1">#</a>Site de l&#39;Office de Tourisme</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ressource</th>
+<th>Licence</th>
+<th>Fichier de licence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Police Inter (graisses 300 à 600)</td>
+<td>SIL Open Font License 1.1</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/fonts/LICENSE-inter.txt" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/assets/fonts/LICENSE-inter.txt</code></a></td>
+</tr>
+<tr>
+<td>Police Jost (graisses 500 à 700)</td>
+<td>SIL Open Font License 1.1</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/fonts/LICENSE-jost.txt" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/assets/fonts/LICENSE-jost.txt</code></a></td>
+</tr>
+<tr>
+<td>Bibliothèque <code>qrcode-generator</code> 2.0.4 (Kazuhiko Arase), copiée dans <code>assets/js/vendor/qrcode.mjs</code></td>
+<td>MIT</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/vendor/LICENSE-qrcode-generator.txt" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/assets/js/vendor/LICENSE-qrcode-generator.txt</code></a></td>
+</tr>
+<tr>
+<td>63 photographies de <code>assets/img/photos</code></td>
+<td>Licence de contenu Pixabay (usage libre, attribution non obligatoire)</td>
+<td>Mention dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/mentions-legales.html" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/mentions-legales.html</code></a></td>
+</tr>
+</tbody></table></div>
+<p>Le fichier de licence de <code>qrcode-generator</code> rappelle aussi que « QR Code » est une marque déposée de DENSO WAVE. La licence de contenu Pixabay comporte des usages interdits (notamment la revente des images non modifiées et l&#39;utilisation de personnes identifiables d&#39;une manière qui laisserait croire à leur soutien) ; leur liste exacte est à relire sur le site de Pixabay. Les photos illustrent ici des lieux fictifs. La page source de chaque photo n&#39;est pas consignée dans le dépôt, ce qui empêche de prouver a posteriori la licence d&#39;une image précise.</p>
+<h2 id="documentation-officielle"><a class="anchor" href="#documentation-officielle" aria-hidden="true" tabindex="-1">#</a>Documentation officielle</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ressource</th>
+<th>Version</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>marked</code></td>
+<td>18.2.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>highlight.js</code></td>
+<td>11.12.0</td>
+<td>BSD-3-Clause</td>
+</tr>
+<tr>
+<td><code>mermaid</code></td>
+<td>12.3.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><code>yaml</code></td>
+<td>2.8.1</td>
+<td>ISC</td>
+</tr>
+<tr>
+<td>Police Inter (thème)</td>
+<td></td>
+<td>SIL Open Font License 1.1, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/theme/assets/fonts/LICENSE-inter.txt" class="external" target="_blank" rel="noopener noreferrer"><code>documentation-officielle/theme/assets/fonts/LICENSE-inter.txt</code></a></td>
+</tr>
+</tbody></table></div>
+<h2 id="compatibilite"><a class="anchor" href="#compatibilite" aria-hidden="true" tabindex="-1">#</a>Compatibilité</h2>
+<p>Les licences relevées sont toutes permissives (MIT, MIT-0, ISC, BSD, Apache-2.0) ou propres aux polices (OFL). Aucune licence à réciprocité forte (GPL, AGPL) n&#39;a été repérée parmi les dépendances directes. Les obligations à respecter lors d&#39;une distribution sont :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Licence</th>
+<th>Obligation principale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MIT, ISC, BSD</td>
+<td>Conserver la mention de droit d&#39;auteur et le texte de la licence</td>
+</tr>
+<tr>
+<td>Apache-2.0</td>
+<td>Idem, plus le fichier <code>NOTICE</code> s&#39;il existe et la mention des modifications</td>
+</tr>
+<tr>
+<td>OFL 1.1</td>
+<td>Distribuer le texte de la licence avec la police ; ne pas vendre la police seule</td>
+</tr>
+<tr>
+<td>MIT-0</td>
+<td>Aucune</td>
+</tr>
+</tbody></table></div>
+<p>Les images Docker et les bundles produits par Next.js et Expo incluent ces dépendances : leurs mentions doivent rester accessibles (fichiers de licence conservés dans <code>node_modules</code> des images, ou page de mentions dans l&#39;application).</p>
+<h2 id="produire-un-inventaire-complet"><a class="anchor" href="#produire-un-inventaire-complet" aria-hidden="true" tabindex="-1">#</a>Produire un inventaire complet</h2>
+<p>Pour un inventaire exhaustif, dépendances transitives comprises, lancer depuis chaque sous-projet un outil comme <code>license-checker</code> :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npx --<span class="hljs-built_in">yes</span> license-checker --production --summary</code></pre></div>
+<p>Cet outil n&#39;est pas une dépendance du dépôt ; <code>npx</code> le télécharge à la volée. Un rapport par projet, joint à chaque version, permettrait de suivre l&#39;apparition d&#39;une licence incompatible. Voir aussi <a href="../contribuer/dependances.html">Dépendances</a>.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="accessibilite.html"><span>Précédent</span><strong>Accessibilité numérique</strong></a><a class="pager-next" href="registre-risques.html"><span>Suivant</span><strong>Registre des risques</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/juridique/licences.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#licence-du-depot">Licence du dépôt</a></li><li class="toc-h2"><a href="#smart-contracts">Smart contracts</a></li><li class="toc-h2"><a href="#backend">Backend</a></li><li class="toc-h2"><a href="#frontend-web">Frontend web</a></li><li class="toc-h2"><a href="#application-mobile">Application mobile</a></li><li class="toc-h2"><a href="#site-de-l-office-de-tourisme">Site de l&#39;Office de Tourisme</a></li><li class="toc-h2"><a href="#documentation-officielle">Documentation officielle</a></li><li class="toc-h2"><a href="#compatibilite">Compatibilité</a></li><li class="toc-h2"><a href="#produire-un-inventaire-complet">Produire un inventaire complet</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

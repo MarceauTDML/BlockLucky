@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audits et checklists | Documentation BlockLucky</title>
+<meta name="description" content="Deux audits par checklist ont été menés pendant le projet : un audit d&#39;infrastructure d&#39;environ 245 points et un audit de sécurité d&#39;environ 300 points. Cette p">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="audits.html" aria-current="page">Audits et checklists</a></div></li><li><div class="nav-row"><a href="signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>11. Sécurité</span></div>
+    <article class="markdown">
+<h1>Audits et checklists</h1>
+<p>Deux audits par checklist ont été menés pendant le projet : un audit d&#39;infrastructure d&#39;environ 245 points et un audit de sécurité d&#39;environ 300 points. Cette page présente leur structure, explique ce que leurs fichiers de travail permettent d&#39;établir et donne, thème par thème, l&#39;état du dépôt vérifié dans le code.</p>
+<h2 id="ce-que-les-fichiers-d-audit-permettent-d-etablir"><a class="anchor" href="#ce-que-les-fichiers-d-audit-permettent-d-etablir" aria-hidden="true" tabindex="-1">#</a>Ce que les fichiers d&#39;audit permettent d&#39;établir</h2>
+<div class="hint hint-important"><p class="hint-title">Important</p>
+<p>Les deux checklists sont des grilles de référence. Dans leurs exports de travail, la colonne Statut de chaque ligne vaut « À faire » et l&#39;onglet de synthèse de la checklist de sécurité affiche zéro point « Fait ». Les grilles ont servi de liste de contrôle pendant le durcissement du dépôt, mais leur suivi n&#39;a pas été reporté dans les fichiers. <strong>Ces fichiers ne permettent donc pas d&#39;établir un taux de conformité</strong>, et cette page n&#39;en donne aucun. La synthèse ci-dessous a été établie en vérifiant chaque thème directement dans le dépôt ; chaque mesure déclarée faite renvoie à sa preuve.</p>
+</div>
+<h3 id="checklist-d-infrastructure"><a class="anchor" href="#checklist-d-infrastructure" aria-hidden="true" tabindex="-1">#</a>Checklist d&#39;infrastructure</h3>
+<p>Chaque ligne décrit un anti-modèle, la règle à appliquer, les outils de référence et une priorité (Haute, Moyenne, Basse). Les 245 points se répartissent en huit thèmes :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Thème</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Architecture et organisation du code</td>
+<td>35</td>
+</tr>
+<tr>
+<td>Base de données (PostgreSQL)</td>
+<td>35</td>
+</tr>
+<tr>
+<td>Cache et asynchronisme (Redis)</td>
+<td>34</td>
+</tr>
+<tr>
+<td>Performance et passage à l&#39;échelle</td>
+<td>31</td>
+</tr>
+<tr>
+<td>Expérience développeur et tests</td>
+<td>30</td>
+</tr>
+<tr>
+<td>CI/CD et déploiement</td>
+<td>28</td>
+</tr>
+<tr>
+<td>Observabilité et supervision</td>
+<td>28</td>
+</tr>
+<tr>
+<td>Haute disponibilité et résilience</td>
+<td>24</td>
+</tr>
+</tbody></table></div>
+<h3 id="checklist-de-securite"><a class="anchor" href="#checklist-de-securite" aria-hidden="true" tabindex="-1">#</a>Checklist de sécurité</h3>
+<p>Chaque ligne donne une mesure, la règle ou la norme de référence (OWASP ASVS et MASVS, ANSSI, CNIL), une priorité, la plateforme concernée et des colonnes de suivi (Statut, Responsable, Date cible, Preuve). La grille rappelle qu&#39;un point « Fait » doit être prouvé par un test, une configuration ou un rapport, et que ses points juridiques ne remplacent pas l&#39;avis d&#39;un avocat ou d&#39;un DPO.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Priorité</th>
+<th>Signification</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>P0</td>
+<td>Indispensable avant toute mise en ligne</td>
+<td>123</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>Avant le lancement public</td>
+<td>118</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>Avec la croissance</td>
+<td>48</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>Applications très sensibles (banque, santé)</td>
+<td>11</td>
+</tr>
+</tbody></table></div>
+<p>Les 300 points sont répartis en 22 catégories. Elles structurent la synthèse ci-dessous.</p>
+<h2 id="synthese-de-l-audit-de-securite"><a class="anchor" href="#synthese-de-l-audit-de-securite" aria-hidden="true" tabindex="-1">#</a>Synthèse de l&#39;audit de sécurité</h2>
+<p>Légende : <strong>fait</strong> (preuve dans le dépôt), <strong>partiel</strong> (mesure présente mais incomplète), <strong>absent</strong>, <strong>sans objet</strong> (fonction inexistante dans BlockLucky).</p>
+<h3 id="authentification-18-points-et-authentification-avancee-12-points"><a class="anchor" href="#authentification-18-points-et-authentification-avancee-12-points" aria-hidden="true" tabindex="-1">#</a>Authentification (18 points) et authentification avancée (12 points)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>État</th>
+<th>Preuve ou commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Hachage et politique de mot de passe, mots de passe compromis</td>
+<td>sans objet</td>
+<td>Aucun mot de passe ; connexion par code email</td>
+</tr>
+<tr>
+<td>Limitation des tentatives</td>
+<td>fait</td>
+<td>30 requêtes par IP en 10 minutes, 10 échecs par compte en une heure, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/otp-challenge.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/otp-challenge.service.ts</code></a></td>
+</tr>
+<tr>
+<td>TOTP conforme RFC 6238, secret de 160 bits chiffré, anti-rejeu</td>
+<td>fait</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/totp.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/totp.service.ts</code></a>, test d&#39;anti-rejeu</td>
+</tr>
+<tr>
+<td>Codes de récupération hachés, usage unique</td>
+<td>fait</td>
+<td><a href="authentification.html#codes-de-secours">Authentification</a></td>
+</tr>
+<tr>
+<td>MFA obligatoire pour les administrateurs</td>
+<td>partiel</td>
+<td>Imposée par <code>requireRoles</code>, mais la méthode email n&#39;ajoute pas de facteur ; voir <a href="authentification.html#limites-connues">Limites</a></td>
+</tr>
+<tr>
+<td>Comparaison en temps constant</td>
+<td>fait</td>
+<td><code>safeEqual</code></td>
+</tr>
+<tr>
+<td>Notifications de sécurité</td>
+<td>fait</td>
+<td>Modèle <code>security-alert</code></td>
+</tr>
+<tr>
+<td>Vérification de l&#39;email avant création du compte</td>
+<td>fait</td>
+<td>Test <code>exige le code envoyé par email...</code></td>
+</tr>
+<tr>
+<td>Ré-authentification avant action sensible</td>
+<td>partiel</td>
+<td>Désactivation de la 2FA seulement</td>
+</tr>
+<tr>
+<td>Anti-énumération</td>
+<td>partiel</td>
+<td>Réponse de <code>/login</code> différente pour un compte TOTP</td>
+</tr>
+<tr>
+<td>Passkeys et WebAuthn, MFA résistant au hameçonnage</td>
+<td>absent</td>
+<td></td>
+</tr>
+<tr>
+<td>CAPTCHA, détection de connexions suspectes</td>
+<td>absent</td>
+<td></td>
+</tr>
+</tbody></table></div>
+<h3 id="sessions-et-jetons-13-points-sessions-et-cryptographie-avancees-10-points"><a class="anchor" href="#sessions-et-jetons-13-points-sessions-et-cryptographie-avancees-10-points" aria-hidden="true" tabindex="-1">#</a>Sessions et jetons (13 points), sessions et cryptographie avancées (10 points)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>État</th>
+<th>Preuve ou commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Validation stricte des JWT, durée limitée</td>
+<td>fait</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/session.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/session.service.ts</code></a></td>
+</tr>
+<tr>
+<td>Déconnexion effective, révocation de tous les appareils</td>
+<td>fait</td>
+<td><a href="sessions.html#revocation">Sessions</a></td>
+</tr>
+<tr>
+<td>Pas de jeton dans l&#39;URL</td>
+<td>partiel</td>
+<td>Jeton de session jamais dans l&#39;URL ; le jeton de suppression RGPD figure dans le lien de l&#39;email</td>
+</tr>
+<tr>
+<td>Cookies <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite</code>, préfixe <code>__Host-</code></td>
+<td>sans objet</td>
+<td>Pas de cookie ; jeton dans <code>localStorage</code> sur le web</td>
+</tr>
+<tr>
+<td>Stockage du jeton côté web</td>
+<td>partiel</td>
+<td><code>localStorage</code>, exposé en cas de XSS</td>
+</tr>
+<tr>
+<td>Rotation des jetons de rafraîchissement</td>
+<td>sans objet</td>
+<td>Pas de jeton de rafraîchissement</td>
+</tr>
+<tr>
+<td>Liste des sessions actives</td>
+<td>absent</td>
+<td></td>
+</tr>
+<tr>
+<td>Rotation des clés de signature, clés par utilisateur, crypto-shredding</td>
+<td>absent</td>
+<td></td>
+</tr>
+</tbody></table></div>
+<h3 id="autorisation-et-controle-d-acces-12-points"><a class="anchor" href="#autorisation-et-controle-d-acces-12-points" aria-hidden="true" tabindex="-1">#</a>Autorisation et contrôle d&#39;accès (12 points)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>État</th>
+<th>Preuve ou commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Autorisation côté serveur sur chaque route, refus par défaut</td>
+<td>fait</td>
+<td><a href="autorisations.html#matrice-complete">Matrice des droits</a></td>
+</tr>
+<tr>
+<td>Protection IDOR</td>
+<td>fait</td>
+<td><code>assertPartnerAccess</code>, routes utilisateur sans identifiant en paramètre</td>
+</tr>
+<tr>
+<td>Anti-affectation de masse, anti-escalade</td>
+<td>fait</td>
+<td>Schémas Zod, aucune route ne modifie un rôle</td>
+</tr>
+<tr>
+<td>Back-office protégé</td>
+<td>fait</td>
+<td><code>router.use(authenticate, requireRoles(&#39;ADMIN&#39;))</code></td>
+</tr>
+<tr>
+<td>Identifiants non prédictibles</td>
+<td>fait</td>
+<td>UUID v7</td>
+</tr>
+<tr>
+<td>Revue périodique des accès</td>
+<td>absent</td>
+<td></td>
+</tr>
+</tbody></table></div>
+<h3 id="injections-et-validation-des-entrees-18-points"><a class="anchor" href="#injections-et-validation-des-entrees-18-points" aria-hidden="true" tabindex="-1">#</a>Injections et validation des entrées (18 points)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>État</th>
+<th>Preuve ou commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Requêtes paramétrées</td>
+<td>fait</td>
+<td>Prisma uniquement</td>
+</tr>
+<tr>
+<td>Validation par schéma, listes blanches</td>
+<td>fait</td>
+<td><a href="validation.html">Validation des entrées</a></td>
+</tr>
+<tr>
+<td>Échappement des sorties (emails, CSV)</td>
+<td>fait</td>
+<td><code>escapeHtml</code>, <code>neutralizeSpreadsheetCell</code></td>
+</tr>
+<tr>
+<td>Commandes système, XXE, SSTI, désérialisation</td>
+<td>sans objet</td>
+<td>Aucune de ces fonctions n&#39;existe</td>
+</tr>
+<tr>
+<td>Validation des paramètres de requête et des événements temps réel</td>
+<td>partiel</td>
+<td><code>limit</code> non borné sur le classement, événements de chat non validés</td>
+</tr>
+</tbody></table></div>
+<h3 id="securite-navigateur-14-points"><a class="anchor" href="#securite-navigateur-14-points" aria-hidden="true" tabindex="-1">#</a>Sécurité navigateur (14 points)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>État</th>
+<th>Preuve ou commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CSP</td>
+<td>partiel</td>
+<td>Stricte sur le site de l&#39;Office de Tourisme ; <code>&#39;unsafe-inline&#39;</code> dans <code>script-src</code> sur le web, absente en développement</td>
+</tr>
+<tr>
+<td>HSTS, <code>nosniff</code>, anti-clickjacking, <code>Referrer-Policy</code>, <code>Permissions-Policy</code>, COOP</td>
+<td>fait</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/next.config.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/next.config.mjs</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/docker/security-headers.conf" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/docker/security-headers.conf</code></a></td>
+</tr>
+<tr>
+<td>CSRF</td>
+<td>sans objet</td>
+<td>Jeton en en-tête <code>Authorization</code></td>
+</tr>
+<tr>
+<td>CORS restrictif</td>
+<td>fait</td>
+<td>Liste d&#39;origines explicite</td>
+</tr>
+<tr>
+<td>Aucun secret ni source map dans le front</td>
+<td>fait</td>
+<td>Contrôle de CI du job <code>web</code></td>
+</tr>
+<tr>
+<td>Subresource Integrity</td>
+<td>sans objet</td>
+<td>Aucune ressource tierce chargée</td>
+</tr>
+</tbody></table></div>
+<h3 id="chiffrement-et-secrets-13-points"><a class="anchor" href="#chiffrement-et-secrets-13-points" aria-hidden="true" tabindex="-1">#</a>Chiffrement et secrets (13 points)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>État</th>
+<th>Preuve ou commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Chiffrement applicatif des champs sensibles</td>
+<td>fait</td>
+<td>AES-256-GCM, <a href="cryptographie-secrets.html">Cryptographie et secrets</a></td>
+</tr>
+<tr>
+<td>Aléa cryptographique</td>
+<td>fait</td>
+<td><code>crypto.randomInt</code>, <code>crypto.randomBytes</code></td>
+</tr>
+<tr>
+<td>Aucun secret dans Git</td>
+<td>fait</td>
+<td>gitleaks</td>
+</tr>
+<tr>
+<td>Secrets par environnement, refus des valeurs de développement</td>
+<td>partiel</td>
+<td>Quatre secrets contrôlés ; identifiants S3 et SMTP non contrôlés</td>
+</tr>
+<tr>
+<td>Rotation des secrets, gestionnaire de secrets, KMS</td>
+<td>absent</td>
+<td>Aucun script de re-chiffrement</td>
+</tr>
+<tr>
+<td>TLS, certificats</td>
+<td>hors dépôt</td>
+<td>Fournis par le proxy de déploiement</td>
+</tr>
+</tbody></table></div>
+<h3 id="api-et-reseau-15-points"><a class="anchor" href="#api-et-reseau-15-points" aria-hidden="true" tabindex="-1">#</a>API et réseau (15 points)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>État</th>
+<th>Preuve ou commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Limitation de débit générale et sur l&#39;authentification</td>
+<td>fait</td>
+<td><a href="protection-api.html#limitation-de-debit">Protection des API</a></td>
+</tr>
+<tr>
+<td>Webhooks entrants signés</td>
+<td>fait</td>
+<td>HMAC, fenêtre de 5 minutes, anti-rejeu</td>
+</tr>
+<tr>
+<td>Idempotence</td>
+<td>partiel</td>
+<td>Côté serveur sur quatre routes ; les clients n&#39;envoient pas l&#39;en-tête</td>
+</tr>
+<tr>
+<td>Erreurs sans fuite, en-têtes de version masqués</td>
+<td>fait</td>
+<td>Gestionnaire d&#39;erreurs, <code>helmet</code>, <code>poweredByHeader: false</code>, <code>server_tokens off</code></td>
+</tr>
+<tr>
+<td>Délais d&#39;expiration</td>
+<td>fait</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/server.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/server.ts</code></a>, <code>statement_timeout</code></td>
+</tr>
+<tr>
+<td>Pagination obligatoire</td>
+<td>partiel</td>
+<td>Plafond de 100 pour l&#39;historique, pas pour le classement</td>
+</tr>
+<tr>
+<td>Protection DDoS, WAF</td>
+<td>absent</td>
+<td></td>
+</tr>
+<tr>
+<td>Concurrence (race conditions)</td>
+<td>partiel</td>
+<td>Contraintes d&#39;unicité en base ; validation d&#39;un code promo non atomique</td>
+</tr>
+</tbody></table></div>
+<h3 id="fichiers-et-televersements-10-points"><a class="anchor" href="#fichiers-et-televersements-10-points" aria-hidden="true" tabindex="-1">#</a>Fichiers et téléversements (10 points)</h3>
+<p>Sans objet pour l&#39;essentiel : l&#39;API n&#39;accepte aucun fichier. Les codes promo arrivent sous forme de texte CSV borné à 200 000 caractères, et les exports sont écrits par le serveur dans un compartiment S3.</p>
+<h3 id="infrastructure-et-chaine-logicielle-18-points-chaine-logicielle-et-developpement-10-points"><a class="anchor" href="#infrastructure-et-chaine-logicielle-18-points-chaine-logicielle-et-developpement-10-points" aria-hidden="true" tabindex="-1">#</a>Infrastructure et chaîne logicielle (18 points), chaîne logicielle et développement (10 points)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>État</th>
+<th>Preuve ou commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mises à jour, scan de vulnérabilités, lockfiles</td>
+<td>fait</td>
+<td>Dependabot, <code>npm audit</code>, Trivy, <code>npm ci</code></td>
+</tr>
+<tr>
+<td>SAST</td>
+<td>fait</td>
+<td>CodeQL, Slither</td>
+</tr>
+<tr>
+<td>Divulgation responsable</td>
+<td>fait</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/SECURITY.md" class="external" target="_blank" rel="noopener noreferrer"><code>SECURITY.md</code></a>, <code>security.txt</code></td>
+</tr>
+<tr>
+<td>Base non exposée</td>
+<td>fait</td>
+<td>Ports liés à <code>127.0.0.1</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker-compose.yml" class="external" target="_blank" rel="noopener noreferrer"><code>docker-compose.yml</code></a></td>
+</tr>
+<tr>
+<td>Conteneurs durcis</td>
+<td>fait</td>
+<td><code>read_only</code>, <code>cap_drop: [ALL]</code>, <code>no-new-privileges</code>, utilisateurs non root</td>
+</tr>
+<tr>
+<td>Sécurité de la CI</td>
+<td>fait</td>
+<td>Actions épinglées par SHA, permissions minimales ; voir <a href="chaine-logicielle.html">Chaîne logicielle</a></td>
+</tr>
+<tr>
+<td>Délai d&#39;adoption des nouvelles versions</td>
+<td>fait</td>
+<td><code>cooldown</code> de 5 jours</td>
+</tr>
+<tr>
+<td>DAST, test d&#39;intrusion, SBOM, builds signés</td>
+<td>absent</td>
+<td></td>
+</tr>
+<tr>
+<td>Protection des branches, accès serveurs, DNS</td>
+<td>hors dépôt</td>
+<td>Non vérifiable dans le code</td>
+</tr>
+</tbody></table></div>
+<h3 id="journalisation-et-incidents-11-points"><a class="anchor" href="#journalisation-et-incidents-11-points" aria-hidden="true" tabindex="-1">#</a>Journalisation et incidents (11 points)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>État</th>
+<th>Preuve ou commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Données interdites absentes des journaux</td>
+<td>fait</td>
+<td>Emails masqués, aucun code ni secret journalisé</td>
+</tr>
+<tr>
+<td>Journal des actions d&#39;administration</td>
+<td>partiel</td>
+<td>Disjoncteur, trésorerie, statut des partenaires, exports ; pas le tirage ni l&#39;annulation manuels</td>
+</tr>
+<tr>
+<td>Plan de réponse aux incidents, notification CNIL</td>
+<td>fait (documentaire)</td>
+<td><a href="../infrastructure/incidents.html">Réponse aux incidents</a></td>
+</tr>
+<tr>
+<td>Coupe-circuit</td>
+<td>fait</td>
+<td><code>MAINTENANCE_MODE</code>, disjoncteur du contrat</td>
+</tr>
+<tr>
+<td>Centralisation, conservation et alertes</td>
+<td>absent</td>
+<td>Journaux sur la sortie standard, purge à mettre en place</td>
+</tr>
+</tbody></table></div>
+<h3 id="mobile-15-points-et-mobile-avance-8-points"><a class="anchor" href="#mobile-15-points-et-mobile-avance-8-points" aria-hidden="true" tabindex="-1">#</a>Mobile (15 points) et mobile avancé (8 points)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>État</th>
+<th>Preuve ou commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Stockage sécurisé des secrets</td>
+<td>fait</td>
+<td><code>expo-secure-store</code>, <code>WHEN_UNLOCKED_THIS_DEVICE_ONLY</code></td>
+</tr>
+<tr>
+<td>Pas de secret dans le binaire</td>
+<td>fait</td>
+<td>Variables <code>EXPO_PUBLIC_*</code> limitées à des URL</td>
+</tr>
+<tr>
+<td>Sauvegarde système exclue</td>
+<td>fait</td>
+<td><code>allowBackup: false</code></td>
+</tr>
+<tr>
+<td>Épinglage de certificat, détection de root, attestation, masquage d&#39;écran, mise à jour forcée</td>
+<td>absent</td>
+<td><a href="navigateur-mobile.html#ce-qui-n-est-pas-en-place">Navigateur et mobile</a></td>
+</tr>
+</tbody></table></div>
+<h3 id="logique-metier-et-fraude-15-points"><a class="anchor" href="#logique-metier-et-fraude-15-points" aria-hidden="true" tabindex="-1">#</a>Logique métier et fraude (15 points)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>État</th>
+<th>Preuve ou commentaire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Montants calculés côté serveur et contrat</td>
+<td>fait</td>
+<td>Prix vérifié par le contrat (<code>IncorrectPayment</code>)</td>
+</tr>
+<tr>
+<td>Bornes des valeurs métier</td>
+<td>fait</td>
+<td>Quantité de 1 à 10, plafond par joueur dans le contrat, limite de jeu responsable</td>
+</tr>
+<tr>
+<td>Machine à états</td>
+<td>fait</td>
+<td><code>RoundStatus</code> du contrat</td>
+</tr>
+<tr>
+<td>Anti-abus du parrainage</td>
+<td>partiel</td>
+<td>Points de parrainage attribués seulement après vérification de l&#39;email ; pas de contrôle de comptes multiples</td>
+</tr>
+<tr>
+<td>Tests automatisés des autorisations</td>
+<td>fait</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/api/auth-security.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/api/auth-security.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Double validation des actions critiques</td>
+<td>absent</td>
+<td>Une seule personne ADMIN suffit pour le tirage, le disjoncteur et la trésorerie</td>
+</tr>
+</tbody></table></div>
+<h3 id="rgpd-et-vie-privee-23-points-juridique-et-conformite-20-points-gouvernance-des-donnees-10-points"><a class="anchor" href="#rgpd-et-vie-privee-23-points-juridique-et-conformite-20-points-gouvernance-des-donnees-10-points" aria-hidden="true" tabindex="-1">#</a>RGPD et vie privée (23 points), juridique et conformité (20 points), gouvernance des données (10 points)</h3>
+<p>Ces catégories sont traitées dans la partie <a href="../juridique/rgpd.html">Juridique et conformité</a>. En résumé : registre des traitements, export et anonymisation sont faits ; purges automatiques, analyse d&#39;impact, contrats de sous-traitance et mentions légales complètes sont absents ou à valider. La liste à faire valider figure dans <a href="../juridique/points-a-valider.html">Points à valider</a>.</p>
+<h3 id="architecture-et-api-avancees-10-points-infrastructure-et-cloud-avances-15-points-organisation-10-points"><a class="anchor" href="#architecture-et-api-avancees-10-points-infrastructure-et-cloud-avances-15-points-organisation-10-points" aria-hidden="true" tabindex="-1">#</a>Architecture et API avancées (10 points), infrastructure et cloud avancés (15 points), organisation (10 points)</h3>
+<p>Ces catégories visent un hébergement en nuage et une organisation d&#39;entreprise. Le dépôt ne contient ni infrastructure en code, ni compte cloud, ni processus d&#39;équipe formalisé : elles relèvent du déploiement, décrit dans <a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a>, et ne sont pas évaluables ici. Seule la validation de l&#39;en-tête <code>Host</code> est concernée par le code : elle est absente (voir <a href="validation.html#limites-connues">Validation</a>).</p>
+<h2 id="synthese-de-l-audit-d-infrastructure"><a class="anchor" href="#synthese-de-l-audit-d-infrastructure" aria-hidden="true" tabindex="-1">#</a>Synthèse de l&#39;audit d&#39;infrastructure</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Thème</th>
+<th>Fait, avec preuve</th>
+<th>Absent ou partiel</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Architecture</td>
+<td>Monolithe modulaire par domaine (<a href="../architecture/adr/0001-monolithe-modulaire.html">ADR 0001</a>), TypeScript <code>strict</code>, <code>noUncheckedIndexedAccess</code>, <code>exactOptionalPropertyTypes</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/tsconfig.json" class="external" target="_blank" rel="noopener noreferrer"><code>backend/tsconfig.json</code></a></td>
+<td>Pas de règle de lint sur les frontières entre modules, pas de table outbox</td>
+</tr>
+<tr>
+<td>Base de données</td>
+<td>Migrations expand et contract (<a href="../architecture/adr/0003-migrations-expand-contract.html">ADR 0003</a>), contrôle de dérive du schéma en CI, délai par requête, pool borné, <code>pg_stat_statements</code></td>
+<td>Pas de réplique en lecture</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>Repli mémoire (<a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">ADR 0002</a>), délai de 500 ms par commande, dispersion des durées de cache, préfixe par environnement</td>
+<td>Le repli affaiblit la révocation et la limitation de débit</td>
+</tr>
+<tr>
+<td>Files</td>
+<td>Tentatives bornées avec recul exponentiel et conservation des échecs dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/queues/queue.options.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/queues/queue.options.ts</code></a></td>
+<td>Pas d&#39;alerte sur les tâches en échec</td>
+</tr>
+<tr>
+<td>Observabilité</td>
+<td>Métriques Prometheus protégées, identifiant de requête, journaux structurés (<a href="../backend/observabilite.html">Observabilité</a>)</td>
+<td>Pas de centralisation des journaux</td>
+</tr>
+<tr>
+<td>Haute disponibilité</td>
+<td>Sondes <code>live</code>, <code>ready</code>, <code>deep</code>, arrêt gracieux sur <code>SIGTERM</code>, RPC de secours, worker séparé</td>
+<td>Instance unique, pas de bascule automatique de base</td>
+</tr>
+<tr>
+<td>CI/CD</td>
+<td>Filtre par projet modifié, cache, construction des images, intégration sur une vraie chaîne</td>
+<td>Pas de déploiement automatisé dans la CI</td>
+</tr>
+<tr>
+<td>Performance et tests</td>
+<td>Scénarios k6 versionnés avec seuils (<a href="../infrastructure/tests-charge.html">Tests de charge</a>), tests unitaires, d&#39;intégration et sur chaîne</td>
+<td>Tests de charge non exécutés en CI</td>
+</tr>
+</tbody></table></div>
+<h2 id="constats-ouverts"><a class="anchor" href="#constats-ouverts" aria-hidden="true" tabindex="-1">#</a>Constats ouverts</h2>
+<p>Les écarts relevés pendant la rédaction de cette documentation, classés par priorité suggérée :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Priorité</th>
+<th>Constat</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Haute</td>
+<td>Le propriétaire VRF hérité (déployeur) peut changer le coordinateur et donc le gagnant</td>
+<td><a href="cles-portefeuilles.html#roles-sur-la-chaine">Clés et garde des portefeuilles</a></td>
+</tr>
+<tr>
+<td>Haute</td>
+<td><code>cancelRound</code> permet à l&#39;opérateur de censurer un tirage en devançant la réponse VRF</td>
+<td><a href="menaces.html#front-running-et-ordre-des-transactions">Modèle de menaces</a></td>
+</tr>
+<tr>
+<td>Haute</td>
+<td>Aucun outil de rotation de <code>ENCRYPTION_KEY</code></td>
+<td><a href="cryptographie-secrets.html#rotation">Cryptographie et secrets</a></td>
+</tr>
+<tr>
+<td>Moyenne</td>
+<td>La 2FA par email n&#39;ajoute pas de facteur ; le TOTP remplace le code email</td>
+<td><a href="authentification.html#limites-connues">Authentification</a></td>
+</tr>
+<tr>
+<td>Moyenne</td>
+<td><code>withdrawFees</code> du backend suppose que l&#39;opérateur détient <code>DEFAULT_ADMIN_ROLE</code></td>
+<td><a href="cles-portefeuilles.html#compte-operateur">Clés et garde des portefeuilles</a></td>
+</tr>
+<tr>
+<td>Moyenne</td>
+<td><code>&#39;unsafe-inline&#39;</code> dans <code>script-src</code> alors que le jeton est dans <code>localStorage</code></td>
+<td><a href="navigateur-mobile.html#politique-csp">Navigateur et mobile</a></td>
+</tr>
+<tr>
+<td>Moyenne</td>
+<td>Le lien de confirmation RGPD de l&#39;email pointe vers une page web inexistante</td>
+<td><a href="../juridique/rgpd.html#effacement">RGPD</a></td>
+</tr>
+<tr>
+<td>Basse</td>
+<td><code>limit</code> non borné sur <code>/api/lottery/leaderboard</code>, événements de chat non validés</td>
+<td><a href="validation.html#limites-connues">Validation des entrées</a></td>
+</tr>
+<tr>
+<td>Basse</td>
+<td>Validation d&#39;un code promo non atomique</td>
+<td><a href="autorisations.html#limites-connues">Autorisations</a></td>
+</tr>
+</tbody></table></div>
+<p>Pour reprendre un audit, dupliquer la grille, renseigner la colonne Preuve avec un lien vers le fichier ou le test, et ne marquer « Fait » qu&#39;une mesure prouvée.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="chaine-logicielle.html"><span>Précédent</span><strong>Chaîne logicielle</strong></a><a class="pager-next" href="signalement.html"><span>Suivant</span><strong>Signaler une vulnérabilité</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/securite/audits.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#ce-que-les-fichiers-d-audit-permettent-d-etablir">Ce que les fichiers d&#39;audit permettent d&#39;établir</a></li><li class="toc-h3"><a href="#checklist-d-infrastructure">Checklist d&#39;infrastructure</a></li><li class="toc-h3"><a href="#checklist-de-securite">Checklist de sécurité</a></li><li class="toc-h2"><a href="#synthese-de-l-audit-de-securite">Synthèse de l&#39;audit de sécurité</a></li><li class="toc-h3"><a href="#authentification-18-points-et-authentification-avancee-12-points">Authentification (18 points) et authentification avancée (12 points)</a></li><li class="toc-h3"><a href="#sessions-et-jetons-13-points-sessions-et-cryptographie-avancees-10-points">Sessions et jetons (13 points), sessions et cryptographie avancées (10 points)</a></li><li class="toc-h3"><a href="#autorisation-et-controle-d-acces-12-points">Autorisation et contrôle d&#39;accès (12 points)</a></li><li class="toc-h3"><a href="#injections-et-validation-des-entrees-18-points">Injections et validation des entrées (18 points)</a></li><li class="toc-h3"><a href="#securite-navigateur-14-points">Sécurité navigateur (14 points)</a></li><li class="toc-h3"><a href="#chiffrement-et-secrets-13-points">Chiffrement et secrets (13 points)</a></li><li class="toc-h3"><a href="#api-et-reseau-15-points">API et réseau (15 points)</a></li><li class="toc-h3"><a href="#fichiers-et-televersements-10-points">Fichiers et téléversements (10 points)</a></li><li class="toc-h3"><a href="#infrastructure-et-chaine-logicielle-18-points-chaine-logicielle-et-developpement-10-points">Infrastructure et chaîne logicielle (18 points), chaîne logicielle et développement (10 points)</a></li><li class="toc-h3"><a href="#journalisation-et-incidents-11-points">Journalisation et incidents (11 points)</a></li><li class="toc-h3"><a href="#mobile-15-points-et-mobile-avance-8-points">Mobile (15 points) et mobile avancé (8 points)</a></li><li class="toc-h3"><a href="#logique-metier-et-fraude-15-points">Logique métier et fraude (15 points)</a></li><li class="toc-h3"><a href="#rgpd-et-vie-privee-23-points-juridique-et-conformite-20-points-gouvernance-des-donnees-10-points">RGPD et vie privée (23 points), juridique et conformité (20 points), gouvernance des données (10 points)</a></li><li class="toc-h3"><a href="#architecture-et-api-avancees-10-points-infrastructure-et-cloud-avances-15-points-organisation-10-points">Architecture et API avancées (10 points), infrastructure et cloud avancés (15 points), organisation (10 points)</a></li><li class="toc-h2"><a href="#synthese-de-l-audit-d-infrastructure">Synthèse de l&#39;audit d&#39;infrastructure</a></li><li class="toc-h2"><a href="#constats-ouverts">Constats ouverts</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

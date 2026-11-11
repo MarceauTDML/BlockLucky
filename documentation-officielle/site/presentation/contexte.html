@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contexte et kickoff | Documentation BlockLucky</title>
+<meta name="description" content="BlockLucky répond à un appel à projet fictif de la Ville d&#39;EtherBay, présenté lors du kickoff du rush « BlockLucky, création d&#39;un smart contract » de l&#39;Epitech ">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="contexte.html" aria-current="page">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>1. Présentation du projet</span></div>
+    <article class="markdown">
+<h1>Contexte et kickoff</h1>
+<p>BlockLucky répond à un appel à projet fictif de la Ville d&#39;EtherBay, présenté lors du kickoff du rush « BlockLucky, création d&#39;un smart contract » de l&#39;Epitech Digital School (promotion DIGI3). Cette page résume ce document de 23 pages, puis explique comment l&#39;équipe l&#39;a interprété et quel périmètre elle a retenu.</p>
+<h2 id="le-brief"><a class="anchor" href="#le-brief" aria-hidden="true" tabindex="-1">#</a>Le brief</h2>
+<p>Le brief tient en une phrase, reproduite telle quelle dans le kickoff :</p>
+<blockquote>
+<p>Créer un smart contract pour une loterie simple. Les participants pourront acheter des tickets avec des ethers fictifs, et après un certain nombre de participants ou une certaine durée, un gagnant sera choisi au hasard pour remporter la cagnotte.</p>
+</blockquote>
+<p>Chaque élément de cette phrase se retrouve dans le contrat <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Exigence du brief</th>
+<th>Traduction dans le contrat</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Acheter des tickets</td>
+<td><code>buyTickets(quantity)</code> et <code>buyTicketsFor(player, quantity)</code>, payables au prix exact du tour</td>
+</tr>
+<tr>
+<td>Avec des ethers fictifs</td>
+<td>Déploiement sur un réseau de test : nœud Hardhat local (chain ID 31337), Sepolia prévu</td>
+</tr>
+<tr>
+<td>Après un certain nombre de participants</td>
+<td>Tour fermé dès que <code>maxTickets</code> est atteint (<code>isDrawReady</code>)</td>
+</tr>
+<tr>
+<td>Ou une certaine durée</td>
+<td>Tour fermé à <code>endTime</code> s&#39;il compte au moins <code>minTicketsToDraw</code> tickets ; sinon annulé et remboursé (<code>closeExpiredRound</code>)</td>
+</tr>
+<tr>
+<td>Un gagnant choisi au hasard</td>
+<td>Nombre aléatoire fourni par Chainlink VRF v2.5, <code>randomWords[0] % ticketCount</code></td>
+</tr>
+<tr>
+<td>Remporter la cagnotte</td>
+<td>Cagnotte moins la commission de la Mairie, retirable par le gagnant (<code>claimPrize</code>) et versée automatiquement par le backend</td>
+</tr>
+</tbody></table></div>
+<p>Le cycle complet est décrit dans <a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a>.</p>
+<h2 id="objectifs-pedagogiques"><a class="anchor" href="#objectifs-pedagogiques" aria-hidden="true" tabindex="-1">#</a>Objectifs pédagogiques</h2>
+<p>Le kickoff fixe trois objectifs à l&#39;exercice :</p>
+<ol>
+<li>comprendre le fonctionnement des smart contracts ;</li>
+<li>apprendre à utiliser des outils de développement blockchain ;</li>
+<li>mettre en pratique les concepts théoriques.</li>
+</ol>
+<p>Il présente deux outils : Remix, un environnement de développement web adapté au prototypage, et Hardhat, un environnement en ligne de commande adapté aux tests avancés et aux déploiements. L&#39;équipe a retenu Hardhat 3 pour le développement, les tests et le déploiement ; les contrats restent compilables dans Remix (voir <a href="../smart-contracts/remix.html">Utiliser Remix</a>). Les raisons sont détaillées dans <a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a>.</p>
+<h2 id="les-cinq-concepts-cles"><a class="anchor" href="#les-cinq-concepts-cles" aria-hidden="true" tabindex="-1">#</a>Les cinq concepts clés</h2>
+<p>Le kickoff définit cinq notions. Le tableau indique comment le projet les met en œuvre.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Définition du kickoff (résumée)</th>
+<th>Mise en œuvre dans BlockLucky</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Smart contract</td>
+<td>Programme autonome qui exécute les conditions prévues</td>
+<td>Le contrat encaisse, ferme, tire au sort et paie sans intervention humaine ; le backend n&#39;a aucun moyen de désigner le gagnant</td>
+</tr>
+<tr>
+<td>Transparence</td>
+<td>Transactions et résultats visibles et vérifiables par tous</td>
+<td>Chaque ticket est une transaction ; les liens vers l&#39;explorateur sont fournis quand <code>EXPLORER_URL</code> est défini ; page publique <code>/transparence</code></td>
+</tr>
+<tr>
+<td>Décentralisation</td>
+<td>Aucune entité centrale ne contrôle le système</td>
+<td>Hasard fourni par l&#39;oracle Chainlink ; <code>requestDraw</code> et <code>closeExpiredRound</code> appelables par n&#39;importe qui</td>
+</tr>
+<tr>
+<td>Sécurité</td>
+<td>Données protégées par la cryptographie</td>
+<td>Protection contre la réentrance, retraits en mode pull, rôles séparés, pause ; clés des portefeuilles chiffrées en AES-256-GCM</td>
+</tr>
+<tr>
+<td>Interactivité</td>
+<td>Interface intuitive et engageante</td>
+<td>Achat en un geste, salle d&#39;attente et annonce du gagnant en direct, badges POAP, EtherPoints</td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>La décentralisation est partielle, et la documentation le dit : le backend garde les clés des portefeuilles des citoyens (modèle dit custodial). Ce compromis, choisi pour l&#39;inclusion, est argumenté dans l&#39;<a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">ADR 0004</a> et ses risques dans <a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a>.</p>
+</div>
+<h2 id="le-scenario-etherbay"><a class="anchor" href="#le-scenario-etherbay" aria-hidden="true" tabindex="-1">#</a>Le scénario EtherBay</h2>
+<h3 id="la-ville"><a class="anchor" href="#la-ville" aria-hidden="true" tabindex="-1">#</a>La ville</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Donnée du kickoff</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Population</td>
+<td>120 000 habitants</td>
+</tr>
+<tr>
+<td>Cible principale</td>
+<td>35 % de la population a entre 18 et 35 ans, soit 42 000 personnes</td>
+</tr>
+<tr>
+<td>Événement à digitaliser</td>
+<td>La loterie des fêtes de fin d&#39;année</td>
+</tr>
+<tr>
+<td>Objectif d&#39;engagement</td>
+<td>Au moins 10 000 participants</td>
+</tr>
+</tbody></table></div>
+<p>La ville est décrite comme dynamique et ouverte à l&#39;innovation. Elle veut rassembler la communauté locale et envisage la blockchain pour garantir la transparence et la confiance dans le tirage.</p>
+<h3 id="les-attentes-de-la-ville"><a class="anchor" href="#les-attentes-de-la-ville" aria-hidden="true" tabindex="-1">#</a>Les attentes de la ville</h3>
+<p>Le kickoff liste cinq attentes : éducatif (sensibiliser à la blockchain), engagement (10 000 participants), innovation (positionner EtherBay comme ville innovante), transparence (confiance totale dans le système) et collaboration (renforcer le partenariat Mairie et Epitech). Elles sont traduites en indicateurs mesurables dans <a href="objectifs-indicateurs.html">Objectifs et indicateurs</a>.</p>
+<h3 id="les-parties-prenantes"><a class="anchor" href="#les-parties-prenantes" aria-hidden="true" tabindex="-1">#</a>Les parties prenantes</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Partie prenante</th>
+<th>Ce qu&#39;elle attend</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Madame la Maire</td>
+<td>Un événement mémorable, un succès auprès de la communauté, qui fasse parler de lui et soit inclusif</td>
+</tr>
+<tr>
+<td>Le responsable événementiel</td>
+<td>L&#39;aspect pratique, la facilité d&#39;utilisation et la fluidité de l&#39;expérience</td>
+</tr>
+<tr>
+<td>Le DSI</td>
+<td>La sécurité, la fiabilité et l&#39;efficacité du système</td>
+</tr>
+</tbody></table></div>
+<p>Leurs besoins sont reformulés, un par un, avec la réponse du projet et la preuve dans le dépôt, dans <a href="besoins.html">Besoins des parties prenantes</a>.</p>
+<h2 id="les-criteres-de-selection"><a class="anchor" href="#les-criteres-de-selection" aria-hidden="true" tabindex="-1">#</a>Les critères de sélection</h2>
+<p>L&#39;appel à projet retient le projet qui :</p>
+<ol>
+<li>a développé un smart contract solide et sécurisé ;</li>
+<li>a su convaincre les parties prenantes de la pertinence de sa solution, de sa facilité d&#39;utilisation et de sa capacité à garantir la transparence et la confiance.</li>
+</ol>
+<p>Le premier critère est couvert par la partie <a href="../smart-contracts/index.html">Smart contracts</a>, en particulier <a href="../smart-contracts/securite.html">Sécurité du contrat</a> et <a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a>. Le second par la partie 1 de cette documentation et le guide <a href="../guides/soutenance.html">Préparer la soutenance</a>.</p>
+<h2 id="la-timeline-imposee"><a class="anchor" href="#la-timeline-imposee" aria-hidden="true" tabindex="-1">#</a>La timeline imposée</h2>
+<p>Le kickoff demande de répondre à l&#39;appel à projet en moins de 48 heures, en cinq étapes.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape du kickoff</th>
+<th>Ce qui existe dans le dépôt</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1. Configuration de l&#39;environnement</td>
+<td>Projet Hardhat 3, nœud local en conteneur (service <code>blockchain</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker-compose.yml" class="external" target="_blank" rel="noopener noreferrer"><code>docker-compose.yml</code></a>)</td>
+</tr>
+<tr>
+<td>2. Création du smart contract</td>
+<td><code>BlockLucky.sol</code> et <code>BlockLuckyPOAP.sol</code></td>
+</tr>
+<tr>
+<td>3. Test du smart contract</td>
+<td>47 tests dont 4 de fuzzing, 100 % des lignes couvertes, Slither en CI</td>
+</tr>
+<tr>
+<td>4. Déploiement</td>
+<td>Déploiement local automatique ; script Sepolia <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/deploy-sepolia.ts" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/scripts/deploy-sepolia.ts</code></a> prêt mais non exécuté</td>
+</tr>
+<tr>
+<td>5. Soutenance</td>
+<td>Préparée avec <a href="../guides/soutenance.html">ce guide</a></td>
+</tr>
+</tbody></table></div>
+<p>L&#39;historique Git montre que le travail a dépassé le cadre strict des 48 heures et du seul contrat : le dépôt contient aussi le backend, le web, le mobile et un site vitrine, développés entre le 2 et le 11 novembre 2026. Voir <a href="historique.html">Historique et feuille de route</a>.</p>
+<h2 id="les-axes-complementaires"><a class="anchor" href="#les-axes-complementaires" aria-hidden="true" tabindex="-1">#</a>Les axes complémentaires</h2>
+<p>Les dernières pages du kickoff ouvrent trois axes au-delà du code.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Axe</th>
+<th>Contenu demandé</th>
+<th>Où le trouver</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UI/UX research</td>
+<td>Une interface fonctionnelle, intuitive et agréable</td>
+<td><a href="profils-parcours.html">Profils et parcours</a>, <a href="../web/design-system.html">Design system</a>, <a href="../web/accessibilite.html">Accessibilité et responsive</a></td>
+</tr>
+<tr>
+<td>Stratégie marketing et communication</td>
+<td>Marché (besoins et comportements), promotion, KPI</td>
+<td><a href="marketing.html">Volet marketing</a>, <a href="objectifs-indicateurs.html">Objectifs et indicateurs</a></td>
+</tr>
+<tr>
+<td>Aspects éthiques et réglementaires</td>
+<td>Éthique, réglementation, gestion des risques</td>
+<td><a href="../juridique/veille-juridique.html">Veille juridique</a>, <a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a>, <a href="../juridique/registre-risques.html">Registre des risques</a></td>
+</tr>
+</tbody></table></div>
+<p>Le kickoff contient aussi des statistiques de marché (détention de cryptomonnaies, adoption de la blockchain, taille du marché des loteries). Les livrables de l&#39;équipe les écartent explicitement, faute de source, et cette documentation fait de même.</p>
+<h2 id="le-perimetre-retenu-par-l-equipe"><a class="anchor" href="#le-perimetre-retenu-par-l-equipe" aria-hidden="true" tabindex="-1">#</a>Le périmètre retenu par l&#39;équipe</h2>
+<p>L&#39;équipe (Rajeeva, Myriam, Marie et Marceau) a fait trois choix structurants, consignés dans ses livrables de cadrage et dans l&#39;<a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">ADR 0004</a>.</p>
+<h3 id="un-pilote-pedagogique-en-ethers-fictifs"><a class="anchor" href="#un-pilote-pedagogique-en-ethers-fictifs" aria-hidden="true" tabindex="-1">#</a>Un pilote pédagogique en ethers fictifs</h3>
+<p>Aucune mise en euros ni en ethers réels. Ce choix écarte la qualification de jeu d&#39;argent et le régime des crypto-actifs : il est justifié dans <a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a>. Toutes les interfaces rappellent que les ethers sont fictifs ; la page de billetterie demande de cocher une case de compréhension avant l&#39;achat.</p>
+<h3 id="aucun-prerequis-technique-ni-financier"><a class="anchor" href="#aucun-prerequis-technique-ni-financier" aria-hidden="true" tabindex="-1">#</a>Aucun prérequis technique ni financier</h3>
+<p>L&#39;inclusion demandée par la Maire a conduit à supprimer MetaMask et l&#39;achat de crypto. Le backend crée le portefeuille, la Mairie le dote en ethers fictifs, et la connexion se fait par un code envoyé par email. Le citoyen n&#39;a jamais à manipuler de clé.</p>
+<h3 id="un-produit-complet-autour-du-contrat"><a class="anchor" href="#un-produit-complet-autour-du-contrat" aria-hidden="true" tabindex="-1">#</a>Un produit complet autour du contrat</h3>
+<p>Le contrat seul ne suffit pas à convaincre la Mairie, le responsable événementiel et le DSI. Le projet livre donc les outils d&#39;exploitation (dashboard Mairie, disjoncteur, annulation et remboursement), d&#39;animation (tirage en direct, chat, cadeaux, parrainage, EtherPoints chez les commerçants) et de supervision (sondes, métriques, CI). Le livrable de cadrage de l&#39;équipe classait la boutique, les avantages partenaires, le parrainage et les badges comme des extensions : le code les implémente, avec les limites listées dans <a href="reel-ou-simule.html">Réel, simulé ou à venir</a>.</p>
+<h3 id="hors-perimetre"><a class="anchor" href="#hors-perimetre" aria-hidden="true" tabindex="-1">#</a>Hors périmètre</h3>
+<ul>
+<li>Les mises en monnaie réelle et l&#39;achat de crypto-monnaie par les citoyens.</li>
+<li>Le déploiement sur le réseau Ethereum principal.</li>
+<li>La vérification d&#39;identité au-delà de la déclaration de majorité (case 18 ans et plus obligatoire à la connexion).</li>
+</ul>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="../accueil/projet-en-chiffres.html"><span>Précédent</span><strong>Le projet en chiffres</strong></a><a class="pager-next" href="besoins.html"><span>Suivant</span><strong>Besoins des parties prenantes</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/presentation/contexte.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#le-brief">Le brief</a></li><li class="toc-h2"><a href="#objectifs-pedagogiques">Objectifs pédagogiques</a></li><li class="toc-h2"><a href="#les-cinq-concepts-cles">Les cinq concepts clés</a></li><li class="toc-h2"><a href="#le-scenario-etherbay">Le scénario EtherBay</a></li><li class="toc-h3"><a href="#la-ville">La ville</a></li><li class="toc-h3"><a href="#les-attentes-de-la-ville">Les attentes de la ville</a></li><li class="toc-h3"><a href="#les-parties-prenantes">Les parties prenantes</a></li><li class="toc-h2"><a href="#les-criteres-de-selection">Les critères de sélection</a></li><li class="toc-h2"><a href="#la-timeline-imposee">La timeline imposée</a></li><li class="toc-h2"><a href="#les-axes-complementaires">Les axes complémentaires</a></li><li class="toc-h2"><a href="#le-perimetre-retenu-par-l-equipe">Le périmètre retenu par l&#39;équipe</a></li><li class="toc-h3"><a href="#un-pilote-pedagogique-en-ethers-fictifs">Un pilote pédagogique en ethers fictifs</a></li><li class="toc-h3"><a href="#aucun-prerequis-technique-ni-financier">Aucun prérequis technique ni financier</a></li><li class="toc-h3"><a href="#un-produit-complet-autour-du-contrat">Un produit complet autour du contrat</a></li><li class="toc-h3"><a href="#hors-perimetre">Hors périmètre</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

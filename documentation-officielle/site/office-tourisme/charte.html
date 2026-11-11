@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charte graphique et médias | Documentation BlockLucky</title>
+<meta name="description" content="La mise en page reprend les codes d&#39;un site d&#39;office de tourisme de grande ville : pré-header de liens institutionnels, hero plein écran, titres en capitales, c">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="charte.html" aria-current="page">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>10. Office de Tourisme</span></div>
+    <article class="markdown">
+<h1>Charte graphique et médias</h1>
+<p>La mise en page reprend les codes d&#39;un site d&#39;office de tourisme de grande ville : pré-header de liens institutionnels, hero plein écran, titres en capitales, cartes photo, agenda en carrousel, pied de page avec horaires et labels. Les couleurs sont celles de l&#39;identité EtherBay partagée avec le frontend web et l&#39;application mobile (voir <a href="../web/design-system.html">Design system</a> et <a href="../mobile/theme-composants.html">Thème et composants</a>).</p>
+<h2 id="couleurs"><a class="anchor" href="#couleurs" aria-hidden="true" tabindex="-1">#</a>Couleurs</h2>
+<p>Les couleurs sont déclarées une seule fois, en variables CSS, dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/css/tokens.css" class="external" target="_blank" rel="noopener noreferrer"><code>assets/css/tokens.css</code></a>. Les feuilles de style n&#39;utilisent que les variables sémantiques de la seconde colonne, jamais les valeurs hexadécimales.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable de base</th>
+<th>Valeur</th>
+<th>Variable sémantique</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--eb-green</code></td>
+<td><code>#253D2C</code></td>
+<td><code>--color-cta</code></td>
+<td>Boutons, marque, <code>theme-color</code> du navigateur, fond du favicon</td>
+</tr>
+<tr>
+<td><code>--eb-green-light</code></td>
+<td><code>#3B5E46</code></td>
+<td><code>--color-cta-hover</code></td>
+<td>Survol des boutons</td>
+</tr>
+<tr>
+<td><code>--eb-green-soft</code></td>
+<td><code>#6B9B79</code></td>
+<td>-</td>
+<td>Déclarée mais inutilisée à ce jour</td>
+</tr>
+<tr>
+<td><code>--eb-terracotta</code></td>
+<td><code>#C86D51</code></td>
+<td><code>--color-accent</code></td>
+<td>Titres d&#39;accent, badges, grands textes</td>
+</tr>
+<tr>
+<td><code>--eb-terracotta-text</code></td>
+<td><code>#A9553C</code></td>
+<td><code>--color-accent-text</code></td>
+<td>Petits textes d&#39;accent</td>
+</tr>
+<tr>
+<td><code>--eb-sand</code></td>
+<td><code>#F7F6F2</code></td>
+<td>-</td>
+<td>Fonds clairs, texte clair sur fond sombre</td>
+</tr>
+<tr>
+<td><code>--eb-stone</code></td>
+<td><code>#EFECE6</code></td>
+<td><code>--color-bg-alt</code></td>
+<td>Fonds de sections alternées</td>
+</tr>
+<tr>
+<td><code>--eb-border</code></td>
+<td><code>#E4E2DD</code></td>
+<td>-</td>
+<td>Bordures</td>
+</tr>
+<tr>
+<td><code>--eb-ink</code></td>
+<td><code>#18181B</code></td>
+<td><code>--color-text</code>, <code>--color-bar</code></td>
+<td>Texte principal, pré-header, barre basse du pied de page</td>
+</tr>
+<tr>
+<td><code>--eb-ink-soft</code></td>
+<td><code>#52525B</code></td>
+<td><code>--color-text-soft</code></td>
+<td>Texte secondaire</td>
+</tr>
+<tr>
+<td><code>--eb-muted</code></td>
+<td><code>#6E6D68</code></td>
+<td>-</td>
+<td>Déclarée mais inutilisée à ce jour</td>
+</tr>
+<tr>
+<td><code>--eb-white</code></td>
+<td><code>#FFFFFF</code></td>
+<td><code>--color-bg</code></td>
+<td>Fond principal</td>
+</tr>
+</tbody></table></div>
+<h3 id="contrastes"><a class="anchor" href="#contrastes" aria-hidden="true" tabindex="-1">#</a>Contrastes</h3>
+<p>Ratios de contraste calculés selon la formule WCAG 2.1, à partir des valeurs de <code>tokens.css</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Texte</th>
+<th>Fond</th>
+<th>Ratio</th>
+<th>Niveau AA</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Encre <code>#18181B</code></td>
+<td>blanc</td>
+<td>17,7:1</td>
+<td>conforme</td>
+</tr>
+<tr>
+<td>Vert <code>#253D2C</code></td>
+<td>blanc</td>
+<td>11,8:1</td>
+<td>conforme</td>
+</tr>
+<tr>
+<td>Blanc</td>
+<td>vert clair <code>#3B5E46</code> (survol)</td>
+<td>7,3:1</td>
+<td>conforme</td>
+</tr>
+<tr>
+<td>Encre douce <code>#52525B</code></td>
+<td>blanc</td>
+<td>7,7:1</td>
+<td>conforme</td>
+</tr>
+<tr>
+<td>Terracotta texte <code>#A9553C</code></td>
+<td>blanc</td>
+<td>5,2:1</td>
+<td>conforme</td>
+</tr>
+<tr>
+<td>Terracotta texte <code>#A9553C</code></td>
+<td>sable <code>#F7F6F2</code></td>
+<td>4,8:1</td>
+<td>conforme</td>
+</tr>
+<tr>
+<td>Terracotta texte <code>#A9553C</code></td>
+<td>pierre <code>#EFECE6</code></td>
+<td>4,4:1</td>
+<td>grands textes seulement</td>
+</tr>
+<tr>
+<td>Terracotta <code>#C86D51</code></td>
+<td>blanc</td>
+<td>3,6:1</td>
+<td>grands textes seulement</td>
+</tr>
+</tbody></table></div>
+<p>C&#39;est la raison d&#39;être de la variante <code>--eb-terracotta-text</code> : la terracotta de la marque n&#39;atteint pas 4,5:1 sur blanc et reste réservée aux titres. Sur le fond pierre des sections alternées, même la variante texte passe sous 4,5:1 : un petit texte d&#39;accent posé sur <code>--color-bg-alt</code> doit utiliser l&#39;encre douce.</p>
+<p>Le site n&#39;a pas de thème sombre : aucune règle <code>prefers-color-scheme</code> dans les feuilles de style.</p>
+<h2 id="typographie"><a class="anchor" href="#typographie" aria-hidden="true" tabindex="-1">#</a>Typographie</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rôle</th>
+<th>Police</th>
+<th>Graisses embarquées</th>
+<th>Variable</th>
+<th>Pile de repli</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Titres, en capitales</td>
+<td>Jost</td>
+<td>500, 600, 700</td>
+<td><code>--font-display</code></td>
+<td>Futura, Century Gothic, Trebuchet MS, sans-serif</td>
+</tr>
+<tr>
+<td>Texte courant</td>
+<td>Inter</td>
+<td>300, 400, 500, 600</td>
+<td><code>--font-body</code></td>
+<td>-apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif</td>
+</tr>
+</tbody></table></div>
+<p>Les échelles de taille sont fluides, avec <code>clamp()</code> : de <code>--fs-hero</code> (2,6 à 5,4 rem) à <code>--fs-xs</code> (0,8125 rem), le texte courant étant à <code>--fs-body</code> (1,125 rem, soit 18 px). Les espacements suivent la même logique : <code>--gutter</code> (20 à 40 px) et <code>--section-space</code> (64 à 120 px). Les conteneurs font 1180 px (<code>--container</code>) ou 1320 px (<code>--container-wide</code>).</p>
+<h3 id="polices-auto-hebergees"><a class="anchor" href="#polices-auto-hebergees" aria-hidden="true" tabindex="-1">#</a>Polices auto-hébergées</h3>
+<p>Les sept fichiers WOFF2 sont dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme/assets/fonts" class="external" target="_blank" rel="noopener noreferrer"><code>assets/fonts/</code></a> et déclarés dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/css/fonts.css" class="external" target="_blank" rel="noopener noreferrer"><code>assets/css/fonts.css</code></a>, un <code>@font-face</code> par graisse. Extrait, sans la ligne <code>unicode-range</code> qui limite chaque fichier aux caractères latins :</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">@font-face {
+  font-family: &#x27;Inter&#x27;;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(&#x27;../fonts/inter-latin-400-normal.woff2&#x27;) format(&#x27;woff2&#x27;);
+}</code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Choix</th>
+<th>Raison</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Aucun appel à Google Fonts ni à un CDN</td>
+<td>Aucune adresse IP de visiteur transmise à un tiers, donc aucun transfert hors de l&#39;Union européenne à justifier, et compatibilité avec la politique <code>font-src &#39;self&#39;</code></td>
+</tr>
+<tr>
+<td>Sous-ensemble latin (<code>unicode-range</code>)</td>
+<td>Fichiers légers : l&#39;ensemble du dossier pèse environ 150 Ko</td>
+</tr>
+<tr>
+<td><code>font-display: swap</code></td>
+<td>Le texte s&#39;affiche tout de suite avec la police de repli, puis bascule</td>
+</tr>
+<tr>
+<td><code>&lt;link rel=&quot;preload&quot;&gt;</code> sur Inter 400 et Jost 600</td>
+<td>Les deux graisses de la première vue arrivent avant la feuille de style</td>
+</tr>
+</tbody></table></div>
+<p>Les deux polices sont sous licence SIL Open Font License 1.1, dont le texte accompagne les fichiers (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/fonts/LICENSE-inter.txt" class="external" target="_blank" rel="noopener noreferrer"><code>LICENSE-inter.txt</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/fonts/LICENSE-jost.txt" class="external" target="_blank" rel="noopener noreferrer"><code>LICENSE-jost.txt</code></a>). Cette licence autorise l&#39;embarquement et la redistribution, à condition de conserver ces fichiers.</p>
+<h2 id="identite-visuelle"><a class="anchor" href="#identite-visuelle" aria-hidden="true" tabindex="-1">#</a>Identité visuelle</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Fichier</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Logo</td>
+<td><code>brand()</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/modules/layout.js" class="external" target="_blank" rel="noopener noreferrer"><code>modules/layout.js</code></a> et <code>BRAND_WAVE</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/modules/icons.js" class="external" target="_blank" rel="noopener noreferrer"><code>modules/icons.js</code></a></td>
+<td>Mot « ETHER » + deux vagues SVG + « BAY », sous-titre « DESTINATION ». Entièrement en texte et SVG, sans image</td>
+</tr>
+<tr>
+<td>Favicon</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/img/favicon.svg" class="external" target="_blank" rel="noopener noreferrer"><code>assets/img/favicon.svg</code></a></td>
+<td>Carré arrondi vert <code>#253D2C</code>, deux vagues sable et terracotta</td>
+</tr>
+<tr>
+<td>Motif de plan</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/img/map-pattern.svg" class="external" target="_blank" rel="noopener noreferrer"><code>assets/img/map-pattern.svg</code></a></td>
+<td>Fond des sections « carte » (<code>.section--map</code>), du bloc newsletter (<code>.newsletter__box</code>) et de l&#39;encart de localisation des fiches (<code>.fiche-map</code>)</td>
+</tr>
+<tr>
+<td>Icônes</td>
+<td><code>ICONS</code> de <code>modules/icons.js</code></td>
+<td>SVG en trait, <code>stroke=&quot;currentColor&quot;</code>, toutes <code>aria-hidden=&quot;true&quot;</code> et <code>focusable=&quot;false&quot;</code></td>
+</tr>
+<tr>
+<td>Labels</td>
+<td><code>LABELS</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/data/site.js" class="external" target="_blank" rel="noopener noreferrer"><code>data/site.js</code></a></td>
+<td>Pastilles textuelles T&amp;H, DID, ISO, VÉLO avec le nom complet en <code>title</code>. Ce sont des labels fictifs, sans logo officiel</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;encart de localisation d&#39;une fiche n&#39;est pas une carte interactive : c&#39;est le motif SVG, une épingle et l&#39;adresse en texte. Aucun service de cartographie n&#39;est appelé.</p>
+<h2 id="photos"><a class="anchor" href="#photos" aria-hidden="true" tabindex="-1">#</a>Photos</h2>
+<p>Les 63 photos sont dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme/assets/img/photos" class="external" target="_blank" rel="noopener noreferrer"><code>assets/img/photos/</code></a>, pour environ 10,5 Mo au total.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Usage</th>
+<th>Largeur</th>
+<th>Exemples</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Hero et bandeaux pleine largeur</td>
+<td>1920 px</td>
+<td><code>hero-port.jpg</code>, <code>bandeau-loterie.jpg</code>, <code>bandeau-groupe.jpg</code>, <code>bandeau-greeters.jpg</code>, <code>bandeau-pros.jpg</code></td>
+</tr>
+<tr>
+<td>Cartes, fiches, articles</td>
+<td>1400 px de large, ou 1400 px de haut pour les deux photos en portrait (<code>article-lumieres.jpg</code>, <code>grand-hotel.jpg</code>)</td>
+<td><code>boulangerie-du-port.jpg</code>, <code>article-criee.jpg</code></td>
+</tr>
+</tbody></table></div>
+<p>Toutes sont des JPEG progressifs : le navigateur affiche une version floue dès les premiers octets. Selon le README du site, l&#39;ensemble pesait 215 Mo avant redimensionnement et compression.</p>
+<h3 id="nommage"><a class="anchor" href="#nommage" aria-hidden="true" tabindex="-1">#</a>Nommage</h3>
+<p>Une photo porte le nom du champ <code>visual</code> de la donnée qui l&#39;utilise, qui vaut par défaut l&#39;identifiant du lieu. <code>visualSrc(name)</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/modules/utils.js" class="external" target="_blank" rel="noopener noreferrer"><code>modules/utils.js</code></a> construit le chemin :</p>
+<div class="code-block"><div class="code-head"><span>JavaScript</span></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title function_">visualSrc</span> = (<span class="hljs-params">name</span>) =&gt; <span class="hljs-string">`assets/img/photos/<span class="hljs-subst">${name}</span>.jpg`</span>;</code></pre></div>
+<p>Pour changer la photo d&#39;un lieu, remplacer le fichier en gardant son nom. Pour partager une photo entre plusieurs contenus, renseigner le même <code>visual</code> : la tuile « Les partenaires EtherPoints » réutilise ainsi <code>loterie-citoyenne.jpg</code>.</p>
+<p>Les images des cartes sont chargées en différé (<code>loading=&quot;lazy&quot;</code>, <code>decoding=&quot;async&quot;</code>). Elles ont un texte alternatif vide (<code>alt=&quot;&quot;</code>) : elles sont décoratives, le nom du lieu ou de l&#39;événement étant toujours écrit à côté.</p>
+<h3 id="licence"><a class="anchor" href="#licence" aria-hidden="true" tabindex="-1">#</a>Licence</h3>
+<p>Les photos proviennent de Pixabay et sont utilisées selon la licence de contenu Pixabay : usage libre, y compris commercial, sans attribution obligatoire. Les crédits sont tout de même indiqués dans les mentions légales du site, avec la précision que les lieux photographiés ne se trouvent pas à EtherBay. Le dépôt ne conserve pas l&#39;URL d&#39;origine de chaque photo.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Contrainte de la licence Pixabay</th>
+<th>Respect dans le projet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pas de revente des photos telles quelles</td>
+<td>Les photos illustrent un site, elles ne sont pas distribuées seules</td>
+</tr>
+<tr>
+<td>Pas d&#39;usage trompeur laissant croire à l&#39;approbation d&#39;une personne ou d&#39;une marque visible</td>
+<td>Les commerces sont fictifs, les mentions légales le disent</td>
+</tr>
+<tr>
+<td>Les marques, logos et personnes reconnaissables restent soumis à leurs propres droits</td>
+<td>À vérifier photo par photo avant toute réutilisation hors du projet</td>
+</tr>
+</tbody></table></div>
+<p>La page <a href="../juridique/licences.html">Licences</a> récapitule les licences de tout le dépôt.</p>
+<h3 id="ajouter-une-photo"><a class="anchor" href="#ajouter-une-photo" aria-hidden="true" tabindex="-1">#</a>Ajouter une photo</h3>
+<ol>
+<li>Choisir une photo sous licence libre compatible et noter sa source.</li>
+<li>La redimensionner à 1400 px de large (1920 px pour un bandeau pleine largeur).</li>
+<li>L&#39;enregistrer en JPEG progressif sous le nom <code>&lt;visual&gt;.jpg</code>.</li>
+<li>Viser le poids des photos actuelles : 170 Ko en moyenne, 390 Ko au plus (<code>musee-beaux-arts.jpg</code>).</li>
+</ol>
+<p>L&#39;image Docker copie tout le dossier <code>assets/</code> : aucune déclaration supplémentaire n&#39;est nécessaire.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="billetterie.html"><span>Précédent</span><strong>Billetterie et commande</strong></a><a class="pager-next" href="accessibilite.html"><span>Suivant</span><strong>Accessibilité et vie privée</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/office-tourisme/charte.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#couleurs">Couleurs</a></li><li class="toc-h3"><a href="#contrastes">Contrastes</a></li><li class="toc-h2"><a href="#typographie">Typographie</a></li><li class="toc-h3"><a href="#polices-auto-hebergees">Polices auto-hébergées</a></li><li class="toc-h2"><a href="#identite-visuelle">Identité visuelle</a></li><li class="toc-h2"><a href="#photos">Photos</a></li><li class="toc-h3"><a href="#nommage">Nommage</a></li><li class="toc-h3"><a href="#licence">Licence</a></li><li class="toc-h3"><a href="#ajouter-une-photo">Ajouter une photo</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Préparer la soutenance | Documentation BlockLucky</title>
+<meta name="description" content="Ce guide prépare la démonstration de BlockLucky devant les parties prenantes de la Ville d&#39;EtherBay : le Maire, le responsable événementiel et le DSI, ainsi que">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="soutenance.html" aria-current="page">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>15. Guides pratiques</span></div>
+    <article class="markdown">
+<h1>Préparer la soutenance</h1>
+<p>Ce guide prépare la démonstration de BlockLucky devant les parties prenantes de la Ville d&#39;EtherBay : le Maire, le responsable événementiel et le DSI, ainsi que le jury. Il donne un scénario complet, minuté, sur la stack locale, avec une vraie blockchain (nœud Hardhat), un vrai smart contract et un oracle VRF local. Il liste les preuves de transparence à montrer, les réponses aux questions probables et le plan de secours.</p>
+<p>Les besoins de chaque partie prenante sont rappelés dans <a href="../presentation/besoins.html">Besoins des parties prenantes</a>. Ce qui est réel ou simulé est récapitulé dans <a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a> : le relire avant la soutenance, pour ne rien affirmer de faux.</p>
+<h2 id="ce-que-la-demonstration-prouve"><a class="anchor" href="#ce-que-la-demonstration-prouve" aria-hidden="true" tabindex="-1">#</a>Ce que la démonstration prouve</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Partie prenante</th>
+<th>Ce qu&#39;elle doit voir</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Maire</td>
+<td>Un citoyen participe sans rien connaître à la blockchain ; le gagnant est désigné sans que la Mairie puisse intervenir ; la Mairie peut tout arrêter en cas de problème</td>
+</tr>
+<tr>
+<td>Responsable événementiel</td>
+<td>Le parcours complet est fluide ; le tirage s&#39;annonce en direct ; les commerçants partenaires sont intégrés ; l&#39;Office de Tourisme fait la promotion</td>
+</tr>
+<tr>
+<td>DSI</td>
+<td>Le code est testé, analysé, conteneurisé ; les secrets et les clés sont protégés ; l&#39;exploitation est documentée ; les limites sont connues</td>
+</tr>
+</tbody></table></div>
+<h2 id="la-veille"><a class="anchor" href="#la-veille" aria-hidden="true" tabindex="-1">#</a>La veille</h2>
+<h3 id="installer-et-verifier"><a class="anchor" href="#installer-et-verifier" aria-hidden="true" tabindex="-1">#</a>Installer et vérifier</h3>
+<p>Prérequis : Docker Desktop, Node.js 22 (voir <a href="../demarrage/prerequis.html">Prérequis</a>). Installer les dépendances une fois, à l&#39;avance, avec une connexion fiable :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> backend &amp;&amp; npm ci &amp;&amp; <span class="hljs-built_in">cd</span> ..
+<span class="hljs-built_in">cd</span> frontend-web &amp;&amp; npm ci &amp;&amp; <span class="hljs-built_in">cd</span> ..
+<span class="hljs-built_in">cd</span> smart-contract &amp;&amp; npm ci &amp;&amp; <span class="hljs-built_in">cd</span> ..</code></pre></div>
+<p>Lancer la suite de tests une dernière fois pour pouvoir montrer qu&#39;elle passe :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> smart-contract &amp;&amp; npm <span class="hljs-built_in">test</span></code></pre></div>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> backend &amp;&amp; npm <span class="hljs-built_in">test</span></code></pre></div>
+<h3 id="repartir-d-un-etat-propre"><a class="anchor" href="#repartir-d-un-etat-propre" aria-hidden="true" tabindex="-1">#</a>Repartir d&#39;un état propre</h3>
+<p>Le nœud Hardhat ne garde rien entre deux démarrages : la base doit repartir de zéro en même temps que lui (voir <a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a>). À faire la veille au soir, puis de nouveau le matin :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose down -v
+docker compose up -d --<span class="hljs-built_in">wait</span></code></pre></div>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> backend
+npm run prisma:deploy
+npm run prisma:seed
+npm run dev</code></pre></div>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> frontend-web
+npm run dev</code></pre></div>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> frontend-office-tourisme
+npm run dev</code></pre></div>
+<p><code>docker compose up -d --wait</code> démarre PostgreSQL, Redis, Mailpit et le service <code>blockchain</code>, qui déploie les contrats aux adresses habituelles et lance l&#39;oracle VRF local. <code>npm run dev</code> du backend démarre l&#39;API, les workers, l&#39;indexeur et le keeper dans un seul processus (<code>RUN_WORKERS=true</code> par défaut).</p>
+<div class="hint hint-important"><p class="hint-title">Important</p>
+<p>Ne pas redémarrer le conteneur <code>blockchain</code> pendant la démonstration : il repartirait d&#39;une chaîne vide, et la base deviendrait incohérente avec elle. Le backend le signale par l&#39;erreur « Le curseur d&#39;indexation (bloc N) dépasse la tête de chaîne ».</p>
+</div>
+<h3 id="preparer-les-comptes"><a class="anchor" href="#preparer-les-comptes" aria-hidden="true" tabindex="-1">#</a>Préparer les comptes</h3>
+<p>Le seed crée trois comptes, sans portefeuille réel ; le portefeuille intégré est créé au premier achat :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Compte</th>
+<th>Rôle</th>
+<th>Usage dans la démonstration</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>maire@etherbay.fr</code></td>
+<td><code>ADMIN</code></td>
+<td>Dashboard Mairie, disjoncteur, tirage manuel</td>
+</tr>
+<tr>
+<td><code>boulangerie@etherbay.fr</code></td>
+<td><code>PARTNER</code></td>
+<td>Propriétaire de la Boulangerie du Port et du Cinéma Le Phare, validation d&#39;un code</td>
+</tr>
+<tr>
+<td><code>citoyen@etherbay.fr</code></td>
+<td><code>USER</code></td>
+<td>Citoyen déjà inscrit (250 EtherPoints)</td>
+</tr>
+</tbody></table></div>
+<p>La connexion se fait par code à 6 chiffres envoyé par email, lu dans Mailpit (<code>http://localhost:8025</code>). Le compte du Maire doit avoir activé la double authentification avant d&#39;ouvrir le dashboard : <code>requireRoles</code> refuse sinon toute route d&#39;administration (« La double authentification est obligatoire pour les comptes d&#39;administration »). La veille, se connecter avec <code>maire@etherbay.fr</code>, aller dans Profil, Sécurité, et activer la 2FA par email. En développement, la page affiche le code d&#39;activation (<code>devOtpPreview</code>).</p>
+<p>Pour la démonstration elle-même, deux nouveaux citoyens s&#39;inscrivent en direct, avec des adresses fictives non encore utilisées, par exemple <code>camille@etherbay.fr</code> et <code>dominique@etherbay.fr</code>.</p>
+<h3 id="preparer-l-ecran"><a class="anchor" href="#preparer-l-ecran" aria-hidden="true" tabindex="-1">#</a>Préparer l&#39;écran</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Onglet ou fenêtre</th>
+<th>URL</th>
+<th>Session</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Office de Tourisme</td>
+<td><code>http://localhost:4000</code></td>
+<td>aucune</td>
+</tr>
+<tr>
+<td>Citoyenne Camille</td>
+<td><code>http://localhost:3000/connexion</code></td>
+<td>fenêtre normale</td>
+</tr>
+<tr>
+<td>Citoyen Dominique</td>
+<td><code>http://localhost:3000/connexion</code></td>
+<td>fenêtre de navigation privée</td>
+</tr>
+<tr>
+<td>Maire</td>
+<td><code>http://localhost:3000/connexion</code></td>
+<td>second profil de navigateur</td>
+</tr>
+<tr>
+<td>Mailpit</td>
+<td><code>http://localhost:8025</code></td>
+<td>aucune</td>
+</tr>
+<tr>
+<td>Swagger de l&#39;API</td>
+<td><code>http://localhost:2053/api/docs</code></td>
+<td>aucune</td>
+</tr>
+<tr>
+<td>Terminal 1</td>
+<td><code>docker compose logs -f blockchain</code></td>
+<td>transactions de la chaîne en direct</td>
+</tr>
+<tr>
+<td>Terminal 2</td>
+<td>dossier du dépôt, prêt pour les commandes d&#39;avance du temps</td>
+<td>-</td>
+</tr>
+</tbody></table></div>
+<p>Le jeton de session est gardé dans le <code>localStorage</code> du navigateur : chaque personnage a besoin de sa propre fenêtre ou de son propre profil.</p>
+<h3 id="preparer-le-secours"><a class="anchor" href="#preparer-le-secours" aria-hidden="true" tabindex="-1">#</a>Préparer le secours</h3>
+<p>Enregistrer la veille une vidéo du scénario complet et une série de captures d&#39;écran (voir <a href="#plan-de-secours">Plan de secours</a>).</p>
+<h2 id="scenario"><a class="anchor" href="#scenario" aria-hidden="true" tabindex="-1">#</a>Scénario</h2>
+<p>Durée totale : environ 20 minutes, dont 5 de marge. Les étapes marquées « facultative » se sautent si le temps manque.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Durée</th>
+<th>Personnage</th>
+<th>Écran</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1. L&#39;Office de Tourisme annonce la loterie</td>
+<td>2 min</td>
+<td>visiteur</td>
+<td>site touristique</td>
+</tr>
+<tr>
+<td>2. Inscription et dotation</td>
+<td>3 min</td>
+<td>Camille</td>
+<td>web, Mailpit</td>
+</tr>
+<tr>
+<td>3. Achat de tickets</td>
+<td>2 min</td>
+<td>Camille</td>
+<td>web, terminal 1</td>
+</tr>
+<tr>
+<td>4. Ticket offert</td>
+<td>2 min</td>
+<td>Dominique</td>
+<td>web, Mailpit</td>
+</tr>
+<tr>
+<td>5. Le temps passe sur la chaîne</td>
+<td>1 min</td>
+<td>présentateur</td>
+<td>terminal 2</td>
+</tr>
+<tr>
+<td>6. Tirage et annonce du gagnant</td>
+<td>2 min</td>
+<td>tous</td>
+<td>page Tirage</td>
+</tr>
+<tr>
+<td>7. Cagnotte versée et badge POAP</td>
+<td>2 min</td>
+<td>gagnant</td>
+<td>Historique &amp; POAP</td>
+</tr>
+<tr>
+<td>8. EtherPoints chez un commerçant (facultative)</td>
+<td>2 min</td>
+<td>Camille, boulangerie</td>
+<td>Boutique, espace partenaires</td>
+</tr>
+<tr>
+<td>9. Disjoncteur</td>
+<td>2 min</td>
+<td>Maire</td>
+<td>dashboard Mairie</td>
+</tr>
+<tr>
+<td>10. Preuves de transparence</td>
+<td>2 min</td>
+<td>présentateur</td>
+<td>terminal, page Transparence</td>
+</tr>
+</tbody></table></div>
+<h3 id="1-l-office-de-tourisme-annonce-la-loterie"><a class="anchor" href="#1-l-office-de-tourisme-annonce-la-loterie" aria-hidden="true" tabindex="-1">#</a>1. L&#39;Office de Tourisme annonce la loterie</h3>
+<p>Sur <code>http://localhost:4000</code>, montrer le bandeau « Nouveauté : La Grande Loterie citoyenne », puis la fiche de l&#39;événement (<code>fiche.html?event=loterie-citoyenne</code>) : pilote pédagogique, ethers fictifs, participation réservée aux majeurs. Cliquer sur « Accéder à la loterie » : le frontend web s&#39;ouvre.</p>
+<p>Message : la Ville communique sur la loterie avec ses canaux habituels ; le site touristique ne touche à aucune donnée de la loterie (voir <a href="../office-tourisme/role.html">Rôle dans le projet</a>).</p>
+<h3 id="2-inscription-et-dotation"><a class="anchor" href="#2-inscription-et-dotation" aria-hidden="true" tabindex="-1">#</a>2. Inscription et dotation</h3>
+<p>Camille se connecte sur <code>/connexion</code> avec <code>camille@etherbay.fr</code>, coche la confirmation de majorité, puis saisit le code reçu dans Mailpit. En arrière-plan :</p>
+<ol>
+<li>un portefeuille Ethereum est créé pour elle, sa clé privée chiffrée en AES-256-GCM avec <code>ENCRYPTION_KEY</code> ;</li>
+<li>la Mairie (compte opérateur) lui verse une dotation de bienvenue de 0,1 ether fictif (<code>WELCOME_GRANT_WEI</code>) ;</li>
+<li>elle reçoit 25 EtherPoints de bienvenue et un email de bienvenue, visible dans Mailpit.</li>
+</ol>
+<p>Montrer le portefeuille intégré sur la page Billetterie ou Profil : adresse et solde. Dans le terminal 1, la transaction de dotation apparaît dans les journaux du nœud.</p>
+<p>Message : aucun prérequis technique ni financier pour le citoyen (voir <a href="../architecture/flux/inscription.html">Inscription et portefeuille</a>).</p>
+<h3 id="3-achat-de-tickets"><a class="anchor" href="#3-achat-de-tickets" aria-hidden="true" tabindex="-1">#</a>3. Achat de tickets</h3>
+<p>Camille achète 2 tickets sur <code>/billetterie</code>. La transaction <code>buyTickets</code> est signée avec son portefeuille intégré et envoyée au contrat. Montrer :</p>
+<ul>
+<li>la réponse immédiate avec l&#39;empreinte de transaction ;</li>
+<li>la fenêtre des points crédités : 50 EtherPoints par ticket, soit 100 ;</li>
+<li>les tickets dans <code>/historique</code>, avec leur numéro dans le tour.</li>
+</ul>
+<p>Le prix est de 0,01 ether fictif par ticket, plus les frais de réseau payés par la dotation.</p>
+<h3 id="4-ticket-offert"><a class="anchor" href="#4-ticket-offert" aria-hidden="true" tabindex="-1">#</a>4. Ticket offert</h3>
+<p>Dans la fenêtre privée, Dominique s&#39;inscrit avec <code>dominique@etherbay.fr</code>, puis, dans la Billetterie, choisit « Offrir un ticket » et saisit l&#39;email de Camille. Le contrat enregistre un ticket au nom de Camille, payé par Dominique (<code>buyTicketsFor</code>) ; Dominique reçoit 75 EtherPoints et Camille les 50 points du ticket. Un destinataire qui n&#39;a pas encore de compte en reçoit un, avec son portefeuille, mais aucun email ne le prévient (voir <a href="ajouter-email.html">Ajouter un email</a>).</p>
+<p>Pour avoir deux participants distincts au tirage, Dominique achète aussi 1 ticket pour lui-même. Le tour compte alors 4 tickets : 3 pour Camille, 1 pour Dominique. Le minimum pour lancer un tirage est de 2 tickets (<code>MIN_TICKETS_TO_DRAW</code>).</p>
+<h3 id="5-faire-passer-le-temps-sur-la-chaine"><a class="anchor" href="#5-faire-passer-le-temps-sur-la-chaine" aria-hidden="true" tabindex="-1">#</a>5. Faire passer le temps sur la chaîne</h3>
+<p>Un tour dure 30 minutes sur la blockchain locale (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/deploy-local.ts" class="external" target="_blank" rel="noopener noreferrer"><code>deploy-local.ts</code></a>). Plutôt qu&#39;attendre, avancer l&#39;horloge du nœud Hardhat, comme le fait le test d&#39;intégration <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/chain/onchain-lottery.chain.ts" class="external" target="_blank" rel="noopener noreferrer"><code>onchain-lottery.chain.ts</code></a>. Ouvrir d&#39;abord la page <code>/tirage</code> dans les fenêtres de Camille et de Dominique : l&#39;annonce du gagnant arrive par Socket.IO et n&#39;est affichée que par une page déjà ouverte.</p>
+<p>Avec Git Bash, macOS ou Linux :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -X POST http://127.0.0.1:8545 -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> -d <span class="hljs-string">&#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;evm_increaseTime&quot;,&quot;params&quot;:[1860]}&#x27;</span>
+curl -s -X POST http://127.0.0.1:8545 -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> -d <span class="hljs-string">&#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2,&quot;method&quot;:&quot;evm_mine&quot;,&quot;params&quot;:[]}&#x27;</span></code></pre></div>
+<p>Avec PowerShell :</p>
+<div class="code-block"><div class="code-head"><span>PowerShell</span></div><pre><code class="hljs language-powershell"><span class="hljs-built_in">Invoke-RestMethod</span> <span class="hljs-literal">-Uri</span> http://<span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>:<span class="hljs-number">8545</span> <span class="hljs-literal">-Method</span> Post <span class="hljs-literal">-ContentType</span> <span class="hljs-string">&#x27;application/json&#x27;</span> <span class="hljs-literal">-Body</span> <span class="hljs-string">&#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;evm_increaseTime&quot;,&quot;params&quot;:[1860]}&#x27;</span>
+<span class="hljs-built_in">Invoke-RestMethod</span> <span class="hljs-literal">-Uri</span> http://<span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>:<span class="hljs-number">8545</span> <span class="hljs-literal">-Method</span> Post <span class="hljs-literal">-ContentType</span> <span class="hljs-string">&#x27;application/json&#x27;</span> <span class="hljs-literal">-Body</span> <span class="hljs-string">&#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2,&quot;method&quot;:&quot;evm_mine&quot;,&quot;params&quot;:[]}&#x27;</span></code></pre></div>
+<p><code>evm_increaseTime</code> avance l&#39;horloge de 1 860 secondes (31 minutes) pour les prochains blocs ; <code>evm_mine</code> produit un bloc avec cette nouvelle heure. La valeur couvre un tour entier, quel que soit le temps déjà écoulé depuis son ouverture.</p>
+<h3 id="6-tirage-et-annonce-du-gagnant"><a class="anchor" href="#6-tirage-et-annonce-du-gagnant" aria-hidden="true" tabindex="-1">#</a>6. Tirage et annonce du gagnant</h3>
+<p>Rien à faire : en moins de 15 secondes, la chaîne d&#39;automatismes suivante s&#39;exécute.</p>
+<div class="diagram"><pre class="mermaid">sequenceDiagram
+    participant K as Keeper du backend
+    participant C as Contrat BlockLucky
+    participant V as Oracle VRF local
+    participant I as Indexeur
+    participant W as Worker
+    participant P as Pages Tirage
+    K-&gt;&gt;C: isDrawReady ? oui, requestDraw()
+    C-&gt;&gt;V: requestRandomWords
+    C--&gt;&gt;I: DrawRequested
+    V-&gt;&gt;C: fulfillRandomWords
+    C-&gt;&gt;C: gagnant = ticket aléa modulo nombre de tickets
+    C--&gt;&gt;I: WinnerPicked, puis RoundOpened du tour suivant
+    I-&gt;&gt;P: draw:winner par Socket.IO
+    I-&gt;&gt;W: CLAIM_PRIZE pour le gagnant
+    W-&gt;&gt;C: claimPrize() signé par le portefeuille du gagnant
+    C--&gt;&gt;I: PrizeClaimed</pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Composant</th>
+<th>Fréquence</th>
+<th>Fichier</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Keeper</td>
+<td>toutes les 10 s (<code>KEEPER_INTERVAL_MS</code>)</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.keeper.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lottery.keeper.ts</code></a></td>
+</tr>
+<tr>
+<td>Oracle VRF local</td>
+<td>toutes les 2 s</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/local-vrf-responder.ts" class="external" target="_blank" rel="noopener noreferrer"><code>local-vrf-responder.ts</code></a></td>
+</tr>
+<tr>
+<td>Indexeur</td>
+<td>toutes les 3 s (<code>INDEXER_INTERVAL_MS</code>)</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.indexer.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lottery.indexer.ts</code></a></td>
+</tr>
+</tbody></table></div>
+<p>La page <code>/tirage</code> passe par « Tirage en cours », puis affiche l&#39;adresse du portefeuille gagnant. Pour une mise en scène plus parlante, le Maire peut déclencher le tirage lui-même depuis <code>/mairie/securite</code> (« Lancer le tirage VRF ») juste après l&#39;avance du temps, avant le passage du keeper.</p>
+<p>Message : personne ne choisit le gagnant. La Mairie peut demander le tirage, comme n&#39;importe qui (<code>requestDraw</code> est publique), mais le résultat vient de l&#39;oracle et le calcul est fait par le contrat.</p>
+<h3 id="7-cagnotte-versee-et-badge-poap"><a class="anchor" href="#7-cagnotte-versee-et-badge-poap" aria-hidden="true" tabindex="-1">#</a>7. Cagnotte versée et badge POAP</h3>
+<p>Le worker réclame la cagnotte au nom du gagnant, sans action de sa part. Sur 4 tickets à 0,01, la collecte est de 0,04 ether fictif : la commission de la Mairie est de 10 % (<code>MUNICIPALITY_FEE_BPS</code> = 1000), le gagnant reçoit 0,036. Dans la fenêtre du gagnant :</p>
+<ul>
+<li>le solde du portefeuille a augmenté d&#39;un peu moins de 0,036 : la transaction de retrait est signée par son portefeuille, qui en paie les frais ;</li>
+<li>la carte « Félicitations » apparaît sur l&#39;accueil si l&#39;annonce a été reçue dans la session, par exemple sur la page Tirage ; son bouton de retrait répond que la cagnotte a déjà été versée ;</li>
+<li>l&#39;onglet POAP de <code>/historique</code> montre le badge de participation du tour, frappé par l&#39;opérateur après le premier achat.</li>
+</ul>
+<p>Les métadonnées du badge sont servies par l&#39;API : <code>http://localhost:2053/api/v1/lottery/poap/1.json</code> et son visuel <code>http://localhost:2053/api/v1/lottery/poap/1.svg</code> (remplacer <code>1</code> par le numéro du tour).</p>
+<h3 id="8-etherpoints-chez-un-commercant-facultative"><a class="anchor" href="#8-etherpoints-chez-un-commercant-facultative" aria-hidden="true" tabindex="-1">#</a>8. EtherPoints chez un commerçant (facultative)</h3>
+<p>Camille a 175 EtherPoints : 25 de bienvenue, 100 pour ses deux tickets et 50 pour le ticket offert. Dans la Boutique, elle échange 100 points contre « -15% sur les viennoiseries et pains spéciaux » de la Boulangerie du Port et obtient un code unique, aussi envoyé par email (Mailpit). Dans le profil du Maire, ou une autre fenêtre, se connecter avec <code>boulangerie@etherbay.fr</code>, ouvrir <code>/partenaire/validation</code> et saisir le code : il est marqué utilisé. Une seconde saisie est refusée.</p>
+<p>Message : l&#39;économie locale profite de la loterie (voir <a href="../architecture/flux/recompense.html">Échange de récompense</a>).</p>
+<h3 id="9-disjoncteur"><a class="anchor" href="#9-disjoncteur" aria-hidden="true" tabindex="-1">#</a>9. Disjoncteur</h3>
+<p>Le Maire ouvre <code>/mairie/securite</code> et clique sur « Mettre le Smart Contract en pause », avec un motif. La transaction <code>pause()</code> part du compte opérateur, qui détient <code>PAUSER_ROLE</code>. Camille tente un achat : refus avec le message « Le Smart Contract est temporairement en pause de sécurité par la Mairie. » (statut 503). Le Maire réactive les participations. Montrer l&#39;entrée correspondante dans <code>/mairie/audit</code>.</p>
+<p>Message : en cas d&#39;incident, la Mairie arrête tout en un clic, et l&#39;action est tracée. La pause bloque les achats et les tirages, mais pas <code>claimPrize</code> ni <code>claimRefund</code> : même en pause, personne ne peut empêcher un gagnant ou un participant remboursé de récupérer ses fonds. Voir <a href="../architecture/flux/disjoncteur.html">Disjoncteur</a>.</p>
+<h3 id="10-preuves-de-transparence"><a class="anchor" href="#10-preuves-de-transparence" aria-hidden="true" tabindex="-1">#</a>10. Preuves de transparence</h3>
+<p>Lire l&#39;état du tour terminé directement dans le contrat, sans passer par l&#39;API ni par la base. Depuis <code>backend/</code>, avec le numéro du tour en argument :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> backend
+node -e <span class="hljs-string">&#x27;
+const { JsonRpcProvider, Contract, formatEther } = require(&quot;ethers&quot;);
+const abi = require(&quot;./src/blockchain/abi/BlockLucky.json&quot;);
+const lottery = new Contract(&quot;0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9&quot;, abi, new JsonRpcProvider(&quot;http://127.0.0.1:8545&quot;));
+(async () =&gt; {
+  const id = BigInt(process.argv[1] ?? (await lottery.currentRoundId()));
+  const r = await lottery.getRound(id);
+  console.log({
+    tour: Number(id),
+    statut: [&quot;Open&quot;, &quot;Drawing&quot;, &quot;Completed&quot;, &quot;Cancelled&quot;][Number(r.status)],
+    tickets: Number(r.ticketCount),
+    collecte: formatEther(r.totalCollected),
+    gagnant: r.winner,
+    ticketGagnant: Number(r.winningTicket),
+    cagnotte: formatEther(r.prize),
+    versee: r.prizeClaimed,
+    requeteVrf: r.vrfRequestId.toString(),
+    commission: formatEther(await lottery.accruedFees()),
+    pause: await lottery.paused(),
+  });
+})();
+&#x27;</span> 1</code></pre></div>
+<p>Les valeurs affichées doivent correspondre à celles de l&#39;application : c&#39;est la base qui recopie la chaîne, pas l&#39;inverse.</p>
+<h2 id="points-de-transparence-a-montrer"><a class="anchor" href="#points-de-transparence-a-montrer" aria-hidden="true" tabindex="-1">#</a>Points de transparence à montrer</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Affirmation</th>
+<th>Preuve</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Le code du contrat est public</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>BlockLucky.sol</code></a>, 415 lignes ; sur Sepolia, code vérifié sur Etherscan</td>
+</tr>
+<tr>
+<td>Chaque ticket est inscrit sur la chaîne</td>
+<td><code>ticketOwner(tour, numéro)</code> et l&#39;événement <code>TicketsPurchased</code> ; l&#39;indexeur les recopie en base, pas l&#39;inverse</td>
+</tr>
+<tr>
+<td>Personne ne choisit le gagnant</td>
+<td><code>fulfillRandomWords</code> : <code>gagnant = ticketOwners[aléa % nombre de tickets]</code> ; seul le coordinateur VRF peut appeler la fonction</td>
+</tr>
+<tr>
+<td>Le tirage ne peut pas être bloqué</td>
+<td><code>requestDraw</code> est appelable par tout le monde dès que le tour est complet ou échu ; <code>retryDraw</code> relance un oracle muet après <code>drawTimeout</code></td>
+</tr>
+<tr>
+<td>La commission est plafonnée</td>
+<td>10 % par défaut, refus au-delà de 20 % (<code>MAX_FEE_BPS = 2000</code>) ; seule la commission est retirable vers la trésorerie</td>
+</tr>
+<tr>
+<td>Les fonds ne peuvent pas rester bloqués</td>
+<td>cagnotte et remboursements en retrait (<code>claimPrize</code>, <code>claimRefund</code>), non bloqués par la pause ; un tour échu sans assez de participants est annulé et intégralement remboursable</td>
+</tr>
+<tr>
+<td>Le jeu est responsable</td>
+<td>plafond de tickets par participant et par tour (<code>maxTicketsPerPlayer</code>, 100 par défaut), plafond personnel réglable dans le profil, participation réservée aux majeurs</td>
+</tr>
+<tr>
+<td>Le code est vérifié</td>
+<td>47 tests de contrat dont 4 de fuzzing, 100 % des lignes couvertes, Slither sans constat Medium, test d&#39;intégration du backend sur un vrai nœud (voir <a href="../contribuer/tests-qualite.html">Tests et qualité</a>)</td>
+</tr>
+<tr>
+<td>Les actions de la Mairie sont tracées</td>
+<td>journal d&#39;audit <code>/mairie/audit</code> : disjoncteur, retraits de trésorerie, partenaires</td>
+</tr>
+<tr>
+<td>Les règles sont expliquées aux citoyens</td>
+<td>page publique <code>/transparence</code></td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Sur la blockchain locale, l&#39;aléa vient du coordinateur simulé <code>VRFCoordinatorV2_5Mock</code> : il calcule les nombres aléatoires à partir de l&#39;identifiant de la requête (<code>keccak256(requestId, i)</code>), donc de façon prévisible, et l&#39;oracle local est un simple script. C&#39;est suffisant pour démontrer le circuit, pas l&#39;imprévisibilité. Sur Sepolia, le coordinateur est celui de Chainlink VRF v2.5, qui fournit un aléa accompagné d&#39;une preuve cryptographique vérifiée par le contrat du coordinateur. Le dire avant que la question ne soit posée.</p>
+</div>
+<h2 id="questions-probables"><a class="anchor" href="#questions-probables" aria-hidden="true" tabindex="-1">#</a>Questions probables</h2>
+<h3 id="le-maire"><a class="anchor" href="#le-maire" aria-hidden="true" tabindex="-1">#</a>Le Maire</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Réponse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Combien cela coûte-t-il aux citoyens ?</td>
+<td>Rien. Les ethers sont fictifs, sur un réseau de test, sans valeur monétaire. La dotation de bienvenue paie les tickets et les frais.</td>
+</tr>
+<tr>
+<td>La Mairie peut-elle truquer le tirage ?</td>
+<td>Non. Le gagnant est calculé par le contrat à partir de l&#39;aléa de Chainlink VRF. La Mairie peut déclencher le tirage ou annuler un tour (avec remboursement intégral), pas choisir le gagnant. Chacun peut le vérifier sur l&#39;explorateur.</td>
+</tr>
+<tr>
+<td>Et si quelque chose tourne mal le jour du tirage ?</td>
+<td>Le disjoncteur met le contrat en pause en un clic. Les fonds restent retirables par leurs propriétaires. Un tour peut être annulé et chaque participant remboursé.</td>
+</tr>
+<tr>
+<td>Est-ce légal ?</td>
+<td>Le pilote est pédagogique et sans enjeu financier réel. Le passage à de vrais fonds poserait la question du statut de loterie et de MiCA : c&#39;est documenté dans <a href="../juridique/veille-juridique.html">Veille juridique</a> et <a href="../juridique/points-a-valider.html">Points à valider</a>.</td>
+</tr>
+<tr>
+<td>Les mineurs peuvent-ils jouer ?</td>
+<td>La majorité est déclarée à l&#39;inscription (case obligatoire) ; il n&#39;y a pas de vérification d&#39;identité.</td>
+</tr>
+<tr>
+<td>Que deviennent les données des citoyens ?</td>
+<td>Email et portefeuille seulement ; export et suppression RGPD dans le profil. L&#39;adresse du portefeuille reste sur la blockchain, pseudonyme mais publique (voir <a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a>).</td>
+</tr>
+</tbody></table></div>
+<h3 id="le-responsable-evenementiel"><a class="anchor" href="#le-responsable-evenementiel" aria-hidden="true" tabindex="-1">#</a>Le responsable événementiel</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Réponse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Combien de participants ?</td>
+<td>Jusqu&#39;à 10 000 tickets par tour (<code>MAX_TICKETS</code>), 100 par participant au plus.</td>
+</tr>
+<tr>
+<td>Comment se passe le tirage public ?</td>
+<td>La page Tirage affiche le compte à rebours, la salle d&#39;attente, le chat et l&#39;annonce en direct ; elle peut être projetée. Le tirage part automatiquement à l&#39;échéance.</td>
+</tr>
+<tr>
+<td>Peut-on tenir la charge le soir du tirage ?</td>
+<td>Des scénarios de charge k6 existent (charge nominale, pic ×10) avec des objectifs de latence (voir <a href="../infrastructure/tests-charge.html">Tests de charge</a>). Ils n&#39;ont pas été rejoués sur l&#39;infrastructure finale.</td>
+</tr>
+<tr>
+<td>Comment un commerçant rejoint-il le programme ?</td>
+<td>Création de son compte, rôle partenaire attribué par la Mairie, offre et codes depuis l&#39;espace partenaires (voir <a href="ajouter-partenaire.html">Ajouter un commerçant partenaire</a>).</td>
+</tr>
+<tr>
+<td>Y a-t-il une application mobile ?</td>
+<td>Oui, Expo pour iOS et Android, avec les fonctions citoyennes. Aucune publication sur les magasins d&#39;applications n&#39;est documentée dans le dépôt (voir <a href="../mobile/builds-publication.html">Builds et publication</a>).</td>
+</tr>
+<tr>
+<td>La communication ?</td>
+<td>Site de l&#39;Office de Tourisme, parrainage, quêtes, badges POAP (voir <a href="../presentation/marketing.html">Volet marketing</a>).</td>
+</tr>
+</tbody></table></div>
+<h3 id="le-dsi"><a class="anchor" href="#le-dsi" aria-hidden="true" tabindex="-1">#</a>Le DSI</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Réponse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Qui détient les clés des portefeuilles ?</td>
+<td>Le backend : le modèle est custodial (ADR 0004). Les clés sont chiffrées en AES-256-GCM avec <code>ENCRYPTION_KEY</code>, qui doit être sauvegardée à part. Acceptable avec des ethers fictifs, pas avec de vrais fonds.</td>
+</tr>
+<tr>
+<td>Que se passe-t-il si le compte opérateur est compromis ?</td>
+<td>Il peut mettre en pause, annuler un tour, frapper des badges et dépenser son solde, mais pas toucher à la cagnotte d&#39;un gagnant ni à la configuration (réservée à l&#39;administrateur). L&#39;administrateur lui retire ses rôles (<code>revokeRole</code>).</td>
+</tr>
+<tr>
+<td>Comment sont protégés les comptes ?</td>
+<td>Connexion sans mot de passe par code email, 2FA par application ou email, 2FA obligatoire pour les administrateurs, droits relus en base à chaque requête (voir <a href="../securite/authentification.html">Authentification et 2FA</a>).</td>
+</tr>
+<tr>
+<td>Quelle CI ?</td>
+<td>Typecheck, lint, tests, migrations sur base vierge, dérive du schéma, contrats (couverture 100 %, Slither), test sur une vraie chaîne, images Docker avec Trivy, gitleaks, CodeQL, Dependabot.</td>
+</tr>
+<tr>
+<td>Et si le serveur tombe ?</td>
+<td>La blockchain est la source de vérité : la base se reconstruit depuis la chaîne en remettant le curseur de l&#39;indexeur au bloc de déploiement. Sauvegardes PostgreSQL et runbooks documentés.</td>
+</tr>
+<tr>
+<td>Peut-on mettre à jour le contrat ?</td>
+<td>Non, il est immuable : une nouvelle version est un nouveau déploiement (voir <a href="redeployer-sepolia.html">Redéployer sur Sepolia</a>). La configuration des tours, l&#39;oracle et la trésorerie se modifient sans redéploiement.</td>
+</tr>
+<tr>
+<td>Quelles sont les limites connues ?</td>
+<td>Voir <a href="../annexes/dette-technique.html">Dette technique et limites</a> et <a href="../smart-contracts/limites.html">Limites connues</a>. Les citer soi-même renforce la crédibilité.</td>
+</tr>
+<tr>
+<td>Peut-on reprendre le projet ?</td>
+<td>Cette documentation, les ADR, les guides pas à pas et la liste de contrôle <a href="../contribuer/mise-en-production.html">Avant une mise en production</a>.</td>
+</tr>
+</tbody></table></div>
+<h2 id="plan-de-secours"><a class="anchor" href="#plan-de-secours" aria-hidden="true" tabindex="-1">#</a>Plan de secours</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Incident</th>
+<th>Réaction immédiate</th>
+<th>Repli</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Le code de connexion n&#39;arrive pas dans Mailpit</td>
+<td>Vérifier <code>docker compose ps</code> ; le code figure aussi dans la réponse de <code>POST /api/v1/auth/login</code> (champ <code>devOtpPreview</code>), visible dans l&#39;onglet Réseau des outils de développement</td>
+<td>Se connecter avec un compte déjà ouvert dans une autre fenêtre</td>
+</tr>
+<tr>
+<td>Le tirage ne part pas après l&#39;avance du temps</td>
+<td>Vérifier que le tour a au moins 2 tickets ; relancer <code>evm_mine</code> ; déclencher le tirage depuis <code>/mairie/securite</code></td>
+<td>Montrer le test <code>npm run test:chain</code> ou la vidéo</td>
+</tr>
+<tr>
+<td>Le tirage reste « en cours »</td>
+<td>L&#39;oracle local ne répond plus : <code>docker compose logs blockchain</code> ; relancer l&#39;oracle dans le conteneur sans le redémarrer : <code>docker compose exec -d blockchain npx hardhat run scripts/local-vrf-responder.ts --network localhost</code></td>
+<td>Vidéo</td>
+</tr>
+<tr>
+<td>L&#39;achat répond « Ce tour est terminé »</td>
+<td>Le tour a dépassé son échéance sans tirage. Avancer le temps et laisser le keeper clore ou tirer le tour, puis racheter dans le nouveau tour</td>
+<td>-</td>
+</tr>
+<tr>
+<td>La page Tirage n&#39;affiche pas le gagnant</td>
+<td>Elle n&#39;était pas ouverte au moment de l&#39;annonce. Montrer la carte « Félicitations » de l&#39;accueil, le solde, ou le script de lecture du contrat</td>
+<td>Captures</td>
+</tr>
+<tr>
+<td>Le backend s&#39;arrête</td>
+<td><code>npm run dev</code> à nouveau : l&#39;indexeur reprend depuis son curseur, rien n&#39;est perdu</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Le conteneur <code>blockchain</code> a redémarré</td>
+<td>Base et chaîne sont désynchronisées : reprendre la procédure « Repartir d&#39;un état propre » (2 minutes), refaire les étapes 2 à 4</td>
+<td>Vidéo pendant la remise en état</td>
+</tr>
+<tr>
+<td>Le service <code>blockchain</code> ne démarre pas, PostgreSQL et Redis fonctionnent</td>
+<td><code>docker compose logs blockchain</code></td>
+<td>Mode simulé, à annoncer clairement : <code>BLOCKCHAIN_MODE=simulated</code> dans <code>backend/.env</code>, sur une base réinitialisée. L&#39;interface affiche « Mode démonstration » ; aucune transaction réelle, le tirage est simulé par le backend</td>
+</tr>
+<tr>
+<td>Docker ne démarre pas du tout</td>
+<td>-</td>
+<td>PostgreSQL et Redis tournent aussi dans Docker : rien ne fonctionne sans lui. Vidéo et captures</td>
+</tr>
+<tr>
+<td>Pas de vidéoprojecteur ou réseau instable</td>
+<td>-</td>
+<td>Vidéo hors ligne et captures</td>
+</tr>
+</tbody></table></div>
+<p>Le mode simulé est un dernier recours : il prouve le parcours, pas le smart contract. Ne pas le présenter comme le fonctionnement réel (voir <a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a>).</p>
+<h3 id="apres-l-avance-du-temps"><a class="anchor" href="#apres-l-avance-du-temps" aria-hidden="true" tabindex="-1">#</a>Après l&#39;avance du temps</h3>
+<p>L&#39;horloge de la chaîne est désormais en avance d&#39;une trentaine de minutes sur l&#39;horloge réelle. Le tour suivant s&#39;ouvre avec une échéance calculée sur l&#39;heure de la chaîne, et le compte à rebours de l&#39;application, calculé avec l&#39;heure réelle, affiche donc environ 30 minutes de plus que la durée restante réelle. Le dire si quelqu&#39;un le remarque, ou repartir d&#39;un état propre avant une seconde démonstration.</p>
+<h2 id="liste-de-controle-du-jour-j"><a class="anchor" href="#liste-de-controle-du-jour-j" aria-hidden="true" tabindex="-1">#</a>Liste de contrôle du jour J</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Base et chaîne réinitialisées le matin, seed lancé.</li>
+<li><input disabled="" type="checkbox"> 2FA du compte <code>maire@etherbay.fr</code> activée.</li>
+<li><input disabled="" type="checkbox"> Backend, frontend web et Office de Tourisme démarrés, <code>docker compose ps</code> sain.</li>
+<li><input disabled="" type="checkbox"> Fenêtres et profils de navigateur ouverts, Mailpit vide.</li>
+<li><input disabled="" type="checkbox"> Commandes d&#39;avance du temps et de lecture du contrat prêtes dans un terminal.</li>
+<li><input disabled="" type="checkbox"> Pages <code>/tirage</code> ouvertes avant l&#39;avance du temps.</li>
+<li><input disabled="" type="checkbox"> Vidéo et captures de secours disponibles hors ligne.</li>
+<li><input disabled="" type="checkbox"> Répartition des rôles entre les membres de l&#39;équipe (présentateur, Camille, Dominique, Maire).</li>
+<li><input disabled="" type="checkbox"> Limites et parties simulées prêtes à être énoncées.</li>
+</ul>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="redeployer-sepolia.html"><span>Précédent</span><strong>Redéployer sur Sepolia</strong></a><a class="pager-next" href="../annexes/glossaire.html"><span>Suivant</span><strong>Glossaire</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/guides/soutenance.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#ce-que-la-demonstration-prouve">Ce que la démonstration prouve</a></li><li class="toc-h2"><a href="#la-veille">La veille</a></li><li class="toc-h3"><a href="#installer-et-verifier">Installer et vérifier</a></li><li class="toc-h3"><a href="#repartir-d-un-etat-propre">Repartir d&#39;un état propre</a></li><li class="toc-h3"><a href="#preparer-les-comptes">Préparer les comptes</a></li><li class="toc-h3"><a href="#preparer-l-ecran">Préparer l&#39;écran</a></li><li class="toc-h3"><a href="#preparer-le-secours">Préparer le secours</a></li><li class="toc-h2"><a href="#scenario">Scénario</a></li><li class="toc-h3"><a href="#1-l-office-de-tourisme-annonce-la-loterie">1. L&#39;Office de Tourisme annonce la loterie</a></li><li class="toc-h3"><a href="#2-inscription-et-dotation">2. Inscription et dotation</a></li><li class="toc-h3"><a href="#3-achat-de-tickets">3. Achat de tickets</a></li><li class="toc-h3"><a href="#4-ticket-offert">4. Ticket offert</a></li><li class="toc-h3"><a href="#5-faire-passer-le-temps-sur-la-chaine">5. Faire passer le temps sur la chaîne</a></li><li class="toc-h3"><a href="#6-tirage-et-annonce-du-gagnant">6. Tirage et annonce du gagnant</a></li><li class="toc-h3"><a href="#7-cagnotte-versee-et-badge-poap">7. Cagnotte versée et badge POAP</a></li><li class="toc-h3"><a href="#8-etherpoints-chez-un-commercant-facultative">8. EtherPoints chez un commerçant (facultative)</a></li><li class="toc-h3"><a href="#9-disjoncteur">9. Disjoncteur</a></li><li class="toc-h3"><a href="#10-preuves-de-transparence">10. Preuves de transparence</a></li><li class="toc-h2"><a href="#points-de-transparence-a-montrer">Points de transparence à montrer</a></li><li class="toc-h2"><a href="#questions-probables">Questions probables</a></li><li class="toc-h3"><a href="#le-maire">Le Maire</a></li><li class="toc-h3"><a href="#le-responsable-evenementiel">Le responsable événementiel</a></li><li class="toc-h3"><a href="#le-dsi">Le DSI</a></li><li class="toc-h2"><a href="#plan-de-secours">Plan de secours</a></li><li class="toc-h3"><a href="#apres-l-avance-du-temps">Après l&#39;avance du temps</a></li><li class="toc-h2"><a href="#liste-de-controle-du-jour-j">Liste de contrôle du jour J</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

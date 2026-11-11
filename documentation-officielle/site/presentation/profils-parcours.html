@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profils et parcours | Documentation BlockLucky</title>
+<meta name="description" content="Cette page décrit qui utilise BlockLucky et comment. Elle croise deux sources : les profils de travail et le parcours conçus par l&#39;équipe dans son livrable « Re">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="profils-parcours.html" aria-current="page">Profils et parcours</a></div></li><li><div class="nav-row"><a href="fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>1. Présentation du projet</span></div>
+    <article class="markdown">
+<h1>Profils et parcours</h1>
+<p>Cette page décrit qui utilise BlockLucky et comment. Elle croise deux sources : les profils de travail et le parcours conçus par l&#39;équipe dans son livrable « Recherche utilisateurs et parcours » (dossier 03, daté du 6 novembre 2026), et les rôles et écrans réellement implémentés dans le code.</p>
+<h2 id="les-profils-de-travail"><a class="anchor" href="#les-profils-de-travail" aria-hidden="true" tabindex="-1">#</a>Les profils de travail</h2>
+<p>Le livrable de recherche définit quatre profils hypothétiques. Ce ne sont pas des personas validés : l&#39;équipe précise qu&#39;ils gardent le statut d&#39;hypothèses tant que les entretiens et les tests n&#39;ont pas eu lieu. Ils servent au recrutement des testeurs et à la conception des écrans.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Profil</th>
+<th>Besoin supposé</th>
+<th>Question à vérifier</th>
+<th>Réponse prévue dans le produit</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Personne de 18 à 35 ans à l&#39;aise sur téléphone</td>
+<td>Participer rapidement et retrouver son ticket</td>
+<td>Le vocabulaire et la connexion provoquent-ils un abandon ?</td>
+<td>Connexion par code email, achat en un geste, application mobile, historique des tickets</td>
+</tr>
+<tr>
+<td>Adulte curieux, peu familier de la blockchain</td>
+<td>Comprendre le montant engagé et le gain</td>
+<td>Peut-il expliquer le caractère fictif des ethers ?</td>
+<td>Mention « ETH fictif » sur chaque montant, case de compréhension avant l&#39;achat, charte de transparence</td>
+</tr>
+<tr>
+<td>Personne ayant besoin d&#39;un accompagnement</td>
+<td>Obtenir de l&#39;aide et lire facilement les écrans</td>
+<td>Peut-elle participer avec le dispositif proposé ?</td>
+<td>Page d&#39;aide (<code>/profil/aide</code>), thème clair ou sombre, navigation clavier, textes en français et en anglais</td>
+</tr>
+<tr>
+<td>Agent ou relais local</td>
+<td>Aider sans accéder aux secrets du compte</td>
+<td>Les réponses de la FAQ suffisent-elles ?</td>
+<td>Aucun secret à transmettre : pas de mot de passe ni de phrase de récupération, la clé du portefeuille reste chiffrée côté serveur</td>
+</tr>
+</tbody></table></div>
+<p>La cible principale reste celle du kickoff : les 18 à 35 ans, soit 35 % des 120 000 habitants. Le livrable marketing ouvre le dispositif à tous les adultes pour répondre à l&#39;objectif d&#39;inclusion.</p>
+<h3 id="le-protocole-de-recherche-prevu"><a class="anchor" href="#le-protocole-de-recherche-prevu" aria-hidden="true" tabindex="-1">#</a>Le protocole de recherche prévu</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Effectif (hypothèse H02)</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Entretiens courts</td>
+<td>6 à 8 personnes</td>
+<td>Questionnaire de neuf questions : tranche d&#39;âge, pratique des événements locaux, connaissance de la blockchain, freins, confiance dans le tirage, aide souhaitée</td>
+</tr>
+<tr>
+<td>Tests de parcours modérés</td>
+<td>5 à 8 personnes</td>
+<td>Découvrir l&#39;événement, lire les règles, participer avec des unités de test, retrouver son ticket et le résultat</td>
+</tr>
+</tbody></table></div>
+<p>Le seuil de décision pour envisager un pilote (hypothèse H03) est d&#39;au moins 4 parcours réussis sans aide critique et 4 reformulations correctes sur 5. Une double confirmation ou un montant mal compris est un incident critique à corriger avant toute ouverture. Ces tests restent à réaliser.</p>
+<h2 id="les-roles-dans-le-code"><a class="anchor" href="#les-roles-dans-le-code" aria-hidden="true" tabindex="-1">#</a>Les rôles dans le code</h2>
+<p>Le modèle de données connaît trois rôles (énumération <code>Role</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/schema.prisma" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/schema.prisma</code></a>). Les visiteurs non connectés forment un quatrième profil.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Profil</th>
+<th>Rôle</th>
+<th>Espaces accessibles</th>
+<th>Page d&#39;arrivée après connexion</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Visiteur</td>
+<td>aucun</td>
+<td>Page municipale publique, transparence, confidentialité, mentions légales, invitation, site de l&#39;Office de Tourisme</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Citoyen</td>
+<td><code>USER</code></td>
+<td>Espace citoyen web et application mobile</td>
+<td><code>/accueil</code></td>
+</tr>
+<tr>
+<td>Commerçant partenaire</td>
+<td><code>PARTNER</code></td>
+<td>Espace partenaire web</td>
+<td><code>/partenaire</code></td>
+</tr>
+<tr>
+<td>Mairie (administrateur)</td>
+<td><code>ADMIN</code></td>
+<td>Dashboard Mairie et espace partenaire</td>
+<td><code>/mairie</code></td>
+</tr>
+</tbody></table></div>
+<p>La redirection après connexion est faite par <code>homeForRole</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/hooks/useAuth.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/hooks/useAuth.ts</code></a>. Le contrôle réel des droits est fait par le backend : <code>requireRoles</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/rbac.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/rbac.middleware.ts</code></a> relit le rôle en base à chaque requête et refuse un administrateur qui n&#39;a pas activé la double authentification. La matrice complète est dans <a href="../securite/autorisations.html">Autorisations et matrice des droits</a>.</p>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Aucun écran ne permet de créer un compte partenaire ou administrateur. Tout nouveau compte est un citoyen (<code>USER</code>). Le changement de rôle se fait aujourd&#39;hui directement en base ; les comptes de démonstration sont créés par le seed (<a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a>).</p>
+</div>
+<h2 id="le-parcours-principal-du-citoyen"><a class="anchor" href="#le-parcours-principal-du-citoyen" aria-hidden="true" tabindex="-1">#</a>Le parcours principal du citoyen</h2>
+<p>L&#39;équipe a conçu un parcours en six étapes, chacune instrumentée par un événement analytique. Le tableau reprend la conception du livrable et indique ce que fait le code.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Attente du citoyen</th>
+<th>Réponse de l&#39;interface</th>
+<th>Événement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Découvrir</td>
+<td>Savoir qui organise</td>
+<td>Page municipale publique <code>/</code> qui identifie la Mairie et l&#39;objet pédagogique</td>
+<td><code>landing_view</code></td>
+</tr>
+<tr>
+<td>Comprendre</td>
+<td>Connaître les règles et la valeur engagée</td>
+<td>Règles et charte de transparence sur <code>/transparence</code></td>
+<td><code>rules_view</code></td>
+</tr>
+<tr>
+<td>Accéder</td>
+<td>Comprendre le compte et les données</td>
+<td>Onboarding en quatre écrans, déclaration de majorité, saisie de l&#39;email puis du code</td>
+<td><code>access_started</code></td>
+</tr>
+<tr>
+<td>Participer</td>
+<td>Confirmer une seule action</td>
+<td>Billetterie : quantité, total en ETH fictif, case de compréhension, bouton bloqué pendant l&#39;envoi</td>
+<td><code>ticket_submitted</code></td>
+</tr>
+<tr>
+<td>Recevoir</td>
+<td>Retrouver une confirmation</td>
+<td>Ticket affiché comme confirmé une fois la transaction minée et indexée, historique avec lien vers l&#39;explorateur</td>
+<td><code>ticket_confirmed</code></td>
+</tr>
+<tr>
+<td>Vérifier</td>
+<td>Comprendre le résultat</td>
+<td>Salle de tirage : identifiant de la requête VRF, annonce du gagnant en direct</td>
+<td><code>result_view</code></td>
+</tr>
+</tbody></table></div>
+<div class="diagram"><pre class="mermaid">sequenceDiagram
+    participant C as Citoyen
+    participant W as Frontend web
+    participant B as Backend
+    participant K as Contrat BlockLucky
+    C-&gt;&gt;W: Ouvre la page municipale
+    C-&gt;&gt;W: Lit les règles
+    C-&gt;&gt;W: Saisit son email et confirme sa majorité
+    W-&gt;&gt;B: POST /auth/login
+    B--&gt;&gt;C: Code à 6 chiffres par email
+    C-&gt;&gt;W: Saisit le code
+    W-&gt;&gt;B: POST /auth/2fa/verify
+    B-&gt;&gt;B: Crée le portefeuille et verse la dotation
+    C-&gt;&gt;W: Confirme l&#39;achat d&#39;un ticket
+    W-&gt;&gt;B: POST /lottery/buy
+    B-&gt;&gt;K: buyTickets signé par le portefeuille du citoyen
+    K--&gt;&gt;B: Événement TicketsPurchased
+    B--&gt;&gt;W: Ticket confirmé et 50 EtherPoints
+    K--&gt;&gt;B: WinnerPicked après le tirage VRF
+    B--&gt;&gt;W: draw:winner en temps réel</pre></div>
+<p>Les étapes antérieures à la connexion envoient des événements anonymes. Le livrable demande aussi qu&#39;un nouvel appui après une erreur reprenne l&#39;état existant pour éviter les doublons : c&#39;est le rôle de l&#39;en-tête <code>Idempotency-Key</code> accepté par <code>POST /api/v1/lottery/buy</code>.</p>
+<h3 id="les-etats-a-couvrir"><a class="anchor" href="#les-etats-a-couvrir" aria-hidden="true" tabindex="-1">#</a>Les états à couvrir</h3>
+<p>Le livrable liste six états à tester. Le code les traite ainsi :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>État</th>
+<th>Traitement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Chargement</td>
+<td>Composants <code>Loader</code> sur le web et le mobile</td>
+</tr>
+<tr>
+<td>Absence de ticket</td>
+<td>État vide de l&#39;historique</td>
+</tr>
+<tr>
+<td>Refus réseau</td>
+<td>Erreur traduite par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.gateway.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.gateway.ts</code></a>, réessai proposé quand <code>canRetry</code> est vrai</td>
+</tr>
+<tr>
+<td>Transaction en attente</td>
+<td>Bouton désactivé pendant l&#39;envoi, reçu « en attente » jusqu&#39;à la confirmation</td>
+</tr>
+<tr>
+<td>Participation fermée</td>
+<td>Tour en tirage ou contrat en pause : achat refusé avec un message explicite, bouton désactivé</td>
+</tr>
+<tr>
+<td>Accès refusé</td>
+<td>Écran 403 côté web, réponse 403 du backend</td>
+</tr>
+</tbody></table></div>
+<h2 id="les-parcours-secondaires-du-citoyen"><a class="anchor" href="#les-parcours-secondaires-du-citoyen" aria-hidden="true" tabindex="-1">#</a>Les parcours secondaires du citoyen</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Parcours</th>
+<th>Web</th>
+<th>Mobile</th>
+<th>Détail</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Offrir un ticket à un proche</td>
+<td><code>/billetterie</code></td>
+<td><code>BuyTicketScreen</code></td>
+<td>Le ticket est acheté par le portefeuille de l&#39;expéditeur au nom du destinataire (<code>buyTicketsFor</code>) ; un compte et un portefeuille sont créés pour le destinataire s&#39;il n&#39;existe pas ; 75 EtherPoints pour l&#39;expéditeur</td>
+</tr>
+<tr>
+<td>Parrainer</td>
+<td><code>/profil</code>, <code>/invite/[code]</code></td>
+<td><code>ProfileScreen</code></td>
+<td>Lien unique ; 100 EtherPoints pour le parrain et 50 pour le filleul à l&#39;inscription</td>
+</tr>
+<tr>
+<td>Suivre le tirage en direct</td>
+<td><code>/tirage</code></td>
+<td><code>LiveDrawScreen</code></td>
+<td>Salle d&#39;attente, chat, roulette, annonce du gagnant</td>
+</tr>
+<tr>
+<td>Échanger des EtherPoints</td>
+<td><code>/boutique</code>, <code>/boutique/[rewardId]</code>, <code>/boutique/carte</code>, <code>/boutique/mes-codes</code></td>
+<td><code>RewardsCatalogScreen</code>, <code>RewardDetailScreen</code>, <code>ScratchCardScreen</code>, <code>MyCodesScreen</code></td>
+<td>Carte à gratter virtuelle, code promo et QR code à présenter en caisse</td>
+</tr>
+<tr>
+<td>Retirer ses gains</td>
+<td><code>/accueil</code></td>
+<td><code>HomeScreen</code></td>
+<td>La cagnotte est versée automatiquement ; un bouton permet de la réclamer si besoin</td>
+</tr>
+<tr>
+<td>Gérer sa sécurité</td>
+<td><code>/profil/securite</code>, <code>/profil/securite/2fa</code></td>
+<td><code>SecurityScreen</code>, <code>Setup2FAScreen</code></td>
+<td>2FA par application TOTP ou par email, sessions, plafond de jeu responsable</td>
+</tr>
+<tr>
+<td>Exercer ses droits RGPD</td>
+<td><code>/profil/rgpd</code></td>
+<td><code>GDPRScreen</code></td>
+<td>Export JSON, demande de suppression confirmée par email</td>
+</tr>
+</tbody></table></div>
+<h2 id="le-parcours-du-commercant-partenaire"><a class="anchor" href="#le-parcours-du-commercant-partenaire" aria-hidden="true" tabindex="-1">#</a>Le parcours du commerçant partenaire</h2>
+<div class="diagram"><pre class="mermaid">flowchart LR
+    A[&quot;Connexion espace pro&quot;] --&gt; B[&quot;Créer son établissement&quot;]
+    B --&gt; C[&quot;Créer une offre en EtherPoints&quot;]
+    C --&gt; D[&quot;Importer des codes promo CSV&quot;]
+    D --&gt; E[&quot;Valider un code en caisse&quot;]
+    E --&gt; F[&quot;Suivre la consommation&quot;]</pre></div>
+<p>Le commerçant se connecte depuis <code>/connexion?espace=pro</code>. Il crée son établissement, actif dès sa création (la Mairie peut ensuite le suspendre), puis des offres (titre, coût en EtherPoints, stock, date d&#39;expiration facultative). La date d&#39;expiration est enregistrée dans Redis mais n&#39;est vérifiée nulle part : une offre expirée reste échangeable. Il importe des codes promo par fichier <code>.csv</code> ou <code>.txt</code> d&#39;au plus 1 Mo, valide en caisse le code présenté par le citoyen et suit le taux de consommation. Chaque action est vérifiée contre la propriété de l&#39;établissement (<code>ownerId</code>). Voir <a href="../backend/modules/partenaires.html">Partenaires</a>.</p>
+<h2 id="le-parcours-de-la-mairie"><a class="anchor" href="#le-parcours-de-la-mairie" aria-hidden="true" tabindex="-1">#</a>Le parcours de la Mairie</h2>
+<p>L&#39;administrateur se connecte depuis <code>/connexion?espace=pro</code>. Tant qu&#39;il n&#39;a pas activé la double authentification, le backend refuse toutes les routes d&#39;administration avec une réponse 403 : la première étape est donc <code>/profil/securite/2fa</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Écran</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/mairie</code></td>
+<td>Indicateurs, état du tour, tirage manuel, annulation avec remboursement, export de rapport</td>
+</tr>
+<tr>
+<td><code>/mairie/analytique</code></td>
+<td>Répartition par âge, acquisition par source UTM, exports CSV et PDF</td>
+</tr>
+<tr>
+<td><code>/mairie/partenaires</code></td>
+<td>Approbation ou suspension des commerces</td>
+</tr>
+<tr>
+<td><code>/mairie/securite</code></td>
+<td>Disjoncteur (pause du contrat), reversement de la commission à la trésorerie</td>
+</tr>
+<tr>
+<td><code>/mairie/audit</code></td>
+<td>Journal chronologique des actions d&#39;administration, filtrable et exportable</td>
+</tr>
+</tbody></table></div>
+<p>Le détail est dans <a href="../backend/modules/administration.html">Administration Mairie</a> et <a href="../architecture/flux/disjoncteur.html">Disjoncteur</a>.</p>
+<h2 id="les-parcours-hors-application"><a class="anchor" href="#les-parcours-hors-application" aria-hidden="true" tabindex="-1">#</a>Les parcours hors application</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Profil</th>
+<th>Parcours</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Visiteur de la ville</td>
+<td>Site de l&#39;Office de Tourisme : découverte, agenda, restaurants, hébergements, billetterie et commande simulées (<a href="../office-tourisme/pages.html">Pages et parcours</a>)</td>
+</tr>
+<tr>
+<td>Relais local</td>
+<td>Kit de communication et fiche de rôle prévus par le <a href="marketing.html">volet marketing</a>, sans accès technique</td>
+</tr>
+<tr>
+<td>Développeur de la Ville</td>
+<td>Cette documentation, à partir du <a href="../demarrage/prerequis.html">démarrage rapide</a></td>
+</tr>
+</tbody></table></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="objectifs-indicateurs.html"><span>Précédent</span><strong>Objectifs et indicateurs</strong></a><a class="pager-next" href="fonctionnalites.html"><span>Suivant</span><strong>Catalogue des fonctionnalités</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/presentation/profils-parcours.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#les-profils-de-travail">Les profils de travail</a></li><li class="toc-h3"><a href="#le-protocole-de-recherche-prevu">Le protocole de recherche prévu</a></li><li class="toc-h2"><a href="#les-roles-dans-le-code">Les rôles dans le code</a></li><li class="toc-h2"><a href="#le-parcours-principal-du-citoyen">Le parcours principal du citoyen</a></li><li class="toc-h3"><a href="#les-etats-a-couvrir">Les états à couvrir</a></li><li class="toc-h2"><a href="#les-parcours-secondaires-du-citoyen">Les parcours secondaires du citoyen</a></li><li class="toc-h2"><a href="#le-parcours-du-commercant-partenaire">Le parcours du commerçant partenaire</a></li><li class="toc-h2"><a href="#le-parcours-de-la-mairie">Le parcours de la Mairie</a></li><li class="toc-h2"><a href="#les-parcours-hors-application">Les parcours hors application</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

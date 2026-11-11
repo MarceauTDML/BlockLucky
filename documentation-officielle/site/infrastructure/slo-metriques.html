@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Objectifs de service et métriques | Documentation BlockLucky</title>
+<meta name="description" content="Cette page fixe les objectifs de service de BlockLucky pour la période de la Grande Loterie citoyenne, décrit les métriques que le backend expose et donne les r">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="slo-metriques.html" aria-current="page">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>13. Infrastructure et exploitation</span></div>
+    <article class="markdown">
+<h1>Objectifs de service et métriques</h1>
+<p>Cette page fixe les objectifs de service de BlockLucky pour la période de la Grande Loterie citoyenne, décrit les métriques que le backend expose et donne les règles de dimensionnement. Les objectifs servent de référence aux seuils des <a href="tests-charge.html">tests de charge</a>.</p>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Le dépôt expose les métriques au format Prometheus mais ne fournit ni serveur Prometheus, ni tableau de bord, ni règle d&#39;alerte. Les requêtes PromQL de cette page sont prêtes à l&#39;emploi le jour où une collecte est branchée.</p>
+</div>
+<h2 id="indicateurs-et-objectifs"><a class="anchor" href="#indicateurs-et-objectifs" aria-hidden="true" tabindex="-1">#</a>Indicateurs et objectifs</h2>
+<p>Fenêtre glissante de 28 jours.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Parcours</th>
+<th>Indicateur (SLI)</th>
+<th>Objectif (SLO)</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Consultation de la loterie (<code>GET /api/v1/lottery/status</code>)</td>
+<td>part des requêtes en 2xx servies en moins de 250 ms</td>
+<td>99,5 %</td>
+<td><code>http_request_duration_seconds</code></td>
+</tr>
+<tr>
+<td>Achat de ticket (<code>POST /api/v1/lottery/buy</code>)</td>
+<td>part des requêtes non 5xx servies en moins de 800 ms</td>
+<td>99,9 %</td>
+<td><code>http_request_duration_seconds</code></td>
+</tr>
+<tr>
+<td>Échange de récompense (<code>POST /api/v1/marketplace/claim</code>)</td>
+<td>part des requêtes non 5xx</td>
+<td>99,9 %</td>
+<td><code>http_request_duration_seconds</code></td>
+</tr>
+<tr>
+<td>Emails transactionnels</td>
+<td>part des jobs terminés sans échec définitif</td>
+<td>99 %</td>
+<td><code>queue_jobs_total{queue=&quot;emails-queue&quot;}</code></td>
+</tr>
+<tr>
+<td>Indexation de la chaîne</td>
+<td>retard du curseur d&#39;indexation sur la tête de chaîne</td>
+<td>moins de 10 blocs, 99 % du temps</td>
+<td>table <code>ChainCursor</code>, pas encore de métrique</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;ancienne version de ces objectifs fixait 300 ms pour la consultation. Les seaux de l&#39;histogramme (<code>0.25</code> puis <code>0.5</code>) ne permettent pas de mesurer ce seuil exactement : l&#39;objectif est ramené au seuil mesurable le plus proche, 250 ms. Pour revenir à 300 ms, il faut ajouter <code>0.3</code> à la liste <code>buckets</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/observability/metrics.ts" class="external" target="_blank" rel="noopener noreferrer"><code>metrics.ts</code></a>.</p>
+<p>L&#39;achat de ticket attend la confirmation de la transaction sur la chaîne (<code>tx.wait()</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.gateway.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lottery.gateway.ts</code></a>). Sur le nœud Hardhat local, le minage est immédiat et l&#39;objectif de 800 ms est réaliste. Sur Sepolia, un bloc est produit environ toutes les 12 secondes : cet objectif de latence n&#39;a pas de sens et seul l&#39;objectif de disponibilité s&#39;applique.</p>
+<h3 id="budget-d-erreur"><a class="anchor" href="#budget-d-erreur" aria-hidden="true" tabindex="-1">#</a>Budget d&#39;erreur</h3>
+<p>Un objectif de 99,9 % sur 28 jours autorise 0,1 % de requêtes en échec, soit l&#39;équivalent d&#39;environ 40 minutes d&#39;indisponibilité totale (28 × 24 × 60 × 0,001 = 40,3 minutes). Quand le budget est consommé, les livraisons de fonctionnalités s&#39;arrêtent au profit des corrections de fiabilité.</p>
+<h3 id="alertes"><a class="anchor" href="#alertes" aria-hidden="true" tabindex="-1">#</a>Alertes</h3>
+<p>Une alerte se déclenche sur la vitesse de consommation du budget (burn rate), jamais sur une cause seule comme le processeur ou la mémoire. Une règle courante : alerter quand le taux d&#39;erreur dépasse 14,4 fois le rythme nominal à la fois sur 1 heure et sur 5 minutes. À ce rythme, 2 % du budget mensuel part en une heure ; la fenêtre courte évite une alerte qui continuerait de sonner après la fin du problème.</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">(
+  sum(rate(http_request_duration_seconds_count{route=~&quot;/api(/v1)?/lottery/buy&quot;,status_code=~&quot;5..&quot;}[1h]))
+  / sum(rate(http_request_duration_seconds_count{route=~&quot;/api(/v1)?/lottery/buy&quot;}[1h]))
+) &gt; 14.4 * 0.001
+and
+(
+  sum(rate(http_request_duration_seconds_count{route=~&quot;/api(/v1)?/lottery/buy&quot;,status_code=~&quot;5..&quot;}[5m]))
+  / sum(rate(http_request_duration_seconds_count{route=~&quot;/api(/v1)?/lottery/buy&quot;}[5m]))
+) &gt; 14.4 * 0.001</code></pre></div>
+<h2 id="metriques-exposees"><a class="anchor" href="#metriques-exposees" aria-hidden="true" tabindex="-1">#</a>Métriques exposées</h2>
+<p>Les métriques sont définies dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/observability/metrics.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/observability/metrics.ts</code></a> avec <code>prom-client</code>, dans un registre qui ajoute à chaque série les étiquettes <code>service=&quot;blocklucky-backend&quot;</code> et <code>environment</code> (valeur de <code>NODE_ENV</code>).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Métrique</th>
+<th>Type</th>
+<th>Étiquettes</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>http_request_duration_seconds</code></td>
+<td>histogramme</td>
+<td><code>method</code>, <code>route</code>, <code>status_code</code></td>
+<td>Durée de chaque requête HTTP. Seaux : 10, 25, 50, 100, 250, 500, 800 ms, 1, 2,5 et 5 s</td>
+</tr>
+<tr>
+<td><code>http_requests_in_flight</code></td>
+<td>jauge</td>
+<td>aucune</td>
+<td>Requêtes en cours de traitement</td>
+</tr>
+<tr>
+<td><code>queue_jobs_total</code></td>
+<td>compteur</td>
+<td><code>queue</code>, <code>status</code></td>
+<td>Jobs BullMQ terminés (<code>completed</code>) ou en échec (<code>failed</code>) par file : <code>emails-queue</code>, <code>ledger-queue</code>, <code>chain-actions</code></td>
+</tr>
+<tr>
+<td><code>business_events_total</code></td>
+<td>compteur</td>
+<td><code>event</code></td>
+<td>Événements métier, voir ci-dessous</td>
+</tr>
+<tr>
+<td>métriques par défaut</td>
+<td>divers</td>
+<td></td>
+<td>Processus Node.js : mémoire, processeur, ramasse-miettes, descripteurs, lag de l&#39;event loop (<code>nodejs_eventloop_lag_p99_seconds</code>, précision 20 ms)</td>
+</tr>
+</tbody></table></div>
+<p>Les métriques par défaut ne sont pas collectées quand <code>METRICS_ENABLED=false</code> ou quand <code>NODE_ENV=test</code>.</p>
+<h3 id="etiquette-route"><a class="anchor" href="#etiquette-route" aria-hidden="true" tabindex="-1">#</a>Étiquette route</h3>
+<p>L&#39;étiquette <code>route</code> vaut <code>req.baseUrl</code> suivi du chemin déclaré dans le routeur, par exemple <code>/api/v1/lottery/rewards/:id</code> et non l&#39;identifiant réel : le nombre de séries reste borné. Comme les routes sont montées deux fois, sous <code>/api/v1</code> et sous <code>/api</code>, une même route produit deux valeurs selon le préfixe appelé par le client ; les requêtes PromQL utilisent donc l&#39;expression <code>/api(/v1)?/…</code>. Une requête qui ne correspond à aucune route (404) est étiquetée <code>unmatched</code>.</p>
+<h3 id="evenements-metier"><a class="anchor" href="#evenements-metier" aria-hidden="true" tabindex="-1">#</a>Événements métier</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Valeur de <code>event</code></th>
+<th>Émis par</th>
+<th>Moment</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ticket_purchased</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lottery.services.ts</code></a></td>
+<td>achat ou cadeau réussi, incrémenté de la quantité</td>
+</tr>
+<tr>
+<td><code>ticket_indexed</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.indexer.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lottery.indexer.ts</code></a></td>
+<td>tickets créés en base depuis un événement <code>TicketsPurchased</code></td>
+</tr>
+<tr>
+<td><code>reward_claimed</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>marketplace.services.ts</code></a></td>
+<td>échange d&#39;une récompense</td>
+</tr>
+<tr>
+<td><code>points_credited_&lt;action&gt;</code>, <code>points_debited_&lt;action&gt;</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/ledger.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>ledger.service.ts</code></a></td>
+<td>mouvement d&#39;EtherPoints, <code>&lt;action&gt;</code> étant le type d&#39;action en minuscules (par exemple <code>ticket_purchase</code>)</td>
+</tr>
+</tbody></table></div>
+<h3 id="ou-lire-les-metriques"><a class="anchor" href="#ou-lire-les-metriques" aria-hidden="true" tabindex="-1">#</a>Où lire les métriques</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Processus</th>
+<th>Adresse</th>
+<th>Protection</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>API</td>
+<td><code>GET /metrics</code> sur le port 2053</td>
+<td>si <code>METRICS_TOKEN</code> est défini, en-tête <code>Authorization: Bearer &lt;METRICS_TOKEN&gt;</code> exigé, sinon 401 ; obligatoire en production</td>
+</tr>
+<tr>
+<td>Worker</td>
+<td><code>GET /metrics</code> sur le port <code>PORT + 1</code> (2054)</td>
+<td>aucune ; le port n&#39;est pas publié par Compose et n&#39;est joignable que depuis le réseau interne</td>
+</tr>
+</tbody></table></div>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -H <span class="hljs-string">&quot;Authorization: Bearer <span class="hljs-variable">$METRICS_TOKEN</span>&quot;</span> http://localhost:2053/metrics | grep http_request_duration_seconds_count</code></pre></div>
+<div class="hint hint-important"><p class="hint-title">Important</p>
+<p>Dans la stack Docker, l&#39;API tourne avec <code>RUN_WORKERS=false</code> : les compteurs <code>queue_jobs_total</code> et <code>ticket_indexed</code> sont incrémentés dans le processus <code>worker</code>, pas dans l&#39;API. Le <code>/metrics</code> de l&#39;API ne les montre donc pas. Une collecte complète doit interroger aussi <code>worker:2054/metrics</code> depuis le réseau Compose. En développement, un seul processus porte tout.</p>
+</div>
+<h3 id="requetes-utiles"><a class="anchor" href="#requetes-utiles" aria-hidden="true" tabindex="-1">#</a>Requêtes utiles</h3>
+<p>Taux de réussite de la consultation sous 250 ms, sur 5 minutes :</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">sum(rate(http_request_duration_seconds_bucket{route=~&quot;/api(/v1)?/lottery/status&quot;,status_code=~&quot;2..&quot;,le=&quot;0.25&quot;}[5m]))
+/
+sum(rate(http_request_duration_seconds_count{route=~&quot;/api(/v1)?/lottery/status&quot;}[5m]))</code></pre></div>
+<p>95e centile de la latence par route :</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">histogram_quantile(0.95, sum by (le, route) (rate(http_request_duration_seconds_bucket[5m])))</code></pre></div>
+<p>Taux d&#39;échec des emails :</p>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">sum(rate(queue_jobs_total{queue=&quot;emails-queue&quot;,status=&quot;failed&quot;}[1h]))
+/
+sum(rate(queue_jobs_total{queue=&quot;emails-queue&quot;}[1h]))</code></pre></div>
+<p><code>status=&quot;failed&quot;</code> compte chaque tentative en échec, y compris celles qui seront réessayées (cinq tentatives par job). C&#39;est une borne haute du taux d&#39;échec définitif.</p>
+<h2 id="sondes-de-sante"><a class="anchor" href="#sondes-de-sante" aria-hidden="true" tabindex="-1">#</a>Sondes de santé</h2>
+<p>Définies dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/system/system.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>system.routes.ts</code></a>, hors rate limiting et hors mode maintenance :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Vérifie</th>
+<th>Codes</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/health/live</code></td>
+<td>le processus répond</td>
+<td>200</td>
+<td>sonde Docker de l&#39;API</td>
+</tr>
+<tr>
+<td><code>/health/ready</code></td>
+<td>PostgreSQL répond à <code>SELECT 1</code> en moins de 2 s, et l&#39;arrêt n&#39;est pas commencé</td>
+<td>200 ou 503</td>
+<td>retirer une instance d&#39;un équilibreur</td>
+</tr>
+<tr>
+<td><code>/health/deep</code></td>
+<td>PostgreSQL, Redis (<code>ping</code> en 1 s) et état du réseau blockchain, mis en cache 5 s</td>
+<td>200 ou 503</td>
+<td>diagnostic ; le détail n&#39;est visible qu&#39;avec le jeton <code>METRICS_TOKEN</code> en production</td>
+</tr>
+<tr>
+<td><code>/health</code></td>
+<td>état du disjoncteur et du RPC de secours</td>
+<td>200</td>
+<td>historique ; interroge le contrat mais ne teste ni la base ni Redis</td>
+</tr>
+<tr>
+<td><code>/api/config</code></td>
+<td>version mobile minimale, mode maintenance</td>
+<td>200</td>
+<td>prévu pour les clients, qui ne l&#39;appellent pas encore</td>
+</tr>
+</tbody></table></div>
+<p><code>/health/deep</code> répond <code>pass</code> si tout va bien, <code>warn</code> si Redis est absent (l&#39;API fonctionne en mode dégradé, voir l&#39;<a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">ADR 0002</a>) et <code>fail</code> avec un statut 503 si PostgreSQL est injoignable.</p>
+<h2 id="capacite"><a class="anchor" href="#capacite" aria-hidden="true" tabindex="-1">#</a>Capacité</h2>
+<h3 id="postgresql"><a class="anchor" href="#postgresql" aria-hidden="true" tabindex="-1">#</a>PostgreSQL</h3>
+<p>Chaque processus (API ou worker) ouvre un pool de <code>DB_POOL_MAX</code> connexions, 10 par défaut (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/prisma.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>prisma.config.ts</code></a>). Le serveur accepte <code>max_connections=100</code>, dont 3 réservées par défaut aux superutilisateurs. Au-delà de 8 processus, il faut réduire <code>DB_POOL_MAX</code> ou placer PgBouncer en mode transaction devant PostgreSQL.</p>
+<p>Chaque connexion de l&#39;application est ouverte avec :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Valeur</th>
+<th>Variable</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>statement_timeout</code></td>
+<td>15 s</td>
+<td><code>DB_STATEMENT_TIMEOUT_MS</code></td>
+</tr>
+<tr>
+<td><code>lock_timeout</code></td>
+<td>5 s</td>
+<td>codé en dur</td>
+</tr>
+<tr>
+<td><code>idle_in_transaction_session_timeout</code></td>
+<td>60 s</td>
+<td>codé en dur, aussi fixé côté serveur</td>
+</tr>
+<tr>
+<td>délai de connexion</td>
+<td>5 s</td>
+<td><code>DB_CONNECTION_TIMEOUT_MS</code></td>
+</tr>
+<tr>
+<td>fermeture d&#39;une connexion inactive du pool</td>
+<td>30 s</td>
+<td><code>DB_IDLE_TIMEOUT_MS</code></td>
+</tr>
+</tbody></table></div>
+<h3 id="http"><a class="anchor" href="#http" aria-hidden="true" tabindex="-1">#</a>HTTP</h3>
+<p>Réglés dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/server.ts" class="external" target="_blank" rel="noopener noreferrer"><code>server.ts</code></a> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Réglage</th>
+<th>Valeur</th>
+<th>Raison</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>keepAliveTimeout</code></td>
+<td>65 s (<code>HTTP_KEEP_ALIVE_TIMEOUT_MS</code>)</td>
+<td>supérieur au délai d&#39;inactivité de 60 s des équilibreurs courants, pour que ce soit toujours l&#39;équilibreur qui ferme la connexion</td>
+</tr>
+<tr>
+<td><code>headersTimeout</code></td>
+<td>66 s</td>
+<td>doit dépasser <code>keepAliveTimeout</code></td>
+</tr>
+<tr>
+<td><code>requestTimeout</code></td>
+<td>30 s (<code>HTTP_REQUEST_TIMEOUT_MS</code>)</td>
+<td>coupe une requête trop longue</td>
+</tr>
+<tr>
+<td>corps JSON</td>
+<td>1 Mo</td>
+<td><code>express.json({ limit: &#39;1mb&#39; })</code></td>
+</tr>
+<tr>
+<td>tas V8</td>
+<td>384 Mo</td>
+<td><code>--max-old-space-size=384</code> dans l&#39;image</td>
+</tr>
+</tbody></table></div>
+<h3 id="redis"><a class="anchor" href="#redis" aria-hidden="true" tabindex="-1">#</a>Redis</h3>
+<p>256 Mo avec la politique <code>noeviction</code> : une fois plein, Redis refuse les écritures. Les jobs terminés sont gardés 24 heures (1 000 au plus par file), les jobs en échec 14 jours (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/queues/queue.options.ts" class="external" target="_blank" rel="noopener noreferrer"><code>queue.options.ts</code></a>). Surveiller <code>used_memory</code> avec <code>redis-cli INFO memory</code>.</p>
+<h3 id="blockchain"><a class="anchor" href="#blockchain" aria-hidden="true" tabindex="-1">#</a>Blockchain</h3>
+<p>Le keeper interroge le contrat toutes les <code>KEEPER_INTERVAL_MS</code> (10 s) et l&#39;indexeur lit les journaux toutes les <code>INDEXER_INTERVAL_MS</code> (3 s), par tranches de 2 000 blocs au plus. Les actions on-chain (versement de cagnotte, remboursements, badges) sont traitées une à une (<code>concurrency: 1</code>) pour ne pas désordonner les nonces du compte opérateur.</p>
+<h2 id="arret-propre"><a class="anchor" href="#arret-propre" aria-hidden="true" tabindex="-1">#</a>Arrêt propre</h2>
+<p>Sur <code>SIGTERM</code> ou <code>SIGINT</code>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/observability/shutdown.ts" class="external" target="_blank" rel="noopener noreferrer"><code>shutdown.ts</code></a> :</p>
+<ol>
+<li>marque l&#39;arrêt : <code>/health/ready</code> répond 503 (et la sonde du worker aussi) ;</li>
+<li>ferme dans l&#39;ordre le serveur HTTP (connexions inactives coupées), le relais d&#39;événements Socket.IO, Socket.IO, l&#39;indexeur et le keeper, les workers BullMQ, les files, le client blockchain, Prisma et Redis ;</li>
+<li>quitte avec le code 0, ou force l&#39;arrêt avec le code 1 après <code>SHUTDOWN_TIMEOUT_MS</code> (25 s).</li>
+</ol>
+<p>Une promesse rejetée non gérée déclenche aussi l&#39;arrêt en production, et une exception non capturée dans tous les environnements.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="publier-documentation.html"><span>Précédent</span><strong>Publier la documentation</strong></a><a class="pager-next" href="runbooks.html"><span>Suivant</span><strong>Runbooks</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/infrastructure/slo-metriques.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#indicateurs-et-objectifs">Indicateurs et objectifs</a></li><li class="toc-h3"><a href="#budget-d-erreur">Budget d&#39;erreur</a></li><li class="toc-h3"><a href="#alertes">Alertes</a></li><li class="toc-h2"><a href="#metriques-exposees">Métriques exposées</a></li><li class="toc-h3"><a href="#etiquette-route">Étiquette route</a></li><li class="toc-h3"><a href="#evenements-metier">Événements métier</a></li><li class="toc-h3"><a href="#ou-lire-les-metriques">Où lire les métriques</a></li><li class="toc-h3"><a href="#requetes-utiles">Requêtes utiles</a></li><li class="toc-h2"><a href="#sondes-de-sante">Sondes de santé</a></li><li class="toc-h2"><a href="#capacite">Capacité</a></li><li class="toc-h3"><a href="#postgresql">PostgreSQL</a></li><li class="toc-h3"><a href="#http">HTTP</a></li><li class="toc-h3"><a href="#redis">Redis</a></li><li class="toc-h3"><a href="#blockchain">Blockchain</a></li><li class="toc-h2"><a href="#arret-propre">Arrêt propre</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

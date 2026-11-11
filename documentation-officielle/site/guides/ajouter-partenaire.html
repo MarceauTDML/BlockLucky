@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ajouter un commerçant partenaire | Documentation BlockLucky</title>
+<meta name="description" content="Un commerçant partenaire propose des offres que les citoyens obtiennent en échange de leurs EtherPoints : réduction, produit offert, place gratuite. Ce guide fa">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/vendor/mermaid.min.js" defer></script>
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="ajouter-partenaire.html" aria-current="page">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>15. Guides pratiques</span></div>
+    <article class="markdown">
+<h1>Ajouter un commerçant partenaire</h1>
+<p>Un commerçant partenaire propose des offres que les citoyens obtiennent en échange de leurs EtherPoints : réduction, produit offert, place gratuite. Ce guide fait entrer un nouveau commerce, de la création de son compte jusqu&#39;à la validation d&#39;un code en caisse, puis le fait apparaître sur le site de l&#39;Office de Tourisme. L&#39;exemple est la « Librairie du Môle », qui offre 20 % sur les romans contre 120 EtherPoints.</p>
+<p>Le fonctionnement du module est décrit dans <a href="../backend/modules/partenaires.html">Partenaires</a> et <a href="../architecture/flux/recompense.html">Échange de récompense</a>.</p>
+<h2 id="modele-de-donnees"><a class="anchor" href="#modele-de-donnees" aria-hidden="true" tabindex="-1">#</a>Modèle de données</h2>
+<div class="diagram"><pre class="mermaid">erDiagram
+    User ||--o{ Partner : &quot;possède (ownerId)&quot;
+    Partner ||--o{ RewardCatalog : propose
+    RewardCatalog ||--o{ ClaimedReward : &quot;échangée en&quot;
+    User ||--o{ ClaimedReward : obtient</pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Stockage</th>
+<th>Règle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Compte du commerçant</td>
+<td><code>User</code> avec <code>role = &#39;PARTNER&#39;</code></td>
+<td>Seuls les rôles <code>PARTNER</code> et <code>ADMIN</code> accèdent à l&#39;espace partenaires et aux routes <code>/api/partners</code> d&#39;écriture</td>
+</tr>
+<tr>
+<td>Entreprise</td>
+<td><code>Partner</code> : <code>name</code>, <code>logoUrl</code>, <code>isActive</code>, <code>ownerId</code></td>
+<td>Un compte <code>PARTNER</code> ne gère que les entreprises dont il est propriétaire (<code>assertPartnerAccess</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/partners/partners.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>partners.services.ts</code></a>)</td>
+</tr>
+<tr>
+<td>Offre</td>
+<td><code>RewardCatalog</code> : <code>title</code>, <code>costInPoints</code>, <code>totalStock</code>, <code>remainingStock</code>, <code>isActive</code></td>
+<td>Visible dans la boutique si l&#39;offre <strong>et</strong> l&#39;entreprise sont actives</td>
+</tr>
+<tr>
+<td>Date d&#39;expiration de l&#39;offre</td>
+<td>Redis, clé <code>partner:offer_expiry:&lt;offre&gt;</code></td>
+<td>Enregistrée à la création, mais lue nulle part : elle n&#39;est pas appliquée à ce jour</td>
+</tr>
+<tr>
+<td>Codes promo fournis par le commerçant</td>
+<td>Redis, clé <code>partner:codes:&lt;offre&gt;</code>, tableau JSON</td>
+<td>Distribués un par un à chaque échange ; sans lot, un code est généré</td>
+</tr>
+<tr>
+<td>Code obtenu par un citoyen</td>
+<td><code>ClaimedReward</code> : <code>uniqueCode</code>, <code>isUsed</code></td>
+<td>Marqué utilisé lors de la validation en caisse</td>
+</tr>
+</tbody></table></div>
+<h2 id="fichiers-concernes"><a class="anchor" href="#fichiers-concernes" aria-hidden="true" tabindex="-1">#</a>Fichiers concernés</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/src/api/partners" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/partners/</code></a></td>
+<td>Création d&#39;entreprise, d&#39;offre, import de codes, statistiques</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/admin/admin.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/admin/admin.routes.ts</code></a></td>
+<td>Activation et suspension d&#39;une entreprise par la Mairie</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/backend/src/api/marketplace" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/</code></a></td>
+<td>Catalogue, échange, validation en caisse</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/app/partenaire" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/partenaire/</code></a></td>
+<td>Espace partenaires : tableau de bord, offres, codes, validation</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/partenaires/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/mairie/partenaires/page.tsx</code></a></td>
+<td>Liste des partenaires et activation par la Mairie</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/seed.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/seed.ts</code></a></td>
+<td>Partenaires de démonstration</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/data/places.js" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-office-tourisme/assets/js/data/places.js</code></a></td>
+<td>Fiche du commerce sur le site de l&#39;Office de Tourisme</td>
+</tr>
+</tbody></table></div>
+<h2 id="parcours"><a class="anchor" href="#parcours" aria-hidden="true" tabindex="-1">#</a>Parcours</h2>
+<div class="diagram"><pre class="mermaid">sequenceDiagram
+    participant C as Commerçant
+    participant W as Frontend web
+    participant A as API
+    participant D as Base de données
+    participant M as Mairie
+    C-&gt;&gt;W: Connexion par code email
+    W-&gt;&gt;A: POST /auth/login puis /auth/2fa/verify
+    A-&gt;&gt;D: Compte USER et portefeuille intégré
+    M-&gt;&gt;D: Passage du rôle à PARTNER
+    C-&gt;&gt;W: Reconnexion, espace partenaires
+    W-&gt;&gt;A: POST /partners
+    W-&gt;&gt;A: POST /partners/offers
+    W-&gt;&gt;A: POST /partners/codes/upload
+    M-&gt;&gt;A: PATCH du statut du partenaire
+    Note over W,A: Les citoyens échangent leurs points dans la boutique
+    C-&gt;&gt;W: Validation d&#39;un code en caisse
+    W-&gt;&gt;A: POST /marketplace/redeem</pre></div>
+<h2 id="1-creer-le-compte-du-commercant"><a class="anchor" href="#1-creer-le-compte-du-commercant" aria-hidden="true" tabindex="-1">#</a>1. Créer le compte du commerçant</h2>
+<p>Le commerçant se connecte sur <code>/connexion</code> du frontend web avec son adresse email, comme un citoyen : un code à 6 chiffres lui est envoyé, un compte <code>USER</code> et un portefeuille intégré sont créés. En local, le code arrive dans Mailpit (<code>http://localhost:8025</code>).</p>
+<h2 id="2-lui-attribuer-le-role-partenaire"><a class="anchor" href="#2-lui-attribuer-le-role-partenaire" aria-hidden="true" tabindex="-1">#</a>2. Lui attribuer le rôle partenaire</h2>
+<p>Aucune route de l&#39;API ne modifie le rôle d&#39;un compte : le passage à <code>PARTNER</code> est une opération manuelle en base, faite par un administrateur. En local :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose <span class="hljs-built_in">exec</span> postgres psql -U etherbay_admin -d blocklucky_db -c <span class="hljs-string">&quot;UPDATE \&quot;User\&quot; SET role = &#x27;PARTNER&#x27; WHERE email = &#x27;librairie@etherbay.fr&#x27;;&quot;</span></code></pre></div>
+<p>Le jeton de session porte l&#39;ancien rôle. <code>requireRoles</code> relit le rôle en base à chaque requête et répond 403 « Droits révoqués ou modifiés : reconnectez-vous » tant que le jeton et la base diffèrent : le commerçant doit se déconnecter puis se reconnecter.</p>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Une route d&#39;administration pour promouvoir un compte, tracée dans le journal d&#39;audit comme l&#39;activation d&#39;un partenaire, serait l&#39;évolution naturelle. Voir <a href="ajouter-endpoint.html">Ajouter un endpoint</a> pour la créer dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/admin/admin.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>admin.routes.ts</code></a>.</p>
+</div>
+<h2 id="3-creer-l-entreprise-et-son-offre"><a class="anchor" href="#3-creer-l-entreprise-et-son-offre" aria-hidden="true" tabindex="-1">#</a>3. Créer l&#39;entreprise et son offre</h2>
+<p>Depuis l&#39;espace partenaires (<code>/partenaire/offres</code>), le commerçant crée son entreprise puis son offre. Les appels équivalents, avec le jeton de session du commerçant :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -X POST http://localhost:2053/api/v1/partners \
+  -H <span class="hljs-string">&quot;Authorization: Bearer <span class="hljs-variable">$TOKEN</span>&quot;</span> -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{&quot;name&quot;:&quot;Librairie du Môle&quot;,&quot;logoUrl&quot;:&quot;https://assets.etherbay.fr/partners/librairie.png&quot;}&#x27;</span></code></pre></div>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -X POST http://localhost:2053/api/v1/partners/offers \
+  -H <span class="hljs-string">&quot;Authorization: Bearer <span class="hljs-variable">$TOKEN</span>&quot;</span> -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{&quot;partnerId&quot;:&quot;&lt;id renvoyé&gt;&quot;,&quot;title&quot;:&quot;-20% sur tous les romans&quot;,&quot;costInPoints&quot;:120,&quot;totalStock&quot;:50}&#x27;</span></code></pre></div>
+<p>Règles de validation (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/partners/partners.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>partners.validators.ts</code></a>) :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Contrainte</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>name</code></td>
+<td>2 à 100 caractères</td>
+</tr>
+<tr>
+<td><code>logoUrl</code></td>
+<td>URL en <code>https://</code>, 500 caractères au plus ; par défaut <code>https://assets.etherbay.fr/partners/default.png</code></td>
+</tr>
+<tr>
+<td><code>ownerId</code></td>
+<td>UUID, pris en compte seulement si l&#39;appelant est <code>ADMIN</code> ; pour un <code>PARTNER</code>, le propriétaire est toujours lui-même</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>3 à 120 caractères</td>
+</tr>
+<tr>
+<td><code>costInPoints</code></td>
+<td>entier de 10 à 100 000</td>
+</tr>
+<tr>
+<td><code>totalStock</code></td>
+<td>entier de 1 à 100 000</td>
+</tr>
+<tr>
+<td><code>expiresAt</code></td>
+<td>date ISO avec fuseau, facultative (non appliquée, voir plus haut)</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;entreprise est créée active (<code>isActive: true</code>) : elle apparaît tout de suite dans la boutique. Pour un contrôle préalable par la Mairie, la suspendre dès sa création (étape 5).</p>
+<p>Un administrateur peut créer l&#39;entreprise pour le compte d&#39;un commerçant en passant <code>ownerId</code> : c&#39;est le seul moyen de rattacher une entreprise à un autre compte que le sien.</p>
+<h2 id="4-importer-les-codes-promo-du-commercant"><a class="anchor" href="#4-importer-les-codes-promo-du-commercant" aria-hidden="true" tabindex="-1">#</a>4. Importer les codes promo du commerçant</h2>
+<p>Si le commerçant a ses propres codes (ceux de sa caisse), il les importe sur <code>/partenaire/codes</code>, en fichier CSV ou en liste :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -X POST http://localhost:2053/api/v1/partners/codes/upload \
+  -H <span class="hljs-string">&quot;Authorization: Bearer <span class="hljs-variable">$TOKEN</span>&quot;</span> -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{&quot;rewardId&quot;:&quot;&lt;id de l offre&gt;&quot;,&quot;csvContent&quot;:&quot;LIB-0001\nLIB-0002\nLIB-0003&quot;}&#x27;</span></code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Comportement</th>
+<th>Détail</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Séparateurs acceptés</td>
+<td>retours à la ligne, virgules, points-virgules</td>
+</tr>
+<tr>
+<td>Filtrage</td>
+<td>codes de moins de 3 caractères et en-tête <code>code</code> ignorés, doublons retirés</td>
+</tr>
+<tr>
+<td>Limites</td>
+<td>5 000 codes par liste, 200 000 caractères de CSV</td>
+</tr>
+<tr>
+<td>Effet sur le stock</td>
+<td><code>totalStock</code> et <code>remainingStock</code> augmentent du nombre de codes importés</td>
+</tr>
+<tr>
+<td>Sans import</td>
+<td>chaque échange génère un code à partir des premières lettres du nom du partenaire</td>
+</tr>
+</tbody></table></div>
+<p>Le stock initial saisi à la création de l&#39;offre s&#39;ajoute donc aux codes importés. Une offre créée avec <code>totalStock: 50</code> puis alimentée de 50 codes affiche un stock de 100, dont 50 seulement correspondent à des codes du commerçant ; les 50 autres échanges recevront un code généré. Pour une offre fondée uniquement sur des codes importés, créer l&#39;offre avec un stock de 1, puis importer les codes.</p>
+<h2 id="5-activer-ou-suspendre-l-entreprise"><a class="anchor" href="#5-activer-ou-suspendre-l-entreprise" aria-hidden="true" tabindex="-1">#</a>5. Activer ou suspendre l&#39;entreprise</h2>
+<p>Sur <code>/mairie/partenaires</code>, un administrateur active ou suspend l&#39;entreprise. L&#39;appel <code>PATCH /api/v1/admin/partners/{partnerId}/status</code> avec <code>{&quot;isActive&quot;: false}</code> est enregistré dans le journal d&#39;audit (<code>PARTNER_SUSPENDED</code> ou <code>PARTNER_APPROVED</code>). Une entreprise suspendue disparaît du catalogue, ses offres comprises ; les codes déjà obtenus restent valables en caisse.</p>
+<h2 id="6-valider-un-code-en-caisse"><a class="anchor" href="#6-valider-un-code-en-caisse" aria-hidden="true" tabindex="-1">#</a>6. Valider un code en caisse</h2>
+<p>Le citoyen présente son code (ou son QR code) ; le commerçant le saisit sur <code>/partenaire/validation</code>, qui appelle <code>POST /api/v1/marketplace/redeem</code> avec <code>{&quot;uniqueCode&quot;: &quot;...&quot;}</code>. Le code est marqué utilisé. Un code d&#39;un autre partenaire répond « Code promo introuvable », comme un code inexistant, pour ne pas révéler l&#39;existence des codes des autres commerces.</p>
+<p>Le tableau de bord <code>/partenaire</code> affiche les statistiques de consommation (<code>GET /api/v1/partners/{partnerId}/consumption</code>) : stock, codes réclamés, codes utilisés en caisse, taux de consommation par offre.</p>
+<h2 id="7-ajouter-le-partenaire-aux-donnees-de-demonstration"><a class="anchor" href="#7-ajouter-le-partenaire-aux-donnees-de-demonstration" aria-hidden="true" tabindex="-1">#</a>7. Ajouter le partenaire aux données de démonstration</h2>
+<p>Pour qu&#39;un partenaire existe sur chaque poste de développement, l&#39;ajouter à <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/seed.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/seed.ts</code></a>, sur le modèle de la boulangerie et du cinéma :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">const</span> librairie = <span class="hljs-keyword">await</span> prisma.<span class="hljs-property">partner</span>.<span class="hljs-title function_">create</span>({
+  <span class="hljs-attr">data</span>: {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Librairie du Môle&#x27;</span>,
+    <span class="hljs-attr">logoUrl</span>: <span class="hljs-string">&#x27;https://assets.etherbay.fr/partners/librairie.png&#x27;</span>,
+    <span class="hljs-attr">isActive</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">ownerId</span>: partnerUser.<span class="hljs-property">id</span>,
+    <span class="hljs-attr">rewards</span>: {
+      <span class="hljs-attr">create</span>: [{ <span class="hljs-attr">title</span>: <span class="hljs-string">&#x27;-20% sur tous les romans&#x27;</span>, <span class="hljs-attr">costInPoints</span>: <span class="hljs-number">120</span>, <span class="hljs-attr">totalStock</span>: <span class="hljs-number">50</span>, <span class="hljs-attr">remainingStock</span>: <span class="hljs-number">50</span>, <span class="hljs-attr">isActive</span>: <span class="hljs-literal">true</span> }],
+    },
+  },
+});</code></pre></div>
+<p>Ajouter aussi <code>librairie.name</code> au tableau <code>partners</code> du <code>console.log</code> final.</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le seed crée les utilisateurs avec <code>upsert</code>, mais les partenaires avec <code>create</code> : relancer <code>npm run prisma:seed</code> sur une base déjà peuplée duplique tous les partenaires et leurs offres. Pour repartir de zéro en local : <code>docker compose down -v</code>, puis <code>docker compose up -d --wait</code>, <code>npm run prisma:deploy</code> et <code>npm run prisma:seed</code>. Le seed ne doit jamais être lancé en production.</p>
+</div>
+<h2 id="8-faire-apparaitre-le-commerce-sur-le-site-de-l-office-de-tourisme"><a class="anchor" href="#8-faire-apparaitre-le-commerce-sur-le-site-de-l-office-de-tourisme" aria-hidden="true" tabindex="-1">#</a>8. Faire apparaître le commerce sur le site de l&#39;Office de Tourisme</h2>
+<p>Le site touristique n&#39;interroge pas l&#39;API : le commerce y est ajouté à la main dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/data/places.js" class="external" target="_blank" rel="noopener noreferrer"><code>places.js</code></a>, avec le libellé « Partenaire EtherPoints » et le texte de l&#39;offre :</p>
+<div class="code-block"><div class="code-head"><span>JavaScript</span></div><pre><code class="hljs language-javascript"><span class="hljs-title function_">place</span>({ <span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;librairie-du-mole&#x27;</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Librairie du Môle&#x27;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;Librairie&#x27;</span>, <span class="hljs-attr">universe</span>: <span class="hljs-string">&#x27;decouvrir&#x27;</span>, <span class="hljs-attr">district</span>: <span class="hljs-string">&#x27;Le Môle&#x27;</span>, <span class="hljs-attr">address</span>: <span class="hljs-string">&#x27;5, jetée du Môle&#x27;</span>, <span class="hljs-attr">access</span>: [<span class="hljs-string">&#x27;Centre-ville&#x27;</span>], <span class="hljs-attr">days</span>: [<span class="hljs-string">&#x27;Mardi&#x27;</span>, <span class="hljs-string">&#x27;Mercredi&#x27;</span>, <span class="hljs-string">&#x27;Jeudi&#x27;</span>, <span class="hljs-string">&#x27;Vendredi&#x27;</span>, <span class="hljs-string">&#x27;Samedi&#x27;</span>], <span class="hljs-attr">hours</span>: [<span class="hljs-string">&#x27;Midi&#x27;</span>], <span class="hljs-attr">public</span>: [<span class="hljs-string">&#x27;Tout public&#x27;</span>], <span class="hljs-attr">labels</span>: [<span class="hljs-string">&#x27;Partenaire EtherPoints&#x27;</span>], <span class="hljs-attr">price</span>: <span class="hljs-string">&#x27;Entrée libre&#x27;</span>, <span class="hljs-attr">partnerOffer</span>: <span class="hljs-string">&#x27;-20 % sur tous les romans contre 120 EtherPoints&#x27;</span>, <span class="hljs-attr">description</span>: <span class="hljs-string">&#x27;Exemple de librairie partenaire.&#x27;</span> }),</code></pre></div>
+<p>Dans <code>LIEUX</code>, le commerce apparaît sur la page Découvrir. Dans <code>RESTAURANTS</code>, il apparaîtrait sur la page Manger et dans le bon plan « Les partenaires EtherPoints ». Déposer la photo <code>assets/img/photos/librairie-du-mole.jpg</code> (voir <a href="../office-tourisme/contenus.html#partenaires-etherpoints">Contenus</a>). Le texte de l&#39;offre doit être tenu à jour à la main : rien ne le synchronise avec la base.</p>
+<h2 id="liste-de-controle"><a class="anchor" href="#liste-de-controle" aria-hidden="true" tabindex="-1">#</a>Liste de contrôle</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Compte du commerçant créé par une première connexion.</li>
+<li><input disabled="" type="checkbox"> Rôle <code>PARTNER</code> attribué, reconnexion faite.</li>
+<li><input disabled="" type="checkbox"> Entreprise et offre créées, logo en HTTPS.</li>
+<li><input disabled="" type="checkbox"> Codes importés si le commerçant en fournit, stock vérifié.</li>
+<li><input disabled="" type="checkbox"> Entreprise activée par la Mairie, visible dans la boutique.</li>
+<li><input disabled="" type="checkbox"> Un échange et une validation en caisse testés de bout en bout.</li>
+<li><input disabled="" type="checkbox"> Seed et site de l&#39;Office de Tourisme mis à jour si le partenaire fait partie de la démonstration.</li>
+</ul>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="ajouter-variable.html"><span>Précédent</span><strong>Ajouter une variable d&#39;environnement</strong></a><a class="pager-next" href="modifier-contrat.html"><span>Suivant</span><strong>Modifier le contrat</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/guides/ajouter-partenaire.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#modele-de-donnees">Modèle de données</a></li><li class="toc-h2"><a href="#fichiers-concernes">Fichiers concernés</a></li><li class="toc-h2"><a href="#parcours">Parcours</a></li><li class="toc-h2"><a href="#1-creer-le-compte-du-commercant">1. Créer le compte du commerçant</a></li><li class="toc-h2"><a href="#2-lui-attribuer-le-role-partenaire">2. Lui attribuer le rôle partenaire</a></li><li class="toc-h2"><a href="#3-creer-l-entreprise-et-son-offre">3. Créer l&#39;entreprise et son offre</a></li><li class="toc-h2"><a href="#4-importer-les-codes-promo-du-commercant">4. Importer les codes promo du commerçant</a></li><li class="toc-h2"><a href="#5-activer-ou-suspendre-l-entreprise">5. Activer ou suspendre l&#39;entreprise</a></li><li class="toc-h2"><a href="#6-valider-un-code-en-caisse">6. Valider un code en caisse</a></li><li class="toc-h2"><a href="#7-ajouter-le-partenaire-aux-donnees-de-demonstration">7. Ajouter le partenaire aux données de démonstration</a></li><li class="toc-h2"><a href="#8-faire-apparaitre-le-commerce-sur-le-site-de-l-office-de-tourisme">8. Faire apparaître le commerce sur le site de l&#39;Office de Tourisme</a></li><li class="toc-h2"><a href="#liste-de-controle">Liste de contrôle</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

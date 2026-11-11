@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loterie | Documentation BlockLucky</title>
+<meta name="description" content="Le module lottery expose l&#39;état du tour en cours, l&#39;achat et le cadeau de tickets, le portefeuille intégré du citoyen, la galerie POAP, le retrait de la cagnott">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/css/doc.css">
+<script src="../../assets/js/theme.js"></script>
+<script src="../../assets/vendor/mermaid.min.js" defer></script>
+<script src="../../assets/js/app.js" defer></script>
+<script src="../../assets/js/search.js" defer></script>
+</head>
+<body data-root="../../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../../index.html">
+    <img src="../../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children open"><div class="nav-row"><a href="index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="true"></button></div><ul><li><div class="nav-row"><a href="auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="loterie.html" aria-current="page">Loterie</a></div></li><li><div class="nav-row"><a href="boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>7. Backend</span><span>Modules métier</span></div>
+    <article class="markdown">
+<h1>Loterie</h1>
+<p>Le module <code>lottery</code> expose l&#39;état du tour en cours, l&#39;achat et le cadeau de tickets, le portefeuille intégré du citoyen, la galerie POAP, le retrait de la cagnotte et les deux actions d&#39;administration du tour : le tirage et l&#39;annulation. C&#39;est le module où la différence entre les modes <code>onchain</code> et <code>simulated</code> est la plus forte. En mode <code>onchain</code>, le service délègue tous les appels au contrat à la passerelle <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.gateway.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.gateway.ts</code></a> et laisse l&#39;indexeur projeter les événements en base.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.routes.ts</code></a></td>
+<td>11 routes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.validators.ts</code></a></td>
+<td>4 schémas Zod</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.controllers.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.controllers.ts</code></a></td>
+<td>Contrôleurs, dont la route POAP qui ne suit pas le format <code>sendSuccess</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.services.ts</code></a></td>
+<td>Règles métier des deux modes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.repo.ts</code></a></td>
+<td>Tours, tickets, classement</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/poap.metadata.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/poap.metadata.ts</code></a></td>
+<td>Métadonnées et visuel SVG des badges</td>
+</tr>
+</tbody></table></div>
+<p>Les parcours complets sont décrits dans <a href="../../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a>, <a href="../../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a> et <a href="../../architecture/flux/annulation.html">Annulation et remboursement</a>.</p>
+<h2 id="routes"><a class="anchor" href="#routes" aria-hidden="true" tabindex="-1">#</a>Routes</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Méthode et chemin</th>
+<th>Accès</th>
+<th>Middlewares</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /api/v1/lottery/status</code></td>
+<td>public</td>
+<td>aucun</td>
+<td>État du tour, progression, garanties, réseau</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/lottery/transparency-charter</code></td>
+<td>public</td>
+<td>aucun</td>
+<td>Charte de transparence statique</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/lottery/leaderboard</code></td>
+<td>public</td>
+<td>aucun</td>
+<td>Classement anonymisé par EtherPoints</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/lottery/poap/:file</code></td>
+<td>public</td>
+<td>aucun</td>
+<td>Métadonnées ERC-721 <code>&lt;tour&gt;.json</code> ou visuel <code>&lt;tour&gt;.svg</code></td>
+</tr>
+<tr>
+<td><code>POST /api/v1/lottery/buy</code></td>
+<td>connecté</td>
+<td><code>authenticate</code>, <code>idempotency</code>, <code>validate(buyTicketSchema)</code></td>
+<td>Achat de 1 à 10 tickets</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/lottery/gift</code></td>
+<td>connecté</td>
+<td><code>authenticate</code>, <code>idempotency</code>, <code>validate(giftTicketSchema)</code></td>
+<td>Cadeau d&#39;un ticket à un email</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/lottery/my-tickets</code></td>
+<td>connecté</td>
+<td><code>authenticate</code></td>
+<td>Tickets paginés et badges POAP</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/lottery/wallet</code></td>
+<td>connecté</td>
+<td><code>authenticate</code></td>
+<td>Portefeuille intégré et solde</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/lottery/claim-prize</code></td>
+<td>connecté</td>
+<td><code>authenticate</code>, <code>idempotency</code>, <code>validate(claimPrizeSchema)</code></td>
+<td>Retrait manuel de la cagnotte par le gagnant</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/lottery/draw</code></td>
+<td>ADMIN</td>
+<td><code>authenticate</code>, <code>requireRoles(&#39;ADMIN&#39;)</code>, <code>validate(triggerDrawSchema)</code></td>
+<td>Demande du tirage</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/lottery/refund</code></td>
+<td>ADMIN</td>
+<td><code>authenticate</code>, <code>requireRoles(&#39;ADMIN&#39;)</code></td>
+<td>Annulation du tour et remboursements</td>
+</tr>
+</tbody></table></div>
+<h2 id="constantes-metier"><a class="anchor" href="#constantes-metier" aria-hidden="true" tabindex="-1">#</a>Constantes métier</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Constante</th>
+<th>Valeur</th>
+<th>Où</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Prix d&#39;un ticket en mode simulé</td>
+<td>0,01 ETH</td>
+<td><code>TICKET_PRICE_ETH</code> du service</td>
+</tr>
+<tr>
+<td>Objectif de participants en mode simulé</td>
+<td>10 000</td>
+<td><code>TARGET_PARTICIPANTS</code></td>
+</tr>
+<tr>
+<td>Durée d&#39;un tour simulé</td>
+<td>48 heures après <code>startedAt</code></td>
+<td><code>getCurrentLotteryStatus</code></td>
+</tr>
+<tr>
+<td>EtherPoints par ticket acheté</td>
+<td>50</td>
+<td><code>POINTS_PER_TICKET</code> du service et de l&#39;indexeur</td>
+</tr>
+<tr>
+<td>EtherPoints par ticket offert, pour l&#39;acheteur</td>
+<td>75</td>
+<td><code>POINTS_PER_GIFT</code> et <code>POINTS_PER_GIFTED_TICKET</code></td>
+</tr>
+<tr>
+<td>Limite de jeu responsable par défaut</td>
+<td>50 tickets par tour</td>
+<td>clé Redis <code>user:ticket_limit:&lt;userId&gt;</code>, réglable par <a href="utilisateur.html#put-user-responsible-limit"><code>PUT /user/responsible-limit</code></a></td>
+</tr>
+<tr>
+<td>Salle d&#39;attente</td>
+<td>600 secondes avant la fin du tour</td>
+<td><code>inWaitingRoom</code></td>
+</tr>
+</tbody></table></div>
+<p>En mode <code>onchain</code>, le prix, le nombre maximal de tickets et la limite par joueur viennent du contrat (<code>getRound</code>). Le déploiement local fixe 0,01 ETH, 10 000 tickets, 100 tickets par joueur et une commission de 10 % (<code>smart-contract/deployments/localhost.json</code>). Voir <a href="../../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a>.</p>
+<h2 id="get-lottery-status"><a class="anchor" href="#get-lottery-status" aria-hidden="true" tabindex="-1">#</a>GET /lottery/status</h2>
+<p>Renvoie le tour courant. Les deux modes écrivent en base pendant cette lecture : le mode simulé crée le tour 1 (ou le suivant) si aucun tour <code>OPEN</code> ou <code>LOCKED</code> n&#39;existe, le mode onchain fait un <code>upsert</code> du tour lu sur la chaîne.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Statut de la loterie récupéré avec succès&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;round&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c41-0b6e-7d2a-8f13-5c9e2a7b4d60&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;contractRoundId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;OPEN&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;prizePool&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.04</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;ticketPriceEth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.01</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;winnerWallet&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;chainlinkRequestId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;startedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T13:23:16.000Z&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;drawnAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;drawTargetTime&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T13:53:16.000Z&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;remainingSeconds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">412</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;inWaitingRoom&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;maxTicketsPerPlayer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;progression&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;ticketsSold&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">4</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;distinctParticipants&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;targetParticipants&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">10000</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;percentage&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.04</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;milestones&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+        <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;target&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1000</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Palier Quartier Innovant (1 000 participants)&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;rewardDescription&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;+10% de cagnotte bonus abondée par la Mairie d&#x27;EtherBay&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;unlocked&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span> <span class="hljs-punctuation">}</span>
+      <span class="hljs-punctuation">]</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;guarantees&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;autoRefundEnabled&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;autoRefundPolicy&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Si le tour est annulé, chaque mise est remboursable dans le Smart Contract ; la plateforme réclame automatiquement le remboursement pour vous.&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;gaslessSponsored&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;vrfCertified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;simulated&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;paused&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;network&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;mode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;onchain&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;chainId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">31337</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;isFallback&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;rpcUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://127.0.0.1:8545&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;isPaused&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;contractAddress&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;poapContractAddress&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5fc8d32690cc91d4c39d9d3abcbd16989f875707&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;blockchain&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;mode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;onchain&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;chainId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">31337</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;lotteryContract&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;poapContract&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5FC8d32690cc91D4c39d9d3abcBD16989F875707&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;lotteryExplorerUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span> <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p>La liste <code>milestones</code> contient trois paliers (1 000, 5 000 et 10 000 tickets). Ils sont uniquement affichés : aucun code n&#39;abonde la cagnotte ni ne débloque d&#39;offre quand un palier est atteint. <code>ticketsSold</code> compte des tickets, pas des participants distincts, malgré les libellés.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Mode onchain</th>
+<th>Mode simulé</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>prizePool</code></td>
+<td><code>totalCollected</code> du contrat en ETH</td>
+<td>somme des prix en base</td>
+</tr>
+<tr>
+<td><code>drawTargetTime</code></td>
+<td><code>endTime</code> du contrat</td>
+<td><code>startedAt</code> + 48 h</td>
+</tr>
+<tr>
+<td><code>targetParticipants</code></td>
+<td><code>maxTickets</code> du contrat</td>
+<td>10 000</td>
+</tr>
+<tr>
+<td><code>maxTicketsPerPlayer</code>, <code>guarantees.paused</code></td>
+<td>présents</td>
+<td>absents</td>
+</tr>
+<tr>
+<td><code>vrfCertified</code>, <code>simulated</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td><code>false</code>, <code>true</code></td>
+</tr>
+</tbody></table></div>
+<h2 id="post-lottery-buy"><a class="anchor" href="#post-lottery-buy" aria-hidden="true" tabindex="-1">#</a>POST /lottery/buy</h2>
+<h3 id="corps"><a class="anchor" href="#corps" aria-hidden="true" tabindex="-1">#</a>Corps</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>quantity</code></td>
+<td>entier</td>
+<td>1 à 10, défaut 1, converti depuis une chaîne</td>
+</tr>
+<tr>
+<td><code>roundId</code></td>
+<td>UUID</td>
+<td>facultatif, ignoré par les deux modes : l&#39;achat porte toujours sur le tour courant</td>
+</tr>
+<tr>
+<td><code>retryAttempt</code></td>
+<td>entier</td>
+<td>0 à 5, défaut 0 ; renvoyé incrémenté dans les détails d&#39;une erreur réseau en mode simulé</td>
+</tr>
+</tbody></table></div>
+<h3 id="regles-communes"><a class="anchor" href="#regles-communes" aria-hidden="true" tabindex="-1">#</a>Règles communes</h3>
+<ol>
+<li>Le nombre de tickets du citoyen sur le tour courant, compté en base, plus <code>quantity</code> ne doit pas dépasser sa limite de jeu responsable (50 par défaut). Sinon : <code>400 Jeu Responsable : Limite d&#39;achat atteinte (48/50 tickets autorisés sur ce tirage).</code></li>
+<li>La requête accepte <code>Idempotency-Key</code> : un double clic avec la même clé rejoue la première réponse au lieu d&#39;acheter deux fois (voir <a href="../reference-api.html#idempotence">Référence de l&#39;API</a>).</li>
+</ol>
+<h3 id="mode-onchain"><a class="anchor" href="#mode-onchain" aria-hidden="true" tabindex="-1">#</a>Mode onchain</h3>
+<div class="diagram"><pre class="mermaid">sequenceDiagram
+    participant C as &quot;Client&quot;
+    participant S as &quot;lotteryService&quot;
+    participant G as &quot;lotteryGateway&quot;
+    participant BC as &quot;Contrat BlockLucky&quot;
+    participant I as &quot;lotteryIndexer&quot;
+    C-&gt;&gt;S: POST /lottery/buy quantity 2
+    S-&gt;&gt;G: readCurrentRound puis upsert du tour
+    S-&gt;&gt;G: prepareWallet : portefeuille et dotation si absents
+    G-&gt;&gt;BC: buyTickets(2) signé par le portefeuille, value = prix x 2
+    BC--&gt;&gt;G: reçu avec TicketsPurchased
+    G-&gt;&gt;I: processReceipt
+    I-&gt;&gt;I: tickets en base, +100 points, points:awarded, job MINT_BADGE
+    S--&gt;&gt;C: 201 tickets, transactionHash, solde</pre></div>
+<ol>
+<li><code>prepareWallet</code> crée le portefeuille intégré s&#39;il manque (comptes créés avant l&#39;ADR 0004 ou par l&#39;indexeur) et verse la dotation de bienvenue si elle n&#39;a jamais été versée.</li>
+<li>Le tour doit être <code>OPEN</code> sur la chaîne, sinon <code>409 Le tirage de ce tour est en cours, les achats reprendront au tour suivant.</code></li>
+<li>La transaction <code>buyTickets(quantity)</code> est signée par la clé déchiffrée du citoyen. Le gaz est payé par son portefeuille : il n&#39;y a pas de transaction sponsorisée.</li>
+<li>Le reçu est indexé immédiatement, sans attendre la boucle de l&#39;indexeur. Si l&#39;événement a déjà été indexé, aucun point n&#39;est recrédité.</li>
+</ol>
+<p>Erreurs du contrat traduites par la passerelle :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Erreur du contrat</th>
+<th>Statut</th>
+<th>Message</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>EnforcedPause</code></td>
+<td>503</td>
+<td><code>Le Smart Contract est temporairement en pause de sécurité par la Mairie.</code>, avec <code>errors: { contractError, canRetry: false, circuitBreaker: true }</code></td>
+</tr>
+<tr>
+<td><code>RoundNotOpen</code></td>
+<td>409</td>
+<td><code>Le tirage de ce tour est en cours, les achats reprendront au tour suivant.</code></td>
+</tr>
+<tr>
+<td><code>RoundExpired</code></td>
+<td>409</td>
+<td><code>Ce tour est terminé, le tirage va être lancé.</code></td>
+</tr>
+<tr>
+<td><code>RoundSoldOut</code></td>
+<td>409</td>
+<td><code>Tous les tickets de ce tour ont été vendus.</code></td>
+</tr>
+<tr>
+<td><code>PlayerLimitReached</code></td>
+<td>400</td>
+<td><code>Limite de tickets par participant atteinte pour ce tour.</code></td>
+</tr>
+<tr>
+<td><code>InvalidQuantity</code></td>
+<td>400</td>
+<td><code>Quantité de tickets invalide.</code></td>
+</tr>
+<tr>
+<td><code>IncorrectPayment</code></td>
+<td>400</td>
+<td><code>Montant incorrect pour cet achat.</code></td>
+</tr>
+<tr>
+<td>fonds insuffisants</td>
+<td>402</td>
+<td><code>Solde d&#39;ethers fictifs insuffisant sur votre portefeuille BlockLucky.</code></td>
+</tr>
+<tr>
+<td>nœud injoignable</td>
+<td>503</td>
+<td><code>Réseau blockchain injoignable. Veuillez réessayer dans un instant.</code>, <code>canRetry: true</code></td>
+</tr>
+<tr>
+<td>autre</td>
+<td>502</td>
+<td><code>L&#39;achat n&#39;a pas pu être enregistré sur la blockchain.</code>, <code>canRetry: true</code></td>
+</tr>
+</tbody></table></div>
+<p>La table complète est décrite dans <a href="../../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a>.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Ticket acheté avec succès&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;tickets&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+      <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c45-2e1f-7a09-b3d4-8e6f0a1c2b37&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;transactionHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5d1c...e9a4&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;blockNumber&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">42</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ticketIndex&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;payerWallet&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x8b3f0e5c2d9a71b46e0f3c8d2a5b7e9f1c4d6a08&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-5d2b-7f41-9c0e-6a8b2d4f1e37&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;lotteryId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c41-0b6e-7d2a-8f13-5c9e2a7b4d60&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;purchasedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T13:41:02.000Z&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;etherscanUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span> <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;pointsAwarded&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;newPointsBalance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">125</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;poapBadge&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;MINT_PENDING&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;contractAddress&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5FC8d32690cc91D4c39d9d3abcBD16989F875707&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;roundId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;gaslessSponsored&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;transactionHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5d1c...e9a4&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;etherscanUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;walletAddress&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x8b3f0e5c2d9a71b46e0f3c8d2a5b7e9f1c4d6a08&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;walletBalanceEth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.0799</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p>Le tableau <code>tickets</code> contient un élément par ticket. <code>etherscanUrl</code> est <code>null</code> tant que <code>EXPLORER_URL</code> est vide.</p>
+<h3 id="mode-simule"><a class="anchor" href="#mode-simule" aria-hidden="true" tabindex="-1">#</a>Mode simulé</h3>
+<p>Le tour en base doit être <code>OPEN</code> (<code>400 Cette session de loterie n&#39;est plus ouverte aux achats de tickets.</code>). Pour chaque ticket, <code>blockchainService.relayTicketPurchase</code> vérifie le disjoncteur Redis puis fabrique un hachage et un numéro de bloc aléatoires ; le ticket est inséré et la cagnotte augmentée de 0,01 ETH dans la même transaction. Disjoncteur actif : <code>503 CIRCUIT_BREAKER_ACTIVE: Le Smart Contract est temporairement en pause de sécurité.</code> avec <code>circuitBreaker: true</code>. Le service crédite ensuite <code>50 x quantity</code> points, émet <code>points:awarded</code> et renvoie un faux badge POAP (<code>tokenId</code> aléatoire, <code>metadataUri</code> en <code>ipfs://QmEtherBayPOAP2026/...</code>) avec <code>gaslessSponsored: true</code>.</p>
+<h3 id="effets-de-bord"><a class="anchor" href="#effets-de-bord" aria-hidden="true" tabindex="-1">#</a>Effets de bord</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Effet</th>
+<th>Onchain</th>
+<th>Simulé</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Lignes <code>Ticket</code></td>
+<td>créées par l&#39;indexeur (<code>ticketIndex</code>, <code>payerWallet</code>)</td>
+<td>créées par le service</td>
+</tr>
+<tr>
+<td><code>LotteryRound.prizePool</code></td>
+<td>augmenté du montant de l&#39;événement</td>
+<td>augmenté de 0,01 par ticket</td>
+</tr>
+<tr>
+<td>EtherPoints</td>
+<td>+50 par ticket, <code>TICKET_PURCHASE</code></td>
+<td>idem</td>
+</tr>
+<tr>
+<td>Socket.IO</td>
+<td><code>points:awarded</code> diffusé</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>POAP</td>
+<td>job <code>MINT_BADGE</code> dans la file <code>chain-actions</code></td>
+<td>aucun</td>
+</tr>
+<tr>
+<td>Métrique</td>
+<td><code>business_events_total{event=&quot;ticket_purchased&quot;}</code> et <code>ticket_indexed</code></td>
+<td><code>ticket_purchased</code></td>
+</tr>
+</tbody></table></div>
+<h2 id="post-lottery-gift"><a class="anchor" href="#post-lottery-gift" aria-hidden="true" tabindex="-1">#</a>POST /lottery/gift</h2>
+<p>Offre un ticket à une personne identifiée par son email.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>recipientEmail</code></td>
+<td>chaîne</td>
+<td>obligatoire, email valide, 254 caractères au plus, passé en minuscules</td>
+</tr>
+<tr>
+<td><code>recipientWallet</code></td>
+<td>chaîne</td>
+<td>facultatif, <code>0x</code> + 40 hexadécimaux ; utilisé seulement en mode simulé pour un bénéficiaire inconnu</td>
+</tr>
+<tr>
+<td><code>personalMessage</code></td>
+<td>chaîne</td>
+<td>facultatif, 250 caractères au plus ; validé mais jamais utilisé</td>
+</tr>
+</tbody></table></div>
+<p>Règles en mode onchain :</p>
+<ol>
+<li>S&#39;offrir un ticket est refusé : <code>400 Vous ne pouvez pas vous offrir un ticket à vous-même.</code></li>
+<li>Si aucun compte n&#39;a cet email, un compte est créé avec un portefeuille intégré, <code>referredById</code> égal à l&#39;expéditeur et <code>isEmailVerified = false</code>. Un compte existant sans portefeuille en reçoit un.</li>
+<li>L&#39;expéditeur paie : <code>buyTicketsFor(destinataire, 1)</code> est signé par son portefeuille. Les erreurs sont celles de l&#39;achat.</li>
+<li>L&#39;indexeur attribue le ticket au destinataire, crédite +50 points au destinataire et +75 points <code>GIFT_TICKET</code> à l&#39;expéditeur, et met en file la frappe du POAP du destinataire.</li>
+</ol>
+<p>En mode simulé, il n&#39;y a pas de contrôle d&#39;auto-cadeau ; un destinataire inconnu est créé avec <code>recipientWallet</code> ou une adresse aléatoire sans clé, et seul l&#39;expéditeur reçoit ses 75 points.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Ticket offert avec succès à votre proche !&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;ticket&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c47-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ticketIndex&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">4</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c46-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;recipientEmail&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;voisine@etherbay.fr&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;recipientWallet&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x2c4e...91ab&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;etherscanUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;senderPointsAwarded&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">75</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;senderNewBalance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">200</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Aucun email n&#39;est envoyé au destinataire et la limite de jeu responsable n&#39;est pas appliquée aux cadeaux. Un destinataire créé par un cadeau qui se connecte ensuite passe par le parcours <code>LOGIN</code>, pas <code>SIGNUP</code> : il ne reçoit pas les 25 points de bienvenue.</p>
+</div>
+<h2 id="get-lottery-my-tickets"><a class="anchor" href="#get-lottery-my-tickets" aria-hidden="true" tabindex="-1">#</a>GET /lottery/my-tickets</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>page</code></td>
+<td>entier, défaut 1, minimum 1</td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>entier, défaut 20, entre 1 et 100</td>
+</tr>
+</tbody></table></div>
+<p>Renvoie <code>walletAddress</code>, <code>tickets</code> (identifiant, hachage, bloc, date, tour, statut du tour, <code>etherscanUrl</code>) triés du plus récent au plus ancien, <code>poapBadges</code> et <code>meta</code> (<code>page</code>, <code>limit</code>, <code>total</code>, <code>totalPages</code>). En mode onchain, les badges sont lus sur le contrat POAP (<code>badgeOf</code>, <code>tokenURI</code>) pour au plus 20 tours distincts de la page courante ; seuls les badges frappés apparaissent, <code>mintedAt</code> vaut <code>null</code>. En mode simulé, chaque ticket de la page produit un badge fictif.</p>
+<h2 id="get-lottery-wallet"><a class="anchor" href="#get-lottery-wallet" aria-hidden="true" tabindex="-1">#</a>GET /lottery/wallet</h2>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Portefeuille BlockLucky récupéré&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;mode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;onchain&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;walletAddress&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x8b3f0e5c2d9a71b46e0f3c8d2a5b7e9f1c4d6a08&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;custodial&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;balanceEth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.1</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;welcomeGrantTxHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x9a2f...c41e&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;explorerUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p>En mode onchain, cette lecture appelle <code>prepareWallet</code> : elle peut créer le portefeuille et envoyer la dotation de bienvenue. En mode simulé, <code>balanceEth</code> et <code>explorerUrl</code> valent <code>null</code>.</p>
+<h2 id="post-lottery-claim-prize"><a class="anchor" href="#post-lottery-claim-prize" aria-hidden="true" tabindex="-1">#</a>POST /lottery/claim-prize</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>contractRoundId</code></td>
+<td>entier</td>
+<td>1 à 1 000 000</td>
+</tr>
+</tbody></table></div>
+<p>Le versement de la cagnotte est normalement automatique : l&#39;indexeur met en file un job <code>CLAIM_PRIZE</code> dès l&#39;événement <code>WinnerPicked</code>. Cette route sert de recours manuel. Elle signe <code>claimPrize(contractRoundId)</code> avec le portefeuille du citoyen.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cas</th>
+<th>Statut et message</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mode simulé</td>
+<td><code>409 Le retrait de la cagnotte nécessite le mode blockchain réel (BLOCKCHAIN_MODE=onchain).</code></td>
+</tr>
+<tr>
+<td>Compte sans portefeuille intégré</td>
+<td><code>409 Ce compte n&#39;a pas encore de portefeuille BlockLucky</code></td>
+</tr>
+<tr>
+<td><code>NotWinner</code></td>
+<td><code>403 Ce compte n&#39;est pas le gagnant de ce tour.</code></td>
+</tr>
+<tr>
+<td><code>PrizeAlreadyClaimed</code></td>
+<td><code>409 La cagnotte de ce tour a déjà été versée.</code></td>
+</tr>
+<tr>
+<td><code>RoundNotCompleted</code></td>
+<td><code>409 Le tirage de ce tour n&#39;est pas terminé.</code></td>
+</tr>
+</tbody></table></div>
+<p>Succès : <code>{ &quot;contractRoundId&quot;: 1, &quot;transactionHash&quot;: &quot;0x...&quot;, &quot;etherscanUrl&quot;: null, &quot;walletBalanceEth&quot;: 0.136 }</code>.</p>
+<h2 id="post-lottery-draw"><a class="anchor" href="#post-lottery-draw" aria-hidden="true" tabindex="-1">#</a>POST /lottery/draw</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>roundId</code></td>
+<td>UUID</td>
+<td>facultatif ; utilisé seulement en mode simulé</td>
+</tr>
+</tbody></table></div>
+<p>Mode onchain : le compte opérateur appelle <code>requestDraw()</code> sur le tour courant. La réponse est immédiate, le gagnant n&#39;est pas encore connu :</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Tirage au sort Chainlink VRF demandé&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;round&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;contractRoundId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;LOCKED&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;vrfProof&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;chainlinkRequestId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;7146...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;transactionHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;etherscanUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;PENDING&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;verifiedFair&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;simulated&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Tirage demandé à Chainlink VRF. Le gagnant sera désigné par l&#x27;oracle dans les prochains blocs et annoncé en direct.&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p>L&#39;indexeur passe le tour en <code>LOCKED</code> à l&#39;événement <code>DrawRequested</code>. À l&#39;événement <code>WinnerPicked</code>, il enregistre le gagnant, diffuse <code>draw:winner</code> et met en file le versement. Le keeper déclenche le même tirage sans intervention dès que <code>isDrawReady()</code> est vrai (voir <a href="../../integration-blockchain/keeper.html">Keeper du tirage</a>). Erreurs : <code>409 Le tirage ne peut pas encore être lancé (participants ou durée insuffisants).</code> (<code>DrawNotReady</code>), <code>503</code> si le contrat est en pause.</p>
+<p>Mode simulé : le tour visé (ou le tour courant) doit exister (<code>404 Session de loterie introuvable</code>), ne pas être <code>COMPLETED</code> (<code>400 Le tirage de cette session a déjà été effectué</code>) et compter au moins un ticket (<code>400 Aucun ticket vendu sur cette session pour effectuer un tirage</code>). Le gagnant est tiré par <code>crypto.randomInt</code> parmi les tickets, ce qui pondère par le nombre de tickets. Le tour passe <code>LOCKED</code> puis <code>COMPLETED</code>, <code>draw:winner</code> est diffusé et la réponse porte <code>verifiedFair: false, simulated: true</code>.</p>
+<h2 id="post-lottery-refund"><a class="anchor" href="#post-lottery-refund" aria-hidden="true" tabindex="-1">#</a>POST /lottery/refund</h2>
+<p>Aucun schéma de validation. En mode simulé, <code>roundId</code> est lu dans le corps s&#39;il est fourni.</p>
+<p>Mode onchain : le compte opérateur appelle <code>cancelRound()</code> sur le tour courant (<code>409 Ce tour ne peut pas être annulé.</code> sinon). L&#39;indexeur passe le tour en <code>CANCELLED</code> et met en file un job <code>CLAIM_REFUND</code> par portefeuille payeur distinct ; chaque job signe <code>claimRefund</code> avec le portefeuille intégré du payeur. La réponse renvoie <code>refundedAmountEth</code> (total collecté avant annulation) et le hachage.</p>
+<p>Mode simulé : le statut passe à <code>CANCELLED</code> et la réponse annonce <code>autoRefundExecuted: true</code> alors qu&#39;aucun ethers n&#39;est rendu. Les EtherPoints gagnés à l&#39;achat ne sont repris dans aucun des deux modes.</p>
+<h2 id="routes-publiques-de-lecture"><a class="anchor" href="#routes-publiques-de-lecture" aria-hidden="true" tabindex="-1">#</a>Routes publiques de lecture</h2>
+<h3 id="get-lottery-leaderboard"><a class="anchor" href="#get-lottery-leaderboard" aria-hidden="true" tabindex="-1">#</a>GET /lottery/leaderboard</h3>
+<p><code>limit</code> est lu dans la query, défaut 20, sans borne supérieure. Les comptes non supprimés sont triés par <code>pointsBalance</code> décroissant.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Classement des ambassadeurs récupéré&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;leaderboard&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;rank&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;anonymizedWallet&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x8b3f...6a08&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;pointsBalance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">425</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;referralsCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ticketsBought&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">6</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">]</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span></code></pre></div>
+<h3 id="get-lottery-transparency-charter"><a class="anchor" href="#get-lottery-transparency-charter" aria-hidden="true" tabindex="-1">#</a>GET /lottery/transparency-charter</h3>
+<p>Texte statique : titre, version <code>2026.1</code> et quatre sections (blockchain, Chainlink VRF, remboursement, portefeuille intégré et ethers fictifs).</p>
+<h3 id="get-lottery-poap-file"><a class="anchor" href="#get-lottery-poap-file" aria-hidden="true" tabindex="-1">#</a>GET /lottery/poap/:file</h3>
+<p><code>file</code> doit valoir <code>&lt;n&gt;.json</code> ou <code>&lt;n&gt;.svg</code>, <code>n</code> entier de 1 à 9 chiffres strictement positif. Le JSON n&#39;est pas enveloppé dans <code>sendSuccess</code> : c&#39;est le document ERC-721 lu par les portefeuilles et les explorateurs.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;POAP BlockLucky EtherBay, tour n°1&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Badge de participation non transférable délivré par la Ville d&#x27;EtherBay à chaque citoyen ayant participé à ce tour de la loterie solidaire BlockLucky.&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;image&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://localhost:2053/api/v1/lottery/poap/1.svg&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;external_url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://localhost:3000&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;attributes&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;trait_type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Tour&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;display_type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;number&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;trait_type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Émetteur&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Mairie d&#x27;EtherBay&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;trait_type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Transférable&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Non&quot;</span> <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p>L&#39;URL de l&#39;image est construite à partir du protocole et de l&#39;hôte de la requête : derrière un proxy, <code>TRUST_PROXY</code> doit être réglé pour obtenir <code>https</code>. Les réponses portent <code>Cache-Control: public, max-age=86400, immutable</code>, y compris la réponse <code>404 Badge POAP introuvable</code>. L&#39;existence du tour n&#39;est pas vérifiée. Voir <a href="../../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a>.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="auth.html"><span>Précédent</span><strong>Authentification</strong></a><a class="pager-next" href="boutique.html"><span>Suivant</span><strong>Boutique et récompenses</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/backend/modules/loterie.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#constantes-metier">Constantes métier</a></li><li class="toc-h2"><a href="#get-lottery-status">GET /lottery/status</a></li><li class="toc-h2"><a href="#post-lottery-buy">POST /lottery/buy</a></li><li class="toc-h3"><a href="#corps">Corps</a></li><li class="toc-h3"><a href="#regles-communes">Règles communes</a></li><li class="toc-h3"><a href="#mode-onchain">Mode onchain</a></li><li class="toc-h3"><a href="#mode-simule">Mode simulé</a></li><li class="toc-h3"><a href="#effets-de-bord">Effets de bord</a></li><li class="toc-h2"><a href="#post-lottery-gift">POST /lottery/gift</a></li><li class="toc-h2"><a href="#get-lottery-my-tickets">GET /lottery/my-tickets</a></li><li class="toc-h2"><a href="#get-lottery-wallet">GET /lottery/wallet</a></li><li class="toc-h2"><a href="#post-lottery-claim-prize">POST /lottery/claim-prize</a></li><li class="toc-h2"><a href="#post-lottery-draw">POST /lottery/draw</a></li><li class="toc-h2"><a href="#post-lottery-refund">POST /lottery/refund</a></li><li class="toc-h2"><a href="#routes-publiques-de-lecture">Routes publiques de lecture</a></li><li class="toc-h3"><a href="#get-lottery-leaderboard">GET /lottery/leaderboard</a></li><li class="toc-h3"><a href="#get-lottery-transparency-charter">GET /lottery/transparency-charter</a></li><li class="toc-h3"><a href="#get-lottery-poap-file">GET /lottery/poap/:file</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suppression RGPD | Documentation BlockLucky</title>
+<meta name="description" content="Un citoyen peut demander l&#39;effacement de son compte au titre de l&#39;article 17 du RGPD. La suppression se fait en deux temps pour éviter une suppression accidente">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/css/doc.css">
+<script src="../../assets/js/theme.js"></script>
+<script src="../../assets/vendor/mermaid.min.js" defer></script>
+<script src="../../assets/js/app.js" defer></script>
+<script src="../../assets/js/search.js" defer></script>
+</head>
+<body data-root="../../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../../index.html">
+    <img src="../../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children open"><div class="nav-row"><a href="index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="true"></button></div><ul><li><div class="nav-row"><a href="inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="suppression-rgpd.html" aria-current="page">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>3. Architecture</span><span>Flux métier</span></div>
+    <article class="markdown">
+<h1>Suppression RGPD</h1>
+<p>Un citoyen peut demander l&#39;effacement de son compte au titre de l&#39;article 17 du RGPD. La suppression se fait en deux temps pour éviter une suppression accidentelle ou malveillante : une demande authentifiée produit un jeton à usage unique envoyé par email, puis la confirmation avec ce jeton anonymise le compte et révoque toutes ses sessions. Le compte n&#39;est pas supprimé physiquement : ses identifiants personnels sont effacés et la ligne est marquée <code>deletedAt</code>.</p>
+<h2 id="diagramme-de-sequence"><a class="anchor" href="#diagramme-de-sequence" aria-hidden="true" tabindex="-1">#</a>Diagramme de séquence</h2>
+<div class="diagram"><pre class="mermaid">sequenceDiagram
+  autonumber
+  participant C as Client web ou mobile
+  participant API as API user
+  participant US as UserService
+  participant UR as UserRepository
+  participant DB as PostgreSQL
+  participant Q as File emails-queue
+  participant SS as SessionService
+  participant R as Redis
+
+  C-&gt;&gt;API: POST /user/gdpr/delete-request avec Bearer
+  API-&gt;&gt;US: requestGdprAccountDeletion(userId)
+  US-&gt;&gt;UR: getUserFullProfile
+  US-&gt;&gt;US: generateRandomToken 32 octets
+  US-&gt;&gt;UR: createDeletionToken, sha256 du jeton, 24 h
+  UR-&gt;&gt;DB: Token ACCOUNT_DELETION
+  US-&gt;&gt;Q: enqueueEmail gdpr-deletion avec le jeton
+  US--&gt;&gt;C: 200 confirmationRequired, confirmationToken hors production
+  C-&gt;&gt;API: POST /user/gdpr/confirm-delete token, sans authentification
+  API-&gt;&gt;US: confirmGdprAccountDeletion(token)
+  US-&gt;&gt;UR: findValidDeletionToken, sha256, type, échéance
+  US-&gt;&gt;UR: anonymizeUserAccount(userId, tokenId)
+  UR-&gt;&gt;DB: transaction : anonymisation du User, suppression du Token
+  US-&gt;&gt;SS: revokeAllForUser(userId)
+  SS-&gt;&gt;R: auth:revoked-before:userId, 30 jours
+  US--&gt;&gt;C: 200 deleted, anonymized, deletedAt</pre></div>
+<h2 id="etape-1-demande"><a class="anchor" href="#etape-1-demande" aria-hidden="true" tabindex="-1">#</a>Étape 1 : demande</h2>
+<p><strong>Interface.</strong> La page <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx</code></a> et l&#39;écran <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/GDPRScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/settings/GDPRScreen.tsx</code></a> appellent <code>/user/gdpr/delete-request</code> puis proposent de coller le jeton. Hors production, la page web préremplit le jeton renvoyé par l&#39;API.</p>
+<p><strong>Route.</strong> <code>POST /api/v1/user/gdpr/delete-request</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.routes.ts</code></a>, protégée par <code>authenticate</code> seulement : pas de schéma de corps, pas d&#39;idempotence.</p>
+<p><strong>Service.</strong> <code>userService.requestGdprAccountDeletion</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a>) :</p>
+<ol>
+<li><code>userRepository.getUserFullProfile</code> : 404 si le compte n&#39;existe pas.</li>
+<li><code>generateRandomToken(32)</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/crypto.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/utils/crypto.util.ts</code></a>) tire 32 octets aléatoires encodés en base64url.</li>
+<li><code>userRepository.createDeletionToken</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.repo.ts</code></a>) enregistre dans <code>Token</code> l&#39;empreinte SHA-256 du jeton (jamais le jeton en clair), le type <code>ACCOUNT_DELETION</code> et une échéance de 24 h.</li>
+<li>Si le compte a un email, l&#39;email <code>gdpr-deletion</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/templates/emails/gdpr-deletion.html" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/templates/emails/gdpr-deletion.html</code></a>) est mis en file avec le jeton et un lien <code>CONFIRM_URL</code>.</li>
+<li>La réponse contient <code>confirmationRequired: true</code>, <code>emailSent</code> et, quand <code>NODE_ENV</code> n&#39;est pas <code>production</code>, <code>confirmationToken</code> en clair pour faciliter les tests.</li>
+</ol>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le lien de l&#39;email pointe vers <code>${FRONTEND_URL}/gdpr/confirm-delete?token=...</code>. Cette route n&#39;existe pas dans le frontend web, qui affiche alors sa page 404. La confirmation ne fonctionne qu&#39;en collant le jeton dans la page <code>profil/rgpd</code> ou dans l&#39;écran mobile.</p>
+</div>
+<h2 id="etape-2-confirmation"><a class="anchor" href="#etape-2-confirmation" aria-hidden="true" tabindex="-1">#</a>Étape 2 : confirmation</h2>
+<p><strong>Route.</strong> <code>POST /api/v1/user/gdpr/confirm-delete</code> avec <code>validate(confirmGdprDeletionSchema)</code> : <code>token</code> de 10 à 128 caractères. Cette route n&#39;exige pas d&#39;être connecté : la possession du jeton suffit, ce qui permet de confirmer depuis un autre appareil.</p>
+<p><strong>Service.</strong> <code>userService.confirmGdprAccountDeletion</code> :</p>
+<ol>
+<li><code>findValidDeletionToken</code> cherche un <code>Token</code> dont l&#39;empreinte SHA-256 correspond, de type <code>ACCOUNT_DELETION</code> et non expiré. Sinon : 400 « Jeton de suppression RGPD invalide ou expiré ».</li>
+<li><code>anonymizeUserAccount(userId, tokenId)</code> exécute une transaction qui met à jour le compte et supprime le jeton utilisé.</li>
+<li><code>sessionService.revokeAllForUser</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/session.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/session.service.ts</code></a>) écrit <code>auth:revoked-before:&lt;userId&gt;</code> pour 30 jours : tout jeton émis avant cet instant est refusé par <code>authenticate</code>.</li>
+<li>Réponse 200 avec <code>deleted: true</code>, <code>anonymized: true</code>, <code>userId</code> et <code>deletedAt</code>.</li>
+</ol>
+<h2 id="ce-qui-est-efface-et-ce-qui-reste"><a class="anchor" href="#ce-qui-est-efface-et-ce-qui-reste" aria-hidden="true" tabindex="-1">#</a>Ce qui est effacé et ce qui reste</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Donnée</th>
+<th>Après confirmation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>User.email</code></td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td><code>User.walletAddress</code></td>
+<td>Remplacée par <code>0xdeleted_gdpr_</code> suivi des 8 premiers caractères de l&#39;identifiant</td>
+</tr>
+<tr>
+<td><code>User.walletEncryptedKey</code>, <code>welcomeGrantTxHash</code></td>
+<td><code>null</code> : la clé privée du portefeuille intégré est détruite</td>
+</tr>
+<tr>
+<td><code>twoFactorSecret</code>, <code>twoFactorMethod</code>, <code>twoFactorBackupCodes</code>, <code>isTwoFactorEnabled</code></td>
+<td>Effacés ou désactivés</td>
+</tr>
+<tr>
+<td><code>User.deletedAt</code></td>
+<td>Date de la suppression ; <code>getProfile</code> répond alors 404 et <code>requireRoles</code> refuse le compte</td>
+</tr>
+<tr>
+<td>Jeton de suppression utilisé</td>
+<td>Supprimé</td>
+</tr>
+<tr>
+<td><code>role</code>, <code>pointsBalance</code>, <code>referralCode</code>, <code>referredById</code>, dates</td>
+<td>Conservés</td>
+</tr>
+<tr>
+<td><code>Ticket</code>, <code>PointTransaction</code>, <code>ClaimedReward</code>, <code>Analytics</code></td>
+<td>Conservés, toujours rattachés à l&#39;identifiant du compte</td>
+</tr>
+<tr>
+<td>Clés Redis <code>user:prefs:&lt;id&gt;</code>, <code>user:quests:&lt;id&gt;</code>, <code>user:ticket_limit:&lt;id&gt;</code></td>
+<td>Conservées</td>
+</tr>
+<tr>
+<td>Données on-chain : adresse du portefeuille dans les événements, tickets, badges POAP</td>
+<td>Conservées : la blockchain est immuable</td>
+</tr>
+</tbody></table></div>
+<p>Les tickets gardent dans <code>payerWallet</code> l&#39;adresse d&#39;origine du portefeuille, et la chaîne relie cette adresse à tous les achats. L&#39;anonymisation est donc partielle : c&#39;est une pseudonymisation du compte, la portée juridique est discutée dans <a href="../../juridique/blockchain-donnees.html">Blockchain et données personnelles</a>.</p>
+<div class="hint hint-caution"><p class="hint-title">Danger</p>
+<p>Les ethers fictifs restant sur le portefeuille intégré deviennent irrécupérables, puisque la clé est détruite. Si le citoyen gagne un tour encore en cours ou attend un remboursement, le job <code>CLAIM_PRIZE</code> ou <code>CLAIM_REFUND</code> ne trouve plus de compte pour son adresse et se termine sans rien faire : les fonds restent bloqués dans le contrat. Sur un réseau principal, il faudrait proposer au citoyen de vider son portefeuille vers une adresse de son choix avant la suppression.</p>
+</div>
+<h2 id="erreurs-possibles"><a class="anchor" href="#erreurs-possibles" aria-hidden="true" tabindex="-1">#</a>Erreurs possibles</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Code</th>
+<th>Cause</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Demande</td>
+<td>401</td>
+<td>Jeton de session absent ou révoqué</td>
+</tr>
+<tr>
+<td>Demande</td>
+<td>404</td>
+<td>Compte introuvable</td>
+</tr>
+<tr>
+<td>Confirmation</td>
+<td>400</td>
+<td>Jeton de moins de 10 caractères, inconnu, expiré ou déjà utilisé</td>
+</tr>
+<tr>
+<td>Confirmation</td>
+<td>409</td>
+<td>Adresse anonymisée déjà prise par un autre compte supprimé (voir ci-dessous)</td>
+</tr>
+<tr>
+<td>Les deux</td>
+<td>429</td>
+<td>Rate limit global : 300 requêtes par 15 minutes et par IP</td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>L&#39;adresse anonymisée n&#39;est pas unique en pratique. Les identifiants sont des UUID version 7 (<code>@default(uuid(7))</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/schema.prisma" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/schema.prisma</code></a>), dont les 8 premiers caractères hexadécimaux codent l&#39;horodatage de création et ne changent que toutes les 65 secondes environ. Deux comptes créés dans la même minute, ce qui est le cas de tous les comptes du seed, reçoivent la même adresse anonymisée. La suppression du second échoue alors sur l&#39;unicité de <code>walletAddress</code> et répond 409, sans rien effacer.</p>
+</div>
+<h2 id="idempotence"><a class="anchor" href="#idempotence" aria-hidden="true" tabindex="-1">#</a>Idempotence</h2>
+<ul>
+<li>Chaque demande crée un nouveau jeton sans invalider les précédents : plusieurs jetons peuvent être valides en même temps pendant 24 h.</li>
+<li>Un jeton ne sert qu&#39;une fois : il est supprimé dans la même transaction que l&#39;anonymisation. Rejouer la confirmation renvoie 400.</li>
+<li>Un autre jeton encore valide du même compte relance l&#39;anonymisation, qui réécrit les mêmes valeurs et réussit.</li>
+<li>La demande n&#39;est pas protégée par <code>Idempotency-Key</code> : un double envoi produit deux jetons et deux emails.</li>
+</ul>
+<h2 id="export-avant-suppression"><a class="anchor" href="#export-avant-suppression" aria-hidden="true" tabindex="-1">#</a>Export avant suppression</h2>
+<p>Le droit à la portabilité est servi par <code>GET /api/v1/user/gdpr/export</code>, qui renvoie en JSON le profil (sans la clé chiffrée ni le secret 2FA), les tickets avec leur tour, le journal des EtherPoints, les récompenses échangées et les événements analytiques. Voir <a href="../../backend/modules/utilisateur.html">Utilisateur et RGPD</a> et <a href="../../juridique/rgpd.html">RGPD</a>.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="recompense.html"><span>Précédent</span><strong>Échange de récompense</strong></a><a class="pager-next" href="../conventions.html"><span>Suivant</span><strong>Conventions de code</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/architecture/flux/suppression-rgpd.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#diagramme-de-sequence">Diagramme de séquence</a></li><li class="toc-h2"><a href="#etape-1-demande">Étape 1 : demande</a></li><li class="toc-h2"><a href="#etape-2-confirmation">Étape 2 : confirmation</a></li><li class="toc-h2"><a href="#ce-qui-est-efface-et-ce-qui-reste">Ce qui est effacé et ce qui reste</a></li><li class="toc-h2"><a href="#erreurs-possibles">Erreurs possibles</a></li><li class="toc-h2"><a href="#idempotence">Idempotence</a></li><li class="toc-h2"><a href="#export-avant-suppression">Export avant suppression</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

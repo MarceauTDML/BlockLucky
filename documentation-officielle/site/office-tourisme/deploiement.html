@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Servir et déployer | Documentation BlockLucky</title>
+<meta name="description" content="Le site est un dossier de fichiers statiques. Il peut être servi par n&#39;importe quel serveur HTTP, mais deux configurations sont versionnées : le serveur de déve">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="deploiement.html" aria-current="page">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="../juridique/veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="../juridique/crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="../juridique/rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="../juridique/registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="../juridique/cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="../juridique/accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="../juridique/licences.html">Licences</a></div></li><li><div class="nav-row"><a href="../juridique/registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="../juridique/points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>10. Office de Tourisme</span></div>
+    <article class="markdown">
+<h1>Servir et déployer</h1>
+<p>Le site est un dossier de fichiers statiques. Il peut être servi par n&#39;importe quel serveur HTTP, mais deux configurations sont versionnées : le serveur de développement <code>serve</code> piloté par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/serve.json" class="external" target="_blank" rel="noopener noreferrer"><code>serve.json</code></a>, et une image Docker nginx décrite par le <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme/Dockerfile" class="external" target="_blank" rel="noopener noreferrer"><code>Dockerfile</code></a> et le dossier <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-office-tourisme/docker" class="external" target="_blank" rel="noopener noreferrer"><code>docker/</code></a>.</p>
+<h2 id="servir-en-local"><a class="anchor" href="#servir-en-local" aria-hidden="true" tabindex="-1">#</a>Servir en local</h2>
+<p>Depuis le dossier du site :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> frontend-office-tourisme
+npm run dev</code></pre></div>
+<p>Le script <code>dev</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>package.json</code></a> lance <code>npx --yes serve@14.2.7 . -l 4000</code>. Il n&#39;y a pas de <code>npm ci</code> à faire : <code>npx</code> télécharge la version exacte de <code>serve</code> au premier lancement, ce qui demande un accès à l&#39;annuaire npm. Le site est alors disponible sur <code>http://localhost:4000</code>.</p>
+<p><code>serve</code> lit <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/serve.json" class="external" target="_blank" rel="noopener noreferrer"><code>serve.json</code></a> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Réglage</th>
+<th>Valeur</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cleanUrls</code></td>
+<td><code>false</code></td>
+<td>Les URL gardent leur extension <code>.html</code>, comme en production</td>
+</tr>
+<tr>
+<td><code>trailingSlash</code></td>
+<td><code>false</code></td>
+<td>Pas de redirection vers une URL terminée par <code>/</code></td>
+</tr>
+<tr>
+<td><code>directoryListing</code></td>
+<td><code>false</code></td>
+<td>Pas de liste des fichiers d&#39;un dossier</td>
+</tr>
+<tr>
+<td><code>rewrites</code></td>
+<td><code>/</code> vers <code>/index.html</code></td>
+<td>Page d&#39;accueil</td>
+</tr>
+<tr>
+<td>En-têtes des <code>.css</code>, <code>.js</code>, <code>.mjs</code></td>
+<td><code>Cache-Control: no-cache</code></td>
+<td>Chaque modification est visible au rechargement</td>
+</tr>
+<tr>
+<td>En-têtes des images</td>
+<td><code>Cache-Control: public, max-age=3600</code></td>
+<td>Une heure de cache</td>
+</tr>
+<tr>
+<td>En-têtes des <code>.html</code> et de <code>/</code></td>
+<td><code>no-cache</code>, <code>X-Content-Type-Options</code>, <code>Referrer-Policy</code>, <code>Content-Security-Policy</code>, <code>X-Frame-Options</code></td>
+<td>Même politique de sécurité de contenu qu&#39;en production</td>
+</tr>
+</tbody></table></div>
+<p>Servir le site avec la même politique de sécurité de contenu qu&#39;en production permet de détecter en développement un style en ligne ou une ressource externe qui serait bloqué une fois déployé.</p>
+<p>D&#39;autres serveurs conviennent pour un essai rapide, sans les en-têtes : l&#39;extension Live Server de VS Code, ou <code>python -m http.server 4000</code>. Ouvrir directement <code>index.html</code> depuis le disque ne fonctionne pas : le navigateur bloque le chargement des modules ES en <code>file://</code>.</p>
+<h2 id="image-docker"><a class="anchor" href="#image-docker" aria-hidden="true" tabindex="-1">#</a>Image Docker</h2>
+<div class="code-block"><div class="code-head"><span>Dockerfile</span></div><pre><code class="hljs language-dockerfile"><span class="hljs-keyword">FROM</span> nginxinc/nginx-unprivileged:<span class="hljs-number">1.30</span>-alpine
+<span class="hljs-keyword">USER</span> root
+<span class="hljs-keyword">RUN</span><span class="language-bash"> apk upgrade --no-cache</span>
+<span class="hljs-keyword">USER</span> <span class="hljs-number">101</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> docker/nginx.conf /etc/nginx/conf.d/default.conf</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> docker/security-headers.conf /etc/nginx/snippets/security-headers.conf</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> --<span class="hljs-built_in">chown</span>=nginx:nginx *.html /usr/share/nginx/html/</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> --<span class="hljs-built_in">chown</span>=nginx:nginx assets /usr/share/nginx/html/assets</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> --<span class="hljs-built_in">chown</span>=nginx:nginx .well-known /usr/share/nginx/html/.well-known</span>
+<span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">8080</span>
+<span class="hljs-keyword">HEALTHCHECK</span><span class="language-bash"> --interval=30s --<span class="hljs-built_in">timeout</span>=3s CMD wget -q -O /dev/null http://127.0.0.1:8080/health || <span class="hljs-built_in">exit</span> 1</span></code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Choix</th>
+<th>Raison</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Image <code>nginx-unprivileged</code></td>
+<td>nginx tourne sous l&#39;utilisateur 101 et écoute le port 8080 : aucun privilège n&#39;est nécessaire pour ouvrir un port inférieur à 1024</td>
+</tr>
+<tr>
+<td><code>apk upgrade</code> en root, puis retour à l&#39;utilisateur 101</td>
+<td>Applique les correctifs Alpine publiés après l&#39;image de base, pour passer le contrôle Trivy de la CI</td>
+</tr>
+<tr>
+<td>Copie sélective</td>
+<td>Seuls les pages, <code>assets/</code>, <code>.well-known/</code> et la configuration nginx entrent dans l&#39;image</td>
+</tr>
+<tr>
+<td><code>HEALTHCHECK</code> sur <code>/health</code></td>
+<td>Docker et Compose savent si le serveur répond</td>
+</tr>
+</tbody></table></div>
+<p>Le <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/.dockerignore" class="external" target="_blank" rel="noopener noreferrer"><code>.dockerignore</code></a> écarte <code>README.md</code>, <code>package.json</code>, <code>serve.json</code>, le <code>Dockerfile</code> et les journaux : ces fichiers ne sont pas servis en production.</p>
+<p>Construire et lancer l&#39;image seule, depuis la racine du dépôt :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker build -t blocklucky-tourisme frontend-office-tourisme
+docker run --<span class="hljs-built_in">rm</span> -p 4000:8080 blocklucky-tourisme</code></pre></div>
+<h3 id="configuration-nginx"><a class="anchor" href="#configuration-nginx" aria-hidden="true" tabindex="-1">#</a>Configuration nginx</h3>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/docker/nginx.conf" class="external" target="_blank" rel="noopener noreferrer"><code>docker/nginx.conf</code></a> définit un seul serveur :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Directive</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>listen 8080</code>, <code>server_tokens off</code></td>
+<td>Port non privilégié, version de nginx masquée</td>
+</tr>
+<tr>
+<td><code>client_max_body_size 16k</code></td>
+<td>Corps de requête limité : le site ne reçoit jamais de données</td>
+</tr>
+<tr>
+<td><code>gzip on</code> niveau 6, au-delà de 1024 octets</td>
+<td>Compression du CSS, du JavaScript, du SVG, du JSON et du texte</td>
+</tr>
+<tr>
+<td><code>if ($request_method !~ ^(GET|HEAD)$) { return 405; }</code></td>
+<td>Toute autre méthode HTTP est refusée</td>
+</tr>
+<tr>
+<td><code>location = /health</code></td>
+<td>Répond <code>200 ok</code> en texte, sans journal d&#39;accès</td>
+</tr>
+<tr>
+<td><code>location = /.well-known/security.txt</code></td>
+<td>Sert le fichier de contact sécurité, cache d&#39;un jour</td>
+</tr>
+<tr>
+<td><code>location ~ /\.(?!well-known)</code></td>
+<td>Tout autre chemin commençant par un point renvoie 404</td>
+</tr>
+<tr>
+<td><code>error_page 404 /404.html</code></td>
+<td>Page d&#39;erreur du site</td>
+</tr>
+</tbody></table></div>
+<p>Les durées de cache dépendent du type de fichier :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fichiers</th>
+<th><code>Cache-Control</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.html</code></td>
+<td><code>no-cache</code> : le navigateur revalide à chaque visite</td>
+</tr>
+<tr>
+<td><code>.css</code>, <code>.js</code>, <code>.mjs</code></td>
+<td><code>public, max-age=86400, stale-while-revalidate=604800</code> : un jour, puis une semaine de revalidation en arrière-plan</td>
+</tr>
+<tr>
+<td>Images et polices (<code>jpg</code>, <code>jpeg</code>, <code>png</code>, <code>webp</code>, <code>avif</code>, <code>svg</code>, <code>ico</code>, <code>woff2</code>)</td>
+<td><code>public, max-age=2592000</code> : 30 jours</td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Les noms des fichiers CSS et JavaScript ne contiennent pas d&#39;empreinte. Après une mise à jour, un visiteur peut garder l&#39;ancienne version d&#39;un module jusqu&#39;à un jour, tandis que les pages HTML, revalidées, sont déjà à jour. Pour une modification incompatible entre une page et un module, renommer le module ou ajouter un paramètre de version dans l&#39;URL du script.</p>
+</div>
+<h3 id="en-tetes-de-securite"><a class="anchor" href="#en-tetes-de-securite" aria-hidden="true" tabindex="-1">#</a>En-têtes de sécurité</h3>
+<p>Les en-têtes sont regroupés dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/docker/security-headers.conf" class="external" target="_blank" rel="noopener noreferrer"><code>docker/security-headers.conf</code></a> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>En-tête</th>
+<th>Valeur</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Content-Security-Policy</code></td>
+<td>voir ci-dessous</td>
+<td>Liste blanche des ressources</td>
+</tr>
+<tr>
+<td><code>Strict-Transport-Security</code></td>
+<td><code>max-age=63072000; includeSubDomains</code></td>
+<td>HTTPS obligatoire pendant deux ans, sous-domaines compris. Ignoré par le navigateur tant que le site est servi en HTTP, comme sur le port 4000 local</td>
+</tr>
+<tr>
+<td><code>X-Content-Type-Options</code></td>
+<td><code>nosniff</code></td>
+<td>Le navigateur respecte le type MIME annoncé</td>
+</tr>
+<tr>
+<td><code>X-Frame-Options</code></td>
+<td><code>DENY</code></td>
+<td>Le site ne peut pas être affiché dans un cadre</td>
+</tr>
+<tr>
+<td><code>Referrer-Policy</code></td>
+<td><code>strict-origin-when-cross-origin</code></td>
+<td>Seule l&#39;origine est transmise aux autres sites</td>
+</tr>
+<tr>
+<td><code>Permissions-Policy</code></td>
+<td><code>camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()</code></td>
+<td>Fonctions sensibles du navigateur désactivées</td>
+</tr>
+<tr>
+<td><code>Cross-Origin-Opener-Policy</code></td>
+<td><code>same-origin</code></td>
+<td>Isolement de la fenêtre vis-à-vis des pages ouvertes</td>
+</tr>
+<tr>
+<td><code>Cross-Origin-Resource-Policy</code></td>
+<td><code>same-origin</code></td>
+<td>Les ressources du site ne peuvent pas être chargées par un autre site</td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Dans nginx, un bloc <code>location</code> qui déclare son propre <code>add_header</code> n&#39;hérite plus d&#39;aucun <code>add_header</code> du niveau <code>server</code>. C&#39;est pourquoi chaque <code>location</code> qui ajoute un <code>Cache-Control</code> refait <code>include /etc/nginx/snippets/security-headers.conf</code>. Toute nouvelle <code>location</code> avec un <code>add_header</code> doit en faire autant, sinon ses réponses partent sans politique de sécurité.</p>
+</div>
+<h3 id="politique-de-securite-de-contenu"><a class="anchor" href="#politique-de-securite-de-contenu" aria-hidden="true" tabindex="-1">#</a>Politique de sécurité de contenu</h3>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; style-src &#x27;self&#x27;; style-src-attr &#x27;unsafe-inline&#x27;; img-src &#x27;self&#x27; data:; font-src &#x27;self&#x27;; connect-src &#x27;self&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; frame-ancestors &#x27;none&#x27;; form-action &#x27;self&#x27;</code></pre></div>
+<p>La même valeur est écrite dans <code>security-headers.conf</code> et dans <code>serve.json</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Directive</th>
+<th>Conséquence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>script-src &#39;self&#39;</code></td>
+<td>Aucun script en ligne, aucun script tiers. Tous les comportements sont dans des modules de <code>assets/js/</code></td>
+</tr>
+<tr>
+<td><code>style-src &#39;self&#39;</code></td>
+<td>Feuilles de style du site uniquement, pas de balise <code>&lt;style&gt;</code></td>
+</tr>
+<tr>
+<td><code>style-src-attr &#39;unsafe-inline&#39;</code></td>
+<td>Les attributs <code>style=&quot;...&quot;</code> restent autorisés. Ils sont utilisés dans le HTML des pages (espacements ponctuels) et dans quelques gabarits JavaScript</td>
+</tr>
+<tr>
+<td><code>img-src &#39;self&#39; data:</code></td>
+<td>Images du site et images en <code>data:</code> (icône SVG intégrée dans <code>layout.css</code>)</td>
+</tr>
+<tr>
+<td><code>font-src &#39;self&#39;</code></td>
+<td>Polices auto-hébergées uniquement</td>
+</tr>
+<tr>
+<td><code>connect-src &#39;self&#39;</code></td>
+<td>Aucune requête réseau vers un autre domaine, en particulier vers l&#39;API BlockLucky</td>
+</tr>
+<tr>
+<td><code>object-src &#39;none&#39;</code>, <code>base-uri &#39;none&#39;</code>, <code>frame-ancestors &#39;none&#39;</code></td>
+<td>Ni plugin, ni changement de l&#39;URL de base, ni affichage en cadre</td>
+</tr>
+<tr>
+<td><code>form-action &#39;self&#39;</code></td>
+<td>Un formulaire ne peut être envoyé qu&#39;au site lui-même</td>
+</tr>
+</tbody></table></div>
+<p>Le lien « Accéder à la loterie » n&#39;est pas concerné : une navigation vers un autre site n&#39;est pas une ressource chargée.</p>
+<h2 id="dans-docker-compose"><a class="anchor" href="#dans-docker-compose" aria-hidden="true" tabindex="-1">#</a>Dans Docker Compose</h2>
+<p>Le service <code>tourisme</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/docker-compose.yml" class="external" target="_blank" rel="noopener noreferrer"><code>docker-compose.yml</code></a> fait partie du profil <code>app</code> :</p>
+<div class="code-block"><div class="code-head"><span>YAML</span></div><pre><code class="hljs language-yaml"><span class="hljs-attr">tourisme:</span>
+  <span class="hljs-attr">profiles:</span> [<span class="hljs-string">&quot;app&quot;</span>]
+  <span class="hljs-string">&lt;&lt;:</span> <span class="hljs-meta">*hardening</span>
+  <span class="hljs-attr">build:</span>
+    <span class="hljs-attr">context:</span> <span class="hljs-string">./frontend-office-tourisme</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;4000:8080&quot;</span>
+  <span class="hljs-attr">restart:</span> <span class="hljs-string">unless-stopped</span></code></pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Propriété</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>profiles: [&quot;app&quot;]</code></td>
+<td>Démarré seulement avec <code>docker compose --profile app up</code>, avec le reste de l&#39;application</td>
+</tr>
+<tr>
+<td><code>&lt;&lt;: *hardening</code></td>
+<td>Système de fichiers en lecture seule, toutes les capacités Linux retirées, <code>no-new-privileges</code>, <code>/tmp</code> en mémoire (64 Mo) pour les fichiers temporaires de nginx</td>
+</tr>
+<tr>
+<td><code>ports: &quot;4000:8080&quot;</code></td>
+<td>Le port 8080 du conteneur est publié sur le port 4000 de toutes les interfaces de l&#39;hôte</td>
+</tr>
+<tr>
+<td>aucune dépendance</td>
+<td>Le service ne dépend ni de la base, ni de l&#39;API</td>
+</tr>
+</tbody></table></div>
+<p>Pour ne lancer que ce service :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose --profile app up -d --build tourisme</code></pre></div>
+<p>Le contexte de construction et la stack complète sont décrits dans <a href="../infrastructure/docker-compose.html">Docker Compose</a> et <a href="../infrastructure/images.html">Images Docker</a>.</p>
+<h2 id="verifications-de-la-ci"><a class="anchor" href="#verifications-de-la-ci" aria-hidden="true" tabindex="-1">#</a>Vérifications de la CI</h2>
+<p>Le job <code>tourisme</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/workflows/ci.yml" class="external" target="_blank" rel="noopener noreferrer"><code>.github/workflows/ci.yml</code></a> s&#39;exécute quand un fichier de <code>frontend-office-tourisme/</code> ou le workflow change :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Commande</th>
+<th>Échoue si</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Syntaxe des modules JavaScript</td>
+<td><code>find assets/js \( -name &#39;*.js&#39; -o -name &#39;*.mjs&#39; \) -exec node --check {} \;</code></td>
+<td>Un fichier ne se compile pas</td>
+</tr>
+<tr>
+<td>Ressources locales référencées par les pages HTML</td>
+<td><code>node ../.github/scripts/check-static-links.mjs .</code></td>
+<td>Un <code>src</code> ou <code>href</code> d&#39;une page HTML vise un fichier absent</td>
+</tr>
+</tbody></table></div>
+<p>Le script <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/.github/scripts/check-static-links.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>check-static-links.mjs</code></a> ignore les liens absolus (<code>https:</code>, <code>mailto:</code>, <code>tel:</code>), les ancres seules et les gabarits <code>${...}</code>, puis retire paramètres et ancre avant de tester l&#39;existence du fichier. Il affiche <code>14 pages vérifiées, aucune ressource locale manquante</code> quand tout va bien.</p>
+<p>Le job <code>docker</code> construit ensuite l&#39;image, puis Trivy l&#39;analyse et échoue sur toute vulnérabilité <code>CRITICAL</code> ou <code>HIGH</code> pour laquelle un correctif existe (<code>--ignore-unfixed</code>). Dependabot propose chaque semaine les nouvelles versions de l&#39;image de base (écosystème <code>docker</code>, voir <a href="../contribuer/dependances.html">Dépendances</a>).</p>
+<h2 id="avant-une-mise-en-ligne"><a class="anchor" href="#avant-une-mise-en-ligne" aria-hidden="true" tabindex="-1">#</a>Avant une mise en ligne</h2>
+<p>La cible prévue est <code>tourisme.etherbay.tech</code>, derrière le proxy Caddy de la machine de démonstration (voir <a href="../infrastructure/environnements.html">Environnements</a> et <a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a>). Le conteneur sert du HTTP ; Caddy termine le HTTPS.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Point</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Lien vers la loterie</td>
+<td>Remplacer <code>lotteryAppUrl: &#39;http://localhost:3000&#39;</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/data/site.js" class="external" target="_blank" rel="noopener noreferrer"><code>assets/js/data/site.js</code></a> par l&#39;URL publique du frontend web, puis reconstruire l&#39;image</td>
+</tr>
+<tr>
+<td>Exposition du port</td>
+<td>Le service publie <code>4000</code> sur toutes les interfaces. Derrière un proxy sur la même machine, limiter la publication à <code>127.0.0.1:4000:8080</code> pour que seul Caddy y accède</td>
+</tr>
+<tr>
+<td>HSTS</td>
+<td>L&#39;en-tête porte <code>includeSubDomains</code> : il ne doit être envoyé que si tous les sous-domaines d&#39;<code>etherbay.tech</code> sont servis en HTTPS</td>
+</tr>
+<tr>
+<td>Dates des contenus</td>
+<td>Vérifier que les événements de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/assets/js/data/events.js" class="external" target="_blank" rel="noopener noreferrer"><code>assets/js/data/events.js</code></a> couvrent la période de démonstration (voir <a href="contenus.html#evenements">Contenus</a>)</td>
+</tr>
+<tr>
+<td><code>security.txt</code></td>
+<td>Le champ <code>Expires</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-office-tourisme/.well-known/security.txt" class="external" target="_blank" rel="noopener noreferrer"><code>.well-known/security.txt</code></a> vaut <code>2027-11-10T00:00:00.000Z</code> : le renouveler avant cette date</td>
+</tr>
+<tr>
+<td>Mentions légales</td>
+<td>Elles décrivent un site de démonstration : à réécrire si le site devenait réel</td>
+</tr>
+</tbody></table></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="accessibilite.html"><span>Précédent</span><strong>Accessibilité et vie privée</strong></a><a class="pager-next" href="../securite/menaces.html"><span>Suivant</span><strong>Modèle de menaces</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/office-tourisme/deploiement.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#servir-en-local">Servir en local</a></li><li class="toc-h2"><a href="#image-docker">Image Docker</a></li><li class="toc-h3"><a href="#configuration-nginx">Configuration nginx</a></li><li class="toc-h3"><a href="#en-tetes-de-securite">En-têtes de sécurité</a></li><li class="toc-h3"><a href="#politique-de-securite-de-contenu">Politique de sécurité de contenu</a></li><li class="toc-h2"><a href="#dans-docker-compose">Dans Docker Compose</a></li><li class="toc-h2"><a href="#verifications-de-la-ci">Vérifications de la CI</a></li><li class="toc-h2"><a href="#avant-une-mise-en-ligne">Avant une mise en ligne</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>
