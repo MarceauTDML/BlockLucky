@@ -12,6 +12,17 @@ updates:
       backend-minor-patch:
         update-types: [minor, patch]
   - package-ecosystem: npm
+    directory: /smart-contract
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 5
+    groups:
+      contracts-minor-patch:
+        update-types: [minor, patch]
+  - package-ecosystem: npm
     directory: /frontend-web
     schedule:
       interval: weekly
@@ -39,7 +50,7 @@ updates:
       mobile-minor-patch:
         update-types: [minor, patch]
   - package-ecosystem: docker
-    directories: [/backend, /frontend-web, /frontend-office-tourisme]
+    directories: [/backend, /frontend-web, /frontend-office-tourisme, /smart-contract]
     schedule:
       interval: weekly
   - package-ecosystem: docker-compose

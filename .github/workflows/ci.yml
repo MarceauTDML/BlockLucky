@@ -23,6 +23,7 @@ jobs:
       pull-requests: read
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
+      contracts: ${{ steps.filter.outputs.contracts }}
       web: ${{ steps.filter.outputs.web }}
       mobile: ${{ steps.filter.outputs.mobile }}
       tourisme: ${{ steps.filter.outputs.tourisme }}
@@ -37,6 +38,9 @@ jobs:
           filters: |
             backend:
               - 'backend/**'
+              - '.github/workflows/ci.yml'
+            contracts:
+              - 'smart-contract/**'
               - '.github/workflows/ci.yml'
             web:
               - 'frontend-web/**'
@@ -125,6 +129,108 @@ jobs:
         run: npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
       - run: npm test -- --ci
       - run: npm run compile
+
+  contracts:
+    name: Smart contracts (lint, tests, couverture, Slither)
+    needs: changes
+    if: needs.changes.outputs.contracts == 'true' || needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: smart-contract
+    env:
+      HARDHAT_DISABLE_TELEMETRY: 'true'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+      - run: npm ci
+      - name: Vulnérabilités critiques des dépendances des contrats (voir ADR 0004)
+        run: npm audit --omit=dev --audit-level=critical
+      - run: npm run typecheck
+      - name: Règles Solidity (solhint, zéro avertissement)
+        run: npm run lint
+      - name: Tests unitaires, fuzzing et couverture
+        run: npm run test:coverage
+      - name: Couverture des lignes des contrats de production à 100 %
+        run: npm run coverage:check
+      - name: ABI embarquées par le backend à jour
+        run: node scripts/export-abi.mjs --check
+      - name: Analyse statique (Slither, échec dès le niveau Medium)
+        run: npm run slither
+
+  chain:
+    name: Intégration backend sur une vraie blockchain locale
+    needs: [changes, contracts, backend]
+    if: >-
+      always() && !failure() && !cancelled() &&
+      (needs.changes.outputs.contracts == 'true' || needs.changes.outputs.backend == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: blocklucky_chain
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci -d blocklucky_chain"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/blocklucky_chain?schema=public
+      REDIS_URL: redis://localhost:6379
+      RPC_URL: http://127.0.0.1:8545
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Nœud Hardhat, contrats déployés et oracle VRF local
+        working-directory: smart-contract
+        run: |
+          docker build -t blocklucky-chain:ci .
+          docker run -d --name blocklucky-chain -p 8545:8545 blocklucky-chain:ci
+          for _ in $(seq 1 60); do
+            [ "$(docker inspect -f '{{.State.Health.Status}}' blocklucky-chain)" = healthy ] && exit 0
+            sleep 3
+          done
+          docker logs blocklucky-chain
+          exit 1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx prisma migrate deploy
+      - name: Achat, cadeau, tirage VRF, versement de la cagnotte et disjoncteur sur la chaîne
+        run: npm run test:chain -- --ci
+      - name: Journaux du nœud en cas d'échec
+        if: failure()
+        run: docker logs blocklucky-chain
 
   web:
     name: Frontend web (lint, typecheck, tests, build)
@@ -216,11 +322,12 @@ jobs:
 
   docker:
     name: Images Docker et Compose
-    needs: [changes, backend, web, tourisme]
+    needs: [changes, backend, contracts, web, tourisme]
     if: >-
       always() && !failure() && !cancelled() &&
       (needs.changes.outputs.infra == 'true' || needs.changes.outputs.backend == 'true' ||
-       needs.changes.outputs.web == 'true' || needs.changes.outputs.tourisme == 'true')
+       needs.changes.outputs.contracts == 'true' || needs.changes.outputs.web == 'true' ||
+       needs.changes.outputs.tourisme == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -249,6 +356,15 @@ jobs:
           load: true
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
+      - name: Image blockchain locale
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
+        with:
+          context: smart-contract
+          push: false
+          tags: blocklucky-blockchain:${{ github.sha }}
+          load: true
+          cache-from: type=gha,scope=blockchain
+          cache-to: type=gha,mode=max,scope=blockchain
       - name: Image Office de Tourisme
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
         with:
