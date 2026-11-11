@@ -41,7 +41,7 @@ export class BlockchainIndexerWorker {
       });
     }
 
-    const existingTicket = await prisma.ticket.findUnique({
+    const existingTicket = await prisma.ticket.findFirst({
       where: { transactionHash: event.transactionHash },
     });
     if (existingTicket) {

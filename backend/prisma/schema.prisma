@@ -9,6 +9,8 @@ datasource db {
 model User {
   id                   String             @id @default(uuid(7))
   walletAddress        String             @unique
+  walletEncryptedKey   String?
+  welcomeGrantTxHash   String?
   email                String?            @unique
   role                 Role               @default(USER)
   isTwoFactorEnabled   Boolean            @default(false)
@@ -70,6 +72,12 @@ model LotteryRound {
   prizePool          Float     @default(0.0)
   winnerWallet       String?
   chainlinkRequestId String?
+  ticketPriceWei     String?
+  endsAt             DateTime? @db.Timestamptz(3)
+  drawRequestedAt    DateTime? @db.Timestamptz(3)
+  winningTicket      Int?
+  prizeWei           String?
+  prizeClaimedAt     DateTime? @db.Timestamptz(3)
   startedAt          DateTime  @default(now()) @db.Timestamptz(3)
   drawnAt            DateTime? @db.Timestamptz(3)
   tickets            Ticket[]
@@ -86,16 +94,26 @@ enum Status {
 
 model Ticket {
   id              String       @id @default(uuid(7))
-  transactionHash String       @unique
+  transactionHash String
   blockNumber     Int
+  ticketIndex     Int?
+  payerWallet     String?
   userId          String
   user            User         @relation(fields: [userId], references: [id])
   lotteryId       String
   lottery         LotteryRound @relation(fields: [lotteryId], references: [id])
   purchasedAt     DateTime     @default(now()) @db.Timestamptz(3)
 
+  @@unique([lotteryId, ticketIndex])
   @@index([userId, purchasedAt])
   @@index([lotteryId])
+  @@index([transactionHash])
+}
+
+model ChainCursor {
+  id        String   @id
+  lastBlock Int
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 }
 
 model PointTransaction {

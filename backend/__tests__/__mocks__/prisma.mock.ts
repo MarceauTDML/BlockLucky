@@ -110,6 +110,8 @@ export const prismaMock: any = {
       const record = {
         id,
         walletAddress: data.walletAddress,
+        walletEncryptedKey: data.walletEncryptedKey ?? null,
+        welcomeGrantTxHash: data.welcomeGrantTxHash ?? null,
         email: data.email ?? null,
         role: data.role ?? 'USER',
         isTwoFactorEnabled: data.isTwoFactorEnabled ?? false,
@@ -246,6 +248,12 @@ export const prismaMock: any = {
     findUnique: jest.fn(async ({ where }: any) => {
       for (const t of store.tickets.values()) {
         if (t.id === where.id || t.transactionHash === where.transactionHash) return t;
+      }
+      return null;
+    }),
+    findFirst: jest.fn(async ({ where }: any) => {
+      for (const t of store.tickets.values()) {
+        if (t.transactionHash === where.transactionHash) return t;
       }
       return null;
     }),
