@@ -7,6 +7,7 @@ import RouletteAnimation from '@/components/lottery/RouletteAnimation';
 import WinnerClaimCard from '@/components/lottery/WinnerClaimCard';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import Icon from '@/components/ui/Icon';
 import { PageHeader } from '@/components/ui/Misc';
 import useSocket from '@/hooks/useSocket';
 import { trackEvent } from '@/lib/analytics';
@@ -29,9 +30,10 @@ export default function LiveDrawPage() {
   const { onlineWaitingUsers, liveChatMessages, lastWinnerAnnouncement, isRouletteSpinning, socketConnected } =
     useAppSelector((s) => s.lottery);
 
-  const winnerWallet = lastWinnerAnnouncement?.winnerWallet || round?.winnerWallet;
+  const announcedWinner = lastWinnerAnnouncement?.winnerWallet || round?.winnerWallet;
+  const winnerWallet = isRouletteSpinning ? null : announcedWinner;
   const proof = lastWinnerAnnouncement?.vrfProofHash || round?.chainlinkRequestId;
-  const drawRequested = !winnerWallet && round?.status === 'LOCKED';
+  const drawRequested = !announcedWinner && round?.status === 'LOCKED';
 
   useEffect(() => {
     if (winnerWallet) trackEvent('result_view', { source: 'live_draw' });
@@ -57,12 +59,17 @@ export default function LiveDrawPage() {
         actions={<DemoModeBadge simulated={simulated} />}
       />
 
-      <div className="grid gap-3.5 lg:grid-cols-[1.1fr_1fr] lg:gap-5">
+      <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr] lg:gap-5">
         <div className="flex flex-col">
-          <Card padding="sm" className="mb-3.5 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <p className="text-caption font-semibold text-primary">{t("Salle d'attente", 'Waiting Room')}</p>
-              <p className="text-caption font-medium text-secondary tabular">
+          <Card tone="lavender" padding="lg" className="mb-3.5 flex items-start gap-3.5">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-violet">
+              <Icon name="users" size={20} />
+            </span>
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-subtitle font-bold text-fg">{t("Salle d'attente", 'Waiting Room')}</p>
+              <p className="inline-flex items-center gap-1.5 rounded-full bg-surface px-2.5 py-1 text-caption font-semibold text-violet tabular">
+                <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-success" />
                 {t(`${onlineWaitingUsers} en ligne`, `${onlineWaitingUsers} online`)}
               </p>
             </div>
@@ -82,9 +89,10 @@ export default function LiveDrawPage() {
                     'Final countdown opens 10 minutes before smart contract expiration.'
                   )}
             </p>
+            </div>
           </Card>
 
-          <WinnerClaimCard status={status} className="mb-3.5" />
+          {isRouletteSpinning ? null : <WinnerClaimCard status={status} className="mb-3.5" />}
 
           <RouletteAnimation
             spinning={isRouletteSpinning}
@@ -94,12 +102,17 @@ export default function LiveDrawPage() {
             drawRequested={drawRequested}
           />
 
-          <Button variant="outline" onClick={handleSimulateSpin} disabled={isRouletteSpinning}>
+          <Button variant="secondary" onClick={handleSimulateSpin} disabled={isRouletteSpinning}>
+            <Icon name="wheel" size={20} />
             {isRouletteSpinning ? t('Tirage en cours...', 'Drawing...') : t('Simuler la roue de tirage', 'Simulate Draw Wheel')}
           </Button>
 
-          <Card padding="sm" className="mt-3.5 flex flex-col gap-1">
-            <p className="text-caption font-semibold">
+          <Card tone={certified ? 'mint' : 'peach'} padding="lg" className="mt-3.5 flex items-start gap-3.5 rounded-[22px]">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-green">
+              <Icon name="shield" size={20} />
+            </span>
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <p className="text-subtitle font-bold text-fg">
               {certified
                 ? t('Certification Chainlink VRF v2.5', 'Chainlink VRF v2.5 Certification')
                 : t('Tirage de démonstration', 'Demo draw')}
@@ -116,7 +129,7 @@ export default function LiveDrawPage() {
                   )}
             </p>
             {certified && proof ? (
-              <p className="break-all font-mono text-caption text-fg-muted">
+              <p className="break-all rounded-[12px] bg-surface px-3 py-2 font-mono text-caption text-fg-secondary">
                 {t('Preuve : ', 'Proof: ')}
                 {proof}
               </p>
@@ -126,11 +139,12 @@ export default function LiveDrawPage() {
                 href={contractExplorerUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-caption font-medium text-primary underline-offset-2 hover:underline"
+                className="text-caption font-semibold text-green underline-offset-2 hover:underline"
               >
                 {t("Voir le Smart Contract sur l'explorateur de blocs →", 'View the Smart Contract on the block explorer →')}
               </a>
             ) : null}
+            </div>
           </Card>
         </div>
 

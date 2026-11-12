@@ -66,7 +66,6 @@ const lotterySlice = createSlice({
     },
     setWinnerAnnouncement: (state, action: PayloadAction<LiveWinnerAnnouncement | null>) => {
       state.lastWinnerAnnouncement = action.payload;
-      state.isRouletteSpinning = false;
     },
   },
 });
