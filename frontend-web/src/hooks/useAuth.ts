@@ -10,6 +10,7 @@ import {
 import {
   authApi,
   useDisable2FAMutation,
+  useGoogleSignInMutation,
   useLogoutMutation,
   useSetup2FAMutation,
   useSocialLoginMutation,
@@ -18,7 +19,7 @@ import {
 import { baseApi } from '@/store/api/baseApi';
 import storage, { KEYS } from '@/lib/storage';
 import socketClient from '@/lib/socket';
-import { SocialLoginPayload } from '@/types/api.types';
+import { SocialLoginPayload, SocialLoginResponse } from '@/types/api.types';
 import { Role, UserProfile } from '@/types/user.types';
 
 export const homeForRole = (role?: Role | null): string => {
@@ -35,7 +36,9 @@ const persistSession = (token: string, user: UserProfile) => {
 export const useAuth = () => {
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.auth);
-  const [socialLoginTrigger, { isLoading: isLoggingIn }] = useSocialLoginMutation();
+  const [socialLoginTrigger, { isLoading: isSocialLoggingIn }] = useSocialLoginMutation();
+  const [googleSignInTrigger, { isLoading: isGoogleSigningIn }] = useGoogleSignInMutation();
+  const isLoggingIn = isSocialLoggingIn || isGoogleSigningIn;
   const [verify2FATrigger, { isLoading: isVerifying2FA }] = useVerify2FAMutation();
   const [setup2FATrigger, { isLoading: isSettingUp2FA }] = useSetup2FAMutation();
   const [disable2FATrigger, { isLoading: isDisabling2FA }] = useDisable2FAMutation();
@@ -58,17 +61,14 @@ export const useAuth = () => {
     [dispatch]
   );
 
-  const loginWithSocial = useCallback(
-    async (payload: SocialLoginPayload) => {
-      const response = await socialLoginTrigger(payload).unwrap();
-      const result = response.data;
-
+  const applyLoginResult = useCallback(
+    async (result: SocialLoginResponse, fallbackEmail?: string) => {
       if (result.requiresTwoFactor && result.userId && result.twoFactorMethod) {
         dispatch(
           setPendingTwoFactor({
             userId: result.userId,
             method: result.twoFactorMethod,
-            email: result.user?.email ?? payload.email,
+            email: result.user?.email ?? fallbackEmail,
             loginTicket: result.loginTicket,
           })
         );
@@ -84,7 +84,23 @@ export const useAuth = () => {
 
       return { requiresTwoFactor: false as const, user: result.user };
     },
-    [dispatch, refreshProfile, socialLoginTrigger]
+    [dispatch, refreshProfile]
+  );
+
+  const loginWithSocial = useCallback(
+    async (payload: SocialLoginPayload) => {
+      const response = await socialLoginTrigger(payload).unwrap();
+      return applyLoginResult(response.data, payload.email);
+    },
+    [applyLoginResult, socialLoginTrigger]
+  );
+
+  const loginWithGoogle = useCallback(
+    async (idToken: string) => {
+      const response = await googleSignInTrigger({ idToken }).unwrap();
+      return applyLoginResult(response.data);
+    },
+    [applyLoginResult, googleSignInTrigger]
   );
 
   const verifyOtpCode = useCallback(
@@ -143,7 +159,9 @@ export const useAuth = () => {
     isVerifying2FA,
     isSettingUp2FA,
     isDisabling2FA,
+    isGoogleSigningIn,
     loginWithSocial,
+    loginWithGoogle,
     verifyOtpCode,
     setup2FA: setup2FATrigger,
     disable2FA: disable2FATrigger,

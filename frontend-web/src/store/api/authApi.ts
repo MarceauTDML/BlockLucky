@@ -27,6 +27,14 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['User', 'Points'],
     }),
+    googleSignIn: builder.mutation<ApiResponse<SocialLoginResponse>, { idToken: string }>({
+      query: (body) => ({
+        url: '/auth/oauth/google',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User', 'Points'],
+    }),
     setup2FA: builder.mutation<ApiResponse<Setup2FAResponse>, { method: 'APP' | 'EMAIL' }>({
       query: (body) => ({
         url: '/auth/2fa/setup',
@@ -141,6 +149,7 @@ export const authApi = baseApi.injectEndpoints({
 export const {
   useGetOnboardingQuery,
   useSocialLoginMutation,
+  useGoogleSignInMutation,
   useSetup2FAMutation,
   useVerify2FAMutation,
   useDisable2FAMutation,
