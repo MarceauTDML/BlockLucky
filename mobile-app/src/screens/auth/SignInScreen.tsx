@@ -34,6 +34,7 @@ const SignInScreen: React.FC = () => {
         navigation.navigate('Verify2FA', {
           userId: result.userId,
           method: result.method,
+          loginTicket: result.loginTicket,
           email: result.email,
           purpose: 'signin',
           devOtpPreview: result.devOtpPreview,

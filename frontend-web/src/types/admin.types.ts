@@ -1,4 +1,5 @@
 import { BackendNetworkStatus } from './api.types';
+import { Role } from './user.types';
 
 export type AgeBucket = '18-25' | '26-35' | '36-50' | '50+';
 
@@ -137,4 +138,36 @@ export interface IdentityDecisionResponse {
   status: IdentityVerificationStatus;
   reviewedAt: string;
   note: string | null;
+}
+
+export type StaffRole = 'ADMIN' | 'PARTNER';
+
+export interface StaffAccountPartner {
+  id: string;
+  name: string;
+  isActive: boolean;
+}
+
+export interface StaffAccount {
+  id: string;
+  email: string | null;
+  role: Role;
+  firstName: string | null;
+  lastName: string | null;
+  isTwoFactorEnabled: boolean;
+  createdAt: string;
+  partners: StaffAccountPartner[];
+}
+
+export interface CreateStaffAccountPayload {
+  email: string;
+  role: StaffRole;
+  firstName?: string;
+  lastName?: string;
+  partnerId?: string;
+}
+
+export interface CreateStaffAccountResponse {
+  account: StaffAccount;
+  created: boolean;
 }

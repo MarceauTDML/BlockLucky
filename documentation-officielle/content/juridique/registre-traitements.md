@@ -14,11 +14,11 @@ Ce registre, prévu par l'article 30 du RGPD, décrit les traitements de donnée
 | Rubrique | Contenu |
 |---|---|
 | Finalité | Inscription, connexion, participation à la Grande Loterie citoyenne, historique des tickets, versement des gains et remboursements |
-| Base légale | Exécution du contrat (conditions de participation) |
+| Base légale | Exécution du contrat (conditions générales d'utilisation et règlement de participation, acceptés par case obligatoire) |
 | Personnes concernées | Citoyens majeurs, dont l'âge est vérifié par pièce d'identité avant tout achat (voir fiche 2 bis) ; bénéficiaires d'un ticket offert (voir fiche 2) |
-| Données | Email ; prénom et nom, facultatifs (écran Données personnelles du mobile) ; empreinte bcrypt du mot de passe, s'il en existe un ; adresse du portefeuille intégré et clé privée chiffrée (AES-256-GCM) ; hash de la dotation de bienvenue ; tranche d'âge (connexion web) ; rôle ; tickets, hash de transaction et adresse payeuse ; code de parrainage et parrain ; préférences (thème, langue, notifications et leurs catégories) ; limite de jeu responsable ; messages envoyés au support (transmis par email à `SUPPORT_EMAIL`, non conservés en base) |
+| Données | Email ; prénom et nom, facultatifs (écran Données personnelles du mobile) ; empreinte bcrypt du mot de passe, s'il en existe un ; adresse du portefeuille intégré et clé privée chiffrée (AES-256-GCM) ; hash de la dotation de bienvenue ; tranche d'âge (connexion web) ; rôle ; tickets, hash de transaction et adresse payeuse ; code de parrainage et parrain ; préférences (thème, langue, notifications et leurs catégories) ; messages envoyés au support (transmis par email à `SUPPORT_EMAIL`, non conservés en base) |
 | Code | [`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts), [`backend/src/api/lottery/lottery.services.ts`](src:backend/src/api/lottery/lottery.services.ts), [`backend/src/blockchain/wallet.service.ts`](src:backend/src/blockchain/wallet.service.ts) |
-| Destinataires | Services municipaux habilités (rôle ADMIN) ; sous-traitants techniques listés plus bas ; Google ou Apple, pour un citoyen qui choisit de se connecter avec eux (le fournisseur sait alors que son utilisateur se connecte à BlockLucky) |
+| Destinataires | Services municipaux habilités (rôle ADMIN) ; sous-traitants techniques listés plus bas ; Google, pour un citoyen qui choisit de se connecter avec ce compte (le fournisseur sait alors que son utilisateur se connecte à BlockLucky) |
 | Données publiques | Adresse du portefeuille et transactions, inscrites sur la blockchain publique (voir [Blockchain et données personnelles](blockchain-donnees.md)) |
 | Conservation | Durée de la participation ; anonymisation sur demande (`/api/user/gdpr/delete-request`) qui supprime l'email, le prénom, le nom, la clé chiffrée et remplace l'adresse dans la fiche du compte. Purge automatique des comptes inactifs **à mettre en place** |
 | Transferts hors UE | Aucun pour les données de la base ; la blockchain publique est répliquée mondialement |
@@ -66,11 +66,11 @@ Ce registre, prévu par l'article 30 du RGPD, décrit les traitements de donnée
 
 | Rubrique | Contenu |
 |---|---|
-| Finalité | Gestion des entreprises partenaires, de leurs offres et de leurs statistiques |
-| Base légale | Exécution du contrat de partenariat (à formaliser) |
-| Personnes concernées | Commerçants titulaires d'un compte PARTNER |
-| Données | Email du compte ; nom et logo de l'entreprise ; offres, stocks et statistiques de consommation |
-| Code | [`backend/src/api/partners/partners.services.ts`](src:backend/src/api/partners/partners.services.ts) |
+| Finalité | Création des comptes partenaires et Mairie par un administrateur, gestion des entreprises partenaires, de leurs offres et de leurs statistiques |
+| Base légale | Exécution du contrat de partenariat (à formaliser) ; pour les agents de la Mairie, exécution de leur mission |
+| Personnes concernées | Commerçants titulaires d'un compte PARTNER ; agents titulaires d'un compte ADMIN |
+| Données | Email du compte, prénom et nom facultatifs saisis par l'administrateur, rôle, établissement rattaché ; nom et logo de l'entreprise ; offres, stocks et statistiques de consommation |
+| Code | `createStaffAccount` et `updateStaffRole` de [`backend/src/api/admin/admin.services.ts`](src:backend/src/api/admin/admin.services.ts) (page `/mairie/comptes`, email d'invitation `staff-invitation`), [`backend/src/api/partners/partners.services.ts`](src:backend/src/api/partners/partners.services.ts) |
 | Destinataires | Le partenaire lui-même ; administrateurs de la Ville |
 | Conservation | Durée du partenariat ; aucune règle implémentée |
 
@@ -89,13 +89,13 @@ Ce registre, prévu par l'article 30 du RGPD, décrit les traitements de donnée
 | Rubrique | Contenu |
 |---|---|
 | Finalité | Statistiques de fréquentation du parcours, efficacité des campagnes (source UTM) |
-| Base légale | Intérêt légitime, avec opposition possible |
+| Base légale | Consentement pour la mesure du parcours sur le web ; intérêt légitime pour les événements de connexion et d'inscription enregistrés par le serveur |
 | Données | Type d'événement ; source UTM ; plateforme ; chemin de la page ; identifiant du compte s'il est connecté ; pour la connexion et l'inscription, fournisseur et tranche d'âge |
 | Code | [`frontend-web/src/lib/analytics.ts`](src:frontend-web/src/lib/analytics.ts), [`backend/src/api/analytics/analytics.services.ts`](src:backend/src/api/analytics/analytics.services.ts) |
 | Destinataires | Administrateurs (tableau de bord) |
-| Opposition | Bouton de la page Confidentialité du web, mémorisé sur l'appareil ; sans effet sur les événements de connexion et d'inscription enregistrés par le serveur |
+| Consentement | Bandeau au premier passage sur le web, « Tout refuser » ou « Tout accepter » ; choix mémorisé 182 jours sur l'appareil (`bl.consent.choice`) et modifiable par « Gérer mes traceurs » ; aucun événement de parcours ni source UTM avant accord ; sans effet sur les événements de connexion et d'inscription enregistrés par le serveur |
 | Conservation | 13 mois maximum ; purge **à mettre en place** |
-| Remarque | La politique de confidentialité parle d'« événements de parcours anonymisés ». Les événements d'un utilisateur connecté portent son identifiant : ils sont pseudonymes, pas anonymes. La formulation est à corriger. |
+| Remarque | Les événements d'un utilisateur connecté portent son identifiant : ils sont pseudonymes, pas anonymes, ce que la politique de confidentialité réécrite indique désormais. |
 
 ## 7. Journal des actions d'administration
 
@@ -103,7 +103,7 @@ Ce registre, prévu par l'article 30 du RGPD, décrit les traitements de donnée
 |---|---|
 | Finalité | Traçabilité des actions de la Mairie |
 | Base légale | Obligation légale et intérêt légitime (contrôle interne) |
-| Données | Administrateur, action (`CIRCUIT_BREAKER_PAUSE`, `CIRCUIT_BREAKER_RESUME`, `TREASURY_WITHDRAWAL_MULTISIG`, `PARTNER_APPROVED`, `PARTNER_SUSPENDED`, `EXPORT_REPORT_CSV` ou `_PDF`, `IDENTITY_DOCUMENT_VIEWED`, `IDENTITY_VERIFICATION_DECISION`), horodatage, paramètres ; pour la vérification d'âge, identifiant du citoyen, décision et motif d'un refus |
+| Données | Administrateur, action (`CIRCUIT_BREAKER_PAUSE`, `CIRCUIT_BREAKER_RESUME`, `TREASURY_WITHDRAWAL_MULTISIG`, `PARTNER_APPROVED`, `PARTNER_SUSPENDED`, `EXPORT_REPORT_CSV` ou `_PDF`, `IDENTITY_DOCUMENT_VIEWED`, `IDENTITY_VERIFICATION_DECISION`, `STAFF_ACCOUNT_CREATED`, `STAFF_ROLE_CHANGED`, `STAFF_ROLE_REVOKED`), horodatage, paramètres ; pour la vérification d'âge, identifiant du citoyen, décision et motif d'un refus ; pour les comptes, identifiant, email, ancien et nouveau rôle, établissement rattaché ou détaché |
 | Code | `recordAdminAuditLog` de [`backend/src/api/admin/admin.repo.ts`](src:backend/src/api/admin/admin.repo.ts), stocké dans la table `Analytics` avec le préfixe `ADMIN_AUDIT:` |
 | Destinataires | Administrateurs (`GET /api/admin/audit-logs`) |
 | Conservation | 1 an ; purge **à mettre en place** |
@@ -112,7 +112,7 @@ Ce registre, prévu par l'article 30 du RGPD, décrit les traitements de donnée
 
 | Rubrique | Contenu |
 |---|---|
-| Finalité | Codes de connexion, d'inscription et de réinitialisation du mot de passe, alertes de sécurité, bienvenue, confirmation de suppression RGPD, codes promo obtenus, décision sur la vérification d'âge |
+| Finalité | Codes de connexion, d'inscription et de réinitialisation du mot de passe, alertes de sécurité, bienvenue, confirmation de suppression RGPD, codes promo obtenus, décision sur la vérification d'âge, invitation d'un compte partenaire ou Mairie créé par un administrateur |
 | Base légale | Exécution du contrat et intérêt légitime (sécurité) |
 | Données | Email, contenu du message (code, adresse de portefeuille, code de parrainage, jeton de suppression, décision et motif d'un refus de pièce d'identité) |
 | Code | [`backend/src/services/email.service.ts`](src:backend/src/services/email.service.ts), file BullMQ `emails` |
@@ -147,7 +147,7 @@ Ce registre, prévu par l'article 30 du RGPD, décrit les traitements de donnée
 | Fournisseur SMTP | Envoi des emails | À désigner, UE exigée | À signer |
 | Stockage objet S3 | Exports et visuels | UE exigée (`eu-west-3` par défaut) | À signer |
 | Fournisseur RPC Ethereum | Lecture et écriture sur la chaîne | À désigner | À signer |
-| Google, Apple | Vérification de l'identité à la connexion sociale, au choix du citoyen | Hors UE possible | Conditions des fournisseurs ; le backend ne leur envoie aucune donnée, il ne fait que vérifier leurs jetons |
+| Google | Vérification de l'identité à la connexion sociale, au choix du citoyen | Hors UE possible | Conditions des fournisseurs ; le backend ne leur envoie aucune donnée, il ne fait que vérifier leurs jetons |
 
 ## Tenir le registre à jour
 

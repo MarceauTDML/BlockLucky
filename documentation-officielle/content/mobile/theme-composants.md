@@ -138,7 +138,7 @@ La fonction `t(fr, en)` fonctionne comme sur le web (voir [Internationalisation]
 
 ## Icônes
 
-Les icônes viennent de la maquette. Les fichiers sources sont dans [`mobile-app/assets/icons`](src:mobile-app/assets/icons) ; leur contenu SVG est recopié dans [`iconData.ts`](src:mobile-app/src/components/ui/icons/iconData.ts), qui associe un nom (`tabHome`, `bell`, `google`, `apple`, `idCard`…) à un balisage, une largeur et une hauteur. [`Icon.tsx`](src:mobile-app/src/components/ui/icons/Icon.tsx) l'affiche avec `SvgXml` de `react-native-svg` :
+Les icônes viennent de la maquette. Les fichiers sources sont dans [`mobile-app/assets/icons`](src:mobile-app/assets/icons) ; leur contenu SVG est recopié dans [`iconData.ts`](src:mobile-app/src/components/ui/icons/iconData.ts), qui associe un nom (`tabHome`, `bell`, `google`, `idCard`, `volume`, `volumeOff`…) à un balisage, une largeur et une hauteur. [`Icon.tsx`](src:mobile-app/src/components/ui/icons/Icon.tsx) l'affiche avec `SvgXml` de `react-native-svg` :
 
 | Prop | Rôle |
 |---|---|
@@ -146,14 +146,35 @@ Les icônes viennent de la maquette. Les fichiers sources sont dans [`mobile-app
 | `size` | Largeur ; la hauteur suit les proportions de l'icône |
 | `color` | Couleur appliquée par `currentColor`, `ink` du thème par défaut |
 
-L'icône est masquée aux lecteurs d'écran (`importantForAccessibility="no"`) : le libellé doit être porté par le bouton qui la contient. Ajouter une icône demande de déposer le SVG dans `assets/icons`, puis d'ajouter son entrée dans `iconData.ts` : le fichier SVG n'est pas lu à l'exécution.
+L'icône est masquée aux lecteurs d'écran (`importantForAccessibility="no"`) : le libellé doit être porté par le bouton qui la contient. Ajouter une icône demande de déposer le SVG dans `assets/icons`, puis d'ajouter son entrée dans `iconData.ts` : le fichier SVG n'est pas lu à l'exécution. Les icônes `volume` et `volumeOff`, ajoutées pour l'interrupteur des sons, n'existent que dans `iconData.ts`, sans fichier dans `assets/icons`.
+
+## Sons
+
+[`mobile-app/src/hooks/useSound.ts`](src:mobile-app/src/hooks/useSound.ts) joue deux sons courts du grand tirage avec `expo-audio` (plugin déclaré dans `app.json`). Les fichiers sont dans [`mobile-app/assets/sounds`](src:mobile-app/assets/sounds) et ont été fournis par l'équipe.
+
+| Élément | Valeur |
+|---|---|
+| `SOUNDS.wheel` | `assets/sounds/roue-tirage.mp3` |
+| `SOUNDS.chrono` | `assets/sounds/chrono.mp3` |
+| `CHRONO_SECONDS` | 8 : durée du compte à rebours sonore |
+| `useSound(source)` | Renvoie `play({ loop? })` et `stop()` ; crée le lecteur par `useAudioPlayer`, règle une fois le mode audio (`playsInSilentMode: true`, `interruptionMode: 'mixWithOthers'`) et coupe le son si la préférence passe à faux |
+| `useSoundPreference()` | Renvoie `soundEnabled` et `setSoundEnabled` ; valeur partagée par tous les écrans (`useSyncExternalStore`), vraie par défaut |
+| Mémorisation | Clé `blocklucky_sound_enabled` dans SecureStore (`'1'` ou `'0'`), `localStorage` sur la cible web d'Expo ; la préférence n'est pas envoyée au backend |
+
+| Utilisation | Comportement |
+|---|---|
+| `DrawWheel` | `roue-tirage.mp3` en boucle tant que la roue tourne sans résultat, puis une lecture sans boucle pendant l'arrêt sur le secteur gagnant ; arrêt à la fin de l'animation et au démontage |
+| `WaitingRoomScreen` | `chrono.mp3` joué une seule fois par tour quand il reste 8 secondes ou moins avant la révélation, arrêté si la salle se ferme ou si l'écran est quitté |
+| `DisplaySettingsScreen` | Interrupteur « Sons » (`SwitchRow`, icône `volume` ou `volumeOff`) : « Roue et compte à rebours du grand tirage, sur cet appareil » |
+
+Les erreurs de lecture et de stockage sont ignorées : sans son, l'interface fonctionne de la même façon.
 
 ## Composants métier
 
 | Dossier | Composants |
 |---|---|
 | [`components/auth`](src:mobile-app/src/components/auth) | `AuthHero`, `SocialAuthButtons`, `PasswordRules`, `CheckboxRow`, `OrDivider`, `TextLink`, `FormMessage`, `DevOtpHint`, `HighlightCard`, `AgeNoticeCard`, `IdentitySideCard`, utilitaires `authErrors` |
-| [`components/draw`](src:mobile-app/src/components/draw) | `DrawWheel` (roue à 10 secteurs), `CurrentTicketCard`, `ResultCards`, `RoomChat`, `WaitingRoomClosed`, `CrossFade`, `RollingValue`, `PulseDots`, hook `useNow`, formats `drawFormat` |
+| [`components/draw`](src:mobile-app/src/components/draw) | `DrawWheel` (roue à 10 secteurs, avec le son de la roue), `CurrentTicketCard`, `ResultCards`, `RoomChat`, `WaitingRoomClosed`, `CrossFade`, `RollingValue`, `PulseDots`, hook `useNow`, formats `drawFormat` |
 | [`components/lottery`](src:mobile-app/src/components/lottery) | `DeadlineCard`, `MilestonesPanel`, `DrawStatusBadge`, `DialogSummary`, `ScratchOfferCard`, hook `useCountdown`, formats `lotteryFormat` |
 | [`components/marketplace`](src:mobile-app/src/components/marketplace) | `ScratchCanvas`, `ScratchOfferCard`, `CodeCard`, `RewardCard`, `PointsBalanceCard`, utilitaires `apiErrors` et `scratchOffers` |
 | [`components/profile`](src:mobile-app/src/components/profile) | `IdentityCard`, `ReferralCodeCard`, `SummaryTiles`, `ListGroup`, `SwitchRow`, `TabTitle`, utilitaire `ageStatus` |

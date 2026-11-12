@@ -16,6 +16,7 @@ Chaque projet du dépôt a son propre `package.json` et son propre `node_modules
 | Servir le site de l'Office de Tourisme | `frontend-office-tourisme/` | `npm run dev` |
 | Compiler et tester les contrats | `smart-contract/` | `npm run build`, puis `npm test` |
 | Republier les ABI vers le backend après un changement de contrat | `smart-contract/` | `npm run export:abi` |
+| Déployer sur Sepolia, dans l'ordre | `smart-contract/` | `npm run vrf:sepolia`, `npm run deploy:sepolia`, `npm run automation:sepolia`, puis `npm run verify:sepolia` |
 | Construire et prévisualiser cette documentation | `documentation-officielle/` | `npm run build`, puis `npm run serve` |
 
 Avant d'ouvrir une pull request, lancer dans chaque projet modifié les mêmes contrôles que la CI : `npm run typecheck`, `npm run lint` et les tests (voir [Intégration continue](../infrastructure/ci.md) et [Tests et qualité](../contribuer/tests-qualite.md)).

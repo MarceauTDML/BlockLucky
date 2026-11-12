@@ -133,7 +133,7 @@ Solution :
 
 Symptôme : « Le compte opérateur du backend n'a pas le rôle requis sur le Smart Contract. » (statut 403) au tirage, à la pause ou au reversement de la commission.
 
-Cause : `RELAYER_PRIVATE_KEY` du backend n'est pas un compte habilité par le déploiement. En local, c'est le cas si la clé a été changée dans `backend/.env` sans être passée au conteneur `blockchain`, ou pour `setTreasury`, réservé au rôle `DEFAULT_ADMIN_ROLE` du compte n° 0.
+Cause : `RELAYER_PRIVATE_KEY` du backend n'est pas un compte habilité par le déploiement. En local, c'est le cas si la clé a été changée dans `backend/.env` sans être passée au conteneur `blockchain`, ou pour `setTreasury` si la chaîne a été déployée avec `LOCAL_STRICT_ROLES=true` : l'opérateur n'a alors plus `DEFAULT_ADMIN_ROLE`, détenu par le compte n° 2. Sur Sepolia, `setTreasury` est refusé dès que l'adresse saisie diffère de `MAIRIE_TREASURY_ADDRESS`.
 
 Solution : revenir à la clé de `.env.example`, ou exporter la même `RELAYER_PRIVATE_KEY` dans le shell avant `docker compose up` pour que le déploiement l'habilite ([Infrastructure locale](infrastructure-locale.md#comptes)).
 

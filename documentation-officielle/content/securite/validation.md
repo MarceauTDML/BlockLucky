@@ -24,7 +24,7 @@ Toute donnée qui entre dans le backend par un corps de requête passe par un sc
 
 Les objets Zod sont non stricts par défaut : un champ non déclaré n'est pas rejeté, il est retiré. C'est ce qui protège contre l'affectation de masse. Un client qui ajoute `"role": "ADMIN"` au corps de `/api/auth/login` n'a aucun effet, puisque `role` ne figure pas dans `socialLoginSchema`.
 
-Seul `req.body` est réécrit. Les paramètres d'URL et de requête (`req.params`, `req.query`) peuvent être vérifiés par un schéma, mais le contrôleur lit toujours la valeur brute. Les schémas des routes de vérification d'identité de l'administration sont les seuls à déclarer `query` et `params` ; ailleurs, ces valeurs sont converties à la main dans les contrôleurs (voir [Limites connues](#limites-connues)).
+Seul `req.body` est réécrit. Les paramètres d'URL et de requête (`req.params`, `req.query`) peuvent être vérifiés par un schéma, mais le contrôleur lit toujours la valeur brute. Les schémas des routes de vérification d'identité et de gestion des comptes de l'administration sont les seuls à déclarer `query` et `params` ; ailleurs, ces valeurs sont converties à la main dans les contrôleurs (voir [Limites connues](#limites-connues)).
 
 ## Schémas et bornes
 
@@ -32,11 +32,11 @@ Chaque module a son fichier `*.validators.ts`. Le tableau résume les règles de
 
 | Schéma | Fichier | Règles notables |
 |---|---|---|
-| `socialLoginSchema` | [`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts) | Adresse `^0x[0-9a-fA-F]{40}$` mise en minuscules ; email de 254 caractères au plus ; `isAdultConfirmed` doit valoir `true` ; `provider` et `ageGroup` en énumération ; code de parrainage 64 et UTM 100 caractères au plus |
-| `signupSchema`, `resetPasswordSchema` | idem | Mot de passe de 10 à 128 caractères avec au moins une lettre et un chiffre (`passwordPolicy`) ; email de 254 caractères au plus, mis en minuscules ; `acceptTerms` doit valoir `true` à l'inscription ; code de réinitialisation de 6 chiffres |
+| `socialLoginSchema` | [`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts) | Adresse `^0x[0-9a-fA-F]{40}$` mise en minuscules ; email de 254 caractères au plus ; `isAdultConfirmed` doit valoir `true` ; `acceptTerms` facultatif, mais `true` s'il est présent ; `provider` (`GOOGLE`, `EMAIL`, `WALLET`) et `ageGroup` en énumération ; code de parrainage 64 et UTM 100 caractères au plus |
+| `signupSchema`, `resetPasswordSchema` | idem | Mot de passe de 10 à 128 caractères avec au moins une lettre et un chiffre (`passwordPolicy`) ; email de 254 caractères au plus, mis en minuscules ; `acceptTerms` et `isAdultConfirmed` doivent valoir `true` à l'inscription ; code de réinitialisation de 6 chiffres |
 | `signinSchema` | idem | Mot de passe de 1 à 128 caractères, refusé au-delà avec le message générique « Email ou mot de passe incorrect. » |
-| `googleOAuthSchema`, `appleOAuthSchema` | idem | Jeton de 20 à 8 192 caractères ; nom Apple de 200 caractères au plus |
-| `verify2FASchema`, `disable2FASchema` | idem | Code de 6 à 16 caractères `[0-9A-Za-z-]`, `userId` en UUID |
+| `googleOAuthSchema` | idem | Jeton de 20 à 8 192 caractères |
+| `verify2FASchema`, `disable2FASchema` | idem | Code de 6 à 16 caractères `[0-9A-Za-z-]`, `userId` en UUID ; `loginTicket` facultatif de 32 à 128 caractères `[A-Za-z0-9_-]` |
 | `buyTicketSchema` | [`backend/src/api/lottery/lottery.validators.ts`](src:backend/src/api/lottery/lottery.validators.ts) | Quantité égale à 1 : « Un seul ticket par participant et par grand tirage. » |
 | `giftTicketSchema` | idem | Email du bénéficiaire, message personnel de 250 caractères au plus |
 | `claimPrizeSchema` | idem | Numéro de tour de 1 à 1 000 000 |
@@ -46,11 +46,11 @@ Chaque module a son fichier `*.validators.ts`. Le tableau résume les règles de
 | `createRewardOfferSchema` | idem | Coût de 10 à 100 000 points, stock de 1 à 100 000, date ISO 8601 avec fuseau |
 | `uploadCodesBatchSchema` | idem | Au plus 5 000 codes de 3 à 64 caractères, ou un CSV de 200 000 caractères au plus |
 | `submitIdentitySchema` | [`backend/src/api/user/user.validators.ts`](src:backend/src/api/user/user.validators.ts) | Recto et verso obligatoires, chaînes de 16 caractères au moins et de la taille d'une image de 4 Mo encodée en base64 au plus |
-| `setResponsibleGamingLimitSchema` | [`backend/src/api/user/user.validators.ts`](src:backend/src/api/user/user.validators.ts) | Limite entière de 1 à 500 tickets |
 | `updatePreferencesSchema`, `completeSocialQuestSchema` | idem | Énumérations fermées |
 | `confirmGdprDeletionSchema` | idem | Jeton de 10 à 128 caractères |
 | `trackEventSchema` | [`backend/src/api/analytics/analytics.validators.ts`](src:backend/src/api/analytics/analytics.validators.ts) | Type `^[A-Za-z0-9_:.-]{2,64}$`, préfixes réservés refusés, au plus 20 métadonnées de types simples, chaînes de 200 caractères au plus |
 | `circuitBreakerSchema`, `treasuryWithdrawalSchema` | [`backend/src/api/admin/admin.validators.ts`](src:backend/src/api/admin/admin.validators.ts) | Motif d'au moins 5 caractères ; adresse Ethereum ; montant positif plafonné à 1 000 ETH ; note de 500 caractères au plus |
+| `listStaffAccountsSchema`, `createStaffAccountSchema`, `updateStaffRoleSchema` | idem | Rôle `ADMIN` ou `PARTNER` en filtre et à la création, `USER`, `PARTNER` ou `ADMIN` au changement ; recherche de 120 caractères au plus ; `limit` de 1 à 100 ; email valide mis en minuscules ; prénom et nom de 80 caractères au plus ; `partnerId` en UUID, refusé si le rôle n'est pas `PARTNER` ; identifiant de compte en UUID |
 | `listIdentityVerificationsSchema`, `identityDecisionSchema` | idem | Statut en énumération ; identifiant de demande en UUID ; décision booléenne ; motif de refus de 3 à 500 caractères obligatoire quand `approved` vaut `false` |
 | `blockchainWebhookSchema` | [`backend/src/api/webhooks/webhooks.validators.ts`](src:backend/src/api/webhooks/webhooks.validators.ts) | Union discriminée sur `eventType` ; hash `^0x[0-9a-fA-F]{64}$` ; adresses vérifiées ; prix plafonné à 10 ETH |
 

@@ -5,29 +5,18 @@ import BackButton from '@/components/ui/BackButton';
 import Button, { LinkButton } from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import { Alert, PageHeader } from '@/components/ui/Misc';
-import { ChoicePills } from '@/components/ui/SegmentedTabs';
 import Sheet from '@/components/ui/Sheet';
 import useAuth from '@/hooks/useAuth';
 import { useAppDispatch } from '@/store';
-import { useSetResponsibleLimitMutation } from '@/store/api/authApi';
 import { getErrorMessage } from '@/store/api/baseApi';
 import { updateUserProfile } from '@/store/slices/authSlice';
 import storage, { KEYS } from '@/lib/storage';
 import { useAppTheme } from '@/theme/ThemeProvider';
 
-const LIMIT_PRESETS = [5, 10, 25, 50, 100] as const;
-type Limit = (typeof LIMIT_PRESETS)[number];
-
 export default function SecurityPage() {
   const { t } = useAppTheme();
   const dispatch = useAppDispatch();
   const { user, disable2FA, isDisabling2FA, signOutEverywhere } = useAuth();
-  const [setResponsibleLimit, { isLoading: isSavingLimit }] = useSetResponsibleLimitMutation();
-
-  const current = user?.responsibleGaming?.maxTicketsPerRound ?? 25;
-  const [selectedLimit, setSelectedLimit] = useState<Limit>(
-    (LIMIT_PRESETS as readonly number[]).includes(current) ? (current as Limit) : 25
-  );
   const [feedback, setFeedback] = useState<{ tone: 'success' | 'error'; text: string } | null>(null);
   const [confirmDisable, setConfirmDisable] = useState(false);
   const [rbacChecked, setRbacChecked] = useState(false);
@@ -35,26 +24,6 @@ export default function SecurityPage() {
   const persistUser = (patch: Parameters<typeof updateUserProfile>[0]) => {
     dispatch(updateUserProfile(patch));
     if (user) storage.setJson(KEYS.user, { ...user, ...patch });
-  };
-
-  const handleSaveLimit = async () => {
-    setFeedback(null);
-    try {
-      await setResponsibleLimit({ maxTicketsPerRound: selectedLimit }).unwrap();
-      persistUser({ responsibleGaming: { maxTicketsPerRound: selectedLimit } });
-      setFeedback({
-        tone: 'success',
-        text: t(
-          `Limite enregistrée : maximum ${selectedLimit} tickets par tirage.`,
-          `Limit saved: maximum ${selectedLimit} tickets per draw.`
-        ),
-      });
-    } catch {
-      setFeedback({
-        tone: 'error',
-        text: t('Impossible de mettre à jour votre limite pour le moment.', 'Unable to update your limit at the moment.'),
-      });
-    }
   };
 
   const handleDisable2FA = async () => {
@@ -85,25 +54,16 @@ export default function SecurityPage() {
         <section className="card flex flex-col gap-3 p-5">
           <div className="flex items-center gap-3">
             <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sun-soft text-on-sun">
-              <Icon name="clock" size={20} />
+              <Icon name="ticket" size={20} />
             </span>
-            <h2 className="text-subtitle font-bold">{t('Plafond de participation', 'Participation Cap')}</h2>
+            <h2 className="text-subtitle font-bold">{t('Un ticket par habitant et par tirage', 'One ticket per resident per draw')}</h2>
           </div>
           <p className="text-caption text-fg-secondary">
             {t(
-              'Définissez votre limite personnelle de tickets par tirage. Elle s’applique immédiatement sur le web et le mobile.',
-              'Set your personal maximum number of tickets per draw. It applies immediately on web and mobile.'
+              'Le grand tirage est un moment convivial, pas une course aux tickets : chaque habitant participe avec un seul ticket par tirage, sur le web comme sur le mobile. Vos chances sont les mêmes que celles de vos voisins.',
+              'The grand draw is a friendly moment, not a ticket race: each resident takes part with a single ticket per draw, on web and mobile alike. Your odds are the same as your neighbours’.'
             )}
           </p>
-          <ChoicePills
-            options={LIMIT_PRESETS}
-            value={selectedLimit}
-            onChange={setSelectedLimit}
-            ariaLabel={t('Plafond de tickets', 'Ticket cap')}
-          />
-          <Button onClick={handleSaveLimit} loading={isSavingLimit}>
-            {t(`Enregistrer (${selectedLimit} tickets max)`, `Save Limit (${selectedLimit} tickets max)`)}
-          </Button>
           <p className="rounded-[16px] bg-surface-elevated px-4 py-3 text-caption text-fg-secondary">
             {t(
               'Besoin d’aide ? Joueurs Info Service : 09 74 75 13 13 (appel non surtaxé).',

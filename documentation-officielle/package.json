@@ -1,6 +1,7 @@
 {
   "name": "blocklucky-documentation-officielle",
   "version": "1.0.0",
+  "license": "MIT",
   "private": true,
   "description": "Documentation officielle du code source BlockLucky de la Ville d'EtherBay",
   "type": "module",

@@ -80,6 +80,7 @@ export default function HomePage() {
               prizePoolEth={status?.round.prizePool ?? 0}
               roundNumber={status?.round.contractRoundId ?? 1}
               simulated={simulated}
+              sound
             >
               {!isOpen || isPaused ? (
                 <div role="status" className="rounded-[16px] bg-surface/70 px-4 py-3 text-caption font-semibold text-on-sun">

@@ -42,7 +42,6 @@ Les parcours complets sont décrits dans [Achat et cadeau de ticket](../../archi
 | EtherPoints par ticket acheté | 50 | `POINTS_PER_TICKET` du service et de l'indexeur |
 | EtherPoints par ticket offert, pour l'acheteur | 75 | `POINTS_PER_GIFT` et `POINTS_PER_GIFTED_TICKET` |
 | Tickets par participant et par tour | 1 | `quantity` limité à 1 par `buyTicketSchema`, contrôle en base et sur le contrat |
-| Limite de jeu responsable par défaut | 50 tickets par tour, sans effet avec un seul ticket | clé Redis `user:ticket_limit:<userId>`, réglable par [`PUT /user/responsible-limit`](utilisateur.md#put-user-responsible-limit) |
 | Délai de révélation | 600 secondes après la fermeture des achats | `DRAW_REVEAL_DELAY_SECONDS` |
 | Indicateur historique `inWaitingRoom` | 600 secondes avant la fin du tour | `inWaitingRoom` |
 
@@ -151,7 +150,7 @@ La liste `milestones` contient quatre paliers, communs aux deux modes :
 ### Règles communes
 
 1. L'âge du compte doit être vérifié (`403 AGE_VERIFICATION_REQUIRED`, voir plus haut).
-2. Un citoyen qui a déjà un ticket sur le tour courant, compté en base, reçoit `409 Vous avez déjà votre ticket pour ce grand tirage.` avec `errors: { "contractError": "PlayerLimitReached" }`. La limite de jeu responsable est encore comparée (`400 Jeu Responsable : Limite d'achat atteinte...`), mais elle ne peut plus être atteinte avant ce contrôle.
+2. Un citoyen qui a déjà un ticket sur le tour courant, compté en base, reçoit `409 Vous avez déjà votre ticket pour ce grand tirage.` avec `errors: { "contractError": "PlayerLimitReached" }`. Aucun plafond personnel n'est plus lu dans Redis : le ticket unique tient lieu de règle de jeu responsable.
 3. La requête accepte `Idempotency-Key` : un double clic avec la même clé rejoue la première réponse au lieu d'acheter deux fois (voir [Référence de l'API](../reference-api.md#idempotence)).
 
 ### Mode onchain
@@ -269,7 +268,7 @@ En mode simulé, l'auto-cadeau et un destinataire qui a déjà un ticket en base
 ```
 
 > [!NOTE]
-> Aucun email n'est envoyé au destinataire et la limite de jeu responsable n'est pas appliquée aux cadeaux. Un destinataire créé par un cadeau qui se connecte ensuite par `/login` passe par le parcours `LOGIN` et ne reçoit pas les 25 points de bienvenue. S'il s'inscrit par `/signup` ou par Google ou Apple, son compte non vérifié est activé et reçoit le bonus de bienvenue (voir [Authentification](auth.md#post-auth-signup)).
+> Aucun email n'est envoyé au destinataire. Un destinataire créé par un cadeau qui se connecte ensuite par `/login` passe par le parcours `LOGIN` et ne reçoit pas les 25 points de bienvenue. S'il s'inscrit par `/signup` ou par Google, son compte non vérifié est activé et reçoit le bonus de bienvenue (voir [Authentification](auth.md#post-auth-signup)).
 
 ## GET /lottery/my-tickets
 
@@ -372,7 +371,7 @@ Mode simulé : le statut passe à `CANCELLED` et la réponse annonce `autoRefund
 
 ### GET /lottery/transparency-charter
 
-Texte statique : titre, version `2026.1` et quatre sections (blockchain, Chainlink VRF, remboursement, portefeuille intégré et ethers fictifs).
+Texte statique de `getTransparencyCharter` : titre, version `2026.1` et quatre sections (registre sur chaîne, tirage Chainlink VRF, remboursement en cas d'annulation, portefeuille intégré et ethers fictifs). Le texte ne présente plus le tirage comme certifié en toutes circonstances : il précise que le coordinateur est simulé en démonstration locale, que les opérateurs peuvent mettre le contrat en pause ou annuler un tour, et que les frais réseau déjà consommés ne sont pas remboursés, au lieu de promettre le retour de 100 % des fonds. Il est affiché par l'écran mobile `HowItWorksScreen`. Le web ne l'appelle pas : sa page `/transparence` affiche la charte rédigée dans `frontend-web/src/content/legal.ts` (voir [Pages et espaces](../../web/pages.md)).
 
 ### GET /lottery/poap/:file
 

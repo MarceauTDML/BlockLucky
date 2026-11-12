@@ -33,6 +33,8 @@ const EMAIL_TAKEN_MESSAGE = 'Cette adresse email est déjà utilisée par un aut
 const WRONG_PASSWORD_MESSAGE = 'Mot de passe incorrect.';
 const WRONG_CURRENT_PASSWORD_MESSAGE = 'Mot de passe actuel incorrect.';
 const USER_NOT_FOUND_MESSAGE = 'Utilisateur introuvable';
+const FIRST_FACTOR_REQUIRED_MESSAGE =
+  'Connexion expirée ou incomplète : reconnectez-vous avant de saisir le code de votre application.';
 const EMAIL_CHANGE_TTL_SECONDS = 10 * 60;
 const WELCOME_POINTS = 25;
 
@@ -175,9 +177,14 @@ export class AuthService {
     return this.activateExistingAccount(existing, signup);
   }
 
+  private async requireAppCode(user: AuthUser) {
+    const loginTicket = await otpChallengeService.issueLoginTicket(user.id);
+    return { requiresTwoFactor: true, twoFactorMethod: 'APP' as const, userId: user.id, loginTicket };
+  }
+
   private async completePrimaryLogin(user: AuthUser, provider: string) {
     if (user.isTwoFactorEnabled && user.twoFactorMethod === 'APP') {
-      return { requiresTwoFactor: true, twoFactorMethod: 'APP' as const, userId: user.id };
+      return this.requireAppCode(user);
     }
     if (user.isTwoFactorEnabled && user.twoFactorMethod === 'EMAIL' && user.email) {
       const code = await otpChallengeService.issue(user.id, 'LOGIN');
@@ -409,15 +416,7 @@ export class AuthService {
     let user = await authRepository.findByWallet(walletLower);
     if (!user && emailLower) user = await authRepository.findByEmail(emailLower);
 
-    if (user && user.isTwoFactorEnabled && user.twoFactorMethod === 'APP') {
-      return {
-        requiresTwoFactor: true,
-        twoFactorMethod: 'APP' as const,
-        userId: user.id,
-      };
-    }
-
-    if (env.LOGIN_EMAIL_CODE_REQUIRED || (user?.isTwoFactorEnabled && user.twoFactorMethod === 'EMAIL')) {
+    if (env.LOGIN_EMAIL_CODE_REQUIRED || user?.isTwoFactorEnabled) {
       const email = user?.email ?? emailLower;
       if (!email) {
         throw new AppError('Une adresse email est requise pour recevoir le code de connexion', 400);
@@ -550,10 +549,32 @@ export class AuthService {
     return true;
   }
 
-  public async verify2FA(subjectId: string, code: string) {
+  private async resolveSecondFactorSubject(input: {
+    sessionUserId?: string | undefined;
+    userId?: string | undefined;
+    loginTicket?: string | undefined;
+  }) {
+    const ticketUserId = input.loginTicket ? await otpChallengeService.readLoginTicket(input.loginTicket) : null;
+    if (input.loginTicket && !ticketUserId) throw new AppError(FIRST_FACTOR_REQUIRED_MESSAGE, 401);
+    if (ticketUserId && input.userId && input.userId !== ticketUserId) {
+      throw new AppError(FIRST_FACTOR_REQUIRED_MESSAGE, 401);
+    }
+    const subjectId = input.sessionUserId ?? ticketUserId ?? input.userId;
+    if (!subjectId) throw new AppError('Identifiant utilisateur requis pour vérifier le code 2FA', 400);
+    return { subjectId, ticketUserId };
+  }
+
+  public async verify2FA(input: {
+    code: string;
+    sessionUserId?: string | undefined;
+    userId?: string | undefined;
+    loginTicket?: string | undefined;
+  }) {
+    const { code } = input;
+    const { subjectId, ticketUserId } = await this.resolveSecondFactorSubject(input);
     await otpChallengeService.assertNotLocked(subjectId);
 
-    if (await otpChallengeService.hasPending(subjectId)) {
+    if (!ticketUserId && (await otpChallengeService.hasPending(subjectId))) {
       const challenge = await otpChallengeService.consume(subjectId, code);
       if (!challenge) {
         await otpChallengeService.recordFailure(subjectId);
@@ -583,6 +604,8 @@ export class AuthService {
         });
         await sessionService.revokeAllForUser(user.id);
         await this.notify(user.email, 'Double authentification par email activée');
+      } else if (user.isTwoFactorEnabled && user.twoFactorMethod === 'APP') {
+        return { verified: true, ...(await this.requireAppCode(user)) };
       } else {
         await authRepository.recordAuthAnalytics(user.id, 'USER_LOGIN', undefined, { provider: 'EMAIL_CODE' });
       }
@@ -592,11 +615,16 @@ export class AuthService {
     }
 
     const user = await authRepository.findById(subjectId);
-    if (!user || user.twoFactorMethod !== 'APP' || !(await this.verifyTotpOrBackup(user, code))) {
+    const firstFactorPassed = user
+      ? input.sessionUserId === user.id || (user.isTwoFactorEnabled && ticketUserId === user.id)
+      : false;
+    if (!firstFactorPassed) throw new AppError(FIRST_FACTOR_REQUIRED_MESSAGE, 401);
+    if (!user || user.deletedAt || user.twoFactorMethod !== 'APP' || !(await this.verifyTotpOrBackup(user, code))) {
       await otpChallengeService.recordFailure(subjectId);
       throw new AppError(INVALID_CODE_MESSAGE, 401);
     }
     await otpChallengeService.clearFailures(subjectId);
+    if (input.loginTicket) await otpChallengeService.revokeLoginTicket(input.loginTicket);
 
     if (!user.isTwoFactorEnabled) {
       await authRepository.updateTwoFactor(user.id, {

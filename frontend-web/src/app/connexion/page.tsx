@@ -42,6 +42,7 @@ function LoginContent() {
   const referralCode = referralInput ?? (isClient ? storage.get(KEYS.referral) || '' : '');
   const [ageGroup, setAgeGroup] = useState<AgeGroup>('18-25');
   const [isAdultConfirmed, setIsAdultConfirmed] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [ageModalVisible, setAgeModalVisible] = useState(!isProSpace);
   const [onboardingFinished, setOnboardingFinished] = useState(false);
   const onboardingDone =
@@ -72,6 +73,15 @@ function LoginContent() {
       setAgeModalVisible(true);
       return;
     }
+    if (!termsAccepted) {
+      setErrorMessage(
+        t(
+          "Acceptez les conditions générales d'utilisation et le règlement de participation pour continuer.",
+          'Accept the terms of use and the participation rules to continue.'
+        )
+      );
+      return;
+    }
     if (!isValidEmail(email)) {
       setErrorMessage(t('Veuillez saisir une adresse email valide.', 'Please enter a valid email address.'));
       return;
@@ -85,6 +95,7 @@ function LoginContent() {
         email: seed,
         provider,
         isAdultConfirmed: true,
+        acceptTerms: true,
         ageGroup,
         ...(referralCode.trim() ? { referralCode: referralCode.trim() } : {}),
         utmSource: getUtmSource(),
@@ -183,6 +194,18 @@ function LoginContent() {
                 <div className="mb-5 flex gap-3.5 rounded-[23px] bg-lavender p-4">
                   <Icon name="idCard" size={29} className="text-violet" />
                   <div className="flex min-w-0 flex-1 flex-col gap-3">
+                    <CheckboxCard id="terms" checked={termsAccepted} onChange={setTermsAccepted}>
+                      {t("J'accepte les ", 'I accept the ')}
+                      <Link href="/cgu" target="_blank" className="underline underline-offset-2 hover:text-fg-secondary">
+                        {t("conditions générales d'utilisation", 'terms of use')}
+                      </Link>
+                      {t(' et le ', ' and the ')}
+                      <Link href="/reglement" target="_blank" className="underline underline-offset-2 hover:text-fg-secondary">
+                        {t('règlement de participation', 'participation rules')}
+                      </Link>
+                      .
+                    </CheckboxCard>
+
                     <CheckboxCard id="adult" checked={isAdultConfirmed} onChange={setIsAdultConfirmed}>
                       {t('Je certifie être majeur (18 ans et plus)', 'I confirm that I am 18 years of age or older')}
                     </CheckboxCard>
@@ -257,24 +280,22 @@ function LoginContent() {
               </form>
 
               <p className="mt-6 px-3 text-center text-caption text-fg-muted">
-                {isProSpace ? (
+                {t(
+                  'En créant un compte, vous reconnaissez avoir lu la ',
+                  'By creating an account, you acknowledge that you have read the '
+                )}
+                <Link href="/confidentialite" className="underline underline-offset-2 hover:text-fg">
+                  {t('politique de confidentialité', 'privacy policy')}
+                </Link>
+                .
+              </p>
+              {isProSpace ? (
+                <p className="mt-3 px-3 text-center text-caption text-fg-muted">
                   <Link href="/connexion" className="underline underline-offset-2 hover:text-fg">
                     {t('Je suis un habitant', 'I am a resident')}
                   </Link>
-                ) : (
-                  <>
-                    {t('En continuant, vous acceptez les ', 'By continuing you accept the ')}
-                    <Link href="/mentions-legales" className="underline underline-offset-2 hover:text-fg">
-                      {t('conditions de participation', 'terms of participation')}
-                    </Link>
-                    {t(' et la ', ' and the ')}
-                    <Link href="/confidentialite" className="underline underline-offset-2 hover:text-fg">
-                      {t('politique de confidentialité', 'privacy policy')}
-                    </Link>
-                    .
-                  </>
-                )}
-              </p>
+                </p>
+              ) : null}
               <SecurityFooter className="mt-6" />
             </div>
           </div>

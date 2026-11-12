@@ -65,7 +65,7 @@ Ces informations restent pseudonymes, mais elles enrichissent le graphe des tran
 | Clé privée | `User.walletEncryptedKey`, chiffrée |
 | Tranche d'âge, source UTM | Table `Analytics` |
 | EtherPoints, récompenses, codes promo | Tables `User`, `PointTransaction`, `ClaimedReward` |
-| Préférences, limite de jeu, quêtes | Redis |
+| Préférences, quêtes | Redis |
 | Messages du chat en direct | Diffusés par Socket.IO, ni stockés ni écrits sur la chaîne |
 | Message personnel d'un cadeau | Email au bénéficiaire, s'il est envoyé |
 

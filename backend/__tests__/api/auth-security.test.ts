@@ -29,6 +29,20 @@ const loginBody = (email: string, wallet = '0xaaaabbbbccccddddeeeeffff0000111122
   isAdultConfirmed: true,
 });
 
+const appCodeStepFor = async (email: string, wallet?: string) => {
+  const start = sentCodes.length;
+  const login = await request(app).post('/api/auth/login').send(loginBody(email, wallet));
+  expect(login.body.data.twoFactorMethod).toBe('EMAIL');
+  expect(login.body.data.token).toBeUndefined();
+  const emailStep = await request(app)
+    .post('/api/auth/2fa/verify')
+    .send({ userId: login.body.data.userId, code: sentCodes[start] });
+  expect(emailStep.status).toBe(200);
+  return emailStep.body.data;
+};
+
+const appCodeStep = (email: string) => appCodeStepFor(email);
+
 describe('Sécurité de l’authentification', () => {
   beforeAll(() => {
     jest.spyOn(emailService, 'sendTemplateEmail').mockImplementation(async (_to, _subject, template, variables) => {
@@ -168,22 +182,117 @@ describe('Sécurité de l’authentification', () => {
     expect(stored.twoFactorSecret).not.toBe(setup.body.data.secret);
     expect(stored.twoFactorBackupCodes).not.toContain(setup.body.data.backupCodes[0]);
 
-    const relogin = await request(app).post('/api/auth/login').send(loginBody('totp@etherbay.fr'));
-    expect(relogin.body.data.twoFactorMethod).toBe('APP');
+    const relogin = await appCodeStep('totp@etherbay.fr');
+    expect(relogin.twoFactorMethod).toBe('APP');
+    expect(relogin.token).toBeUndefined();
     const replay = await request(app)
       .post('/api/auth/2fa/verify')
-      .send({ userId: relogin.body.data.userId, code });
+      .send({ userId: relogin.userId, loginTicket: relogin.loginTicket, code });
     expect(replay.status).toBe(401);
 
     const backup = await request(app)
       .post('/api/auth/2fa/verify')
-      .send({ userId: relogin.body.data.userId, code: setup.body.data.backupCodes[0] });
+      .send({ userId: relogin.userId, loginTicket: relogin.loginTicket, code: setup.body.data.backupCodes[0] });
     expect(backup.status).toBe(200);
+    expect(backup.body.data.token).toBeDefined();
 
+    const ticketReuse = await request(app)
+      .post('/api/auth/2fa/verify')
+      .send({ userId: relogin.userId, loginTicket: relogin.loginTicket, code: setup.body.data.backupCodes[1] });
+    expect(ticketReuse.status).toBe(401);
+
+    const again = await appCodeStep('totp@etherbay.fr');
     const reuse = await request(app)
       .post('/api/auth/2fa/verify')
-      .send({ userId: relogin.body.data.userId, code: setup.body.data.backupCodes[0] });
+      .send({ userId: again.userId, loginTicket: again.loginTicket, code: setup.body.data.backupCodes[0] });
     expect(reuse.status).toBe(401);
+  });
+
+  it('refuse un code de l’application présenté avec le seul identifiant du compte', async () => {
+    const secret = totpService.generateSecret();
+    const victim = await prismaMock.user.create({
+      data: {
+        walletAddress: '0x7070000000000000000000000000000000007070',
+        email: 'victime@etherbay.fr',
+        isEmailVerified: true,
+        isTwoFactorEnabled: true,
+        twoFactorMethod: 'APP',
+        twoFactorSecret: secret,
+      },
+    });
+
+    const bypass = await request(app)
+      .post('/api/auth/2fa/verify')
+      .send({ userId: victim.id, code: totpService.generateToken(secret) });
+    expect(bypass.status).toBe(401);
+    expect(bypass.body.data?.token).toBeUndefined();
+
+    const forged = await request(app)
+      .post('/api/auth/2fa/verify')
+      .send({ userId: victim.id, loginTicket: 'a'.repeat(43), code: totpService.generateToken(secret) });
+    expect(forged.status).toBe(401);
+
+    await prismaMock.user.create({
+      data: {
+        walletAddress: '0x8080000000000000000000000000000000008080',
+        email: 'intrus@etherbay.fr',
+        isEmailVerified: true,
+        isTwoFactorEnabled: true,
+        twoFactorMethod: 'APP',
+        twoFactorSecret: totpService.generateSecret(),
+      },
+    });
+    const other = await appCodeStepFor('intrus@etherbay.fr', '0x8080000000000000000000000000000000008080');
+    expect(other.loginTicket).toEqual(expect.any(String));
+    const crossed = await request(app)
+      .post('/api/auth/2fa/verify')
+      .send({ userId: victim.id, loginTicket: other.loginTicket, code: totpService.generateToken(secret) });
+    expect(crossed.status).toBe(401);
+  });
+
+  it('refuse d’activer la 2FA par application sans session authentifiée', async () => {
+    env.LOGIN_EMAIL_CODE_REQUIRED = false;
+    const login = await request(app).post('/api/auth/login').send(loginBody('activation@etherbay.fr'));
+    const setup = await request(app)
+      .post('/api/auth/2fa/setup')
+      .set('Authorization', `Bearer ${login.body.data.token}`)
+      .send({ method: 'APP' });
+
+    const anonymous = await request(app)
+      .post('/api/auth/2fa/verify')
+      .send({ userId: login.body.data.user.id, code: totpService.generateToken(setup.body.data.secret) });
+    expect(anonymous.status).toBe(401);
+    const stored = await prismaMock.user.findUnique({ where: { email: 'activation@etherbay.fr' } });
+    expect(stored.isTwoFactorEnabled).toBe(false);
+  });
+
+  it('demande le code de l’application après le mot de passe, avec un ticket de connexion', async () => {
+    env.LOGIN_EMAIL_CODE_REQUIRED = false;
+    const secret = totpService.generateSecret();
+    const signup = await request(app)
+      .post('/api/auth/signup')
+      .send({ email: 'motdepasse@etherbay.fr', password: 'Citoyen2026!', acceptTerms: true, isAdultConfirmed: true });
+    const created = await request(app)
+      .post('/api/auth/2fa/verify')
+      .send({ userId: signup.body.data.userId, code: sentCodes[0] });
+    expect(created.status).toBe(200);
+    await prismaMock.user.update({
+      where: { id: created.body.data.user.id },
+      data: { isTwoFactorEnabled: true, twoFactorMethod: 'APP', twoFactorSecret: secret },
+    });
+
+    const signin = await request(app)
+      .post('/api/auth/signin')
+      .send({ email: 'motdepasse@etherbay.fr', password: 'Citoyen2026!' });
+    expect(signin.status).toBe(200);
+    expect(signin.body.data).toMatchObject({ requiresTwoFactor: true, twoFactorMethod: 'APP' });
+    expect(signin.body.data.loginTicket).toEqual(expect.any(String));
+
+    const verified = await request(app)
+      .post('/api/auth/2fa/verify')
+      .send({ loginTicket: signin.body.data.loginTicket, code: totpService.generateToken(secret) });
+    expect(verified.status).toBe(200);
+    expect(verified.body.data.token).toBeDefined();
   });
 
   it('exige une authentification récente pour désactiver la 2FA', async () => {

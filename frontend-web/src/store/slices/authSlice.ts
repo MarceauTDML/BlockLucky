@@ -9,6 +9,7 @@ export interface AuthState {
   pendingTwoFactorUserId: string | null;
   pendingTwoFactorMethod: 'APP' | 'EMAIL' | null;
   pendingTwoFactorEmail: string | null;
+  pendingLoginTicket: string | null;
 }
 
 const initialState: AuthState = {
@@ -19,6 +20,7 @@ const initialState: AuthState = {
   pendingTwoFactorUserId: null,
   pendingTwoFactorMethod: null,
   pendingTwoFactorEmail: null,
+  pendingLoginTicket: null,
 };
 
 const authSlice = createSlice({
@@ -42,14 +44,21 @@ const authSlice = createSlice({
       state.pendingTwoFactorUserId = null;
       state.pendingTwoFactorMethod = null;
       state.pendingTwoFactorEmail = null;
+      state.pendingLoginTicket = null;
     },
     setPendingTwoFactor: (
       state,
-      action: PayloadAction<{ userId: string; method: 'APP' | 'EMAIL'; email?: string | null }>
+      action: PayloadAction<{
+        userId: string;
+        method: 'APP' | 'EMAIL';
+        email?: string | null;
+        loginTicket?: string | null;
+      }>
     ) => {
       state.pendingTwoFactorUserId = action.payload.userId;
       state.pendingTwoFactorMethod = action.payload.method;
       state.pendingTwoFactorEmail = action.payload.email ?? null;
+      state.pendingLoginTicket = action.payload.loginTicket ?? null;
     },
     updateUserPoints: (state, action: PayloadAction<number>) => {
       if (state.user) state.user.pointsBalance = action.payload;
@@ -64,6 +73,7 @@ const authSlice = createSlice({
       state.pendingTwoFactorUserId = null;
       state.pendingTwoFactorMethod = null;
       state.pendingTwoFactorEmail = null;
+      state.pendingLoginTicket = null;
     },
   },
 });

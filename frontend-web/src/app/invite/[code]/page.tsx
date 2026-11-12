@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Icon from '@/components/ui/Icon';
 import { Loader } from '@/components/ui/Loader';
-import { trackEvent } from '@/lib/analytics';
+import { rememberUtmSource, trackEvent } from '@/lib/analytics';
 import storage, { KEYS } from '@/lib/storage';
 
 export default function InvitePage() {
@@ -15,7 +15,7 @@ export default function InvitePage() {
     const code = String(params?.code || '').slice(0, 64);
     if (/^[a-z0-9-]{4,64}$/i.test(code)) {
       storage.set(KEYS.referral, code);
-      if (!storage.get(KEYS.utm)) storage.set(KEYS.utm, 'referral');
+      rememberUtmSource('referral', true);
       trackEvent('REFERRAL_LINK_OPENED');
     }
     router.replace('/');

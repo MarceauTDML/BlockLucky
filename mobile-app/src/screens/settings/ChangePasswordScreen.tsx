@@ -104,8 +104,8 @@ const ChangePasswordScreen: React.FC = () => {
         ) : (
           <AppText size={12} color={colors.inkMuted} style={styles.note}>
             {t(
-              'Votre compte utilise un code par e-mail, Google ou Apple. Un mot de passe vous permettra aussi de vous connecter avec votre e-mail.',
-              'Your account uses an e-mail code, Google or Apple. A password will also let you sign in with your e-mail.',
+              'Votre compte utilise un code par e-mail ou Google. Un mot de passe vous permettra aussi de vous connecter avec votre e-mail.',
+              'Your account uses an e-mail code or Google. A password will also let you sign in with your e-mail.',
             )}
           </AppText>
         )}

@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import SoundToggle from '@/components/lottery/SoundToggle';
 import Icon from '@/components/ui/Icon';
+import useSound, { CHRONO_SECONDS, SOUNDS } from '@/hooks/useSound';
 import { formatRemainingTime } from '@/lib/date';
 import { cn } from '@/lib/cn';
 import { useAppTheme } from '@/theme/ThemeProvider';
@@ -12,6 +14,7 @@ export interface CountdownTimerProps {
   prizePoolEth: number;
   roundNumber: number;
   simulated?: boolean;
+  sound?: boolean;
   className?: string;
   children?: React.ReactNode;
 }
@@ -28,6 +31,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   prizePoolEth,
   roundNumber,
   simulated = false,
+  sound = false,
   className,
   children,
 }) => {
@@ -40,6 +44,21 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
   }, [targetTime]);
+
+  const { play: playChrono, stop: stopChrono } = useSound(SOUNDS.chrono);
+  const chronoFor = useRef<string | null>(null);
+  const finalCountdown = sound && secondsLeft > 0 && secondsLeft <= CHRONO_SECONDS;
+  const countdownKey = `${roundNumber}-${targetTime ?? ''}`;
+
+  useEffect(() => {
+    if (!finalCountdown || chronoFor.current === countdownKey) return;
+    chronoFor.current = countdownKey;
+    playChrono();
+  }, [finalCountdown, countdownKey, playChrono]);
+
+  useEffect(() => {
+    if (!sound) stopChrono();
+  }, [sound, stopChrono]);
 
   const { hours, minutes, seconds } = formatRemainingTime(secondsLeft);
 
@@ -56,9 +75,12 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
           <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-sun" />
           {simulated ? t('Mode démonstration', 'Demo mode') : 'Chainlink VRF'}
         </span>
-        <p className="text-caption font-semibold text-on-sun">
-          {t(`Tirage municipal #${roundNumber}`, `City Draw #${roundNumber}`)}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-caption font-semibold text-on-sun">
+            {t(`Tirage municipal #${roundNumber}`, `City Draw #${roundNumber}`)}
+          </p>
+          {sound ? <SoundToggle /> : null}
+        </div>
       </div>
 
       <p className="eyebrow-caps text-caption font-bold text-on-sun">{t('Cagnotte actuelle', 'Current Prize Pool')}</p>

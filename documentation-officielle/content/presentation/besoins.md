@@ -66,14 +66,14 @@ Le DSI évalue la solution sur des critères techniques : sécurité, fiabilité
 | Sécurité | Contrat et plateforme résistants aux attaques connues | Contrat : `ReentrancyGuard`, retraits en mode pull, rôles séparés, pause, erreurs typées, analyse Slither bloquante. Plateforme : clés et pièces d'identité chiffrées en AES-256-GCM, connexion par code email ou mot de passe haché par bcrypt, 2FA TOTP obligatoire pour les administrateurs, sessions révocables, CSP, limitation de débit, signature HMAC du webhook, gitleaks et CodeQL en CI | [Sécurité du contrat](../smart-contracts/securite.md), [Modèle de menaces](../securite/menaces.md), [`backend/src/utils/crypto.util.ts`](src:backend/src/utils/crypto.util.ts) |
 | Fiabilité | Résultat juste et fonds jamais bloqués | Hasard Chainlink VRF vérifiable, `requestDraw` appelable par tous, relance du tirage après délai (`retryDraw`), remboursement intégral en cas d'annulation, indexeur idempotent avec curseur et confirmations | [`smart-contract/contracts/BlockLucky.sol`](src:smart-contract/contracts/BlockLucky.sol), [`backend/src/blockchain/lottery.indexer.ts`](src:backend/src/blockchain/lottery.indexer.ts) |
 | Efficacité | Coût et performance maîtrisés | Optimiseur Solidity et rapport de gaz (`npm run test:gas`), cache Redis, worker séparé possible, pool PostgreSQL réglable, réseau de test sans coût réel | [`smart-contract/hardhat.config.ts`](src:smart-contract/hardhat.config.ts), [`docker-compose.yml`](src:docker-compose.yml) |
-| Maintenabilité | Faire évoluer et exploiter sans l'équipe d'origine | CI par projet, 47 tests du contrat à 100 % de couverture des lignes, tests d'intégration sur un vrai nœud, ADR, runbooks, documentation générée depuis le code | [`.github/workflows/ci.yml`](src:.github/workflows/ci.yml), [Décisions d'architecture](../architecture/adr/index.md) |
+| Maintenabilité | Faire évoluer et exploiter sans l'équipe d'origine | CI par projet, 54 tests du contrat à 100 % de couverture des lignes, tests d'intégration sur un vrai nœud, ADR, runbooks, documentation générée depuis le code | [`.github/workflows/ci.yml`](src:.github/workflows/ci.yml), [Décisions d'architecture](../architecture/adr/index.md) |
 | Données maîtrisées | Savoir quelles données sont traitées et où | Registre des traitements, export et anonymisation RGPD, effacement de la clé du portefeuille et de la pièce d'identité à la suppression, images d'identité effacées dès la décision de la Mairie, aucune donnée personnelle sur la chaîne | [Registre des traitements](../juridique/registre-traitements.md), [Blockchain et données personnelles](../juridique/blockchain-donnees.md) |
 
 ### Ce qui reste à faire pour le DSI
 
 - Le modèle custodial concentre le risque sur la clé `ENCRYPTION_KEY` et sur le compte opérateur : leur garde en production n'est pas encore organisée (voir [Clés et garde des portefeuilles](../securite/cles-portefeuilles.md)).
 - La trésorerie de la Mairie est une adresse simple, malgré le libellé « multi-signatures » de la route de retrait.
-- Aucun audit de sécurité externe du contrat n'a été mené ; aucun déploiement Sepolia n'a été fait.
+- Aucun audit de sécurité externe du contrat n'a été mené ; aucun déploiement Sepolia n'a été fait. Les scripts séparent déjà les rôles (multisig administrateur, trésorerie, opérateur) et transfèrent la propriété VRF, mais leur exécution demande les clés et les fonds de l'équipe.
 
 ## Les besoins ajoutés par l'équipe
 
@@ -92,7 +92,7 @@ Le kickoff ne les formule pas, mais elles découlent du contexte d'une loterie m
 |---|---|
 | Une loterie est un jeu d'argent réglementé | Ethers fictifs uniquement, sans valeur monétaire, aucune conversion possible ([Veille juridique](../juridique/veille-juridique.md)) |
 | Les mineurs ne doivent pas jouer | Pièce d'identité examinée par un agent de la Mairie avant tout achat, cadeau ou échange (`AGE_VERIFICATION_REQUIRED`, obligatoire en production), envoyée depuis le web ou le mobile ; sur le web, la case « 18 ans et plus » reste exigée à la connexion |
-| Le jeu doit rester responsable | Un seul ticket par participant et par grand tirage (`maxTicketsPerPlayer` à 1 par défaut, contrôle répété par le backend) ; la billetterie web n'achète qu'un ticket ; le plafond personnel de jeu responsable existe toujours mais n'a plus d'effet |
+| Le jeu doit rester responsable | Un seul ticket par participant et par grand tirage (`maxTicketsPerPlayer` à 1 par défaut, contrôle répété par le backend) ; la billetterie web n'achète qu'un ticket ; le plafond personnel de jeu responsable, devenu sans objet, a été retiré au profit d'un rappel de cette règle sur `/profil/securite` |
 | Les données personnelles sont protégées | RGPD : export, suppression, consentement à la mesure d'audience |
 | Le service public doit être accessible | Navigation clavier, contrastes, `prefers-reduced-motion` ([Accessibilité numérique](../juridique/accessibilite.md)) |
 

@@ -46,16 +46,16 @@ Légende : **fait** (preuve dans le dépôt), **partiel** (mesure présente mais
 | Hachage et politique de mot de passe | fait | bcrypt coût 12, 10 à 128 caractères avec une lettre et un chiffre, [`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts) |
 | Mots de passe compromis | absent | Aucune vérification contre une liste de fuites |
 | Réinitialisation du mot de passe | fait | Code email à usage unique, réponse identique pour une adresse inconnue, révocation de toutes les sessions, alerte par email |
-| Connexion par fournisseur d'identité | fait | Jetons Google et Apple vérifiés côté serveur (signature, émetteur, audience, email vérifié), [`backend/src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) ; rattachement par adresse email |
+| Connexion par fournisseur d'identité | fait | Jetons Google vérifiés côté serveur (signature, émetteur, audience, email vérifié), [`backend/src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) ; rattachement par adresse email |
 | Limitation des tentatives | fait | 30 requêtes par IP en 10 minutes, 10 échecs par compte ou par adresse inconnue en une heure, mots de passe compris, [`backend/src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) |
 | TOTP conforme RFC 6238, secret de 160 bits chiffré, anti-rejeu | fait | [`backend/src/services/totp.service.ts`](src:backend/src/services/totp.service.ts), test d'anti-rejeu |
 | Codes de récupération hachés, usage unique | fait | [Authentification](authentification.md#codes-de-secours) |
-| MFA obligatoire pour les administrateurs | partiel | Imposée par `requireRoles`, mais les connexions par code email ou par TOTP seul restent possibles sans mot de passe ; voir [Limites](authentification.md#limites-connues) |
+| MFA obligatoire pour les administrateurs | partiel | Imposée par `requireRoles` ; le code TOTP exige désormais un premier facteur (ticket de connexion), mais ce premier facteur peut être un code email, sans mot de passe ; voir [Limites](authentification.md#limites-connues) |
 | Comparaison en temps constant | fait | `safeEqual` |
 | Notifications de sécurité | fait | Modèle `security-alert` |
 | Vérification de l'email avant création du compte | fait | Test `exige le code envoyé par email...` |
 | Ré-authentification avant action sensible | partiel | Désactivation de la 2FA seulement |
-| Anti-énumération | partiel | Message unique et temps égalisé sur `/signin`, réponse identique de `/password/forgot` ; réponse de `/login` différente pour un compte TOTP, 409 de `/signup` pour une adresse inscrite |
+| Anti-énumération | partiel | Message unique et temps égalisé sur `/signin`, réponse identique de `/password/forgot` ; 409 de `/signup` pour une adresse inscrite |
 | Passkeys et WebAuthn, MFA résistant au hameçonnage | absent | |
 | CAPTCHA, détection de connexions suspectes | absent | |
 
@@ -171,7 +171,7 @@ Sans objet pour l'essentiel : l'API n'accepte aucun fichier. Les codes promo arr
 | Mesure | État | Preuve ou commentaire |
 |---|---|---|
 | Montants calculés côté serveur et contrat | fait | Prix vérifié par le contrat (`IncorrectPayment`) |
-| Bornes des valeurs métier | fait | Un ticket par participant et par grand tirage (schéma, service et `maxTicketsPerPlayer` du contrat, 1 par défaut), coût du ticket à gratter fixé par le serveur, limite de jeu responsable |
+| Bornes des valeurs métier | fait | Un ticket par participant et par grand tirage (schéma, service et `maxTicketsPerPlayer` du contrat, 1 par défaut), coût du ticket à gratter fixé par le serveur ; l'ancien plafond personnel de jeu responsable a été retiré, devenu sans objet |
 | Contrôle d'âge | partiel | Pièce d'identité examinée par la Mairie, statut relu en base à chaque achat ([Autorisations](autorisations.md#verification-d-age)) ; pas de contrôle de correspondance entre la personne et la pièce |
 | Machine à états | fait | `RoundStatus` du contrat |
 | Anti-abus du parrainage | partiel | Points de parrainage attribués seulement après vérification de l'email ; pas de contrôle de comptes multiples |
@@ -208,8 +208,8 @@ Les écarts relevés pendant la rédaction de cette documentation, classés par 
 | Haute | Le propriétaire VRF hérité (déployeur) peut changer le coordinateur et donc le gagnant | [Clés et garde des portefeuilles](cles-portefeuilles.md#roles-sur-la-chaine) |
 | Haute | `cancelRound` permet à l'opérateur de censurer un tirage en devançant la réponse VRF | [Modèle de menaces](menaces.md#front-running-et-ordre-des-transactions) |
 | Haute | Aucun outil de rotation de `ENCRYPTION_KEY` | [Cryptographie et secrets](cryptographie-secrets.md#rotation) |
-| Moyenne | La 2FA par email n'ajoute pas de facteur ; `/2fa/verify` accepte un code TOTP avec le seul `userId`, et la connexion par code email reste ouverte aux comptes à mot de passe | [Authentification](authentification.md#limites-connues) |
-| Moyenne | Rattachement d'une connexion Google ou Apple à un compte existant par la seule adresse email | [Authentification](authentification.md#rattachement-par-adresse-email) |
+| Moyenne | La 2FA par email n'ajoute pas de facteur, et la connexion par code email reste ouverte aux comptes à mot de passe. Le code TOTP présenté avec le seul `userId` est refusé depuis l'introduction du ticket de connexion | [Authentification](authentification.md#limites-connues) |
+| Moyenne | Rattachement d'une connexion Google à un compte existant par la seule adresse email | [Authentification](authentification.md#rattachement-par-adresse-email) |
 | Moyenne | Pièce d'identité en attente conservée sans limite de durée et lisible par tout ADMIN | [Autorisations](autorisations.md#verification-d-age) |
 | Moyenne | `withdrawFees` du backend suppose que l'opérateur détient `DEFAULT_ADMIN_ROLE` | [Clés et garde des portefeuilles](cles-portefeuilles.md#compte-operateur) |
 | Moyenne | `'unsafe-inline'` dans `script-src` alors que le jeton est dans `localStorage` | [Navigateur et mobile](navigateur-mobile.md#politique-csp) |

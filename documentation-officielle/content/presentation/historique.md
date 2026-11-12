@@ -7,10 +7,10 @@ Cette page retrace les grandes étapes du projet, reconstituées à partir de l'
 | Indicateur | Valeur |
 |---|---|
 | Premier commit | 2 novembre 2026, 18 h 23 |
-| Dernier commit | 11 novembre 2026, 23 h 39 |
-| Commits sur la branche `marceau` | 381, dont 204 hors fusions |
-| Pull requests fusionnées | 177, numérotées jusqu'à la n° 193 |
-| Jours actifs | 2, 3, 9, 10 et 11 novembre |
+| Dernier commit | 12 novembre 2026, 18 h 31 |
+| Commits sur la branche `marceau` | 427, dont 227 hors fusions |
+| Pull requests fusionnées | 200, numérotées jusqu'à la n° 218 |
+| Jours actifs | 2, 3, 9, 10, 11 et 12 novembre |
 
 Le travail s'est fait sur une branche d'intégration (`marceau`), fusionnée dans `main` par pull request à chaque étape, presque toujours après un seul commit. Les livrables UX, marketing et budget de l'équipe, hors dépôt, sont datés du 6 novembre, pendant la pause du code.
 
@@ -75,7 +75,7 @@ Le soir, l'intégration se termine : effacement de la clé du portefeuille à la
 
 ### 12 novembre : comptes, vérification d'âge et refonte mobile
 
-La migration `20261112090000_password_accounts_identity_verification` marque l'étape suivante, postérieure au dernier commit indiqué dans les repères :
+La migration `20261112090000_password_accounts_identity_verification` marque l'étape suivante :
 
 1. comptes avec mot de passe, réinitialisation par code et connexion Google et Apple ;
 2. vérification d'âge par pièce d'identité chiffrée, examinée depuis la page Mairie `/mairie/identites`, et refus des achats tant que l'âge n'est pas vérifié ;
@@ -83,7 +83,8 @@ La migration `20261112090000_password_accounts_identity_verification` marque l'�
 4. ticket à gratter acheté en EtherPoints et nouveaux paliers de la jauge ;
 5. refonte complète de l'application mobile sur la maquette Figma : police Inter, nouveaux jetons de couleur, quatre onglets et douze nouveaux écrans ;
 6. alignement du frontend web sur cette charte : mêmes couleurs, police et icônes, pages restylées sur les écrans mobiles ;
-7. espace Paramètres du mobile ouvert par une roue dentée dans l'en-tête (affichage, notifications par catégorie, prénom et nom, changement d'email et de mot de passe, message au support), avec la migration `20261112150000_user_names`.
+7. espace Paramètres du mobile ouvert par une roue dentée dans l'en-tête (affichage, notifications par catégorie, prénom et nom, changement d'email et de mot de passe, message au support), avec la migration `20261112150000_user_names` ;
+8. dernière série de corrections : ticket de connexion (`loginTicket`) exigé pour le code de l'application d'authentification, retrait de la connexion Apple, cases d'acceptation des conditions et de majorité à l'inscription, page `/mairie/comptes` pour créer les comptes Mairie et partenaires, séparation des rôles du contrat et scripts Sepolia (VRF, Automation, vérification), retrait du plafond de jeu responsable, sons du tirage, pages légales et bandeau de consentement aux traceurs, licence MIT.
 
 ## Ce que l'historique explique
 
@@ -101,7 +102,7 @@ Les actions sont classées par priorité. La dette technique détaillée est dan
 
 | Action | Pourquoi | Référence |
 |---|---|---|
-| Déployer les contrats sur Sepolia et publier leur code sur Etherscan | Rendre le tirage vérifiable par tous | [Redéployer sur Sepolia](../guides/redeployer-sepolia.md) |
+| Déployer les contrats sur Sepolia et publier leur code sur Etherscan, avec les scripts `vrf:sepolia`, `deploy:sepolia`, `automation:sepolia` et `verify:sepolia` ; l'équipe doit fournir les clés (déployeur, multisig de la Mairie, opérateur) et les fonds de test | Rendre le tirage vérifiable par tous | [Déploiement sur Sepolia](../smart-contracts/sepolia.md) |
 | Mettre l'application en ligne sur etherbay.tech | Ouvrir le pilote | [Déploiement sur etherbay.tech](../infrastructure/deploiement-etherbay.md) |
 | Confier `ENCRYPTION_KEY` et `RELAYER_PRIVATE_KEY` à un coffre de secrets | Le modèle custodial en dépend | [Clés et garde des portefeuilles](../securite/cles-portefeuilles.md) |
 | Corriger ou retirer les éléments fictifs du dashboard et de la jauge | Ne pas présenter de fausses données | [Réel, simulé ou à venir](reel-ou-simule.md#ce-qui-est-encore-fictif) |
@@ -121,11 +122,10 @@ Les actions sont classées par priorité. La dette technique détaillée est dan
 
 | Évolution | Condition |
 |---|---|
-| Enregistrer une tâche Chainlink Automation en complément du keeper | Déploiement Sepolia fait |
+| Enregistrer la tâche Chainlink Automation (`npm run automation:sepolia`) en complément du keeper | Déploiement Sepolia fait, LINK de test disponible |
 | Trésorerie réellement multi-signatures (par exemple un Safe) | Décision de la Mairie |
 | Notifications push réelles via `expo-notifications`, déjà installé | Service d'envoi côté serveur |
 | Remontée d'erreurs réelle (Sentry ou équivalent) | Choix d'un fournisseur et analyse RGPD |
-| Écrans de gestion des rôles partenaire et administrateur | Procédure d'habilitation définie par la Mairie |
 | Mesure de l'entonnoir dans le dashboard | Les événements sont déjà collectés ([Objectifs et indicateurs](objectifs-indicateurs.md)) |
 
 ### Dépendances en attente

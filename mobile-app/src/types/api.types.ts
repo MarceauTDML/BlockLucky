@@ -30,15 +30,20 @@ export interface Setup2FAResponse {
 
 export interface Verify2FAResponse {
   verified: boolean;
-  token: string;
-  user: UserProfile;
+  token?: string;
+  user?: UserProfile;
   isNewUser?: boolean;
+  requiresTwoFactor?: boolean;
+  twoFactorMethod?: 'APP' | 'EMAIL';
+  userId?: string;
+  loginTicket?: string;
 }
 
 export interface AuthSessionResponse {
   requiresTwoFactor: boolean;
   twoFactorMethod?: 'APP' | 'EMAIL' | null;
   userId?: string;
+  loginTicket?: string;
   token?: string;
   isNewUser?: boolean;
   user?: UserProfile;
@@ -54,14 +59,10 @@ export interface SignUpPayload {
   email: string;
   password: string;
   acceptTerms: true;
+  isAdultConfirmed: true;
   referralCode?: string;
   utmSource?: string;
   ageGroup?: '18-25' | '26-35' | '36-50' | '50+';
-}
-
-export interface AppleSignInPayload {
-  identityToken: string;
-  fullName?: string;
 }
 
 export interface ResetPasswordPayload {

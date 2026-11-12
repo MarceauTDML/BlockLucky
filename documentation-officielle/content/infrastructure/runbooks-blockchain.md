@@ -182,7 +182,7 @@ Le tirage est demandé (`requestDraw`), le tour passe en `Drawing` (en base : `L
 
 La fonction `retryDraw()` du contrat abandonne la requête en cours et en émet une nouvelle. Elle exige le rôle `OPERATOR_ROLE` et n'est acceptée que si le tour est en `Drawing` depuis au moins `drawTimeout` : 10 minutes en local, 24 heures sur Sepolia (paramètres de [`deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) et [`deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts)). Avant ce délai, elle échoue avec `DrawNotStale`. La réponse tardive à l'ancienne requête est ensuite ignorée par le contrat.
 
-Le backend n'appelle jamais `retryDraw` : il faut le faire à la main. En local, le compte Hardhat n° 0 (Mairie) possède `OPERATOR_ROLE` et le nœud l'expose déverrouillé :
+Le backend n'appelle jamais `retryDraw` : il faut le faire à la main. En développement local avec la clé par défaut, l'opérateur est le compte Hardhat n° 0, qui possède `OPERATOR_ROLE`, et le nœud l'expose déverrouillé. Avec le profil `app`, l'opérateur est le compte de `RELAYER_PRIVATE_KEY` et le compte n° 0 n'a plus de rôle : construire alors un `Wallet` sur cette clé au lieu de `getSigner(0)`.
 
 ```bash
 docker compose exec blockchain node --input-type=module -e '
@@ -216,7 +216,7 @@ Chaque réponse VRF est payée par l'abonnement Chainlink auquel le contrat est 
 
 ### Diagnostic
 
-Sur Sepolia, consulter le solde LINK et ETH de l'abonnement sur `vrf.chain.link`. Le script de déploiement Sepolia refuse de déployer si l'abonnement n'est pas financé, mais le solde peut s'épuiser ensuite. Le mode de paiement (`nativePayment`) est fixé au déploiement : ETH si l'abonnement n'avait pas de LINK, LINK sinon.
+Sur Sepolia, consulter le solde LINK et ETH de l'abonnement sur `vrf.chain.link`. Le script de déploiement Sepolia refuse de déployer si l'abonnement n'est pas financé, mais le solde peut s'épuiser ensuite. Le mode de paiement (`nativePayment`) est fixé au déploiement : ETH si l'abonnement avait un solde en ETH, ce qui est le cas de l'abonnement créé par `npm run vrf:sepolia`, LINK sinon, sauf si `VRF_NATIVE_PAYMENT` l'a forcé. Son identifiant est dans `deployments/sepolia-vrf.json`.
 
 En local, l'identifiant de l'abonnement simulé est dans le fichier de déploiement du conteneur :
 
@@ -226,7 +226,7 @@ docker compose exec blockchain cat deployments/localhost.json
 
 ### Résolution
 
-1. Financer l'abonnement : sur Sepolia, depuis `vrf.chain.link` avec du LINK ou de l'ETH de test, dans la monnaie de `nativePayment` ; en local, appeler `fundSubscription(subId, montant)` sur le coordinateur simulé, comme le fait `deploy-local.ts`.
+1. Financer l'abonnement : sur Sepolia, relancer `npm run vrf:sepolia` (qui recharge l'abonnement enregistré de `VRF_FUND_ETH` ETH, 0,5 par défaut) ou passer par `vrf.chain.link`, dans la monnaie de `nativePayment` ; en local, appeler `fundSubscription(subId, montant)` sur le coordinateur simulé, comme le fait `deploy-local.ts`.
 2. Sur Sepolia, Chainlink traite en général la requête en attente une fois l'abonnement financé. En local, l'oracle ne retente jamais une requête échouée.
 3. Si le tour est toujours en `Drawing` après `drawTimeout`, appliquer [retryDraw](#resolution-retrydraw).
 

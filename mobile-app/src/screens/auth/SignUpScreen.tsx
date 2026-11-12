@@ -17,13 +17,17 @@ import AppText from '../../components/ui/AppText';
 import Screen from '../../components/ui/Screen';
 import useAppTheme from '../../hooks/useAppTheme';
 import useAuth, { AuthStepResult } from '../../hooks/useAuth';
-import { useAuthNavigation } from '../../navigation/hooks';
+import { useAuthNavigation, useRootNavigation } from '../../navigation/hooks';
 import { AuthStackParamList } from '../../types/navigation.types';
 import { isValidEmail } from '../../utils/validators.util';
+
+type LegalDoc = 'cgu' | 'reglement' | 'confidentialite';
 
 const SignUpScreen: React.FC = () => {
   const { colors, t } = useAppTheme();
   const navigation = useAuthNavigation();
+  const rootNavigation = useRootNavigation();
+  const openLegal = (doc: LegalDoc) => rootNavigation.navigate('Legal', { doc });
   const route = useRoute<RouteProp<AuthStackParamList, 'SignUp'>>();
   const { signUpWithPassword, isSigningUp } = useAuth();
   const initialReferral = route.params?.referralCode ?? '';
@@ -34,17 +38,23 @@ const SignUpScreen: React.FC = () => {
   const [referralCode, setReferralCode] = useState(initialReferral);
   const [showReferral, setShowReferral] = useState(Boolean(initialReferral));
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [confirmAdult, setConfirmAdult] = useState(false);
   const [errors, setErrors] = useState<{
     email?: string;
     password?: string;
     confirmation?: string;
     terms?: string;
+    adult?: string;
   }>({});
   const [formError, setFormError] = useState('');
 
   const termsError = t(
-    'Acceptez les conditions pour créer votre compte.',
-    'Accept the terms to create your account.',
+    'Acceptez les conditions d’utilisation et le règlement pour créer votre compte.',
+    'Accept the terms of use and the rules to create your account.',
+  );
+  const adultError = t(
+    'Certifiez avoir 18 ans ou plus pour créer votre compte.',
+    'Certify that you are 18 or older to create your account.',
   );
 
   const handleResult = useCallback(
@@ -53,6 +63,7 @@ const SignUpScreen: React.FC = () => {
         navigation.navigate('Verify2FA', {
           userId: result.userId,
           method: result.method,
+          loginTicket: result.loginTicket,
           email: result.email,
           purpose: 'signin',
           devOtpPreview: result.devOtpPreview,
@@ -63,10 +74,14 @@ const SignUpScreen: React.FC = () => {
   );
 
   const requireTerms = useCallback(() => {
-    if (acceptTerms) return true;
-    setErrors((current) => ({ ...current, terms: termsError }));
+    if (acceptTerms && confirmAdult) return true;
+    setErrors((current) => ({
+      ...current,
+      terms: acceptTerms ? undefined : termsError,
+      adult: confirmAdult ? undefined : adultError,
+    }));
     return false;
-  }, [acceptTerms, termsError]);
+  }, [acceptTerms, adultError, confirmAdult, termsError]);
 
   const handleSubmit = async () => {
     setFormError('');
@@ -83,6 +98,7 @@ const SignUpScreen: React.FC = () => {
           ? undefined
           : t('Les deux mots de passe ne correspondent pas.', 'Passwords do not match.'),
       terms: acceptTerms ? undefined : termsError,
+      adult: confirmAdult ? undefined : adultError,
     };
     setErrors(nextErrors);
     if (Object.values(nextErrors).some(Boolean)) return;
@@ -92,6 +108,7 @@ const SignUpScreen: React.FC = () => {
         email: trimmed,
         password,
         acceptTerms: true,
+        isAdultConfirmed: true,
         utmSource: 'MOBILE_APP',
         ...(referralCode.trim() ? { referralCode: referralCode.trim() } : {}),
       });
@@ -206,10 +223,44 @@ const SignUpScreen: React.FC = () => {
           if (value) setErrors((current) => ({ ...current, terms: undefined }));
         }}
         label={t(
-          'J’accepte les conditions d’utilisation et la politique de confidentialité.',
-          'I accept the terms of use and the privacy policy.',
+          'J’accepte les conditions générales d’utilisation et le règlement de participation.',
+          'I accept the terms of use and the participation rules.',
         )}
         errorText={errors.terms}
+      />
+      <AppText size={11} color={colors.inkMuted} style={styles.legalLinks}>
+        {t('Lire ', 'Read ')}
+        <AppText
+          size={11}
+          weight="bold"
+          color={colors.ink}
+          accessibilityRole="link"
+          onPress={() => openLegal('cgu')}
+          style={styles.underline}
+        >
+          {t('les CGU', 'the terms of use')}
+        </AppText>
+        {t(' et ', ' and ')}
+        <AppText
+          size={11}
+          weight="bold"
+          color={colors.ink}
+          accessibilityRole="link"
+          onPress={() => openLegal('reglement')}
+          style={styles.underline}
+        >
+          {t('le règlement', 'the rules')}
+        </AppText>
+      </AppText>
+
+      <CheckboxRow
+        checked={confirmAdult}
+        onChange={(value) => {
+          setConfirmAdult(value);
+          if (value) setErrors((current) => ({ ...current, adult: undefined }));
+        }}
+        label={t('Je certifie avoir 18 ans ou plus.', 'I certify that I am 18 or older.')}
+        errorText={errors.adult}
       />
 
       {formError ? <FormMessage message={formError} /> : null}
@@ -241,9 +292,20 @@ const SignUpScreen: React.FC = () => {
       <View style={styles.terms}>
         <AppText size={10} color={colors.inkMuted} align="center">
           {t(
-            'En créant un compte, vous acceptez nos conditions. Consultez notre politique de confidentialité.',
-            'By creating an account, you accept our terms. Read our privacy policy.',
+            'En créant un compte, vous reconnaissez avoir lu la ',
+            'By creating an account, you acknowledge that you have read the ',
           )}
+          <AppText
+            size={10}
+            weight="bold"
+            color={colors.ink}
+            accessibilityRole="link"
+            onPress={() => openLegal('confidentialite')}
+            style={styles.underline}
+          >
+            {t('politique de confidentialité', 'privacy policy')}
+          </AppText>
+          .
         </AppText>
       </View>
     </Screen>
@@ -257,6 +319,14 @@ const styles = StyleSheet.create({
   },
   switch: {
     marginTop: 8,
+  },
+  legalLinks: {
+    marginTop: -10,
+    marginBottom: 14,
+    marginLeft: 44,
+  },
+  underline: {
+    textDecorationLine: 'underline',
   },
   terms: {
     marginTop: 22,

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 
 import { getErrorMessage } from '../../components/auth/authErrors';
+import SettingsLinkCard from '../../components/settings/SettingsLinkCard';
 import AppButton from '../../components/ui/AppButton';
 import AppInput from '../../components/ui/AppInput';
 import AppText from '../../components/ui/AppText';
@@ -12,6 +13,7 @@ import Screen from '../../components/ui/Screen';
 import ScreenHeader from '../../components/ui/ScreenHeader';
 import SectionHeader from '../../components/ui/SectionHeader';
 import Icon from '../../components/ui/icons/Icon';
+import { getLegalDocument, LEGAL_DOC_ORDER } from '../../content/legal';
 import useAppTheme from '../../hooks/useAppTheme';
 import { useRootNavigation } from '../../navigation/hooks';
 import { useSendSupportMessageMutation } from '../../store/api/authApi';
@@ -21,7 +23,7 @@ const SUBJECT_MAX = 120;
 const MESSAGE_MAX = 2000;
 
 export const HelpSupportScreen: React.FC = () => {
-  const { colors, t } = useAppTheme();
+  const { colors, language, t } = useAppTheme();
   const navigation = useRootNavigation();
   const [sendMessage, { isLoading }] = useSendSupportMessageMutation();
 
@@ -145,6 +147,22 @@ export const HelpSupportScreen: React.FC = () => {
         </View>
       </Card>
 
+      <SectionHeader title={t('Informations légales', 'Legal information')} />
+      <View style={styles.legalList}>
+        {LEGAL_DOC_ORDER.map((id) => {
+          const document = getLegalDocument(id, language);
+          return (
+            <SettingsLinkCard
+              key={id}
+              title={document.title}
+              subtitle={document.summary}
+              icon="document"
+              onPress={() => navigation.navigate('Legal', { doc: id })}
+            />
+          );
+        })}
+      </View>
+
       <ResultDialog
         visible={sent}
         status="success"
@@ -191,6 +209,9 @@ const styles = StyleSheet.create({
   flex: {
     flex: 1,
     gap: 2,
+  },
+  legalList: {
+    gap: 12,
   },
 });
 

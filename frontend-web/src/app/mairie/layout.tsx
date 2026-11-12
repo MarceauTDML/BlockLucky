@@ -12,6 +12,7 @@ export default function MairieLayout({ children }: { children: React.ReactNode }
     { href: '/mairie/analytique', label: t('Analytique', 'Analytics'), icon: 'star' },
     { href: '/mairie/partenaires', label: t('Partenaires', 'Partners'), icon: 'users' },
     { href: '/mairie/identites', label: t('Identités', 'Identities'), icon: 'idCard' },
+    { href: '/mairie/comptes', label: t('Comptes', 'Accounts'), icon: 'tabProfile' },
     { href: '/mairie/securite', label: t('Sécurité', 'Security'), icon: 'shield' },
     { href: '/mairie/audit', label: t('Audit', 'Audit'), icon: 'document' },
   ];

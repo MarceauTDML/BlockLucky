@@ -23,43 +23,66 @@ Le web ne dépose **aucun cookie**. Il utilise le `localStorage` sous les clés 
 |---|---|---|
 | `bl.auth.token`, `bl.auth.user` | Jeton de session et profil | Oui |
 | `bl.onboarding.done` | Écrans d'accueil déjà vus | Oui (confort demandé par l'utilisateur) |
-| `bl.pref.theme`, `bl.pref.language` | Thème et langue | Oui (préférence explicite) |
+| `bl.pref.theme`, `bl.pref.language`, `bl.pref.sound` | Thème, langue, sons du tirage activés ou coupés | Oui (préférence explicite) |
 | `bl.referral.code` | Code de parrainage reçu par lien | Oui pour le parrainage |
 | `bl.partner.selected`, `bl.marketplace.lastClaim` | État de l'espace partenaire et de la boutique | Oui |
-| `bl.tracking.optout` | Opposition à la mesure d'audience | Oui |
-| `bl.utm.source` | Source de la visite (paramètre `utm_source`) | **Non** : sert à la mesure d'audience |
+| `bl.consent.choice` | Choix de mesure d'audience (`granted` ou `denied`), sa date et la version du dispositif | Oui (mémorise le choix) |
+| `bl.tracking.optout` | Ancien marqueur d'opposition, encore lu comme un refus, effacé au premier choix enregistré | Oui |
+| `bl.utm.source` | Source de la visite (paramètre `utm_source`) | **Non** : écrit seulement après accord |
 
 ### Consentement
 
-Il n'y a pas de bandeau sur le web. La mesure d'audience fonctionne par défaut, sur la base de l'intérêt légitime, avec un droit d'opposition : la page Confidentialité propose un bouton « M'opposer à la mesure d'audience » qui écrit `bl.tracking.optout`. `trackEvent` de [`frontend-web/src/lib/analytics.ts`](src:frontend-web/src/lib/analytics.ts) ne fait plus aucun appel tant que ce marqueur est présent. Le fonctionnement est détaillé dans [Analytique et consentement](../web/analytique-consentement.md).
+Un bandeau s'affiche au premier passage, sur toutes les pages, tant qu'aucun choix valide n'est enregistré. Il est rendu par `ConsentBanner` de [`frontend-web/src/components/layout/ConsentBanner.tsx`](src:frontend-web/src/components/layout/ConsentBanner.tsx), monté dans [`frontend-web/src/app/providers.tsx`](src:frontend-web/src/app/providers.tsx), et s'appuie sur [`frontend-web/src/lib/consent.ts`](src:frontend-web/src/lib/consent.ts).
 
-> [!WARNING]
-> La mesure envoie l'identifiant du compte quand l'utilisateur est connecté, et l'enregistrement de `bl.utm.source` a lieu sans consentement. Une mesure d'audience peut être exemptée de consentement sous des conditions strictes, notamment de finalité limitée et de données non recoupées avec d'autres traitements. L'éligibilité de ce dispositif à l'exemption est à vérifier ; à défaut, un bandeau de consentement serait nécessaire avant toute mesure.
+| Élément | Comportement |
+|---|---|
+| Boutons | « Tout refuser » et « Tout accepter », de même style et côte à côte : le refus demande un seul clic, comme l'acceptation ; lien vers la politique relative aux traceurs |
+| Enregistrement | `bl.consent.choice` contient `{ audience, date, version }`, avec `CONSENT_VERSION` à 1 |
+| Durée du choix | 182 jours (`CONSENT_VALIDITY_MS`), soit environ 6 mois ; un choix expiré ou d'une autre version est ignoré et le bandeau revient |
+| Avant tout choix | Mesure désactivée : `trackEvent` de [`frontend-web/src/lib/analytics.ts`](src:frontend-web/src/lib/analytics.ts) n'envoie rien, `getUtmSource` renvoie `web_direct` et le paramètre `utm_source` n'est gardé qu'en mémoire, pour être enregistré si l'accord est donné dans la même visite |
+| Au démarrage | `discardAudienceDataWithoutConsent` efface `bl.utm.source` si aucun accord valide n'existe |
+| Refus | Efface `bl.utm.source` ; la navigation et la participation restent possibles |
+| Retour sur le choix | Bouton « Gérer mes traceurs » dans le pied de page public et dans la ligne légale de l'espace connecté, et commandes `ConsentControls` sur `/traceurs` et `/confidentialite` |
+
+Une fois acceptée, la mesure envoie l'identifiant du compte quand l'utilisateur est connecté. Le fonctionnement est détaillé dans [Analytique et consentement](../web/analytique-consentement.md).
+
+> [!NOTE]
+> Le choix n'est enregistré que sur l'appareil : le serveur ne conserve aucune preuve du consentement. La durée de 6 mois et l'égalité des deux boutons suivent les recommandations de la CNIL ; leur validation reste à faire par le DPO.
 
 ### Pages légales
 
+Les textes sont rassemblés dans [`frontend-web/src/content/legal.ts`](src:frontend-web/src/content/legal.ts), en français et en anglais, avec la mention « Version du 12 novembre 2026 » (`LEGAL_VERSION`). Le même fichier est recopié à l'identique dans l'application mobile. Chaque page est rendue par `LegalDocumentPage` de [`frontend-web/src/components/layout/LegalPage.tsx`](src:frontend-web/src/components/layout/LegalPage.tsx).
+
 | Chemin | Fichier | Titre affiché | Contenu |
 |---|---|---|---|
-| `/mentions-legales` | [`frontend-web/src/app/mentions-legales/page.tsx`](src:frontend-web/src/app/mentions-legales/page.tsx) | « Conditions de participation » | Organisateur, éligibilité (majeurs uniquement), nature des unités (ethers fictifs sans valeur), jeu responsable avec le numéro de Joueurs Info Service, avantages partenaires |
-| `/confidentialite` | [`frontend-web/src/app/confidentialite/page.tsx`](src:frontend-web/src/app/confidentialite/page.tsx) | « Politique de confidentialité » | Responsable de traitement, données collectées, blockchain et minimisation, droits, mesure d'audience avec bouton d'opposition, durée de conservation |
+| `/cgu` | [`frontend-web/src/app/cgu/page.tsx`](src:frontend-web/src/app/cgu/page.tsx) | « Conditions générales d'utilisation » | Éditeur et acceptation, compte réservé aux 18 ans et plus, vérification de l'âge, portefeuille intégré, un ticket par tirage et offres partenaires, usage du chat, assistance, données et fermeture du compte |
+| `/reglement` | [`frontend-web/src/app/reglement/page.tsx`](src:frontend-web/src/app/reglement/page.tsx) | « Règlement de participation » | Organisateur, gratuité, obtention du ticket, clôture et résultat, cagnotte fictive, annulation et remboursement, réclamation, jeu responsable avec Joueurs Info Service ; voir [Règlement de participation](reglement-participation.md) |
+| `/mentions-legales` | [`frontend-web/src/app/mentions-legales/page.tsx`](src:frontend-web/src/app/mentions-legales/page.tsx) | « Mentions légales » | Identification seulement : éditeur (Ville d'EtherBay, collectivité fictive, adresse et téléphone du scénario), direction de la publication, hébergeur (Microsoft Ireland Operations Limited, région Azure Danemark Est), contacts, licence MIT du code |
+| `/confidentialite` | [`frontend-web/src/app/confidentialite/page.tsx`](src:frontend-web/src/app/confidentialite/page.tsx) | « Politique de confidentialité » | Responsable et DPO, données par finalité avec leur base, caractère obligatoire, destinataires (dont Google), données visibles sur la blockchain, durées, export et fermeture, droits, décisions automatisées ; bloc « Mon choix de mesure d'audience » |
+| `/traceurs` | [`frontend-web/src/app/traceurs/page.tsx`](src:frontend-web/src/app/traceurs/page.tsx) | « Politique relative aux traceurs » | Stockage local, choix sur le web, application mobile, effacement ; bloc « Gérer mes traceurs » |
+| `/transparence` | [`frontend-web/src/app/transparence/page.tsx`](src:frontend-web/src/app/transparence/page.tsx) | « Charte de transparence du tirage » | Règles du tour, sélection du ticket gagnant, preuves selon l'environnement, incidents ; lien vers le règlement |
 
-Les deux pages portent la mention « Version de travail du pilote, novembre 2026 » et sont bilingues (français, anglais). Elles sont liées depuis le pied de page public ([`frontend-web/src/components/layout/PublicShell.tsx`](src:frontend-web/src/components/layout/PublicShell.tsx)) et depuis l'écran de connexion, qui indique : « En continuant, vous acceptez les conditions de participation et la politique de confidentialité ». La majorité est confirmée par une case à cocher distincte. Cette déclaration ne suffit plus pour jouer : la vérification d'âge par pièce d'identité, envoyée depuis `/profil/identite` ou depuis l'application mobile, est exigée avant tout achat.
+La politique de confidentialité réécrite corrige les écarts relevés auparavant : les événements de mesure y sont présentés comme reliés au compte et soumis au consentement, et le cadeau de ticket, la vérification d'âge par pièce d'identité, la connexion Google et la permanence des transactions publiques y figurent. La charte (`TransparencyCharter` de [`frontend-web/src/components/lottery/TransparencyCharter.tsx`](src:frontend-web/src/components/lottery/TransparencyCharter.tsx)) signale l'environnement courant d'après `GET /lottery/status` : démonstration Hardhat (chain ID 31337, coordinateur VRF simulé, tirage non certifié par Chainlink), Sepolia ou mode simulé. Le texte servi par le backend (`getTransparencyCharter` de [`lottery.services.ts`](src:backend/src/api/lottery/lottery.services.ts)) ne parle plus de tirage « certifié » ni de remboursement de « 100 % des fonds » et précise que les frais réseau consommés ne sont pas remboursés.
 
-Ce qui manque :
+Les six documents sont liés depuis le pied de page public ([`frontend-web/src/components/layout/PublicShell.tsx`](src:frontend-web/src/components/layout/PublicShell.tsx)) et depuis une ligne légale en bas de l'espace connecté ([`frontend-web/src/components/layout/AppShell.tsx`](src:frontend-web/src/components/layout/AppShell.tsx)), dans l'ordre de `LEGAL_DOC_ORDER`, suivis du bouton « Gérer mes traceurs ».
+
+Sur `/connexion`, une case obligatoire « J'accepte les conditions générales d'utilisation et le règlement de participation », avec des liens vers `/cgu` et `/reglement`, s'ajoute à la case de majorité ; le formulaire envoie alors `acceptTerms: true` à `POST /auth/login`, qui accepte ce champ de façon facultative. Une phrase indique ensuite « En créant un compte, vous reconnaissez avoir lu la politique de confidentialité », avec un lien vers `/confidentialite`. Ces déclarations ne suffisent pas pour jouer : la vérification d'âge par pièce d'identité, envoyée depuis `/profil/identite` ou depuis l'application mobile, est exigée avant tout achat.
+
+Ce qui reste à faire :
 
 | Élément | Situation |
 |---|---|
-| Mentions légales au sens de la LCEN | La page `/mentions-legales` contient en réalité les conditions de participation. Aucune page n'identifie l'éditeur (adresse, contact), le directeur de la publication ni l'hébergeur. |
-| Règlement de jeu complet | Durée, dotation, modalités du tirage et du remboursement, résolution des litiges : à rédiger |
-| Conditions générales d'utilisation distinctes | Absentes ; les conditions de participation en tiennent lieu |
-| Exactitude de la politique de confidentialité | Elle parle d'« événements de parcours anonymisés » alors qu'ils sont rattachés au compte ; elle ne mentionne ni le cadeau de ticket, ni les données Redis, ni l'immutabilité des transactions, ni la vérification d'âge par pièce d'identité, ni la connexion par Google ou Apple |
+| Valeur juridique des textes | Rédigés pour le scénario pédagogique, avec un éditeur et des coordonnées fictifs ; relecture par un juriste à prévoir |
+| Preuve de l'acceptation | `acceptTerms` est vérifié par le schéma mais n'est pas enregistré en base, ni la version des textes acceptée |
 | Déclaration d'accessibilité | Absente (voir [Accessibilité numérique](accessibilite.md)) |
 
 ## Application mobile
 
-L'application ne dépose pas de cookie et n'envoie pas d'événement de mesure d'audience. Elle conserve le jeton et le profil dans le stockage sécurisé du système (voir [Navigateur et mobile](../securite/navigateur-mobile.md#application-mobile)). Elle propose la rectification du prénom et du nom, l'export et la suppression des données dans Paramètres, puis Données personnelles ([`mobile-app/src/screens/settings/PersonalDataScreen.tsx`](src:mobile-app/src/screens/settings/PersonalDataScreen.tsx)).
+L'application ne dépose pas de cookie et n'envoie pas d'événement de mesure d'audience. Elle conserve le jeton, le profil et la préférence de sons (`blocklucky_sound_enabled`) dans le stockage sécurisé du système (voir [Navigateur et mobile](../securite/navigateur-mobile.md#application-mobile)). Elle propose la rectification du prénom et du nom, l'export et la suppression des données dans Paramètres, puis Données personnelles ([`mobile-app/src/screens/settings/PersonalDataScreen.tsx`](src:mobile-app/src/screens/settings/PersonalDataScreen.tsx)).
 
-Elle ne contient en revanche **aucun écran** de conditions de participation ni de politique de confidentialité, ni de lien vers les pages du web. L'inscription par mot de passe impose pourtant de cocher « J'accepte les conditions d'utilisation et la politique de confidentialité » (`acceptTerms`, vérifié par le backend), sans que ces textes soient consultables depuis l'écran. Les connexions Google et Apple ne demandent aucune acceptation. L'écran de vérification d'âge présente un encart sur la protection des données de la pièce, et l'application demande l'accès à l'appareil photo et aux photos avec un texte d'explication déclaré dans [`mobile-app/app.json`](src:mobile-app/app.json). Les magasins d'applications exigent une URL de politique de confidentialité et des déclarations sur les données collectées ; ces éléments sont à préparer avant publication (voir [Builds et publication](../mobile/builds-publication.md)).
+Les six documents légaux sont consultables dans l'application, sans renvoi vers le web. Leur texte vient de [`mobile-app/src/content/legal.ts`](src:mobile-app/src/content/legal.ts), identique à celui du web, et s'affiche dans l'écran `Legal` ([`mobile-app/src/screens/settings/LegalScreen.tsx`](src:mobile-app/src/screens/settings/LegalScreen.tsx)), déclaré à la racine de la navigation pour être ouvert avant comme après la connexion. L'écran affiche la version du texte et la liste des autres documents. Aide & Support ([`mobile-app/src/screens/settings/HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx)) comporte une section « Informations légales » qui ouvre chacun d'eux.
+
+L'inscription par mot de passe ([`mobile-app/src/screens/auth/SignUpScreen.tsx`](src:mobile-app/src/screens/auth/SignUpScreen.tsx)) impose deux cases : « J'accepte les conditions générales d'utilisation et le règlement de participation » (`acceptTerms`) et « Je certifie avoir 18 ans ou plus » (`isAdultConfirmed`), toutes deux exigées à `true` par `POST /auth/signup`. Les liens « les CGU » et « le règlement », puis la phrase « En créant un compte, vous reconnaissez avoir lu la politique de confidentialité », ouvrent l'écran `Legal`. La connexion Google ne demande aucune acceptation. L'écran de vérification d'âge présente un encart sur la protection des données de la pièce, et l'application demande l'accès à l'appareil photo et aux photos avec un texte d'explication déclaré dans [`mobile-app/app.json`](src:mobile-app/app.json). Les magasins d'applications exigent une URL de politique de confidentialité et des déclarations sur les données collectées ; ces éléments sont à préparer avant publication (voir [Builds et publication](../mobile/builds-publication.md)).
 
 ## Site de l'Office de Tourisme
 
@@ -109,7 +132,8 @@ Manquent : le directeur de la publication, l'hébergeur et ses coordonnées. Le 
 | Exigence | Web | Mobile | Office de Tourisme |
 |---|---|---|---|
 | Absence de cookie tiers | Oui | Oui | Oui |
-| Bandeau ou opposition | Opposition sur la page Confidentialité | Sans objet (pas de mesure) | Bandeau conforme dans sa forme, sans mesure derrière |
-| Mentions légales LCEN | Absentes | Absentes | Partielles |
-| Conditions d'utilisation | Conditions de participation (version de travail) | Absentes | Présentes |
-| Politique de confidentialité | Présente, à corriger | Absente | Section courte |
+| Bandeau de consentement | Refus et acceptation en un clic, mesure bloquée avant accord | Sans objet (pas de mesure) | Bandeau conforme dans sa forme, sans mesure derrière |
+| Mentions légales LCEN | `/mentions-legales` (éditeur fictif du scénario) | Écran `Legal` | Partielles |
+| Conditions d'utilisation et règlement | `/cgu` et `/reglement`, acceptation obligatoire à la connexion | Écran `Legal`, acceptation obligatoire à l'inscription par mot de passe | Présentes |
+| Politique de confidentialité | `/confidentialite`, réécrite | Écran `Legal` | Section courte |
+| Politique relative aux traceurs | `/traceurs` | Écran `Legal` | Absente |

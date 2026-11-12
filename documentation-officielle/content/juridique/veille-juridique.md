@@ -21,7 +21,7 @@ Cette page recense les textes susceptibles de s'appliquer à BlockLucky et leur 
 | Le RGPD s'applique-t-il ? | Oui : email, adresse de portefeuille, historique de participation, photos de pièce d'identité jusqu'à la décision de la Mairie | Idem, avec en plus des obligations de lutte contre le blanchiment |
 | Les mineurs peuvent-ils jouer ? | Non : l'achat exige une pièce d'identité validée par la Mairie (`AGE_VERIFICATION_REQUIRED`) | Contrôle d'âge effectif obligatoire, probablement plus robuste qu'un examen sur photo |
 | Le ticket à gratter est-il un jeu de hasard ? | Il attribue au hasard une offre de commerçant contre des EtherPoints : à faire qualifier | Loterie à mise si les points avaient une valeur |
-| Des cookies sont-ils déposés ? | Le web n'en dépose pas ; le site de l'Office de Tourisme utilise le `localStorage` | Bandeau et preuve de consentement si une mesure d'audience est ajoutée |
+| Des cookies sont-ils déposés ? | Aucun cookie ; le web et le site de l'Office de Tourisme utilisent le `localStorage`. Le web demande le consentement par un bandeau avant toute mesure d'audience | Preuve du consentement conservée côté serveur |
 | L'accessibilité est-elle obligatoire ? | Oui pour un service public en ligne d'une commune | Idem |
 
 ## Jeux d'argent et loteries
@@ -60,7 +60,7 @@ Sans sacrifice financier ni gain de valeur, l'opération relèverait d'un dispos
 
 > [!WARNING]
 > Le ticket à gratter ne respecte plus la condition qui figurait dans la version précédente de cette veille. `POST /api/marketplace/scratch` débite 50 EtherPoints (offre « violet », `SCRATCH_COST_VIOLET`) ou 100 (offre « lucky », `SCRATCH_COST_LUCKY`), puis choisit l'offre par `crypto.randomInt` parmi les offres en stock ([`backend/src/api/marketplace/marketplace.services.ts`](src:backend/src/api/marketplace/marketplace.services.ts)) : c'est un tirage au sort payé en points. Tant que les EtherPoints sont gratuits, non achetables et sans valeur monétaire, le sacrifice financier fait défaut ; mais les offres gagnées ont une valeur réelle chez les commerçants, et les points se gagnent aussi en achetant des tickets. La qualification est à faire valider (point JUR-4 de [Points à valider](points-a-valider.md)). L'achat est réservé aux comptes dont l'âge est vérifié.
-4. L'afficher clairement dans l'interface (charte de transparence, bandeau de démonstration) et dans les conditions de participation.
+4. L'afficher clairement dans l'interface (charte de transparence, bandeau de démonstration), dans les conditions générales d'utilisation et dans le règlement de participation.
 
 ### Si la Mairie voulait une vraie loterie
 
@@ -98,7 +98,7 @@ Points propres à la blockchain :
 
 | Texte | Effet | Situation |
 |---|---|---|
-| Loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN) | Mentions légales identifiant l'éditeur, le directeur de la publication et l'hébergeur | Partielles sur le site de l'Office de Tourisme, absentes sur le web (voir [Cookies, mentions et CGU](cookies-mentions.md)) |
+| Loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN) | Mentions légales identifiant l'éditeur, le directeur de la publication et l'hébergeur | Publiées sur le web (`/mentions-legales`) et dans l'application mobile avec les valeurs du scénario fictif ; partielles sur le site de l'Office de Tourisme (voir [Cookies, mentions et CGU](cookies-mentions.md)) |
 | Code de la consommation | Conditions générales de vente si un service est vendu à un consommateur | Sans objet : aucune vente ; la billetterie de l'Office de Tourisme est une démonstration |
 | Règlement (UE) 2022/2065 sur les services numériques (DSA) | Point de contact et mécanisme de signalement pour les services d'hébergement de contenus | Le chat en direct diffuse des messages de participants sans modération ; l'applicabilité est à faire préciser |
 
@@ -115,9 +115,9 @@ L'état réel est décrit dans [Accessibilité numérique](accessibilite.md).
 ## Éthique et jeu responsable
 
 - Public visé : les 18 à 35 ans d'EtherBay. Le jeu est réservé aux majeurs dont la pièce d'identité a été validée par la Mairie.
-- Plafonds : un seul ticket par participant et par grand tirage, imposé par le schéma de `POST /api/lottery/buy`, par le service (409 « Vous avez déjà votre ticket pour ce grand tirage. ») et par le contrat (`maxTicketsPerPlayer`, 1 par défaut dans [`smart-contract/scripts/lib/deployment.ts`](src:smart-contract/scripts/lib/deployment.ts)). La limite de jeu responsable de 1 à 500 tickets (`PUT /api/user/responsible-limit`) existe toujours côté serveur, mais elle n'a plus d'effet pratique et l'application mobile ne la propose plus.
-- Transparence : code du contrat vérifiable sur Etherscan après déploiement sur Sepolia, preuve VRF consultable, commission de la Mairie plafonnée à 20 % dans le contrat (`MAX_FEE_BPS = 2000`), remboursement intégral si le tour est annulé.
-- Les conditions de participation rappellent le numéro de Joueurs Info Service (09 74 75 13 13).
+- Plafonds : un seul ticket par participant et par grand tirage, imposé par le schéma de `POST /api/lottery/buy`, par le service (409 « Vous avez déjà votre ticket pour ce grand tirage. ») et par le contrat (`maxTicketsPerPlayer`, 1 par défaut dans [`smart-contract/scripts/lib/deployment.ts`](src:smart-contract/scripts/lib/deployment.ts)). L'ancienne limite personnelle de jeu responsable (`PUT /api/user/responsible-limit`) a été retirée : la route n'existe plus, le profil renvoie toujours `responsibleGaming.maxTicketsPerRound: 1` et la page `/profil/securite` du web explique la règle d'un ticket par habitant.
+- Transparence : code du contrat vérifiable sur Etherscan après déploiement sur Sepolia, preuve VRF consultable, commission de la Mairie plafonnée à 20 % dans le contrat (`MAX_FEE_BPS = 2000`), remboursement du prix du ticket si le tour est annulé, hors frais réseau déjà consommés.
+- Le règlement de participation (`/reglement` et écran `Legal` du mobile) et la page `/profil/securite` rappellent le numéro de Joueurs Info Service (09 74 75 13 13).
 - Les mécaniques d'engagement (compte à rebours, salle d'attente, cadeaux, parrainage, quêtes, tickets à gratter) doivent rester mesurées. Aucune incitation à racheter des ethers ne doit exister, puisqu'aucun achat n'est possible.
 
 ## Suivi de la veille

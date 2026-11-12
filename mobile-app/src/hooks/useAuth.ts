@@ -6,7 +6,6 @@ import {
   useSignInMutation,
   useSignUpMutation,
   useGoogleSignInMutation,
-  useAppleSignInMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useVerify2FAMutation,
@@ -23,7 +22,6 @@ import {
   updateUserProfile,
 } from '../store/slices/authSlice';
 import {
-  AppleSignInPayload,
   AuthSessionResponse,
   ResetPasswordPayload,
   SignInPayload,
@@ -36,6 +34,7 @@ export type AuthStepResult =
       requiresTwoFactor: true;
       userId: string;
       method: TwoFactorMethod;
+      loginTicket?: string;
       email?: string | null;
       devOtpPreview?: string;
     }
@@ -47,7 +46,6 @@ export const useAuth = () => {
   const [signInTrigger, { isLoading: isSigningIn }] = useSignInMutation();
   const [signUpTrigger, { isLoading: isSigningUp }] = useSignUpMutation();
   const [googleTrigger, { isLoading: isGoogleSigningIn }] = useGoogleSignInMutation();
-  const [appleTrigger, { isLoading: isAppleSigningIn }] = useAppleSignInMutation();
   const [forgotTrigger, { isLoading: isRequestingReset }] = useForgotPasswordMutation();
   const [resetTrigger, { isLoading: isResettingPassword }] = useResetPasswordMutation();
   const [verify2FATrigger, { isLoading: isVerifying2FA }] = useVerify2FAMutation();
@@ -64,6 +62,7 @@ export const useAuth = () => {
           requiresTwoFactor: true,
           userId: result.userId,
           method,
+          loginTicket: result.loginTicket,
           email: result.user?.email ?? email,
           devOtpPreview: result.devOtpPreview,
         };
@@ -104,14 +103,6 @@ export const useAuth = () => {
     [applySession, googleTrigger],
   );
 
-  const signInWithApple = useCallback(
-    async (payload: AppleSignInPayload) => {
-      const response = await appleTrigger(payload).unwrap();
-      return applySession(response.data);
-    },
-    [applySession, appleTrigger],
-  );
-
   const requestPasswordReset = useCallback(
     async (email: string) => {
       const response = await forgotTrigger({ email }).unwrap();
@@ -140,9 +131,20 @@ export const useAuth = () => {
   );
 
   const verifyOtpCode = useCallback(
-    async (userId: string, code: string) => {
-      const response = await verify2FATrigger({ userId, code }).unwrap();
+    async (userId: string, code: string, loginTicket?: string) => {
+      const response = await verify2FATrigger({
+        userId,
+        code,
+        ...(loginTicket ? { loginTicket } : {}),
+      }).unwrap();
       const result = response.data;
+
+      if (result.requiresTwoFactor && result.userId) {
+        dispatch(
+          setPendingTwoFactor({ userId: result.userId, method: result.twoFactorMethod ?? 'APP' }),
+        );
+        return result;
+      }
 
       if (result.token && result.user) {
         await secureStorage.setToken(result.token);
@@ -201,11 +203,10 @@ export const useAuth = () => {
     ageVerificationStatus: (authState.user?.ageVerificationStatus ??
       'NONE') as AgeVerificationStatus,
     isAgeVerified: authState.user?.ageVerificationStatus === 'VERIFIED',
-    isLoggingIn: isSigningIn || isGoogleSigningIn || isAppleSigningIn,
+    isLoggingIn: isSigningIn || isGoogleSigningIn,
     isSigningIn,
     isSigningUp,
     isGoogleSigningIn,
-    isAppleSigningIn,
     isRequestingReset,
     isResettingPassword,
     isVerifying2FA,
@@ -214,7 +215,6 @@ export const useAuth = () => {
     signInWithPassword,
     signUpWithPassword,
     signInWithGoogle,
-    signInWithApple,
     requestPasswordReset,
     resetPassword,
     setAgeVerificationStatus,

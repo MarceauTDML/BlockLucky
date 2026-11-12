@@ -25,8 +25,8 @@ Les contrôleurs passent toujours un message explicite. Le statut est 200 pour u
 ```json
 {
   "success": true,
-  "message": "Limite d'achat Jeu Responsable enregistrée",
-  "data": { "userId": "019a7c3e-5d2b-7f41-9c0e-6a8b2d4f1e37", "maxTicketsPerRound": 10, "updatedAt": "2026-11-11T16:00:00.000Z" }
+  "message": "Préférences de thème, langue et notifications mises à jour",
+  "data": { "preferences": { "theme": "DARK", "language": "FR", "pushNotificationsEnabled": true, "notifications": { "drawReminders": true, "results": true, "rewards": true, "referrals": false } } }
 }
 ```
 

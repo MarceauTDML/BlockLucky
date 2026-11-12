@@ -7,9 +7,9 @@ Cette page recense ce que les contrats et leur outillage ne font pas, ou font im
 | Limite | Détail | Piste |
 |---|---|---|
 | Aléa prévisible en local | Le mock calcule `keccak256(abi.encode(requestId, 0))`, et `fulfillRandomWordsWithOverride` est appelable par tous : sur la chaîne locale, n'importe qui peut choisir le gagnant | Ne présenter comme équitable qu'un tirage fait sur Sepolia avec le vrai coordinateur |
-| Pouvoir du propriétaire `ConfirmedOwner` | Hérité de `VRFConsumerBaseV2Plus`, il peut remplacer le coordinateur par `setCoordinator`, donc fournir un faux aléa. C'est le compte qui déploie, et aucun script ne transfère cette propriété | Transférer la propriété à l'administrateur, idéalement un multisig (voir [Exploitation du contrat](exploitation.md#proprietaire-confirmedowner)) |
+| Pouvoir du propriétaire `ConfirmedOwner` | Hérité de `VRFConsumerBaseV2Plus`, il peut remplacer le coordinateur par `setCoordinator`, donc fournir un faux aléa. Les scripts la transfèrent à `VRF_OWNER_ADDRESS` (le multisig par défaut), mais en deux temps : tant que le multisig n'a pas appelé `acceptOwnership`, le déployeur la garde | Faire signer `acceptOwnership` par le multisig juste après le déploiement (voir [Exploitation du contrat](exploitation.md#proprietaire-confirmedowner)) |
 | Veto de l'opérateur | `cancelRound` est accepté pendant le tirage. Un opérateur qui lit la réponse de l'oracle dans le mempool peut annuler le tour avant qu'elle soit incluse. Personne ne perd d'argent, mais l'issue peut être écartée | Restreindre l'annulation en `Drawing` aux tirages plus anciens que `drawTimeout` |
-| Administrateur unique | Un seul compte détient `DEFAULT_ADMIN_ROLE` dans les scripts, sans multisig ni délai (timelock) | Multisig et timelock pour les changements de configuration |
+| Administrateur sans délai | Sur Sepolia, `DEFAULT_ADMIN_ROLE` est confié à `MAIRIE_ADMIN_ADDRESS`, prévu pour un multisig, mais le script ne vérifie pas que l'adresse en est un, et aucun délai (timelock) ne précède un changement de configuration ; en local, l'opérateur reste administrateur additionnel | Timelock pour les changements de configuration |
 | Pas d'audit externe | Les contrats n'ont été vérifiés que par les tests, solhint et Slither | Audit avant tout usage avec de vraies valeurs |
 
 ## Règles de jeu
@@ -48,26 +48,25 @@ Cette page recense ce que les contrats et leur outillage ne font pas, ou font im
 
 | Limite | Détail |
 |---|---|
-| Aucun upkeep Chainlink enregistré | L'interface Automation est prête, mais le tirage dépend du keeper du backend ou d'un appel manuel (voir [Chainlink Automation](automation.md)) |
-| Opérations manuelles non outillées | Aucun script pour `retryDraw`, `setRoundConfig`, `setVrfConfig`, `transferOwnership` ou la rotation des rôles : console Hardhat, Remix ou Etherscan |
+| Aucun upkeep Chainlink enregistré | `npm run automation:sepolia` inscrit l'upkeep, mais le contrat n'est pas encore déployé sur Sepolia : le tirage dépend du keeper du backend ou d'un appel manuel (voir [Chainlink Automation](automation.md)) |
+| Opérations manuelles non outillées | Le déploiement répartit les rôles et propose la propriété VRF, mais aucun script ne couvre `retryDraw`, `setRoundConfig`, `setVrfConfig`, `acceptOwnership` ni la rotation ultérieure des rôles : console Hardhat, Remix, Etherscan ou Transaction Builder du multisig |
 
 ## Déploiement et outillage
 
 | Limite | Détail |
 |---|---|
-| Aucun déploiement Sepolia consigné | Le script existe, mais le dépôt ne contient pas de `deployments/sepolia.json` |
+| Aucun déploiement Sepolia consigné | Les scripts `vrf:sepolia`, `deploy:sepolia`, `automation:sepolia` et `verify:sepolia` existent, mais ils demandent les clés et les fonds de test de l'équipe : le dépôt ne contient pas de `deployments/sepolia.json` |
 | Bloc de départ possiblement tardif | `deploy-sepolia.ts` lit `deploymentBlock` après le déploiement de `BlockLucky` ; si un bloc a été produit entre-temps, `CHAIN_START_BLOCK` saute l'événement `RoundOpened` du tour 1 (voir [Déploiement sur Sepolia](sepolia.md#9-configuration-du-backend)) |
-| `POAP_BASE_URI` vérifié tard | Sur Sepolia, son absence n'arrête le script qu'après le déploiement de `BlockLucky` |
 | Adresses locales fragiles | Les adresses déterministes supposent que le compte 0 n'a envoyé aucune transaction avant le script, et que l'ordre du script ne change pas |
 | Chaîne locale sans persistance | Un redémarrage du conteneur `blockchain` efface la chaîne ; la base du backend doit être réinitialisée |
 | Triage Slither lié aux lignes | Les constats acceptés citent des numéros de ligne ; un déplacement de code peut les faire réapparaître et bloquer la CI |
 | Couverture des branches non mesurée | Le seuil de 100 % porte sur les lignes. Certaines conditions de validation (`maxTickets` nul, `keyHash` nulle, `drawTimeout` nul…) ne sont pas testées isolément |
-| Scripts non testés | `deploy-sepolia.ts` n'est exercé par aucun test ni par la CI |
+| Scripts Sepolia non testés | La répartition des rôles de `lib/roles.ts` est testée ([`test/roles.test.ts`](src:smart-contract/test/roles.test.ts)), mais `setup-vrf-sepolia.ts`, `deploy-sepolia.ts`, `register-automation-sepolia.ts` et `verify-sepolia.ts` ne sont exécutés par aucun test ni par la CI |
 | Fuzzing sans état | Les tests de fuzzing rejouent des scénarios fixes avec des paramètres aléatoires ; il n'y a pas de test d'invariants sur des séquences d'appels quelconques |
 
 ## Écarts entre le contrat et le backend
 
 | Écart | Conséquence |
 |---|---|
-| Le reversement de commission du backend appelle `setTreasury` avec le compte opérateur | `setTreasury` exige `DEFAULT_ADMIN_ROLE`. Avec un opérateur distinct de l'administrateur, le reversement vers une nouvelle adresse échoue (voir [Exploitation du contrat](exploitation.md#commission-withdrawfees-et-settreasury)) |
+| Le reversement de commission du backend appelle `setTreasury` avec le compte opérateur | `setTreasury` exige `DEFAULT_ADMIN_ROLE`. En local, l'opérateur le garde pour cette raison ; sur Sepolia, il ne l'a pas et le reversement ne fonctionne que vers `MAIRIE_TREASURY_ADDRESS` (voir [Exploitation du contrat](exploitation.md#commission-withdrawfees-et-settreasury)) |
 | Le montant demandé au reversement est ignoré en mode on-chain | `withdrawFees` verse toujours la totalité de `accruedFees` |

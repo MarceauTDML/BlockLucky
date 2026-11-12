@@ -34,7 +34,10 @@ export const authApi = baseApi.injectEndpoints({
         body,
       }),
     }),
-    verify2FA: builder.mutation<ApiResponse<Verify2FAResponse>, { userId: string; code: string }>({
+    verify2FA: builder.mutation<
+      ApiResponse<Verify2FAResponse>,
+      { userId: string; code: string; loginTicket?: string }
+    >({
       query: (body) => ({
         url: '/auth/2fa/verify',
         method: 'POST',
@@ -92,17 +95,6 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Quests', 'User', 'Points'],
     }),
-    setResponsibleLimit: builder.mutation<
-      ApiResponse<{ userId: string; maxTicketsPerRound: number }>,
-      { maxTicketsPerRound: number }
-    >({
-      query: (body) => ({
-        url: '/user/responsible-limit',
-        method: 'PUT',
-        body,
-      }),
-      invalidatesTags: ['User'],
-    }),
     updatePreferences: builder.mutation<
       ApiResponse<{ preferences: { theme: string; language: string; pushNotificationsEnabled: boolean } }>,
       { theme?: 'DARK' | 'LIGHT' | 'SYSTEM'; language?: 'FR' | 'EN'; pushNotificationsEnabled?: boolean }
@@ -159,7 +151,6 @@ export const {
   useGetReferralsQuery,
   useGetQuestsQuery,
   useCompleteQuestMutation,
-  useSetResponsibleLimitMutation,
   useUpdatePreferencesMutation,
   useGetNotificationsQuery,
   useExportGdprDataMutation,

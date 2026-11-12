@@ -37,6 +37,7 @@ Points d'attention :
 - **Mot de passe public** : `EtherBay2026demo` est écrit en clair dans [`backend/prisma/seed.ts`](src:backend/prisma/seed.ts). Le mobile se connecte avec lui (`/auth/signin`) ; le web continue de passer par l'email et un code à usage unique, qui arrive dans Mailpit (`http://localhost:8025`). Voir [Comptes et connexion](../demarrage/comptes-et-connexion.md).
 - **Âge vérifié sans pièce** : aucune ligne `IdentityDocument` n'est créée. Les trois comptes peuvent jouer d'emblée, et la page Identités de la Mairie est vide après un seed.
 - **Double authentification administrateur** : avec `ADMIN_MFA_REQUIRED` actif (valeur par défaut), les routes d'administration exigent que `maire@etherbay.fr` configure d'abord une double authentification.
+- **Autres comptes** : le seed ne crée que ces trois comptes. Les comptes Mairie et partenaires supplémentaires se créent ensuite depuis la page `/mairie/comptes` du web (`POST /admin/accounts`), qui crée le compte avec un portefeuille intégré, sans mot de passe ni âge vérifié, et envoie l'email d'invitation `staff-invitation`.
 
 ### Tour de loterie
 
@@ -72,7 +73,7 @@ Les stocks restants inférieurs aux stocks totaux (95 sur 100, 180 sur 200) simu
 
 - aucun ticket, aucun mouvement d'EtherPoints, aucune récompense échangée ;
 - aucune ligne `ChainCursor` : l'indexeur part de `CHAIN_START_BLOCK` ;
-- aucune donnée Redis (limites de jeu responsable, lots de codes promo) ;
+- aucune donnée Redis (préférences, quêtes, lots de codes promo) ;
 - aucune donnée sur la chaîne : les contrats et le premier tour on-chain sont créés par le script de déploiement de `smart-contract/` (voir [Blockchain locale](../smart-contracts/blockchain-locale.md)).
 
 ## Sortie

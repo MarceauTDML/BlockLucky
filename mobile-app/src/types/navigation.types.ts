@@ -9,6 +9,7 @@ export type AuthStackParamList = {
   Verify2FA: {
     userId: string;
     method: 'APP' | 'EMAIL';
+    loginTicket?: string;
     email?: string | null;
     purpose?: 'signin' | 'signup';
     devOtpPreview?: string;
@@ -56,4 +57,7 @@ export type RootStackParamList = {
   ChangePassword: undefined;
   Setup2FA: undefined;
   HelpSupport: undefined;
+  Legal: {
+    doc: 'cgu' | 'reglement' | 'confidentialite' | 'traceurs' | 'mentions' | 'transparence';
+  };
 };

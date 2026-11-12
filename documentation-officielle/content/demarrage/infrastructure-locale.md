@@ -64,7 +64,7 @@ sequenceDiagram
     S->>N: Attente de eth_chainId
     S->>D: Déploiement des contrats
     D->>N: Coordinateur VRF simulé, BlockLucky, BlockLuckyPOAP
-    D->>N: Rôles et ethers pour l'opérateur si besoin
+    D->>N: Rôles, trésorerie, propriété VRF et ethers pour l'opérateur
     S->>S: Création de /tmp/blockchain-ready
     S->>O: Lancement de local-vrf-responder.ts
     O->>N: Répond aux demandes de tirage toutes les 2 secondes
@@ -86,11 +86,14 @@ Un nœud Hardhat neuf utilise toujours les mêmes comptes, et le script déploie
 
 | Compte Hardhat | Adresse | Rôle |
 |---|---|---|
-| n° 0 | `0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266` | Administrateur de la Mairie (`DEFAULT_ADMIN_ROLE`, opérateur, pause, frappe) et, par défaut, opérateur du backend |
-| n° 1 | `0x70997970C51812dc3A010C7d01b50e0d17dc79C8` | Trésorerie qui reçoit la commission |
+| n° 0 | `0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266` | Déployeur ; par défaut aussi opérateur du backend (opérateur, pause, frappe et `DEFAULT_ADMIN_ROLE` additionnel) |
+| n° 1 | `0x70997970C51812dc3A010C7d01b50e0d17dc79C8` | Trésorerie qui reçoit la commission (`LOCAL_TREASURY_ACCOUNT_INDEX`) |
+| n° 2 | `0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC` | Administrateur de la Mairie (`DEFAULT_ADMIN_ROLE` sur les deux contrats) et propriétaire VRF (`LOCAL_ADMIN_ACCOUNT_INDEX`) |
 | n° 9 | Selon `VRF_ORACLE_ACCOUNT_INDEX` | Signataire des réponses de l'oracle VRF local |
 
-La valeur par défaut de `RELAYER_PRIVATE_KEY` dans `backend/.env.example` est la clé publique et bien connue du compte n° 0. En développement, le backend agit donc avec le compte de la Mairie, qui a déjà tous les rôles. Si `RELAYER_PRIVATE_KEY` est définie dans l'environnement du shell au lancement de Compose, elle est transmise au conteneur sous le nom `OPERATOR_PRIVATE_KEY` : le script accorde alors les rôles opérateur, pause et frappe à ce compte et lui verse 1 000 ETH fictifs.
+Depuis la séparation des rôles ([`smart-contract/scripts/lib/roles.ts`](src:smart-contract/scripts/lib/roles.ts)), le script de déploiement local répartit les rôles comme sur Sepolia : le compte n° 2 est l'administrateur et accepte lui-même la propriété VRF (`acceptOwnership`), le compte n° 1 est la trésorerie, l'opérateur reçoit `OPERATOR_ROLE`, `PAUSER_ROLE` et `MINTER_ROLE`. Une seule exception : en local, l'opérateur garde aussi `DEFAULT_ADMIN_ROLE`, pour que le reversement de commission depuis l'espace Mairie puisse appeler `setTreasury`. `LOCAL_STRICT_ROLES=true` supprime cette exception.
+
+La valeur par défaut de `RELAYER_PRIVATE_KEY` dans `backend/.env.example` est la clé publique et bien connue du compte n° 0. En développement, l'opérateur est donc le déployeur, qui garde ses rôles. Si `RELAYER_PRIVATE_KEY` est définie dans l'environnement du shell au lancement de Compose, elle est transmise au conteneur sous le nom `OPERATOR_PRIVATE_KEY` : le script accorde alors les rôles à ce compte, lui verse 1 000 ETH fictifs, puis retire tous ses rôles au compte n° 0.
 
 > [!CAUTION]
 > Les clés des comptes Hardhat sont publiques. Elles ne doivent jamais servir sur un réseau réel, même de test. Le backend refuse de démarrer en production avec la clé du compte n° 0.

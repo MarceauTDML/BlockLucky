@@ -38,14 +38,15 @@ Voir [Contrat BlockLucky](../smart-contracts/blocklucky.md) et [Badge POAP](../s
 | Fonctionnalité | Web | Mobile | Route ou fichier | État |
 |---|---|---|---|---|
 | Onboarding illustré | `/connexion` (quatre écrans) | `OnboardingScreen` (trois écrans écrits dans l'écran) | `GET /api/v1/auth/onboarding` pour le web | Réel |
-| Déclaration de majorité obligatoire et tranche d'âge | `/connexion` | - | Validée par `socialLoginSchema` | Réel (déclaratif) |
+| Déclaration de majorité obligatoire et tranche d'âge | `/connexion` | `SignUpScreen` (case « 18 ans ou plus ») | `socialLoginSchema`, `signupSchema` (`isAdultConfirmed: true`) | Réel (déclaratif) |
+| Acceptation des conditions générales et du règlement | `/connexion` (case obligatoire, liens vers `/cgu` et `/reglement`) | `SignUpScreen` (case obligatoire, liens vers l'écran `Legal`) | `acceptTerms: true`, exigé par `/auth/signup`, facultatif mais vérifié par `/auth/login` | Réel, acceptation non enregistrée en base |
 | Connexion sans mot de passe par code à 6 chiffres | `/connexion`, `/connexion/verification` | - | `POST /api/v1/auth/login`, `POST /api/v1/auth/2fa/verify` | Réel |
 | Inscription par email et mot de passe, confirmée par un code à 6 chiffres | - | `SignUpScreen`, `Verify2FAScreen` | `POST /api/v1/auth/signup`, `POST /api/v1/auth/2fa/verify` | Réel |
 | Connexion par email et mot de passe | - | `SignInScreen` | `POST /api/v1/auth/signin` | Réel |
 | Mot de passe oublié et réinitialisation par code | - | `ForgotPasswordScreen`, `ResetPasswordScreen` | `POST /api/v1/auth/password/forgot`, `POST /api/v1/auth/password/reset` | Réel |
-| Connexion Google et Apple | - | `SignInScreen`, `SignUpScreen` | `POST /api/v1/auth/oauth/google`, `POST /api/v1/auth/oauth/apple` | Partiel : 503 tant que `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` est vide |
+| Connexion Google | - | `SignInScreen`, `SignUpScreen` | `POST /api/v1/auth/oauth/google` | Partiel : 503 tant que `GOOGLE_CLIENT_IDS` est vide |
 | Vérification d'âge par pièce d'identité validée par la Mairie | `/profil/identite` | `VerifyAgeScreen` | `POST /api/v1/user/identity`, `GET /api/v1/user/identity` | Réel |
-| Double authentification TOTP avec codes de secours | `/profil/securite/2fa` | `Setup2FAScreen` | `POST /api/v1/auth/2fa/setup` | Réel |
+| Double authentification TOTP avec codes de secours | `/profil/securite/2fa` | `Setup2FAScreen` | `POST /api/v1/auth/2fa/setup` ; à la connexion, code accepté avec le `loginTicket` délivré après le premier facteur | Réel |
 | Double authentification par email | `/profil/securite/2fa` | `Setup2FAScreen` | même route, méthode `EMAIL` | Réel |
 | Désactivation de la 2FA (code ou connexion récente) | `/profil/securite` | `SecurityScreen` | `POST /api/v1/auth/2fa/disable` | Réel |
 | Déconnexion de l'appareil, ou de tous les appareils | `/profil/securite` | `ProfileScreen` (cet appareil seulement) | `POST /api/v1/auth/logout` | Réel |
@@ -74,14 +75,13 @@ Détails : [Authentification](../backend/modules/auth.md), [Authentification et 
 | Paliers communautaires de la jauge (5 000, 7 500, 9 000 et 10 000 participants) | `/accueil` | `HomeScreen` | même route | Fictif : récompenses jamais appliquées |
 | Achat de son ticket unique du grand tirage en un geste, âge vérifié | `/billetterie` | `BuyTicketScreen` | `POST /api/v1/lottery/buy` | Réel |
 | Numéro de ticket à cinq chiffres | `/historique` | `MyTicketsScreen`, `TransactionHistoryScreen` | champ `ticketNumber` | Réel |
-| Plafond personnel de jeu responsable (50 par défaut) | `/profil/securite` | - | `PUT /api/v1/user/responsible-limit` | Réel, sans effet tant qu'un seul ticket est permis |
 | Ticket offert à un proche par email, s'il n'a pas encore le sien | `/billetterie` | `GiftTicketScreen` | `POST /api/v1/lottery/gift` | Réel |
 | Historique des tickets et galerie POAP | `/historique` | `MyTicketsScreen`, `TransactionHistoryScreen` | `GET /api/v1/lottery/my-tickets` | Réel |
 | Tirage automatique (keeper) après le délai de révélation `DRAW_REVEAL_DELAY_SECONDS` | - | - | [`backend/src/blockchain/lottery.keeper.ts`](src:backend/src/blockchain/lottery.keeper.ts), [`backend/src/blockchain/draw-reveal.ts`](src:backend/src/blockchain/draw-reveal.ts) | Réel |
 | Versement automatique de la cagnotte et des remboursements | - | - | [`backend/src/blockchain/chain-actions.ts`](src:backend/src/blockchain/chain-actions.ts) | Réel |
 | Réclamation manuelle de la cagnotte | `/accueil`, `/tirage` | `LiveDrawScreen` | `POST /api/v1/lottery/claim-prize` | Réel |
 | Classement anonymisé des ambassadeurs | `/accueil` | `SponsorsScreen` | `GET /api/v1/lottery/leaderboard` | Réel |
-| Charte de transparence | `/transparence`, `/profil/aide` | `HowItWorksScreen` | `GET /api/v1/lottery/transparency-charter` | Réel |
+| Charte de transparence, avec l'environnement courant (Hardhat, Sepolia ou simulé) | `/transparence`, `/profil/aide` | `HowItWorksScreen`, écran `Legal` | Texte de [`frontend-web/src/content/legal.ts`](src:frontend-web/src/content/legal.ts) sur le web ; `GET /api/v1/lottery/transparency-charter` sur `HowItWorksScreen` | Réel |
 | Métadonnées et visuel des badges POAP | - | - | `GET /api/v1/lottery/poap/:file` | Réel |
 
 ## Tirage en direct
@@ -91,6 +91,7 @@ Détails : [Authentification](../backend/modules/auth.md), [Authentification et 
 | Salle d'attente entre la fermeture des achats et la révélation | `/tirage` | `WaitingRoomScreen` | `draw:join`, `draw:waiting-room` | Réel |
 | Chat en direct et réactions | `/tirage` | `WaitingRoomScreen`, `LiveDrawScreen` (sans réactions) | `chat:send`, `chat:message`, `chat:react`, `chat:reaction` | Réel |
 | Annonce du gagnant à tous les clients, roue animée sur mobile | `/tirage` | `LiveDrawScreen` | `draw:winner` | Réel |
+| Sons de la roue et du chronomètre des 8 dernières secondes, coupables | `/tirage`, `/accueil` (bouton `SoundToggle`) | `LiveDrawScreen`, `WaitingRoomScreen`, interrupteur « Sons » de `DisplaySettingsScreen` | - | Réel |
 | Notification des EtherPoints gagnés | modale | modale | `points:awarded` | Réel |
 
 Détails : [Temps réel Socket.IO](../backend/socket-io.md).
@@ -136,6 +137,7 @@ L'espace partenaire n'existe que sur le web. Détails : [Partenaires](../backend
 | Analytique : âges et sources d'acquisition | `/mairie/analytique` | `GET /api/v1/analytics/dashboard` | Partiel : répartition par âge fictive sans données |
 | Export de rapport CSV ou PDF | `/mairie/analytique` | `GET /api/v1/admin/reports/export` | Partiel : le « PDF » serveur est du JSON ; le web imprime le PDF dans le navigateur |
 | Vérification des pièces d'identité : consultation journalisée, décision, effacement des images, email au citoyen | `/mairie/identites` | `GET /api/v1/admin/identity-verifications`, `GET /api/v1/admin/identity-verifications/:id`, `POST /api/v1/admin/identity-verifications/:id/decision` | Réel |
+| Comptes Mairie et partenaires : liste, création avec invitation, changement ou retrait de rôle | `/mairie/comptes` | `GET /api/v1/admin/accounts`, `POST /api/v1/admin/accounts`, `PATCH /api/v1/admin/accounts/:id/role` | Réel |
 | Journal d'audit | `/mairie/audit` | `GET /api/v1/admin/audit-logs` | Réel |
 
 Détails : [Administration Mairie](../backend/modules/administration.md).
@@ -152,7 +154,8 @@ Détails : [Administration Mairie](../backend/modules/administration.md).
 | Centre de notifications | cloche | `NotificationsScreen` | `GET /api/v1/user/notifications` | Fictif : trois notifications codées en dur |
 | Export des données personnelles en JSON | `/profil/rgpd` | `PersonalDataScreen` | `GET /api/v1/user/gdpr/export` | Réel |
 | Suppression du compte confirmée par email | `/profil/rgpd` | `PersonalDataScreen` | `POST /api/v1/user/gdpr/delete-request`, `POST /api/v1/user/gdpr/confirm-delete` | Réel |
-| Refus de la mesure d'audience | `/confidentialite` | - | stockage local | Réel |
+| Consentement à la mesure d'audience (bandeau, « Gérer mes traceurs ») | bandeau, `/confidentialite`, `/traceurs` | - | stockage local `bl.consent.choice`, valable 6 mois | Réel |
+| Documents légaux : conditions générales, règlement, mentions légales, confidentialité, traceurs, transparence | `/cgu`, `/reglement`, `/mentions-legales`, `/confidentialite`, `/traceurs`, `/transparence`, liens du pied de page | écran `Legal`, section « Informations légales » de `HelpSupportScreen` | contenu partagé `content/legal.ts` | Réel |
 | Aide et support | `/profil/aide` | `HelpSupportScreen` | `POST /api/v1/user/support` (mobile) | Réel ; centre d'aide « Bientôt » tant que `EXPO_PUBLIC_HELP_CENTER_URL` est vide |
 
 ## Plateforme et exploitation

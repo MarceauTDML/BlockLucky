@@ -60,7 +60,7 @@ La lecture `ticketsOf(tour, adresse)` renvoie le nombre de tickets d'une adresse
 `withdrawFees(trésorerie)` compare la trésorerie enregistrée dans le contrat à celle demandée. Si elles diffèrent, il appelle `setTreasury`, qui exige le rôle `DEFAULT_ADMIN_ROLE`. Il lit ensuite `accruedFees`, appelle `withdrawFees` et renvoie le hachage, le montant en ETH et la trésorerie. Le montant demandé par l'administrateur (`amountEth`) n'est pas utilisé en mode onchain : c'est toujours la totalité de la commission accumulée qui est reversée.
 
 > [!NOTE]
-> Le script de déploiement local n'accorde à un opérateur distinct de la Mairie que les rôles opérateur, pause et frappe. Avec un tel opérateur, un reversement vers une nouvelle trésorerie échoue donc avec `AccessControlUnauthorizedAccount` (403). Avec la clé de développement par défaut, l'opérateur est le compte administrateur et l'opération réussit.
+> En local, [`deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) laisse `DEFAULT_ADMIN_ROLE` à l'opérateur en plus de ses rôles opérateur, pause et frappe, pour que ce reversement fonctionne quelle que soit l'adresse saisie ; avec `LOCAL_STRICT_ROLES=true`, il ne l'a plus. Sur Sepolia, [`deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) réserve `DEFAULT_ADMIN_ROLE` au multisig de la Mairie (`MAIRIE_ADMIN_ADDRESS`) : il faut saisir l'adresse `MAIRIE_TREASURY_ADDRESS` déjà enregistrée, sinon `setTreasury` échoue avec `AccessControlUnauthorizedAccount` (403). Changer de trésorerie passe alors par le multisig.
 
 `withdrawFees` n'utilise pas `sendAndIndex` : il n'y a rien à indexer, et il n'y a pas de reprise sur `NONCE_EXPIRED`.
 
@@ -154,7 +154,7 @@ Certaines erreurs sont produites par la passerelle ou les services avant tout ap
 |---|---|---|
 | Tour courant non `OPEN` au moment de l'achat | 409 | `buyTickets` de la passerelle |
 | Compte sans clé chiffrée | 409 | `signerFor` de `wallet.service.ts` |
-| Limite de jeu responsable dépassée | 400 | `buyOnchain` de `lottery.services.ts` |
+| Ticket déjà détenu sur le tour courant, compté en base | 409 | `buyOnchain` de `lottery.services.ts` |
 | Cadeau à sa propre adresse email | 400 | `giftOnchain` de `lottery.services.ts` |
 | `claim-prize` en mode simulé | 409 | `claimPrize` de `lottery.services.ts` |
 

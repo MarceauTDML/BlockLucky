@@ -3,7 +3,6 @@ import lotteryRepository from './lottery.repo';
 import authRepository from '../auth/auth.repo';
 import blockchainService from '../../services/blockchain.service';
 import ledgerService from '../../services/ledger.service';
-import redis from '../../config/redis.config';
 import { getSocketIo } from '../../socket/socket.handler';
 import { broadcastWinnerEvent } from '../../socket/events/live-draw.events';
 import { anonymizeWallet } from '../../utils/crypto.util';
@@ -161,17 +160,8 @@ export class LotteryService {
       throw new AppError('Ce tour est terminé, le tirage va être lancé.', 409);
     }
 
-    const limitStr = await redis.get(`user:ticket_limit:${userId}`);
-    const maxTicketsAllowed = limitStr ? Number(limitStr) : 50;
     const currentTicketsCount = await lotteryRepository.countUserTicketsInRound(userId, round.id);
     if (currentTicketsCount > 0) throw playerLimitError();
-
-    if (currentTicketsCount + quantity > maxTicketsAllowed) {
-      throw new AppError(
-        `Jeu Responsable : Limite d'achat atteinte (${currentTicketsCount}/${maxTicketsAllowed} tickets autorisés sur ce tirage).`,
-        400
-      );
-    }
 
     const createdTickets = [];
     let totalPointsEarned = 0;
@@ -540,16 +530,7 @@ export class LotteryService {
 
     const onchain = await lotteryGateway.readCurrentRound();
     const round = await this.syncRound(onchain);
-    const limitStr = await redis.get(`user:ticket_limit:${userId}`);
-    const maxTicketsAllowed = limitStr ? Number(limitStr) : 50;
     const currentTicketsCount = await lotteryRepository.countUserTicketsInRound(userId, round.id);
-    if (currentTicketsCount + quantity > maxTicketsAllowed) {
-      throw new AppError(
-        `Jeu Responsable : Limite d'achat atteinte (${currentTicketsCount}/${maxTicketsAllowed} tickets autorisés sur ce tirage).`,
-        400
-      );
-    }
-
     if (currentTicketsCount > 0) throw playerLimitError();
 
     const buyer = await lotteryGateway.prepareWallet(user);
@@ -726,15 +707,15 @@ export class LotteryService {
       sections: [
         {
           heading: '1. Pourquoi la Blockchain à EtherBay ?',
-          body: "Chaque achat de ticket et chaque tirage au sort est inscrit de façon immuable sur un registre public décentralisé. Aucune intervention humaine ne peut modifier l'issue du tirage.",
+          body: "En mode sur chaîne, chaque achat de ticket et chaque tirage sont inscrits par le Smart Contract sur le registre du réseau utilisé. Le résultat affiché vient du contrat. Les opérateurs habilités peuvent mettre le contrat en pause ou annuler un tour, et ces actions laissent une trace sur la chaîne.",
         },
         {
-          heading: '2. Tirage Aléatoire Certifié (Chainlink VRF)',
-          body: "Le gagnant est désigné par un oracle cryptographique vérifiable (Chainlink VRF) qui génère une preuve mathématique d'équité consultable publiquement.",
+          heading: '2. Tirage aléatoire (Chainlink VRF)',
+          body: "Après la clôture, le contrat demande un aléa au coordinateur Chainlink VRF et l'utilise pour sélectionner un ticket parmi ceux qui sont confirmés. Sur le réseau public Sepolia, la demande et la réponse se vérifient sur l'explorateur. En démonstration locale, le coordinateur est simulé et le tirage n'est pas certifié par Chainlink.",
         },
         {
-          heading: '3. Garantie de Remboursement Automatique (Auto-Refund)',
-          body: "Le Smart Contract intègre une clause de remboursement automatique : si l'événement est annulé ou interrompu, 100% des fonds engagés retournent automatiquement aux participants.",
+          heading: '3. Remboursement en cas d’annulation',
+          body: "Si le seuil minimum de tickets n'est pas atteint à l'échéance, ou si un opérateur annule le tour, le prix des tickets est remboursable en ETH de test au portefeuille qui les a financés, et BlockLucky tente de le verser automatiquement. Les frais réseau déjà consommés ne sont pas remboursés.",
         },
         {
           heading: '4. Portefeuille intégré et ethers fictifs',

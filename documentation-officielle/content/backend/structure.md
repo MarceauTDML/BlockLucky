@@ -21,7 +21,7 @@ backend/src/
 ├── workers/                consommateurs BullMQ et indexeur du webhook simulé
 ├── services/               services transverses (sessions, OTP, TOTP, ledger, email, S3, blockchain)
 ├── socket/                 serveur Socket.IO, authentification, événements, relais Redis
-├── templates/emails/       5 gabarits HTML des emails transactionnels
+├── templates/emails/       8 gabarits HTML des emails transactionnels
 ├── types/                  types partagés (réponses API, JWT, événements Socket.IO)
 └── utils/                  chiffrement, logger, pagination, format des réponses
 ```

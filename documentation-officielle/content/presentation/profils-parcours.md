@@ -8,7 +8,7 @@ Le livrable de recherche définit quatre profils hypothétiques. Ce ne sont pas 
 
 | Profil | Besoin supposé | Question à vérifier | Réponse prévue dans le produit |
 |---|---|---|---|
-| Personne de 18 à 35 ans à l'aise sur téléphone | Participer rapidement et retrouver son ticket | Le vocabulaire et la connexion provoquent-ils un abandon ? | Connexion par code email sur le web, par mot de passe ou Google et Apple sur mobile, achat en un geste, historique des tickets |
+| Personne de 18 à 35 ans à l'aise sur téléphone | Participer rapidement et retrouver son ticket | Le vocabulaire et la connexion provoquent-ils un abandon ? | Connexion par code email sur le web, par mot de passe ou Google sur mobile, achat en un geste, historique des tickets |
 | Adulte curieux, peu familier de la blockchain | Comprendre le montant engagé et le gain | Peut-il expliquer le caractère fictif des ethers ? | Mention « ETH fictif » sur chaque montant, case de compréhension avant l'achat, charte de transparence |
 | Personne ayant besoin d'un accompagnement | Obtenir de l'aide et lire facilement les écrans | Peut-elle participer avec le dispositif proposé ? | Page d'aide (`/profil/aide`), thème clair ou sombre, navigation clavier, textes en français et en anglais |
 | Agent ou relais local | Aider sans accéder aux secrets du compte | Les réponses de la FAQ suffisent-elles ? | Aucun secret à transmettre : pas de phrase de récupération, la clé du portefeuille reste chiffrée côté serveur ; un mot de passe oublié se réinitialise par un code reçu par email |
@@ -38,7 +38,7 @@ Le modèle de données connaît trois rôles (énumération `Role` de [`backend/
 La redirection après connexion est faite par `homeForRole` dans [`frontend-web/src/hooks/useAuth.ts`](src:frontend-web/src/hooks/useAuth.ts). Le contrôle réel des droits est fait par le backend : `requireRoles` de [`backend/src/middlewares/rbac.middleware.ts`](src:backend/src/middlewares/rbac.middleware.ts) relit le rôle en base à chaque requête et refuse un administrateur qui n'a pas activé la double authentification. La matrice complète est dans [Autorisations et matrice des droits](../securite/autorisations.md).
 
 > [!NOTE]
-> Aucun écran ne permet de créer un compte partenaire ou administrateur. Tout nouveau compte est un citoyen (`USER`). Le changement de rôle se fait aujourd'hui directement en base ; les comptes de démonstration sont créés par le seed ([Comptes de démonstration et connexion](../demarrage/comptes-et-connexion.md)).
+> Un compte qui s'inscrit lui-même est toujours un citoyen (`USER`). Les comptes partenaire et Mairie sont créés, ou reçoivent leur rôle, depuis la page `/mairie/comptes`, qui envoie une invitation par email ; le premier compte Mairie vient du seed en démonstration, ou d'une promotion en base en production ([Comptes de démonstration et connexion](../demarrage/comptes-et-connexion.md)).
 
 ## Le parcours principal du citoyen
 
@@ -48,7 +48,7 @@ L'équipe a conçu un parcours en six étapes, chacune instrumentée par un év�
 |---|---|---|---|
 | Découvrir | Savoir qui organise | Page municipale publique `/` qui identifie la Mairie et l'objet pédagogique | `landing_view` |
 | Comprendre | Connaître les règles et la valeur engagée | Règles et charte de transparence sur `/transparence` | `rules_view` |
-| Accéder | Comprendre le compte et les données | Onboarding en quatre écrans, déclaration de majorité, saisie de l'email puis du code ; sur mobile, compte avec mot de passe confirmé par un code ; puis envoi de la pièce d'identité, sur `/profil/identite` ou depuis l'application | `access_started` |
+| Accéder | Comprendre le compte et les données | Onboarding en quatre écrans, déclaration de majorité, acceptation des conditions générales et du règlement, saisie de l'email puis du code ; sur mobile, compte avec mot de passe confirmé par un code ; puis envoi de la pièce d'identité, sur `/profil/identite` ou depuis l'application | `access_started` |
 | Participer | Confirmer une seule action | Billetterie : un seul ticket par grand tirage, total en ETH fictif, case de compréhension sur le web, bouton bloqué pendant l'envoi ; sur le web, achat désactivé avec un lien vers la vérification d'identité tant que l'âge n'est pas vérifié, refus 403 côté backend | `ticket_submitted` |
 | Recevoir | Retrouver une confirmation | Ticket affiché comme confirmé une fois la transaction minée et indexée, historique avec lien vers l'explorateur | `ticket_confirmed` |
 | Vérifier | Comprendre le résultat | Salle d'attente puis salle de tirage : identifiant de la requête VRF, annonce du gagnant en direct, numéro du ticket gagnant | `result_view` |
@@ -100,10 +100,10 @@ Le livrable liste six états à tester. Le code les traite ainsi :
 | Vérifier son âge | - | `VerifyAgeScreen` | Photo du recto et du verso de la pièce d'identité, chiffrées à réception, examinées par la Mairie puis effacées ; email de décision ; nouvel envoi possible après un refus |
 | Offrir un ticket à un proche | `/billetterie` | `GiftTicketScreen` | Le ticket est acheté par le portefeuille de l'expéditeur au nom du destinataire (`buyTicketsFor`) ; un compte et un portefeuille sont créés pour le destinataire s'il n'existe pas ; refusé si le destinataire a déjà son ticket ou si c'est l'expéditeur ; 75 EtherPoints pour l'expéditeur |
 | Parrainer | `/profil`, `/invite/[code]` | `SponsorsScreen` | Lien unique ; 100 EtherPoints pour le parrain et 50 pour le filleul à l'inscription |
-| Suivre le tirage en direct | `/tirage` | `WaitingRoomScreen`, `LiveDrawScreen` | Salle d'attente avec compte à rebours jusqu'à la révélation, chat, roue animée, annonce du gagnant |
+| Suivre le tirage en direct | `/tirage` | `WaitingRoomScreen`, `LiveDrawScreen` | Salle d'attente avec compte à rebours jusqu'à la révélation, chat, roue animée, annonce du gagnant ; sons de la roue et du chronomètre des 8 dernières secondes, désactivables |
 | Échanger des EtherPoints | `/boutique`, `/boutique/[rewardId]`, `/boutique/carte`, `/boutique/mes-codes` | `RewardsCatalogScreen`, `RewardDetailScreen`, `ScratchCardScreen`, `MyCodesScreen` | Carte à gratter virtuelle, code promo et QR code à présenter en caisse ; sur mobile, ticket à gratter acheté 50 ou 100 EtherPoints qui tire une offre au hasard |
 | Retirer ses gains | `/accueil` | `LiveDrawScreen` | La cagnotte est versée automatiquement ; un bouton permet de la réclamer si besoin |
-| Gérer sa sécurité | `/profil/securite`, `/profil/securite/2fa` | `SecurityScreen`, `ChangeEmailScreen`, `ChangePasswordScreen`, `Setup2FAScreen` | 2FA par application TOTP ou par email ; sur le web, déconnexion de tous les appareils et plafond de jeu responsable ; sur le mobile, changement d'adresse email et de mot de passe |
+| Gérer sa sécurité | `/profil/securite`, `/profil/securite/2fa` | `SecurityScreen`, `ChangeEmailScreen`, `ChangePasswordScreen`, `Setup2FAScreen` | 2FA par application TOTP ou par email ; sur le web, déconnexion de tous les appareils et rappel de la règle d'un ticket par tirage ; sur le mobile, changement d'adresse email et de mot de passe |
 | Exercer ses droits RGPD | `/profil/rgpd` | `PersonalDataScreen` | Export JSON, demande de suppression confirmée par email ; sur le mobile, rectification du prénom et du nom |
 | Contacter la Mairie | - | `HelpSupportScreen` | Formulaire transmis par email à un administrateur, qui répond directement au citoyen |
 
@@ -130,6 +130,7 @@ L'administrateur se connecte depuis `/connexion?espace=pro`. Tant qu'il n'a pas 
 | `/mairie/analytique` | Répartition par âge, acquisition par source UTM, exports CSV et PDF |
 | `/mairie/partenaires` | Approbation ou suspension des commerces |
 | `/mairie/identites` | File des pièces d'identité en attente, consultation du recto et du verso (journalisée), validation ou refus motivé |
+| `/mairie/comptes` | Comptes Mairie et partenaires : recherche, création avec invitation par email et rattachement facultatif d'un établissement, changement ou retrait de rôle (sessions du compte fermées, action journalisée) |
 | `/mairie/securite` | Disjoncteur (pause du contrat), reversement de la commission à la trésorerie |
 | `/mairie/audit` | Journal chronologique des actions d'administration, filtrable et exportable |
 

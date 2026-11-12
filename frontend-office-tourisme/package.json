@@ -1,6 +1,7 @@
 {
   "name": "blocklucky-frontend-office-tourisme",
   "version": "1.0.0",
+  "license": "MIT",
   "private": true,
   "description": "Site vitrine de l'Office de Tourisme de la Ville d'EtherBay (HTML, CSS, JavaScript sans backend)",
   "scripts": {

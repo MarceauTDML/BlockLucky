@@ -22,7 +22,7 @@ const sentCodes: string[] = [];
 const lastCode = () => sentCodes[sentCodes.length - 1]!;
 
 const signupAndVerify = async (email: string, password = PASSWORD) => {
-  const signup = await request(app).post('/api/v1/auth/signup').send({ email, password, acceptTerms: true });
+  const signup = await request(app).post('/api/v1/auth/signup').send({ email, password, acceptTerms: true, isAdultConfirmed: true });
   expect(signup.status).toBe(201);
   const verify = await request(app)
     .post('/api/v1/auth/2fa/verify')
@@ -73,7 +73,7 @@ describe('Comptes avec mot de passe', () => {
     await signupAndVerify('doublon@etherbay.fr');
     const again = await request(app)
       .post('/api/v1/auth/signup')
-      .send({ email: 'doublon@etherbay.fr', password: PASSWORD, acceptTerms: true });
+      .send({ email: 'doublon@etherbay.fr', password: PASSWORD, acceptTerms: true, isAdultConfirmed: true });
     expect(again.status).toBe(409);
     expect(again.body.message).toBe('Un compte existe déjà avec cette adresse email.');
   });
@@ -81,16 +81,20 @@ describe('Comptes avec mot de passe', () => {
   it('applique la politique de mot de passe et l’acceptation des conditions', async () => {
     const weak = await request(app)
       .post('/api/v1/auth/signup')
-      .send({ email: 'faible@etherbay.fr', password: 'sanschiffre', acceptTerms: true });
+      .send({ email: 'faible@etherbay.fr', password: 'sanschiffre', acceptTerms: true, isAdultConfirmed: true });
     expect(weak.status).toBe(400);
     const short = await request(app)
       .post('/api/v1/auth/signup')
-      .send({ email: 'court@etherbay.fr', password: 'abc123', acceptTerms: true });
+      .send({ email: 'court@etherbay.fr', password: 'abc123', acceptTerms: true, isAdultConfirmed: true });
     expect(short.status).toBe(400);
     const noTerms = await request(app)
       .post('/api/v1/auth/signup')
-      .send({ email: 'cgu@etherbay.fr', password: PASSWORD, acceptTerms: false });
+      .send({ email: 'cgu@etherbay.fr', password: PASSWORD, acceptTerms: false, isAdultConfirmed: true });
     expect(noTerms.status).toBe(400);
+    const noAdult = await request(app)
+      .post('/api/v1/auth/signup')
+      .send({ email: 'mineur@etherbay.fr', password: PASSWORD, acceptTerms: true });
+    expect(noAdult.status).toBe(400);
   });
 
   it('active un compte créé par un cadeau sans le dupliquer', async () => {
@@ -155,6 +159,7 @@ describe('Comptes avec mot de passe', () => {
       requiresTwoFactor: true,
       twoFactorMethod: 'APP',
       userId: verify.body.data.user.id,
+      loginTicket: expect.any(String),
     });
   });
 

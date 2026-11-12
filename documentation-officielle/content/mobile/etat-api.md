@@ -1,6 +1,6 @@
 # État et appels API
 
-L'application mobile reprend l'architecture du web : un store Redux Toolkit, RTK Query pour les appels au backend et trois slices (`auth`, `lottery`, `ui`). Les noms des endpoints de loterie et de boutique, des tags et des actions sont proches de ceux du web, ce qui permet de passer d'un code à l'autre. Les différences tiennent au périmètre (pas d'endpoint d'administration ni de partenaire, mais des endpoints de mot de passe, de connexion Google et Apple et de vérification d'âge) et à plusieurs réglages absents côté mobile.
+L'application mobile reprend l'architecture du web : un store Redux Toolkit, RTK Query pour les appels au backend et trois slices (`auth`, `lottery`, `ui`). Les noms des endpoints de loterie et de boutique, des tags et des actions sont proches de ceux du web, ce qui permet de passer d'un code à l'autre. Les différences tiennent au périmètre (pas d'endpoint d'administration ni de partenaire, mais des endpoints de mot de passe, de connexion Google et de vérification d'âge) et à plusieurs réglages absents côté mobile.
 
 Le store est créé une fois au chargement du module [`mobile-app/src/store/index.ts`](src:mobile-app/src/store/index.ts) (`export const store`) et fourni par `App.tsx`. Les hooks typés `useAppDispatch` et `useAppSelector` sont exportés depuis ce fichier.
 
@@ -43,15 +43,15 @@ Le jeton est lu dans SecureStore et non dans le store Redux. Il est donc envoyé
 
 | Tag | Fourni par | Invalidé par |
 |---|---|---|
-| `User` | `getProfile`, `getReferrals`, `getIdentityStatus` | `signIn`, `googleSignIn`, `appleSignIn`, `submitIdentity`, `verify2FA`, `disable2FA`, `completeQuest`, `setResponsibleLimit`, `updatePreferences`, `buyTicket`, `giftTicket`, `claimReward`, `scratchTicket` |
+| `User` | `getProfile`, `getReferrals`, `getIdentityStatus` | `signIn`, `googleSignIn`, `submitIdentity`, `verify2FA`, `disable2FA`, `completeQuest`, `updatePreferences`, `buyTicket`, `giftTicket`, `claimReward`, `scratchTicket` |
 | `Lottery` | `getLotteryStatus`, `getLeaderboard`, `getMyTransactions` | `buyTicket`, `giftTicket`, `claimPrize` ; événement `draw:winner` |
 | `Wallet` | `getWallet` | `buyTicket`, `giftTicket`, `claimPrize` ; événement `draw:winner` |
 | `Marketplace` | `getCatalog`, `getRewardDetail`, `getMyCodes` | `claimReward`, `scratchTicket` |
-| `Points` | `getPointsBalance` | `signIn`, `googleSignIn`, `appleSignIn`, `completeQuest`, `buyTicket`, `giftTicket`, `claimReward`, `scratchTicket` |
+| `Points` | `getPointsBalance` | `signIn`, `googleSignIn`, `completeQuest`, `buyTicket`, `giftTicket`, `claimReward`, `scratchTicket` |
 | `Quests` | `getQuests` | `completeQuest` |
 | `Notifications` | `getNotifications` | aucune mutation |
 
-Les tags `Admin`, `Partners`, `Audit` et `Identity` du web n'existent pas. Quatre écrans rafraîchissent le statut de la loterie par `pollingInterval` :
+Les tags `Admin`, `Partners`, `Audit`, `Identity` et `Accounts` du web n'existent pas. Quatre écrans rafraîchissent le statut de la loterie par `pollingInterval` :
 
 | Écran | Période |
 |---|---|
@@ -66,25 +66,27 @@ RTK Query ne rafraîchit pas les données au retour de l'application au premier 
 
 ### authApi
 
-[`mobile-app/src/store/api/authApi.ts`](src:mobile-app/src/store/api/authApi.ts) déclare 28 endpoints :
+[`mobile-app/src/store/api/authApi.ts`](src:mobile-app/src/store/api/authApi.ts) déclare 26 endpoints :
 
 | Groupe | Endpoints | Routes |
 |---|---|---|
-| Connexion et compte | `signIn`, `signUp`, `googleSignIn`, `appleSignIn`, `forgotPassword`, `resetPassword` | `POST /auth/signin`, `/auth/signup`, `/auth/oauth/google`, `/auth/oauth/apple`, `/auth/password/forgot`, `/auth/password/reset` |
+| Connexion et compte | `signIn`, `signUp`, `googleSignIn`, `forgotPassword`, `resetPassword` | `POST /auth/signin`, `/auth/signup`, `/auth/oauth/google`, `/auth/password/forgot`, `/auth/password/reset` |
 | Email et mot de passe du compte connecté | `requestEmailChange`, `confirmEmailChange`, `changePassword` | `POST /auth/email/change`, `/auth/email/confirm`, `/auth/password/change` |
 | Double authentification | `setup2FA`, `verify2FA`, `disable2FA`, `logout` | `POST /auth/2fa/setup`, `/auth/2fa/verify`, `/auth/2fa/disable`, `/auth/logout` |
 | Vérification d'âge | `getIdentityStatus`, `submitIdentity` | `GET /user/identity`, `POST /user/identity` |
-| Profil et parrainage | `getProfile`, `getReferrals`, `getQuests`, `completeQuest`, `setResponsibleLimit`, `updatePreferences`, `getNotifications` | Routes `/user/*` |
+| Profil et parrainage | `getProfile`, `getReferrals`, `getQuests`, `completeQuest`, `updatePreferences`, `getNotifications` | Routes `/user/*` |
 | Paramètres | `updateProfileNames`, `sendSupportMessage` | `PATCH /user/profile`, `POST /user/support` |
 | RGPD | `exportGdprData`, `requestGdprDeletion`, `confirmGdprDeletion` | `GET /user/gdpr/export`, `POST /user/gdpr/delete-request`, `POST /user/gdpr/confirm-delete` |
 | Introduction | `getOnboarding` | `GET /auth/onboarding` |
 
-L'endpoint `socialLogin` (`POST /auth/login`), que le web utilise toujours, a été retiré du mobile.
+L'endpoint `socialLogin` (`POST /auth/login`), que le web utilise toujours, a été retiré du mobile, de même que `appleSignIn` (connexion Apple supprimée) et `setResponsibleLimit` (route `PUT /user/responsible-limit` supprimée).
 
 | Endpoint | Remarque |
 |---|---|
 | `logout` | Argument `{ allDevices }` seul ; le jeton part par `prepareHeaders` |
-| `getOnboarding`, `setResponsibleLimit` | Déclarés mais jamais appelés : l'introduction est codée en dur et aucun écran ne propose plus le plafond de jeu responsable |
+| `getOnboarding` | Déclaré mais jamais appelé : l'introduction est codée en dur |
+| `signUp` | Envoie `acceptTerms: true` et `isAdultConfirmed: true`, exigés par le backend |
+| `verify2FA` | Argument `{ userId, code, loginTicket? }` ; le ticket accompagne un code de l'application après le premier facteur. La réponse peut demander un second facteur (`requiresTwoFactor`, `twoFactorMethod`, `userId`, `loginTicket`) au lieu d'une session |
 | `updatePreferences` | Accepte `theme`, `language`, `pushNotificationsEnabled` et `notifications` (objet partiel `drawReminders`, `results`, `rewards`, `referrals`) ; renvoie les préférences complètes |
 | `changePassword` | Renvoie une nouvelle session comme `signIn` ; l'écran la passe à `applyRenewedSession` de `useAuth`, qui enregistre le nouveau jeton |
 | `updateProfileNames`, `confirmEmailChange` | La réponse est reportée dans le slice et le stockage sécurisé par `patchUser` de `useAuth` |

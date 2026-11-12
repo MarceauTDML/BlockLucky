@@ -92,16 +92,6 @@ export class AuthController {
     }
   }
 
-  public async appleSignIn(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const identity = await oauthVerifierService.verifyApple(req.body.identityToken);
-      const result = await authService.oauthLogin(identity);
-      sendSuccess(res, result, 'Authentification Apple réussie', 200);
-    } catch (error) {
-      next(error);
-    }
-  }
-
   public async setup2FA(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?.userId;
@@ -115,11 +105,12 @@ export class AuthController {
 
   public async verify2FA(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const targetUserId = req.user?.userId || req.body.userId;
-      if (!targetUserId) {
-        throw new AppError('Identifiant utilisateur requis pour vérifier le code 2FA', 400);
-      }
-      const result = await authService.verify2FA(targetUserId, req.body.code);
+      const result = await authService.verify2FA({
+        code: req.body.code,
+        sessionUserId: req.user?.userId,
+        userId: req.body.userId,
+        loginTicket: req.body.loginTicket,
+      });
       sendSuccess(res, result, 'Double authentification (2FA) vérifiée avec succès', 200);
     } catch (error) {
       next(error);

@@ -73,9 +73,6 @@ export class UserService {
 
     const preferences = await this.readPreferences(userId);
 
-    const limitStr = await redis.get(`user:ticket_limit:${userId}`);
-    const maxTicketsPerRound = limitStr ? Number(limitStr) : 50;
-
     return {
       id: user.id,
       walletAddress: user.walletAddress,
@@ -96,7 +93,7 @@ export class UserService {
         referralsCount: user._count.referrals,
       },
       responsibleGaming: {
-        maxTicketsPerRound,
+        maxTicketsPerRound: 1,
       },
       preferences,
       createdAt: user.createdAt,
@@ -254,15 +251,6 @@ export class UserService {
       quest: { ...quest, completed: true },
       pointsAwarded: quest.rewardPoints,
       newPointsBalance: ledgerResult.balance,
-    };
-  }
-
-  public async setResponsibleGamingLimit(userId: string, maxTicketsPerRound: number) {
-    await redis.set(`user:ticket_limit:${userId}`, String(maxTicketsPerRound));
-    return {
-      userId,
-      maxTicketsPerRound,
-      updatedAt: new Date().toISOString(),
     };
   }
 

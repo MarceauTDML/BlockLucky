@@ -5,10 +5,12 @@ export const KEYS = {
   user: 'bl.auth.user',
   onboarding: 'bl.onboarding.done',
   theme: 'bl.pref.theme',
+  sound: 'bl.pref.sound',
   language: 'bl.pref.language',
   utm: 'bl.utm.source',
   referral: 'bl.referral.code',
   trackingOptOut: 'bl.tracking.optout',
+  consent: 'bl.consent.choice',
   partnerId: 'bl.partner.selected',
   lastClaim: 'bl.marketplace.lastClaim',
 } as const;

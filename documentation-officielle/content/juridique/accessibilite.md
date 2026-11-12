@@ -32,6 +32,8 @@ Le non-respect de ces obligations expose à des sanctions administratives ; leur
 | Mouvement | Règle `prefers-reduced-motion` dans [`frontend-web/src/app/globals.css`](src:frontend-web/src/app/globals.css) |
 | Focus | Styles `focus-visible` |
 | Thème | Clair et sombre, choix de l'utilisateur ou préférence du système |
+| Bandeau de consentement | Région `role="region"` reliée à son titre par `aria-labelledby`, non modale, boutons de refus et d'acceptation de même style, bouton de fermeture étiqueté quand il est rouvert ([`ConsentBanner.tsx`](src:frontend-web/src/components/layout/ConsentBanner.tsx)) |
+| Sons du tirage | Bouton `SoundToggle` étiqueté « Couper les sons » ou « Activer les sons » ; aucun son n'est joué avant une première interaction de l'utilisateur avec la page |
 
 Il n'y a ni test automatisé d'accessibilité (axe, pa11y, Lighthouse) dans la CI, ni évaluation des contrastes documentée, ni test avec un lecteur d'écran consigné.
 

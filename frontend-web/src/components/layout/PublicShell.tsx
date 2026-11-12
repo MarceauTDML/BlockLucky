@@ -3,7 +3,10 @@
 import Link from 'next/link';
 import React from 'react';
 import { LinkButton } from '@/components/ui/Button';
+import { getLegalDocument, LEGAL_DOC_ORDER } from '@/content/legal';
 import { homeForRole } from '@/hooks/useAuth';
+import { openConsentManager } from '@/lib/consent';
+import { LEGAL_PATHS } from '@/lib/legalPaths';
 import { useAppSelector } from '@/store';
 import { useAppTheme } from '@/theme/ThemeProvider';
 import Brand from './Brand';
@@ -14,7 +17,7 @@ const footerLink =
   'inline-flex rounded-full bg-surface-elevated px-3.5 py-2 text-fg-secondary transition-colors hover:bg-sun-chip hover:text-fg';
 
 export const PublicShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { t } = useAppTheme();
+  const { language, t } = useAppTheme();
   const { isAuthenticated, user } = useAppSelector((s) => s.auth);
 
   return (
@@ -60,20 +63,17 @@ export const PublicShell: React.FC<{ children: React.ReactNode }> = ({ children 
             </p>
           </div>
           <ul className="flex flex-wrap gap-2 text-small font-semibold md:max-w-md md:justify-end">
+            {LEGAL_DOC_ORDER.map((id) => (
+              <li key={id}>
+                <Link href={LEGAL_PATHS[id]} className={footerLink}>
+                  {getLegalDocument(id, language).title}
+                </Link>
+              </li>
+            ))}
             <li>
-              <Link href="/transparence" className={footerLink}>
-                {t('Charte de transparence', 'Transparency charter')}
-              </Link>
-            </li>
-            <li>
-              <Link href="/confidentialite" className={footerLink}>
-                {t('Confidentialité (RGPD)', 'Privacy (GDPR)')}
-              </Link>
-            </li>
-            <li>
-              <Link href="/mentions-legales" className={footerLink}>
-                {t('Conditions & jeu responsable', 'Terms & responsible play')}
-              </Link>
+              <button type="button" onClick={openConsentManager} className={footerLink}>
+                {t('Gérer mes traceurs', 'Manage trackers')}
+              </button>
             </li>
             <li>
               <Link href="/connexion?espace=pro" className={footerLink}>

@@ -5,7 +5,7 @@ Le module `auth` ouvre les sessions des citoyens, des partenaires et des adminis
 | Parcours | Routes | Client qui l'utilise |
 |---|---|---|
 | Email et mot de passe | `/signup`, `/signin`, `/password/forgot`, `/password/reset` | Application mobile |
-| Google ou Apple | `/oauth/google`, `/oauth/apple` | Application mobile, si les identifiants client sont configurés |
+| Google | `/oauth/google` | Application mobile, si les identifiants client sont configurés |
 | Code à 6 chiffres reçu par email, sans mot de passe | `/login` | Frontend web |
 | Second facteur : code TOTP d'application ou code email | `/2fa/verify` | Web et mobile, pour les comptes qui l'ont activé |
 | Compte connecté : changement d'adresse email ou de mot de passe | `/email/change`, `/email/confirm`, `/password/change` | Application mobile (Paramètres, puis Sécurité) |
@@ -14,13 +14,13 @@ Le module crée aussi le compte et le portefeuille Ethereum intégré lors de la
 
 | Fichier | Contenu |
 |---|---|
-| [`backend/src/api/auth/auth.routes.ts`](src:backend/src/api/auth/auth.routes.ts) | 15 routes et leurs middlewares |
+| [`backend/src/api/auth/auth.routes.ts`](src:backend/src/api/auth/auth.routes.ts) | 14 routes et leurs middlewares |
 | [`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts) | Schémas Zod |
 | [`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts) | Connexion, inscription, mot de passe, OAuth, 2FA, déconnexion |
-| [`backend/src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) | Vérification des jetons d'identité Google et Apple |
+| [`backend/src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) | Vérification des jetons d'identité Google |
 | [`backend/src/api/auth/auth.repo.ts`](src:backend/src/api/auth/auth.repo.ts) | Lecture et écriture de `User`, événements `Analytics` |
 | [`backend/src/services/session.service.ts`](src:backend/src/services/session.service.ts) | Signature, vérification et révocation des JWT |
-| [`backend/src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) | Codes email (connexion, inscription, activation, réinitialisation, changement d'email), compteur d'échecs, anti-rejeu TOTP |
+| [`backend/src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) | Codes email (connexion, inscription, activation, réinitialisation, changement d'email), compteur d'échecs, anti-rejeu TOTP, tickets de connexion (`issueLoginTicket`, `readLoginTicket`, `revokeLoginTicket`) |
 | [`backend/src/utils/crypto.util.ts`](src:backend/src/utils/crypto.util.ts) | `hashValue` et `compareHash` (bcrypt), HMAC, chiffrement |
 | [`backend/src/services/totp.service.ts`](src:backend/src/services/totp.service.ts) | Secrets TOTP, QR code, codes de secours |
 
@@ -38,7 +38,6 @@ Le parcours vu du citoyen est décrit dans [Inscription et portefeuille](../../a
 | `POST /api/v1/auth/email/change` | connecté | `authRateLimiter`, `authenticate`, `validate(emailChangeRequestSchema)` | Envoi d'un code à la nouvelle adresse |
 | `POST /api/v1/auth/email/confirm` | connecté | `authRateLimiter`, `authenticate`, `validate(emailChangeConfirmSchema)` | Confirmation de la nouvelle adresse |
 | `POST /api/v1/auth/oauth/google` | public | `authRateLimiter`, `validate(googleOAuthSchema)` | Connexion ou inscription avec un jeton Google |
-| `POST /api/v1/auth/oauth/apple` | public | `authRateLimiter`, `validate(appleOAuthSchema)` | Connexion ou inscription avec un jeton Apple |
 | `GET /api/v1/auth/onboarding` | public | aucun | Écrans d'accueil statiques |
 | `POST /api/v1/auth/login` | public | `authRateLimiter`, `validate(socialLoginSchema)` | Connexion ou inscription sans mot de passe, par code email |
 | `POST /api/v1/auth/2fa/verify` | public, jeton facultatif | `authRateLimiter`, `optionalAuthenticate`, `validate(verify2FASchema)` | Vérifie un code et délivre la session |
@@ -46,7 +45,7 @@ Le parcours vu du citoyen est décrit dans [Inscription et portefeuille](../../a
 | `POST /api/v1/auth/2fa/disable` | connecté | `authRateLimiter`, `authenticate`, `validate(disable2FASchema)` | Désactive la 2FA |
 | `POST /api/v1/auth/logout` | connecté | `authenticate`, `validate(logoutSchema)` | Révoque la session courante ou toutes les sessions |
 
-`authRateLimiter` limite chaque IP à 30 requêtes par fenêtre de 10 minutes, avec un seul compteur pour les neuf routes qui l'utilisent, stocké dans Redis. Au-delà : `429 Trop de tentatives de connexion/2FA, veuillez patienter quelques minutes.`
+`authRateLimiter` limite chaque IP à 30 requêtes par fenêtre de 10 minutes, avec un seul compteur pour les onze routes qui l'utilisent, stocké dans Redis. Au-delà : `429 Trop de tentatives de connexion/2FA, veuillez patienter quelques minutes.`
 
 ## Jeton de session
 
@@ -60,7 +59,7 @@ Toute session réussie renvoie un JWT signé par [`session.service.ts`](src:back
 | Durée | `JWT_EXPIRES_IN`, 12 heures par défaut, tolérance d'horloge de 30 secondes |
 | Contenu | `userId`, `walletAddress`, `role`, `twoFactorVerified` |
 
-`twoFactorVerified` vaut toujours `true` dans les jetons émis par ce module, y compris après une connexion par mot de passe, Google ou Apple sur un compte sans 2FA. Le champ n'est lu par aucun middleware.
+`twoFactorVerified` vaut toujours `true` dans les jetons émis par ce module, y compris après une connexion par mot de passe ou Google sur un compte sans 2FA. Le champ n'est lu par aucun middleware.
 
 À chaque requête authentifiée, le jeton est vérifié puis comparé à deux clés Redis : `auth:revoked:<jti>` (session révoquée) et `auth:revoked-before:<userId>` (toutes les sessions émises avant cet instant). Le rôle n'est relu en base que par `requireRoles`.
 
@@ -74,7 +73,8 @@ Inscription par email et mot de passe. Aucun compte n'est créé à cette étape
 |---|---|---|
 | `email` | chaîne | email valide, 254 caractères au plus, passé en minuscules |
 | `password` | chaîne | 10 à 128 caractères, au moins une lettre (toutes écritures, `\p{L}`) et un chiffre |
-| `acceptTerms` | booléen | doit valoir `true`, sinon `400 Vous devez accepter les conditions d'utilisation pour créer un compte.` |
+| `acceptTerms` | booléen | doit valoir `true`, sinon `400 Vous devez accepter les conditions d'utilisation et le règlement du jeu pour créer un compte.` |
+| `isAdultConfirmed` | booléen | doit valoir `true`, sinon `400 Vous devez certifier avoir 18 ans ou plus pour créer un compte.` |
 | `referralCode` | chaîne | facultatif, 64 caractères au plus |
 | `utmSource` | chaîne | facultatif, 100 caractères au plus |
 | `ageGroup` | énumération | facultatif : `18-25`, `26-35`, `36-50`, `50+` |
@@ -84,7 +84,8 @@ Inscription par email et mot de passe. Aucun compte n'est créé à cette étape
 1. Un compte existant dont l'email est vérifié, ou un compte anonymisé, bloque l'inscription : `409 Un compte existe déjà avec cette adresse email.`
 2. Le mot de passe est haché tout de suite par `hashValue` (bcrypt, coût 12). Seule l'empreinte est conservée, avec l'email, le parrain résolu, la tranche d'âge et la source, dans le défi `SIGNUP` de Redis pendant 10 minutes. Un code de parrainage inconnu est ignoré.
 3. L'email `otp-code` part avec le sujet `Vérifiez votre adresse email - BlockLucky`.
-4. La réponse, en 201, a la même forme que celle de `/login` : `requiresTwoFactor: true`, `twoFactorMethod: "EMAIL"`, un `userId` provisoire et `devOtpPreview` en développement.
+4. Ni `acceptTerms` ni `isAdultConfirmed` ne sont enregistrés : le schéma garantit seulement que les deux cases ont été cochées.
+5. La réponse, en 201, a la même forme que celle de `/login` : `requiresTwoFactor: true`, `twoFactorMethod: "EMAIL"`, un `userId` provisoire et `devOtpPreview` en développement.
 
 À la vérification du code :
 
@@ -106,7 +107,7 @@ Connexion par email et mot de passe.
 1. Le sujet du blocage est l'identifiant du compte, ou, pour une adresse inconnue, `signin:` suivi du HMAC de l'adresse. Après 10 échecs : `429 Trop de codes erronés...`, comme pour les codes.
 2. Le mot de passe est comparé par bcrypt à l'empreinte du compte. Si le compte n'existe pas ou n'a pas de mot de passe, la comparaison se fait contre une empreinte factice, pour que la durée de la réponse ne révèle pas l'existence du compte.
 3. Tout échec renvoie `401 Email ou mot de passe incorrect.` et compte un échec.
-4. Si la 2FA par application est active, la réponse demande le code TOTP (`requiresTwoFactor: true`, `twoFactorMethod: "APP"`, `userId` du compte). Si la 2FA par email est active, un code `LOGIN` est envoyé. Sinon, la session est délivrée tout de suite, avec l'événement `USER_LOGIN` (fournisseur `PASSWORD`).
+4. Si la 2FA par application est active, la réponse demande le code TOTP (`requiresTwoFactor: true`, `twoFactorMethod: "APP"`, `userId` du compte) et contient un `loginTicket` à renvoyer avec ce code (voir [POST /auth/2fa/verify](#post-auth-2fa-verify)). Si la 2FA par email est active, un code `LOGIN` est envoyé. Sinon, la session est délivrée tout de suite, avec l'événement `USER_LOGIN` (fournisseur `PASSWORD`).
 
 > [!NOTE]
 > `LOGIN_EMAIL_CODE_REQUIRED` ne concerne que `/login`. Une connexion par mot de passe sur un compte sans 2FA ne passe par aucun code email.
@@ -119,7 +120,7 @@ Connexion par email et mot de passe.
 
 La réponse est toujours `200 { "sent": true }`, avec le message `Si un compte existe pour cette adresse, un code de réinitialisation a été envoyé`, que le compte existe ou non. Pour un compte actif, un code `PASSWORD_RESET` est émis sur le sujet `password-reset:<userId>` (10 minutes, 5 essais) et envoyé par l'email `otp-code` (sujet `Réinitialisation de votre mot de passe - BlockLucky`) sans attendre la mise en file. En développement, `devOtpPreview` n'apparaît que pour un compte existant.
 
-Un compte sans mot de passe, inscrit par `/login`, Google ou Apple, peut suivre ce parcours pour en définir un.
+Un compte sans mot de passe, inscrit par `/login` ou Google, peut suivre ce parcours pour en définir un.
 
 ## POST /auth/password/reset
 
@@ -144,7 +145,7 @@ Création ou modification du mot de passe du compte connecté. Le parcours mobil
 
 1. Un compte absent ou supprimé renvoie `404 Utilisateur introuvable`.
 2. Si le compte a un mot de passe : blocage après 10 échecs sur le sujet `<userId>` (le même que `/signin`), puis comparaison bcrypt. Un mot de passe actuel absent ou faux renvoie `401 Mot de passe actuel incorrect.` et compte un échec ; un succès remet le compteur à zéro.
-3. Un compte sans mot de passe (inscrit par `/login`, Google ou Apple) en définit un sans fournir `currentPassword`.
+3. Un compte sans mot de passe (inscrit par `/login` ou Google) en définit un sans fournir `currentPassword`.
 4. Nouvelle empreinte bcrypt, révocation de toutes les sessions du compte (`auth:revoked-before:<userId>`) et alerte `security-alert` à l'adresse du compte (« Mot de passe modifié », ou « Mot de passe défini sur votre compte »).
 5. Une nouvelle session est délivrée aussitôt, avec la même forme que `/signin` : `{ "requiresTwoFactor": false, "isNewUser": false, "token": "...", "user": {...} }`, message `Mot de passe mis à jour, vos autres sessions ont été déconnectées`. Le jeton est émis avec `twoFactorVerified: true`, sans nouveau code 2FA : l'appelant a déjà une session valide. L'appareil qui a fait la demande remplace son jeton ; tous les autres sont déconnectés.
 
@@ -177,14 +178,13 @@ La réponse vaut `{ "message": "Un code à 6 chiffres a été envoyé à <adress
 
 La réponse vaut `{ "profile": { "email": "nouvelle@etherbay.fr" } }`, message `Adresse email mise à jour`. Les sessions ne sont pas révoquées.
 
-## POST /auth/oauth/google et /auth/oauth/apple
+## POST /auth/oauth/google
 
 | Route | Corps | Vérification dans [`oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) |
 |---|---|---|
 | `/oauth/google` | `idToken`, 20 à 8 192 caractères | `OAuth2Client.verifyIdToken` de `google-auth-library`, audience parmi `GOOGLE_CLIENT_IDS` ; `email` et `sub` obligatoires, `email_verified` doit être vrai |
-| `/oauth/apple` | `identityToken`, 20 à 8 192 caractères ; `fullName` facultatif, 200 caractères au plus | `jwtVerify` de `jose` contre les clés publiques `https://appleid.apple.com/auth/keys`, émetteur `https://appleid.apple.com`, audience parmi `APPLE_CLIENT_IDS`, algorithme RS256 ; `email` et `sub` obligatoires, `email_verified` refusé s'il est présent et faux |
 
-Si la liste d'identifiants client du fournisseur est vide, ce qui est le cas par défaut, la route répond `503 Connexion Google non configurée.` ou `503 Connexion Apple non configurée.`. Un jeton invalide, expiré ou sans email vérifié renvoie 401.
+Si `GOOGLE_CLIENT_IDS` est vide, ce qui est le cas par défaut, la route répond `503 Connexion Google non configurée.`. Un jeton invalide, expiré ou sans email vérifié renvoie 401. La connexion avec Apple (`/oauth/apple`) a été retirée : Google est le seul fournisseur d'identité.
 
 Le compte est retrouvé par l'adresse email du jeton :
 
@@ -192,9 +192,9 @@ Le compte est retrouvé par l'adresse email du jeton :
 |---|---|
 | Aucun compte | [Création du compte](#creation-du-compte) sans mot de passe ni parrain, session avec `isNewUser: true` |
 | Compte non vérifié | Activation comme pour `/signup`, session délivrée sans 2FA |
-| Compte vérifié | Même suite que `/signin` : code TOTP ou code email si la 2FA est active, sinon session et `USER_LOGIN` (fournisseur `GOOGLE` ou `APPLE`) |
+| Compte vérifié | Même suite que `/signin` : code TOTP avec `loginTicket` ou code email si la 2FA est active, sinon session et `USER_LOGIN` (fournisseur `GOOGLE`) |
 
-L'identifiant `sub` du fournisseur et le `fullName` d'Apple ne sont pas enregistrés. Les risques de ce rattachement par adresse sont analysés dans [Authentification et 2FA](../../securite/authentification.md#rattachement-par-adresse-email).
+L'identifiant `sub` du fournisseur n'est pas enregistré. Les risques de ce rattachement par adresse sont analysés dans [Authentification et 2FA](../../securite/authentification.md#rattachement-par-adresse-email).
 
 ## POST /auth/login
 
@@ -206,8 +206,9 @@ Connexion sans mot de passe, utilisée par le frontend web. Le client envoie l'e
 |---|---|---|
 | `walletAddress` | chaîne | obligatoire, `0x` + 40 hexadécimaux, passée en minuscules |
 | `email` | chaîne | facultatif, email valide, 254 caractères au plus ; obligatoire en pratique pour un nouveau compte |
-| `provider` | énumération | `GOOGLE`, `APPLE`, `EMAIL` ou `WALLET`, défaut `GOOGLE` ; seulement enregistré dans les métadonnées analytiques |
+| `provider` | énumération | `GOOGLE`, `EMAIL` ou `WALLET`, défaut `GOOGLE` ; seulement enregistré dans les métadonnées analytiques |
 | `isAdultConfirmed` | booléen | doit valoir `true`, sinon `400` avec le message `Vous devez certifier avoir 18 ans ou plus pour participer à la loterie (Légal 18+).` Cette déclaration ne dispense pas de la vérification d'âge exigée à l'achat |
+| `acceptTerms` | booléen | facultatif ; s'il est présent, doit valoir `true`, sinon `400 Vous devez accepter les conditions d'utilisation et le règlement du jeu pour continuer.` Le web l'envoie toujours ; il n'est pas enregistré |
 | `ageGroup` | énumération | facultatif : `18-25`, `26-35`, `36-50`, `50+` |
 | `referralCode` | chaîne | facultatif, 64 caractères au plus, code de parrainage d'un autre citoyen |
 | `utmSource` | chaîne | facultatif, 100 caractères au plus |
@@ -216,9 +217,7 @@ Connexion sans mot de passe, utilisée par le frontend web. Le client envoie l'e
 
 ```mermaid
 flowchart TD
-    A["Recherche du compte par walletAddress puis par email"] --> B{"Compte avec 2FA APP active ?"}
-    B -- oui --> B1["requiresTwoFactor APP, userId du compte"]
-    B -- non --> C{"LOGIN_EMAIL_CODE_REQUIRED ou 2FA EMAIL ?"}
+    A["Recherche du compte par walletAddress puis par email"] --> C{"LOGIN_EMAIL_CODE_REQUIRED ou 2FA active ?"}
     C -- oui --> D{"Compte existant ?"}
     D -- oui --> D1["Code LOGIN lié au compte"]
     D -- non --> D2["Code SIGNUP lié à un identifiant provisoire, inscription en attente dans Redis"]
@@ -232,10 +231,10 @@ flowchart TD
 ```
 
 1. Le compte est cherché par adresse, puis par email.
-2. Un compte dont la 2FA par application est active ne reçoit aucun code email : la réponse demande directement le code TOTP, avec l'identifiant du compte dans `userId`.
+2. Un compte dont la 2FA est active, par email ou par application, reçoit toujours un code email d'abord, même si `LOGIN_EMAIL_CODE_REQUIRED` vaut `false`. Pour la 2FA par application, la vérification de ce code par `/2fa/verify` renvoie ensuite un `loginTicket` et le code TOTP est demandé (voir [POST /auth/2fa/verify](#post-auth-2fa-verify)).
 3. Dans le cas normal (production et développement), un code est émis. L'email utilisé est celui du compte s'il existe, sinon celui du corps. Sans email : `400 Une adresse email est requise pour recevoir le code de connexion`.
 4. Pour un compte existant, le blocage par compte est vérifié avant l'émission (`429`, voir plus bas). Pour un nouvel inscrit, `userId` est un UUID provisoire et les données d'inscription (email, code de parrainage résolu, tranche d'âge, source) sont conservées avec le code dans Redis pendant 10 minutes. Aucun compte n'est créé à cette étape.
-5. Si `LOGIN_EMAIL_CODE_REQUIRED=false` (tests uniquement), le compte est créé ou connecté immédiatement et la réponse contient le jeton.
+5. Si `LOGIN_EMAIL_CODE_REQUIRED=false` (tests uniquement) et que le compte n'a pas de 2FA, le compte est créé ou connecté immédiatement et la réponse contient le jeton.
 
 Un code de parrainage inconnu est ignoré sans erreur.
 
@@ -256,7 +255,7 @@ Code envoyé par email, en développement :
 }
 ```
 
-`devOtpPreview` n'existe qu'en `NODE_ENV=development`. Pour un compte avec 2FA par application, la réponse vaut `{ "requiresTwoFactor": true, "twoFactorMethod": "APP", "userId": "<id du compte>" }`.
+`devOtpPreview` n'existe qu'en `NODE_ENV=development`. La réponse a cette forme pour tous les comptes, y compris ceux dont la 2FA est par application.
 
 ### Effets de bord
 
@@ -271,20 +270,32 @@ Seconde étape des connexions par code et des connexions avec 2FA. Elle confirme
 
 | Champ | Type | Règles |
 |---|---|---|
-| `userId` | UUID | facultatif ; obligatoire sans jeton. Valeur `userId` reçue de `/login`, `/signup`, `/signin` ou d'une route OAuth. |
+| `userId` | UUID | facultatif ; obligatoire sans jeton ni ticket. Valeur `userId` reçue de `/login`, `/signup`, `/signin` ou de `/oauth/google`. |
+| `loginTicket` | chaîne | facultatif, 32 à 128 caractères `[A-Za-z0-9_-]` ; ticket reçu après le premier facteur d'un compte à 2FA par application |
 | `code` | chaîne | 6 à 16 caractères `[0-9A-Za-z-]`, espaces retirés : code email, code TOTP ou code de secours `XXXXX-XXXXX` |
 
-Si un jeton valide accompagne la requête, son `userId` prime sur celui du corps. Sans l'un ni l'autre : `400 Identifiant utilisateur requis pour vérifier le code 2FA`.
+Le sujet vérifié est, dans l'ordre, le compte du jeton s'il accompagne la requête, celui du ticket, puis le `userId` du corps. Sans aucun des trois : `400 Identifiant utilisateur requis pour vérifier le code 2FA`. Un ticket inconnu ou expiré, ou un ticket qui ne correspond pas au `userId` envoyé, renvoie `401 Connexion expirée ou incomplète : reconnectez-vous avant de saisir le code de votre application.`
+
+### Ticket de connexion
+
+Le ticket prouve que le premier facteur a été franchi. Il est émis par `issueLoginTicket` de [`otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) après un mot de passe correct (`/signin`), un jeton Google valide (`/oauth/google`) ou un code email vérifié (`/login`), pour un compte dont la 2FA par application est active.
+
+| Propriété | Valeur |
+|---|---|
+| Valeur | 32 octets aléatoires (256 bits), en base64url |
+| Clé Redis | `auth:login-ticket:<HMAC du ticket>`, qui contient l'identifiant du compte |
+| Durée de vie | 10 minutes |
+| Usage | Unique : supprimé (`revokeLoginTicket`) dès que le code de l'application est accepté |
 
 ### Règles
 
 1. Si le sujet a accumulé 10 échecs, la vérification est refusée : `429 Trop de codes erronés. La vérification est bloquée pendant une heure pour ce compte.` Le compteur `auth:otp-failures:<id>` expire une heure après le dernier échec.
-2. Si un code email est en attente pour ce sujet, il est comparé en temps constant à son HMAC. Un code reste valable 10 minutes et 5 essais ; au cinquième essai erroné il est supprimé, même s'il n'a pas expiré.
+2. Si aucun ticket n'est fourni et qu'un code email est en attente pour ce sujet, il est comparé en temps constant à son HMAC. Un code reste valable 10 minutes et 5 essais ; au cinquième essai erroné il est supprimé, même s'il n'a pas expiré.
    - Finalité `SIGNUP` : le compte est créé (voir [Création du compte](#creation-du-compte)), ou activé pour une inscription par mot de passe sur un compte non vérifié, et la session est délivrée avec `isNewUser: true`.
-   - Finalité `LOGIN` : `isEmailVerified` passe à `true` si besoin, un événement `USER_LOGIN` (fournisseur `EMAIL_CODE`) est enregistré.
+   - Finalité `LOGIN` : `isEmailVerified` passe à `true` si besoin. Si le compte a la 2FA par application, aucune session n'est délivrée : la réponse vaut `{ verified: true, requiresTwoFactor: true, twoFactorMethod: "APP", userId, loginTicket }` et le client renvoie le code TOTP avec ce ticket. Sinon, un événement `USER_LOGIN` (fournisseur `EMAIL_CODE`) est enregistré et la session délivrée.
    - Finalité `SETUP` : la 2FA par email est activée, toutes les sessions antérieures sont révoquées et une alerte de sécurité est envoyée.
-3. Sinon, le compte doit avoir `twoFactorMethod = APP`. Le code est accepté s'il correspond au TOTP courant, précédent ou suivant (pas de 30 secondes) et n'a pas déjà servi (clé `auth:totp-used:<userId>:<compteur>` pendant 120 secondes), ou s'il correspond à un code de secours non utilisé. Un code de secours est consommé et déclenche une alerte email indiquant le nombre restant.
-4. Si la 2FA par application n'était pas encore active, cette vérification l'active, révoque les sessions antérieures et envoie une alerte. Sinon, un événement `USER_LOGIN` (fournisseur `TOTP`) est enregistré.
+3. Sinon, le code est un code d'application. Il n'est examiné que si le premier facteur est prouvé : soit la requête porte une session du compte (activation de la 2FA), soit le ticket appartient au compte et sa 2FA est active. À défaut : `401 Connexion expirée ou incomplète : reconnectez-vous avant de saisir le code de votre application.` Le compte doit ensuite avoir `twoFactorMethod = APP` et ne pas être supprimé. Le code est accepté s'il correspond au TOTP courant, précédent ou suivant (pas de 30 secondes) et n'a pas déjà servi (clé `auth:totp-used:<userId>:<compteur>` pendant 120 secondes), ou s'il correspond à un code de secours non utilisé. Un code de secours est consommé et déclenche une alerte email indiquant le nombre restant.
+4. En cas de succès, le ticket est supprimé. Si la 2FA par application n'était pas encore active, cette vérification l'active, révoque les sessions antérieures et envoie une alerte. Sinon, un événement `USER_LOGIN` (fournisseur `TOTP`) est enregistré.
 
 Tout échec incrémente le compteur et renvoie `401 Code de vérification invalide ou expiré`, sans distinguer code faux, code expiré et compte inconnu. Un succès remet le compteur à zéro.
 
@@ -318,7 +329,7 @@ Le `user.id` d'un nouvel inscrit diffère du `userId` provisoire envoyé par `/l
 
 ### Création du compte
 
-`createVerifiedUser` est appelée à la vérification d'un code `SIGNUP`, par une route OAuth pour une adresse inconnue, ou directement par `/login` quand le code email est désactivé. Si un compte existe déjà pour l'adresse ou l'email (deux inscriptions concurrentes), il est réutilisé et `isNewUser` vaut `false`.
+`createVerifiedUser` est appelée à la vérification d'un code `SIGNUP`, par `/oauth/google` pour une adresse inconnue, ou directement par `/login` quand le code email est désactivé. Si un compte existe déjà pour l'adresse ou l'email (deux inscriptions concurrentes), il est réutilisé et `isNewUser` vaut `false`.
 
 | Étape | Détail |
 |---|---|
@@ -328,7 +339,7 @@ Le `user.id` d'un nouvel inscrit diffère du `userId` provisoire envoyé par `/l
 | Parrainage | +100 `REFERRAL` au parrain, puis +50 `REFERRAL` au filleul |
 | Points | +25 `SOCIAL_QUEST` (« Bonus de bienvenue Onboarding EtherBay ») |
 | Email | `welcome` avec l'adresse du portefeuille et le code de parrainage |
-| Analytique | `USER_SIGNUP` avec `provider` (`PASSWORD`, `GOOGLE`, `APPLE` ou celui envoyé à `/login`), `ageGroup` et `isAdultConfirmed`, toujours enregistré à `true` |
+| Analytique | `USER_SIGNUP` avec `provider` (`PASSWORD`, `GOOGLE` ou celui envoyé à `/login`), `ageGroup` et `isAdultConfirmed`, toujours enregistré à `true` |
 
 Le détail du portefeuille et de la dotation est dans [Portefeuilles intégrés](../../integration-blockchain/portefeuilles.md).
 
@@ -419,7 +430,8 @@ Renvoie `{ "slides": [...] }` : quatre écrans codés en dur dans `getOnboarding
 | 401 | `Email ou mot de passe incorrect.` | `/signin` |
 | 401 | `Mot de passe incorrect.` | `/email/change` |
 | 401 | `Mot de passe actuel incorrect.` | `/password/change` |
-| 401 | `Jeton Google invalide ou expiré.`, `Jeton Apple invalide ou expiré.`, email non vérifié | Routes OAuth |
+| 401 | `Connexion expirée ou incomplète : reconnectez-vous avant de saisir le code de votre application.` | `/2fa/verify` : code d'application sans ticket valide ni session du compte |
+| 401 | `Jeton Google invalide ou expiré.`, email non vérifié | `/oauth/google` |
 | 401 | `Pour désactiver la double authentification, ...` | Preuve manquante sur `/2fa/disable` |
 | 404 | `Utilisateur introuvable` | `/2fa/setup`, `/2fa/disable`, `/password/change`, `/email/change` ou `/email/confirm` sur un compte supprimé |
 | 409 | `La double authentification est déjà active. ...` | `/2fa/setup` |
@@ -427,7 +439,7 @@ Renvoie `{ "slides": [...] }` : quatre écrans codés en dur dans `getOnboarding
 | 409 | `Cette adresse email est déjà utilisée par un autre compte.` | `/email/change`, `/email/confirm` |
 | 429 | `Trop de codes erronés. ...` | 10 échecs pour le même sujet, codes et mots de passe confondus |
 | 429 | `Trop de tentatives de connexion/2FA, ...` | `authRateLimiter` |
-| 503 | `Connexion Google non configurée.`, `Connexion Apple non configurée.` | `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` vide |
+| 503 | `Connexion Google non configurée.` | `GOOGLE_CLIENT_IDS` vide |
 
 Le contrôle `403 Vous devez confirmer avoir plus de 18 ans` du service n'est jamais atteint : la validation Zod rejette la requête avant.
 
@@ -446,7 +458,7 @@ Connexion sans mot de passe, comme le web :
 ```bash
 curl -s -X POST http://localhost:2053/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"walletAddress":"0x1234567890123456789012345678901234567890","email":"citoyen@etherbay.fr","isAdultConfirmed":true,"ageGroup":"26-35"}'
+  -d '{"walletAddress":"0x1234567890123456789012345678901234567890","email":"citoyen@etherbay.fr","isAdultConfirmed":true,"acceptTerms":true,"ageGroup":"26-35"}'
 
 curl -s -X POST http://localhost:2053/api/v1/auth/2fa/verify \
   -H "Content-Type: application/json" \

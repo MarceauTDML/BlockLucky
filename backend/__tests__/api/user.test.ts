@@ -31,7 +31,7 @@ describe('User & GDPR API (/api/user)', () => {
     userToken = loginRes.body.data.token;
   });
 
-  it('should complete social quests, set responsible gaming limit, export GDPR JSON, and confirm GDPR deletion', async () => {
+  it('should complete social quests, reject the removed ticket cap route, export GDPR JSON, and confirm GDPR deletion', async () => {
     const questRes = await request(app)
       .post('/api/user/quests/complete')
       .set('Authorization', `Bearer ${userToken}`)
@@ -45,8 +45,7 @@ describe('User & GDPR API (/api/user)', () => {
       .set('Authorization', `Bearer ${userToken}`)
       .send({ maxTicketsPerRound: 5 });
 
-    expect(limitRes.status).toBe(200);
-    expect(limitRes.body.data.maxTicketsPerRound).toBe(5);
+    expect(limitRes.status).toBe(404);
 
     const exportRes = await request(app)
       .get('/api/user/gdpr/export')

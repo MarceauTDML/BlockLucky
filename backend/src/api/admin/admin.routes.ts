@@ -10,6 +10,9 @@ import {
   listIdentityVerificationsSchema,
   identityVerificationIdSchema,
   identityDecisionSchema,
+  listStaffAccountsSchema,
+  createStaffAccountSchema,
+  updateStaffRoleSchema,
 } from './admin.validators';
 
 const router = Router();
@@ -112,6 +115,45 @@ router.post(
   '/identity-verifications/:id/decision',
   validate(identityDecisionSchema),
   (req, res, next) => adminController.decideIdentityVerification(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/admin/accounts:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Lister les comptes Mairie et partenaires (filtre par rôle, recherche par email ou nom, paginé) avec leurs établissements rattachés
+ */
+router.get(
+  '/accounts',
+  validate(listStaffAccountsSchema),
+  (req, res, next) => adminController.listStaffAccounts(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/admin/accounts:
+ *   post:
+ *     tags: [Admin]
+ *     summary: Créer un compte Mairie ou partenaire, ou attribuer ce rôle à un compte existant, puis envoyer l'invitation par email (action journalisée)
+ */
+router.post(
+  '/accounts',
+  validate(createStaffAccountSchema),
+  (req, res, next) => adminController.createStaffAccount(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/admin/accounts/{id}/role:
+ *   patch:
+ *     tags: [Admin]
+ *     summary: Modifier ou retirer le rôle d'un compte (refus sur son propre compte et sur le dernier compte Mairie, sessions révoquées, action journalisée)
+ */
+router.patch(
+  '/accounts/:id/role',
+  validate(updateStaffRoleSchema),
+  (req, res, next) => adminController.updateStaffRole(req, res, next)
 );
 
 /**

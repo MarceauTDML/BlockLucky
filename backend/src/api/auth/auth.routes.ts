@@ -14,7 +14,6 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
   googleOAuthSchema,
-  appleOAuthSchema,
   emailChangeRequestSchema,
   emailChangeConfirmSchema,
   changePasswordSchema,
@@ -139,20 +138,6 @@ router.post(
 
 /**
  * @openapi
- * /api/auth/oauth/apple:
- *   post:
- *     tags: [Auth]
- *     summary: Connexion ou inscription avec un jeton Sign in with Apple vérifié contre les clés publiques d'Apple
- */
-router.post(
-  '/oauth/apple',
-  authRateLimiter,
-  validate(appleOAuthSchema),
-  (req, res, next) => authController.appleSignIn(req, res, next)
-);
-
-/**
- * @openapi
  * /api/auth/onboarding:
  *   get:
  *     tags: [Auth]
@@ -193,7 +178,7 @@ router.post(
  * /api/auth/2fa/verify:
  *   post:
  *     tags: [Auth]
- *     summary: Vérifier le code OTP à 6 chiffres (App ou Email)
+ *     summary: Vérifier le code OTP à 6 chiffres (Email, ou App avec le loginTicket délivré après le premier facteur ou une session authentifiée)
  */
 router.post(
   '/2fa/verify',

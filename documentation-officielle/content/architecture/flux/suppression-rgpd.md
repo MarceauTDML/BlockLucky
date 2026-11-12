@@ -77,7 +77,7 @@ sequenceDiagram
 | Jeton de suppression utilisé | Supprimé |
 | `role`, `pointsBalance`, `referralCode`, `referredById`, dates | Conservés |
 | `Ticket`, `PointTransaction`, `ClaimedReward`, `Analytics` | Conservés, toujours rattachés à l'identifiant du compte ; les entrées d'audit de la Mairie sur la pièce d'identité, motif de refus compris, restent aussi |
-| Clés Redis `user:prefs:<id>`, `user:quests:<id>`, `user:ticket_limit:<id>` | Conservées |
+| Clés Redis `user:prefs:<id>`, `user:quests:<id>` | Conservées |
 | Données on-chain : adresse du portefeuille dans les événements, tickets, badges POAP | Conservées : la blockchain est immuable |
 
 Les tickets gardent dans `payerWallet` l'adresse d'origine du portefeuille, et la chaîne relie cette adresse à tous les achats. L'anonymisation est donc partielle : c'est une pseudonymisation du compte, la portée juridique est discutée dans [Blockchain et données personnelles](../../juridique/blockchain-donnees.md).

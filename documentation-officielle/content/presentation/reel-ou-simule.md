@@ -6,7 +6,7 @@ Cette page fait l'inventaire honnête de l'état du projet au 12 novembre 2026. 
 
 | Catégorie | Contenu |
 |---|---|
-| Réel | Contrats Solidity, tirage Chainlink VRF, portefeuilles intégrés chiffrés, dotation, achats et cadeaux signés, versement automatique, POAP, disjoncteur, commission, authentification, vérification d'âge par la Mairie, salle d'attente, RGPD, indexeur, keeper |
+| Réel | Contrats Solidity, tirage Chainlink VRF, portefeuilles intégrés chiffrés, dotation, achats et cadeaux signés, versement automatique, POAP, disjoncteur, commission, authentification, vérification d'âge par la Mairie, comptes Mairie et partenaires, consentement aux traceurs, salle d'attente, RGPD, indexeur, keeper |
 | Simulé à dessein | Mode `BLOCKCHAIN_MODE=simulated`, coordinateur VRF local, ethers fictifs |
 | Encore fictif | Notifications push, Sentry, libellé multi-signatures, paliers de la jauge, répartition par âge par défaut, rapport PDF serveur, stockage S3 en local, solde ETH en mode simulé |
 | Pas encore fait | Déploiement Sepolia, mise en ligne sur etherbay.tech, audit externe, tests utilisateurs |
@@ -18,7 +18,7 @@ Ces fonctionnalités fonctionnent de bout en bout en mode `onchain`, contre un v
 
 | Fonctionnalité | Ce qui la rend réelle | Référence |
 |---|---|---|
-| Smart contracts déployables | `BlockLucky` et `BlockLuckyPOAP` compilés, testés (47 tests, 100 % des lignes) et déployés automatiquement sur le nœud Hardhat local ; script Sepolia prêt | [Blockchain locale](../smart-contracts/blockchain-locale.md), [Déploiement sur Sepolia](../smart-contracts/sepolia.md) |
+| Smart contracts déployables | `BlockLucky` et `BlockLuckyPOAP` compilés, testés (54 tests, 100 % des lignes) et déployés automatiquement sur le nœud Hardhat local, avec des rôles séparés (administrateur et propriétaire VRF, trésorerie, opérateur) ; scripts Sepolia prêts | [Blockchain locale](../smart-contracts/blockchain-locale.md), [Déploiement sur Sepolia](../smart-contracts/sepolia.md) |
 | Tirage Chainlink VRF | Le contrat demande le hasard au coordinateur VRF v2.5. En local, le coordinateur est le contrat simulé officiel de Chainlink (`VRFCoordinatorV2_5Mock`) et un oracle local ([`smart-contract/scripts/local-vrf-responder.ts`](src:smart-contract/scripts/local-vrf-responder.ts)) répond aux demandes. Sur Sepolia, ce serait le coordinateur réel de Chainlink | [Tirage Chainlink VRF](../smart-contracts/chainlink-vrf.md) |
 | Portefeuilles intégrés chiffrés | Une clé Ethereum aléatoire par citoyen, chiffrée en AES-256-GCM avec `ENCRYPTION_KEY` avant d'être stockée | [`backend/src/blockchain/wallet.service.ts`](src:backend/src/blockchain/wallet.service.ts) |
 | Dotation de bienvenue | Vrai transfert d'ethers fictifs du compte opérateur vers le portefeuille, une seule fois par compte, protégé par un verrou Redis | `grantWelcomeEthers` |
@@ -32,8 +32,10 @@ Ces fonctionnalités fonctionnent de bout en bout en mode `onchain`, contre un v
 | Indexation | Les tickets, tirages et annulations sont projetés en base depuis les événements du contrat, avec un curseur | [Indexeur d'événements](../integration-blockchain/indexeur.md) |
 | Connexion par code email ou par mot de passe | Code à 6 chiffres haché, valable 10 minutes, envoyé par email ; mot de passe haché par bcrypt, verrouillage après échecs répétés | [Authentification](../backend/modules/auth.md) |
 | Vérification d'âge | Recto et verso de la pièce d'identité chiffrés en AES-256-GCM, examinés par un agent de la Mairie puis effacés ; achat, cadeau et échange refusés (403 `AGE_VERIFICATION_REQUIRED`) tant que l'âge n'est pas vérifié | [`backend/src/middlewares/age-verification.middleware.ts`](src:backend/src/middlewares/age-verification.middleware.ts), [`frontend-web/src/app/mairie/identites/page.tsx`](src:frontend-web/src/app/mairie/identites/page.tsx), [`frontend-web/src/app/(citoyen)/profil/identite/page.tsx`](src:frontend-web/src/app/(citoyen)/profil/identite/page.tsx) |
-| 2FA TOTP | Secret chiffré, codes de secours hachés, protection contre le rejeu, obligatoire pour les administrateurs | [Authentification et 2FA](../securite/authentification.md) |
+| 2FA TOTP | Secret chiffré, codes de secours hachés, protection contre le rejeu, code de l'application accepté seulement après le premier facteur (`loginTicket`), obligatoire pour les administrateurs | [Authentification et 2FA](../securite/authentification.md) |
 | RGPD | Export JSON, suppression confirmée par email avec anonymisation et effacement de la clé du portefeuille | [Suppression RGPD](../architecture/flux/suppression-rgpd.md) |
+| Comptes Mairie et partenaires | Page `/mairie/comptes` : liste, création avec invitation par email, attribution, changement et retrait de rôle, journalisés dans l'audit | [Administration Mairie](../backend/modules/administration.md#comptes-mairie-et-partenaires) |
+| Documents légaux et consentement | Conditions générales, règlement, mentions légales, confidentialité, traceurs et charte de transparence sur le web et le mobile ; acceptation exigée à l'inscription ; mesure d'audience du web soumise à un bandeau de consentement | [Cookies et mentions](../juridique/cookies-mentions.md) |
 
 > [!NOTE]
 > « Signé par le citoyen » veut dire signé avec la clé du portefeuille du citoyen. Cette clé est gardée et utilisée par le backend : le modèle est custodial. Le citoyen ne signe rien lui-même. Ce choix est argumenté dans l'[ADR 0004](../architecture/adr/0004-smart-contract-portefeuille-integre.md).
@@ -63,7 +65,7 @@ Ces éléments existent dans l'interface ou dans l'API mais ne reposent sur aucu
 |---|---|---|
 | Historique des notifications push | `getPushNotificationsHistory` renvoie trois notifications codées en dur. Aucun envoi de notification push n'existe côté serveur ; la bannière de notification du mobile est déclenchée localement (`triggerSimulatedOsPush`) | [`backend/src/api/user/user.services.ts`](src:backend/src/api/user/user.services.ts), [`mobile-app/src/hooks/usePushNotifications.ts`](src:mobile-app/src/hooks/usePushNotifications.ts) |
 | Sentry | Aucun SDK Sentry n'est installé. `sentry.client.ts` stocke les erreurs dans un tableau en mémoire ; `EXPO_PUBLIC_SENTRY_DSN` n'active qu'un message local. Côté web, « Sentry » désigne une simple modale d'erreur | [`mobile-app/src/services/sentry.client.ts`](src:mobile-app/src/services/sentry.client.ts) |
-| Trésorerie « multi-signatures » | Le résumé OpenAPI, l'action d'audit `TREASURY_WITHDRAWAL_MULTISIG` et le champ `multisigWallet` parlent de multi-signatures. En réalité la trésorerie est une adresse simple (`treasury`) du contrat. En mode onchain, si l'adresse saisie dans le dashboard diffère, le backend appelle d'abord `setTreasury` (rôle `DEFAULT_ADMIN_ROLE`, détenu en local par le compte opérateur par défaut, refusé à un opérateur distinct), puis `withdrawFees` verse toute la commission accumulée : le montant saisi est ignoré | [`backend/src/api/admin/admin.routes.ts`](src:backend/src/api/admin/admin.routes.ts), [`backend/src/blockchain/lottery.gateway.ts`](src:backend/src/blockchain/lottery.gateway.ts) |
+| Trésorerie « multi-signatures » | Le résumé OpenAPI, l'action d'audit `TREASURY_WITHDRAWAL_MULTISIG` et le champ `multisigWallet` parlent de multi-signatures. En réalité la trésorerie est une adresse simple (`treasury`) du contrat. En mode onchain, si l'adresse saisie dans le dashboard diffère, le backend appelle d'abord `setTreasury` (rôle `DEFAULT_ADMIN_ROLE`, laissé à l'opérateur en local, réservé à `MAIRIE_ADMIN_ADDRESS` sur Sepolia, où seul un retrait vers la trésorerie enregistrée fonctionne), puis `withdrawFees` verse toute la commission accumulée : le montant saisi est ignoré | [`backend/src/api/admin/admin.routes.ts`](src:backend/src/api/admin/admin.routes.ts), [`backend/src/blockchain/lottery.gateway.ts`](src:backend/src/blockchain/lottery.gateway.ts) |
 | Paliers de la jauge | Quatre paliers (5 000, 7 500, 9 000 et 10 000 participants) annoncent les coulisses du tirage, une offre spéciale des commerçants, un jeu bonus et l'ouverture de la salle. Seule la fermeture des achats à 10 000 tickets découle du contrat (`maxTickets`) ; les trois autres avantages ne sont pas implémentés | `buildMilestones` de [`backend/src/api/lottery/lottery.services.ts`](src:backend/src/api/lottery/lottery.services.ts) |
 | Solde ETH en mode simulé | `walletService.balanceOf` renvoie `null` hors mode onchain : le mobile n'affiche aucun solde et la billetterie considère le solde comme suffisant | [`backend/src/blockchain/wallet.service.ts`](src:backend/src/blockchain/wallet.service.ts) |
 | Répartition par âge | Sans événement portant une tranche d'âge, le dashboard affiche une répartition codée en dur (42 %, 33 %, 17 %, 8 %) ; `target18_35Validated` vaut toujours `true` | [`backend/src/api/analytics/analytics.services.ts`](src:backend/src/api/analytics/analytics.services.ts) |
@@ -76,20 +78,19 @@ Ces éléments existent dans l'interface ou dans l'API mais ne reposent sur aucu
 | Événements Socket.IO déclarés | `draw:countdown`, `draw:started`, `queue:position` et `network:fallback` sont typés mais jamais émis | [`backend/src/types/socket.types.ts`](src:backend/src/types/socket.types.ts) |
 | Traces de Web3Auth | Il n'y a pas de Web3Auth : le portefeuille est créé par le backend. `EXPO_PUBLIC_WEB3AUTH_CLIENT_ID` figure dans `mobile-app/.env.example` sans être lu. L'adresse envoyée par le web à la connexion (`POST /auth/login`) n'est qu'un identifiant de recherche : le vrai portefeuille est créé côté serveur. Le mobile, qui passe par `/auth/signin` et `/auth/signup`, n'envoie plus d'adresse | [`backend/src/api/auth/auth.routes.ts`](src:backend/src/api/auth/auth.routes.ts), [`frontend-web/src/lib/wallet.ts`](src:frontend-web/src/lib/wallet.ts) |
 | Tests mobiles | 8 tests écrits mais sans exécuteur : ni script `test` ni Jest dans `mobile-app/package.json` | `mobile-app/__tests__/` |
-| Connexion Google et Apple | Code complet côté serveur et mobile, mais `GOOGLE_CLIENT_IDS` et `APPLE_CLIENT_IDS` sont vides par défaut : les deux routes répondent 503 et le mobile grise ses boutons tant qu'aucun identifiant client n'est déclaré | [`backend/src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) |
+| Connexion Google | Code complet côté serveur et mobile, mais `GOOGLE_CLIENT_IDS` est vide par défaut : la route répond 503 et le mobile grise son bouton tant qu'aucun identifiant client n'est déclaré. La connexion Apple a été retirée | [`backend/src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) |
 
 ## Ce qui n'est pas encore fait
 
 | Élément | État | Ce qu'il faut faire |
 |---|---|---|
-| Déploiement sur Sepolia | Script [`smart-contract/scripts/deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) prêt, jamais exécuté : il n'existe pas de fichier `deployments/sepolia.json` | Comptes, ETH de test, abonnement VRF : voir [Redéployer sur Sepolia](../guides/redeployer-sepolia.md) |
-| Vérification du code sur Etherscan | Dépend du déploiement Sepolia | Commandes `npx hardhat verify` décrites dans [Déploiement sur Sepolia](../smart-contracts/sepolia.md) |
+| Déploiement sur Sepolia | Quatre scripts prêts, jamais exécutés : `npm run vrf:sepolia` (abonnement VRF), `deploy:sepolia` (contrats et rôles), `automation:sepolia` (upkeep) et `verify:sepolia` (Etherscan). Il n'existe pas de fichier `deployments/sepolia.json` : l'exécution demande les clés de l'équipe (déployeur, multisig de la Mairie, opérateur), de l'ETH et du LINK de test, que le dépôt ne contient pas | Comptes, fonds et ordre des commandes : voir [Déploiement sur Sepolia](../smart-contracts/sepolia.md) et [Redéployer sur Sepolia](../guides/redeployer-sepolia.md) |
+| Vérification du code sur Etherscan | Dépend du déploiement Sepolia | `npm run verify:sepolia`, décrit dans [Déploiement sur Sepolia](../smart-contracts/sepolia.md) |
 | Mise en ligne sur etherbay.tech | Application non hébergée | [Déploiement sur etherbay.tech](../infrastructure/deploiement-etherbay.md) |
-| Chainlink Automation | Le contrat implémente `checkUpkeep` et `performUpkeep`, mais aucune tâche n'est enregistrée ; le keeper du backend joue ce rôle | [Chainlink Automation](../smart-contracts/automation.md) |
+| Chainlink Automation | Le contrat implémente `checkUpkeep` et `performUpkeep`, et `npm run automation:sepolia` sait inscrire l'upkeep, mais aucun n'est enregistré faute de déploiement ; le keeper du backend joue ce rôle | [Chainlink Automation](../smart-contracts/automation.md) |
 | Audit de sécurité externe | Aucun ; seules les analyses automatiques (Slither, CodeQL, gitleaks, Trivy) tournent | [Audits et checklists](../securite/audits.md) |
 | Tests utilisateurs | Protocole rédigé par l'équipe, entretiens et tests non réalisés | [Profils et parcours](profils-parcours.md) |
 | Garde des secrets en production | `ENCRYPTION_KEY` et `RELAYER_PRIVATE_KEY` à confier à un coffre de secrets | [Clés et garde des portefeuilles](../securite/cles-portefeuilles.md) |
-| Création de comptes partenaire et administrateur | Aucun écran ni route ; changement de rôle en base | [Points à valider](../juridique/points-a-valider.md) |
 
 ## Code mort
 
@@ -103,7 +104,7 @@ Il reste le champ `gaslessSponsored` des réponses de `GET /lottery/status` et `
 
 1. Lancer la blockchain locale et réinitialiser la base si le conteneur a redémarré ([Dépannage](../demarrage/depannage.md)).
 2. Ne pas présenter la répartition par âge, les paliers ni les notifications comme des données réelles.
-3. Présenter la trésorerie comme une adresse simple.
+3. Présenter la trésorerie comme une adresse simple, et le tirage local comme non certifié par Chainlink (coordinateur simulé).
 4. Montrer un ticket, sa transaction et le tirage : c'est la preuve demandée par le livrable de cadrage de l'équipe.
 
 Le déroulé complet est dans [Préparer la soutenance](../guides/soutenance.md). La liste de la dette technique, avec les priorités de correction, est dans [Dette technique et limites](../annexes/dette-technique.md).

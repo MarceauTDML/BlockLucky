@@ -80,12 +80,12 @@ Docker Compose lit aussi un fichier `.env` placé à la racine du dépôt pour s
 
 ## Le compte opérateur
 
-`RELAYER_PRIVATE_KEY` est transmise au service `blockchain` sous le nom `OPERATOR_PRIVATE_KEY`. Au déploiement, [`smart-contract/scripts/deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) accorde à ce compte les rôles opérateur, pause et frappe, et lui verse 1 000 ETH fictifs, ce qui finance les dotations de bienvenue.
+`RELAYER_PRIVATE_KEY` est transmise au service `blockchain` sous le nom `OPERATOR_PRIVATE_KEY`. Au déploiement, [`smart-contract/scripts/deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) accorde à ce compte les rôles opérateur, pause et frappe, ainsi que `DEFAULT_ADMIN_ROLE` en administrateur additionnel, lui verse 1 000 ETH fictifs, ce qui finance les dotations de bienvenue, puis retire tous ses rôles au compte Hardhat n° 0 qui a déployé. L'administrateur de la Mairie est le compte n° 2, la trésorerie le compte n° 1.
 
 > [!WARNING]
 > Si le conteneur `blockchain` tournait déjà sans cette variable (après un `docker compose up` sans profil), Compose le recrée parce que son environnement a changé. La chaîne repart alors de zéro. Pour une base cohérente, partir d'un état vierge : `docker compose --profile app down -v`, puis relancer la stack.
 
-Le compte n'a pas le rôle `DEFAULT_ADMIN_ROLE`, qui reste au compte Hardhat n° 0. Les opérations qui l'exigent, comme le changement d'adresse de trésorerie, sont refusées avec « Le compte opérateur du backend n'a pas le rôle requis sur le Smart Contract. » C'est la configuration attendue en production.
+`DEFAULT_ADMIN_ROLE` est laissé à l'opérateur en local pour que le reversement de commission puisse appeler `setTreasury`. Avec `LOCAL_STRICT_ROLES=true` dans l'environnement du service `blockchain`, il ne l'a plus : les opérations qui l'exigent, comme le changement d'adresse de trésorerie, sont alors refusées avec « Le compte opérateur du backend n'a pas le rôle requis sur le Smart Contract. » C'est la configuration de Sepolia, où l'administrateur est un multisig de la Mairie (voir [Déploiement sur Sepolia](../smart-contracts/sepolia.md)).
 
 ## Différences avec le développement
 

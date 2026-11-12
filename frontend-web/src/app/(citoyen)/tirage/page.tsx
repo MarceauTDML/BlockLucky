@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import ChatBox from '@/components/lottery/ChatBox';
 import DemoModeBadge from '@/components/lottery/DemoModeBadge';
 import RouletteAnimation from '@/components/lottery/RouletteAnimation';
+import SoundToggle from '@/components/lottery/SoundToggle';
 import WinnerClaimCard from '@/components/lottery/WinnerClaimCard';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
@@ -56,7 +57,12 @@ export default function LiveDrawPage() {
                 'Demo mode: the draw is simulated by the server, without Chainlink VRF certification.'
               )
         }
-        actions={<DemoModeBadge simulated={simulated} />}
+        actions={
+          <>
+            <DemoModeBadge simulated={simulated} />
+            <SoundToggle />
+          </>
+        }
       />
 
       <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr] lg:gap-5">

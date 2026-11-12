@@ -6,10 +6,10 @@ La première requête dépend du client :
 
 | Client | Première requête | Contenu |
 |---|---|---|
-| Application mobile | `POST /auth/signup` | email, mot de passe, acceptation des conditions, parrainage facultatif |
-| Frontend web | `POST /auth/login` | email, adresse de portefeuille factice, déclaration de majorité, tranche d'âge, parrainage facultatif |
+| Application mobile | `POST /auth/signup` | email, mot de passe, acceptation des conditions et du règlement, déclaration de majorité, parrainage facultatif |
+| Frontend web | `POST /auth/login` | email, adresse de portefeuille factice, déclaration de majorité, acceptation des conditions et du règlement, tranche d'âge, parrainage facultatif |
 
-La seconde est toujours `POST /auth/2fa/verify`. Une inscription par Google ou Apple se fait en une seule requête, décrite plus bas. Le parcours par `/auth/login` sert aussi à la connexion d'un citoyen existant ; le mobile connecte un compte existant par `/auth/signin`.
+La seconde est toujours `POST /auth/2fa/verify`. Une inscription par Google se fait en une seule requête, décrite plus bas. Le parcours par `/auth/login` sert aussi à la connexion d'un citoyen existant ; le mobile connecte un compte existant par `/auth/signin`.
 
 Ce flux décrit le comportement par défaut : `LOGIN_EMAIL_CODE_REQUIRED=true`, obligatoire en production. `/auth/signup` envoie un code quelle que soit cette valeur.
 
@@ -61,7 +61,7 @@ sequenceDiagram
 
 **Route.** `POST /api/v1/auth/signup` avec `authRateLimiter` puis `validate(signupSchema)`.
 
-**Validation.** `signupSchema` ([`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts)) exige un email, un mot de passe de 10 à 128 caractères avec au moins une lettre et un chiffre, et `acceptTerms` strictement égal à `true`. Il accepte `referralCode`, `utmSource` et `ageGroup`. Le mobile n'envoie ni tranche d'âge ni déclaration de majorité.
+**Validation.** `signupSchema` ([`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts)) exige un email, un mot de passe de 10 à 128 caractères avec au moins une lettre et un chiffre, ainsi que `acceptTerms` et `isAdultConfirmed` strictement égaux à `true` : l'écran d'inscription mobile impose deux cases, l'acceptation des conditions générales d'utilisation et du règlement de participation, et la certification d'avoir 18 ans ou plus. Il accepte `referralCode`, `utmSource` et `ageGroup`. Le mobile n'envoie pas de tranche d'âge. Les deux déclarations ne sont pas enregistrées en base.
 
 **Service.** `authService.signup` refuse en 409 une adresse déjà vérifiée ou anonymisée, hache le mot de passe par bcrypt (`hashValue`), résout le parrain, tire un identifiant temporaire par `newSubjectId()` et appelle `issue(subjectId, 'SIGNUP', signup)` avec l'empreinte du mot de passe dans les données d'inscription. Le mot de passe en clair n'est jamais stocké, ni en base ni dans Redis. L'email `otp-code` part avec le sujet « Vérifiez votre adresse email ». La réponse est un 201 de même forme que celle de `/auth/login`.
 
@@ -69,7 +69,7 @@ sequenceDiagram
 
 **Route.** `POST /api/v1/auth/login`, déclarée dans [`backend/src/api/auth/auth.routes.ts`](src:backend/src/api/auth/auth.routes.ts) avec `authRateLimiter` (30 requêtes par 10 minutes et par IP) puis `validate(socialLoginSchema)`.
 
-**Validation.** `socialLoginSchema` ([`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts)) exige une adresse `walletAddress` au format `0x` suivi de 40 caractères hexadécimaux (convertie en minuscules), un email facultatif, `isAdultConfirmed` strictement égal à `true`, et accepte `provider`, `ageGroup`, `referralCode`, `utmSource`.
+**Validation.** `socialLoginSchema` ([`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts)) exige une adresse `walletAddress` au format `0x` suivi de 40 caractères hexadécimaux (convertie en minuscules), un email facultatif, `isAdultConfirmed` strictement égal à `true`, et accepte `acceptTerms` (s'il est présent, il doit valoir `true` ; le web l'envoie toujours, après la case obligatoire des conditions), `provider`, `ageGroup`, `referralCode`, `utmSource`.
 
 > [!NOTE]
 > L'adresse `walletAddress` envoyée par le web n'est pas un vrai portefeuille : [`frontend-web/src/lib/wallet.ts`](src:frontend-web/src/lib/wallet.ts) la dérive de l'email par `generateDeterministicWallet`. Le backend ne s'en sert que pour retrouver un compte existant. Le portefeuille réel du citoyen est celui que le backend génère à l'étape 2.
@@ -77,12 +77,11 @@ sequenceDiagram
 **Service.** `authController.socialLogin` appelle `authService.socialLogin` ([`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts)) :
 
 1. Recherche du compte par adresse (`authRepository.findByWallet`), puis par email (`findByEmail`).
-2. Si le compte existe et a une 2FA par application (`twoFactorMethod === 'APP'`), la réponse demande un code TOTP sans envoyer d'email.
-3. Sinon, comme `LOGIN_EMAIL_CODE_REQUIRED` est vrai :
+2. Comme `LOGIN_EMAIL_CODE_REQUIRED` est vrai, ou si le compte a une 2FA active, un code email est émis :
    - pour un compte existant, `otpChallengeService.assertNotLocked` puis `issue(user.id, 'LOGIN')` ;
    - pour un nouveau citoyen, le parrain est cherché par `findByReferralCode`, un identifiant temporaire est tiré par `newSubjectId()` (UUID), puis `issue(subjectId, 'SIGNUP', signup)` stocke les données d'inscription avec le défi.
-4. `sendCodeEmail` met en file l'email `otp-code`.
-5. La réponse contient `requiresTwoFactor: true`, `twoFactorMethod: 'EMAIL'` et `userId`. En développement uniquement, `devOtpPreview` contient le code.
+3. `sendCodeEmail` met en file l'email `otp-code`.
+4. La réponse contient `requiresTwoFactor: true`, `twoFactorMethod: 'EMAIL'` et `userId`. En développement uniquement, `devOtpPreview` contient le code.
 
 **Défi OTP.** `OtpChallengeService` ([`backend/src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts)) génère 6 chiffres par `crypto.randomInt`, stocke sous `auth:otp:<subjectId>` un HMAC-SHA256 de `<subjectId>:<code>` (jamais le code en clair), le nombre d'essais et l'échéance, avec une expiration Redis de 10 minutes.
 
@@ -90,7 +89,7 @@ sequenceDiagram
 
 ## Étape 2 : validation du code et création du compte
 
-**Route.** `POST /api/v1/auth/2fa/verify` avec `authRateLimiter`, `optionalAuthenticate` et `validate(verify2FASchema)`. Le controller prend l'identifiant du jeton s'il y en a un, sinon `req.body.userId` ; sans l'un ni l'autre, il renvoie 400.
+**Route.** `POST /api/v1/auth/2fa/verify` avec `authRateLimiter`, `optionalAuthenticate` et `validate(verify2FASchema)`. Le controller transmet au service l'identifiant du jeton s'il y en a un, `req.body.userId` et l'éventuel `req.body.loginTicket` ; le service retient le compte du jeton, puis celui du ticket, puis `userId`, et renvoie 400 sans aucun des trois.
 
 **Vérification.** `authService.verify2FA` :
 
@@ -140,9 +139,9 @@ La dotation est rejouée à la première utilisation du portefeuille : `lotteryG
 
 | Étape | Code | Cause |
 |---|---|---|
-| Signup | 400 | Email invalide, mot de passe trop faible, `acceptTerms` absent ou faux |
+| Signup | 400 | Email invalide, mot de passe trop faible, `acceptTerms` ou `isAdultConfirmed` absent ou faux |
 | Signup | 409 | Un compte vérifié existe déjà avec cette adresse |
-| Login | 400 | Adresse au mauvais format, email invalide, `isAdultConfirmed` absent ou faux (le refus de Zod intervient avant le 403 du service) |
+| Login | 400 | Adresse au mauvais format, email invalide, `isAdultConfirmed` absent ou faux (le refus de Zod intervient avant le 403 du service), `acceptTerms` présent mais différent de `true` |
 | Login | 400 | Aucun email fourni pour un nouveau compte : « Une adresse email est requise pour recevoir le code de connexion » |
 | Login | 429 | Plus de 30 requêtes en 10 minutes depuis la même IP, ou compte bloqué après 10 codes faux |
 | Verify | 400 | Ni jeton ni `userId` |
@@ -157,13 +156,13 @@ La dotation est rejouée à la première utilisation du portefeuille : `lotteryG
 - La création du compte, les EtherPoints et les emails ne sont pas dans une même transaction. Un échec au milieu (par exemple de `creditPoints`) laisse un compte créé sans ses points de bienvenue, et la requête répond en erreur. Une nouvelle connexion avec le même email retrouve ce compte.
 - La dotation est protégée deux fois : par le verrou Redis contre les envois concurrents, et par `welcomeGrantTxHash` contre un second envoi. Si Redis est indisponible, le verrou passe par la mémoire du process et ne protège plus contre un envoi depuis un autre process.
 
-## Inscription par Google ou Apple
+## Inscription par Google
 
-`POST /auth/oauth/google` ou `/auth/oauth/apple` reçoit un jeton d'identité du fournisseur, le vérifie dans [`oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) et retrouve le compte par l'adresse email du jeton. Pour une adresse inconnue, `createVerifiedUser` crée directement le compte, sans code email, sans mot de passe et sans parrain, et la session est délivrée dans la même réponse. Ces routes répondent 503 tant que `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` est vide. Voir [Authentification](../../backend/modules/auth.md#post-auth-oauth-google-et-auth-oauth-apple).
+`POST /auth/oauth/google` reçoit un jeton d'identité de Google, le vérifie dans [`oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) et retrouve le compte par l'adresse email du jeton. Pour une adresse inconnue, `createVerifiedUser` crée directement le compte, sans code email, sans mot de passe et sans parrain, et la session est délivrée dans la même réponse. La route répond 503 tant que `GOOGLE_CLIENT_IDS` est vide. La connexion avec Apple a été retirée. Voir [Authentification](../../backend/modules/auth.md#post-auth-oauth-google).
 
 ## Connexion d'un citoyen existant
 
-Sur le mobile, `POST /auth/signin` compare le mot de passe et délivre la session tout de suite, sauf si la 2FA est active. Sur le web, le parcours est le même que l'inscription, avec un défi `LOGIN` au lieu de `SIGNUP` stocké sous l'identifiant du compte. À la validation, `verify2FA` marque l'email vérifié si besoin, enregistre un `USER_LOGIN` et émet un nouveau jeton. Si le compte a une 2FA par application, `/auth/login` renvoie `twoFactorMethod: 'APP'` et `/auth/2fa/verify` attend un code TOTP ou un code de secours. Voir [Authentification et 2FA](../../securite/authentification.md).
+Sur le mobile, `POST /auth/signin` compare le mot de passe et délivre la session tout de suite, sauf si la 2FA est active. Sur le web, le parcours est le même que l'inscription, avec un défi `LOGIN` au lieu de `SIGNUP` stocké sous l'identifiant du compte. À la validation, `verify2FA` marque l'email vérifié si besoin, enregistre un `USER_LOGIN` et émet un nouveau jeton. Si le compte a une 2FA par application, la vérification du code email ne délivre pas de session : elle renvoie `requiresTwoFactor: true`, `twoFactorMethod: 'APP'` et un `loginTicket` valable 10 minutes, puis `/auth/2fa/verify` attend un code TOTP ou un code de secours accompagné de ce ticket. Voir [Authentification et 2FA](../../securite/authentification.md).
 
 ## En mode simulé
 

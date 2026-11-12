@@ -17,6 +17,7 @@ Les écrans ne reçoivent plus de prop `navigation: any` : un nom de route ou un
 flowchart TD
   ROOT["RootNavigator : pile racine"] -->|"isAuthenticated faux"| AUTH["AuthStack"]
   ROOT -->|"isAuthenticated vrai"| MAIN["Main : MainTabs"]
+  ROOT -->|"connecté ou non"| LEGAL["Legal : documents légaux"]
   ROOT --> PUSH["Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, DisplaySettings, NotificationSettings, PersonalData, Security, ChangeEmail, ChangePassword, Setup2FA, HelpSupport"]
   AUTH --> A1["Onboarding"]
   AUTH --> A2["SignIn, SignUp"]
@@ -81,16 +82,16 @@ La barre `TabBar` remplace celle de React Navigation : fond `surface` aux coins 
 
 La rangée porte `accessibilityRole="tablist"` et chaque onglet `accessibilityRole="tab"`, `accessibilityState={{ selected }}` et son libellé : les lecteurs d'écran annoncent l'onglet sélectionné. `TabBar` émet l'événement `tabPress` avant de naviguer, comme la barre standard, mais ne gère pas l'appui long.
 
-## Les 31 écrans
+## Les 32 écrans
 
 ### Avant connexion
 
 | Écran | Fichier | Rôle | Données et actions |
 |---|---|---|---|
 | Introduction | [`OnboardingScreen.tsx`](src:mobile-app/src/screens/auth/OnboardingScreen.tsx) | Trois diapositives (grand tirage, tirage en direct, portefeuille offert et accès réservé aux 18 ans et plus) | Texte codé en dur ; `markOnboardingComplete` puis `replace('SignIn')` ou `replace('SignUp')` |
-| Connexion | [`SignInScreen.tsx`](src:mobile-app/src/screens/auth/SignInScreen.tsx) | Email et mot de passe, lien « Mot de passe oublié ? », boutons Google et Apple, lien vers l'inscription | `signInWithPassword` (`POST /auth/signin`) ; `navigate('Verify2FA')` si la 2FA est active |
-| Inscription | [`SignUpScreen.tsx`](src:mobile-app/src/screens/auth/SignUpScreen.tsx) | Email, mot de passe et confirmation avec règles affichées, code de parrainage repliable, acceptation des conditions, boutons Google et Apple | `signUpWithPassword` (`POST /auth/signup`) puis `navigate('Verify2FA', { purpose: 'signup' })` |
-| Vérification du code | [`Verify2FAScreen.tsx`](src:mobile-app/src/screens/auth/Verify2FAScreen.tsx) | Code à 6 chiffres reçu par email ou donné par l'application TOTP, ou code de secours | `verifyOtpCode` (`POST /auth/2fa/verify`) ; la connexion bascule seule vers les onglets |
+| Connexion | [`SignInScreen.tsx`](src:mobile-app/src/screens/auth/SignInScreen.tsx) | Email et mot de passe, lien « Mot de passe oublié ? », bouton Google, lien vers l'inscription | `signInWithPassword` (`POST /auth/signin`) ; `navigate('Verify2FA')` si la 2FA est active, avec le `loginTicket` pour la méthode `APP` |
+| Inscription | [`SignUpScreen.tsx`](src:mobile-app/src/screens/auth/SignUpScreen.tsx) | Email, mot de passe et confirmation avec règles affichées, code de parrainage repliable, deux cases obligatoires (CGU et règlement ; 18 ans ou plus), liens vers les CGU, le règlement et la politique de confidentialité ouvrant `Legal`, bouton Google | `signUpWithPassword` (`POST /auth/signup`, `acceptTerms` et `isAdultConfirmed` à `true`) puis `navigate('Verify2FA', { purpose: 'signup' })` |
+| Vérification du code | [`Verify2FAScreen.tsx`](src:mobile-app/src/screens/auth/Verify2FAScreen.tsx) | Code à 6 chiffres reçu par email ou donné par l'application TOTP, ou code de secours | `verifyOtpCode` (`POST /auth/2fa/verify`, avec `loginTicket` s'il est fourni) ; la connexion bascule seule vers les onglets, ou l'écran se remplace par un `Verify2FA` `APP` si le backend demande encore le code de l'application |
 | Mot de passe oublié | [`ForgotPasswordScreen.tsx`](src:mobile-app/src/screens/auth/ForgotPasswordScreen.tsx) | Saisie de l'email | `requestPasswordReset` (`POST /auth/password/forgot`) puis `navigate('ResetPassword')` |
 | Nouveau mot de passe | [`ResetPasswordScreen.tsx`](src:mobile-app/src/screens/auth/ResetPasswordScreen.tsx) | Code reçu, nouveau mot de passe et confirmation, renvoi du code | `resetPassword` (`POST /auth/password/reset`), puis `popTo('SignIn')` |
 | Configuration 2FA | [`Setup2FAScreen.tsx`](src:mobile-app/src/screens/auth/Setup2FAScreen.tsx) | Choix application TOTP ou email, QR code, clé et codes de secours copiables, confirmation | `setup2FA` (`POST /auth/2fa/setup`), `verifyOtpCode` |
@@ -110,8 +111,8 @@ La rangée porte `accessibilityRole="tablist"` et chaque onglet `accessibilityRo
 |---|---|---|---|
 | [`BuyTicketScreen.tsx`](src:mobile-app/src/screens/lottery/BuyTicketScreen.tsx) | `BuyTicket` | Achat du ticket unique du grand tirage, solde avant et après | `GET /lottery/status`, `GET /lottery/wallet`, `GET /lottery/my-tickets`, `purchaseTickets` (`POST /lottery/buy`) |
 | [`GiftTicketScreen.tsx`](src:mobile-app/src/screens/lottery/GiftTicketScreen.tsx) | `GiftTicket` (`ticketId` facultatif) | Cadeau d'un ticket par email avec message | `sendGiftTicket` (`POST /lottery/gift`) |
-| [`WaitingRoomScreen.tsx`](src:mobile-app/src/screens/lottery/WaitingRoomScreen.tsx) | `WaitingRoom` | Salle d'attente : compte à rebours de révélation, ticket du citoyen, présence, discussion | `GET /lottery/status` toutes les 5 s, `useSocket`, puis `replace('LiveDraw')` |
-| [`LiveDrawScreen.tsx`](src:mobile-app/src/screens/lottery/LiveDrawScreen.tsx) | `LiveDraw` | Roue animée, numéro gagnant, résultat du citoyen, retrait des gains | `GET /lottery/status` toutes les 4 s, `useSocket`, `claimPrize` (`POST /lottery/claim-prize`) |
+| [`WaitingRoomScreen.tsx`](src:mobile-app/src/screens/lottery/WaitingRoomScreen.tsx) | `WaitingRoom` | Salle d'attente : compte à rebours de révélation, ticket du citoyen, présence, discussion ; son `chrono.mp3` joué une fois dans les 8 dernières secondes | `GET /lottery/status` toutes les 5 s, `useSocket`, `useSound`, puis `replace('LiveDraw')` |
+| [`LiveDrawScreen.tsx`](src:mobile-app/src/screens/lottery/LiveDrawScreen.tsx) | `LiveDraw` | Roue animée avec le son `roue-tirage.mp3`, numéro gagnant, résultat du citoyen, retrait des gains | `GET /lottery/status` toutes les 4 s, `useSocket`, `claimPrize` (`POST /lottery/claim-prize`) |
 | [`TransactionHistoryScreen.tsx`](src:mobile-app/src/screens/lottery/TransactionHistoryScreen.tsx) | `TransactionHistory` | Portefeuille, tickets et badges POAP avec liens vers l'explorateur | `GET /lottery/wallet`, `GET /lottery/my-tickets` |
 | [`HowItWorksScreen.tsx`](src:mobile-app/src/screens/lottery/HowItWorksScreen.tsx) | `HowItWorks` | Règles, calendrier d'un tirage, engagements, charte, lien vers le contrat | `GET /lottery/status`, `GET /lottery/transparency-charter` |
 | [`NotificationsScreen.tsx`](src:mobile-app/src/screens/settings/NotificationsScreen.tsx) | `Notifications` | Liste des notifications, marquées vues à la sortie | `GET /user/notifications` |
@@ -121,16 +122,19 @@ La rangée porte `accessibilityRole="tablist"` et chaque onglet `accessibilityRo
 | [`MyCodesScreen.tsx`](src:mobile-app/src/screens/marketplace/MyCodesScreen.tsx) | `MyCodes` | Codes obtenus, actifs ou utilisés | `GET /marketplace/my-codes` |
 | [`VerifyAgeScreen.tsx`](src:mobile-app/src/screens/settings/VerifyAgeScreen.tsx) | `VerifyAge` | Photo du recto et du verso de la pièce d'identité, statut de la vérification | `GET /user/identity`, `POST /user/identity` |
 | [`SettingsScreen.tsx`](src:mobile-app/src/screens/settings/SettingsScreen.tsx) | `Settings` | Accueil des paramètres : carte d'identité (initiales, prénom et nom, email) puis cinq cartes de section | `GET /user/profile` |
-| [`DisplaySettingsScreen.tsx`](src:mobile-app/src/screens/settings/DisplaySettingsScreen.tsx) | `DisplaySettings` | Mode clair ou sombre, langue français ou anglais | `PUT /user/preferences` (`theme`, `language`) |
+| [`DisplaySettingsScreen.tsx`](src:mobile-app/src/screens/settings/DisplaySettingsScreen.tsx) | `DisplaySettings` | Mode clair ou sombre, langue français ou anglais, interrupteur « Sons » | `PUT /user/preferences` (`theme`, `language`) ; le choix des sons reste sur l'appareil (`useSoundPreference`) |
 | [`NotificationSettingsScreen.tsx`](src:mobile-app/src/screens/settings/NotificationSettingsScreen.tsx) | `NotificationSettings` | Interrupteur général et quatre catégories de notifications | `GET /user/profile`, `PUT /user/preferences` (`pushNotificationsEnabled`, `notifications`) |
 | [`PersonalDataScreen.tsx`](src:mobile-app/src/screens/settings/PersonalDataScreen.tsx) | `PersonalData` | Prénom et nom, export JSON partagé par la feuille système, demande puis confirmation d'anonymisation | `PATCH /user/profile`, `GET /user/gdpr/export`, `POST /user/gdpr/delete-request`, `POST /user/gdpr/confirm-delete`, puis `signOut` |
 | [`SecurityScreen.tsx`](src:mobile-app/src/screens/settings/SecurityScreen.tsx) | `Security` | Adresse email et mot de passe (liens vers les deux écrans suivants), état, activation et désactivation de la 2FA | `GET /user/profile`, `POST /auth/2fa/disable` |
 | [`ChangeEmailScreen.tsx`](src:mobile-app/src/screens/settings/ChangeEmailScreen.tsx) | `ChangeEmail` | Nouvelle adresse et mot de passe actuel, puis code à 6 chiffres reçu sur la nouvelle adresse | `POST /auth/email/change`, `POST /auth/email/confirm`, puis `patchUser` |
 | [`ChangePasswordScreen.tsx`](src:mobile-app/src/screens/settings/ChangePasswordScreen.tsx) | `ChangePassword` | Création d'un premier mot de passe ou modification avec le mot de passe actuel | `POST /auth/password/change`, puis `applyRenewedSession` |
 | [`Setup2FAScreen.tsx`](src:mobile-app/src/screens/auth/Setup2FAScreen.tsx) | `Setup2FA` | Comme dans l'`AuthStack` | `POST /auth/2fa/setup`, `POST /auth/2fa/verify` |
-| [`HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx) | `HelpSupport` | Formulaire pour écrire à un administrateur (objet, message), carte du centre d'aide | `POST /user/support` ; lien `EXPO_PUBLIC_HELP_CENTER_URL` |
+| [`HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx) | `HelpSupport` | Formulaire pour écrire à un administrateur (objet, message), carte du centre d'aide, section « Informations légales » listant les six documents | `POST /user/support` ; lien `EXPO_PUBLIC_HELP_CENTER_URL` ; `navigate('Legal', { doc })` |
+| [`LegalScreen.tsx`](src:mobile-app/src/screens/settings/LegalScreen.tsx) | `Legal` (`doc` : `cgu`, `reglement`, `confidentialite`, `traceurs`, `mentions` ou `transparence`) | Titre et version du document, introduction, sections, puis cartes « Autres documents » | Contenu local de [`content/legal.ts`](src:mobile-app/src/content/legal.ts), identique à celui du web ; `replace('Legal', { doc })` pour changer de document |
 
 Toutes les routes appelées depuis les écrans connectés exigent un jeton, sauf `GET /lottery/status`, `/leaderboard`, `/transparency-charter`, `GET /marketplace/catalog` et `/rewards/:id`, qui sont publiques. Le rôle n'est pas vérifié côté mobile : l'application ne propose aucun écran réservé à `ADMIN` ou `PARTNER`. Un compte Mairie ou partenaire qui se connecte voit l'interface citoyenne.
+
+`Legal` est déclaré dans la pile racine en dehors de la condition `isAuthenticated` : il s'ouvre aussi bien depuis l'inscription, avant toute connexion, que depuis Aide & Support. Les six documents (CGU, règlement de participation, mentions légales, politique de confidentialité, politique relative aux traceurs, charte de transparence) sont embarqués dans l'application et ne demandent aucun appel réseau.
 
 ## Boutons d'en-tête et paramètres
 
@@ -140,11 +144,11 @@ Toutes les routes appelées depuis les écrans connectés exigent un jeton, sauf
 
 | Carte | Route | Contenu |
 |---|---|---|
-| Affichage | `DisplaySettings` | Puces Clair ou Sombre, puces Français ou English |
+| Affichage | `DisplaySettings` | Puces Clair ou Sombre, puces Français ou English, interrupteur « Sons » (roue et compte à rebours du grand tirage, sur cet appareil) |
 | Notifications | `NotificationSettings` | Interrupteur « Autoriser les notifications », puis les catégories rappels du tirage (`drawReminders`), résultats (`results`), offres et récompenses (`rewards`), parrainage (`referrals`) |
 | Données personnelles | `PersonalData` | Formulaire prénom et nom, téléchargement des données (export RGPD), suppression du compte |
 | Sécurité | `Security` | Ligne email vers `ChangeEmail`, ligne mot de passe vers `ChangePassword` (« en créer un » si le compte n'en a pas), puis la 2FA : activation, reconfiguration, désactivation |
-| Aide & Support | `HelpSupport` | Formulaire pour écrire à un administrateur, carte du centre d'aide |
+| Aide & Support | `HelpSupport` | Formulaire pour écrire à un administrateur, carte du centre d'aide, informations légales |
 
 La maquette prévoyait une entrée Langue séparée : elle n'a pas été reprise, la langue se règle dans Affichage.
 

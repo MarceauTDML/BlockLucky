@@ -109,6 +109,52 @@ export class AdminController {
     }
   }
 
+  public async listStaffAccounts(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const rawRole = String(req.query.role ?? '').toUpperCase();
+      const role = rawRole === 'ADMIN' || rawRole === 'PARTNER' ? rawRole : undefined;
+      const search = typeof req.query.search === 'string' ? req.query.search.trim() || undefined : undefined;
+      const { page, limit } = getPaginationParams(req.query as { page?: string; limit?: string });
+      const { accounts, total } = await adminService.listStaffAccounts({ role, search }, page, limit);
+      sendSuccess(
+        res,
+        { accounts },
+        'Comptes Mairie et partenaires récupérés',
+        200,
+        buildPaginationMeta(total, page, limit)
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async createStaffAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const adminId = req.user?.userId;
+      if (!adminId) throw new AppError('Authentification Admin requise', 401);
+      const result = await adminService.createStaffAccount(adminId, req.body);
+      sendSuccess(
+        res,
+        result,
+        result.created ? 'Compte créé et invitation envoyée' : 'Rôle attribué et invitation envoyée',
+        result.created ? 201 : 200
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async updateStaffRole(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const adminId = req.user?.userId;
+      if (!adminId) throw new AppError('Authentification Admin requise', 401);
+      const account = await adminService.updateStaffRole(adminId, String(req.params.id), req.body.role);
+      sendSuccess(res, { account }, account.role === 'USER' ? 'Rôle retiré' : 'Rôle du compte mis à jour');
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async getAuditLogs(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const limit = Number(req.query.limit) || 100;

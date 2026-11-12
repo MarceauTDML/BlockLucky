@@ -20,8 +20,15 @@ function VerifyContent() {
   const router = useRouter();
   const params = useSearchParams();
   const next = safeInternalPath(params.get('next'));
-  const { pendingTwoFactorUserId, pendingTwoFactorMethod, pendingTwoFactorEmail, verifyOtpCode, isVerifying2FA, hydrated } =
-    useAuth();
+  const {
+    pendingTwoFactorUserId,
+    pendingTwoFactorMethod,
+    pendingTwoFactorEmail,
+    pendingLoginTicket,
+    verifyOtpCode,
+    isVerifying2FA,
+    hydrated,
+  } = useAuth();
   const [otpCode, setOtpCode] = useState('');
   const [errorText, setErrorText] = useState('');
 
@@ -38,7 +45,11 @@ function VerifyContent() {
     }
     if (!pendingTwoFactorUserId) return;
     try {
-      const result = await verifyOtpCode(pendingTwoFactorUserId, otpCode.trim());
+      const result = await verifyOtpCode(pendingTwoFactorUserId, otpCode.trim(), pendingLoginTicket);
+      if (result.requiresTwoFactor) {
+        setOtpCode('');
+        return;
+      }
       router.replace(next || homeForRole(result.user?.role));
     } catch (err) {
       setErrorText(getErrorMessage(err, t('Code invalide ou expiré.', 'Invalid or expired code.')));

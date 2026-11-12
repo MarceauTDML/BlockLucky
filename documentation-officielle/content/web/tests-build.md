@@ -44,7 +44,7 @@ npm run test:watch
 | `validators` | `isValidEmail`, `isValidOtpCode` |
 | `safeInternalPath (anti open-redirect)` | Seuls les chemins internes sont acceptés |
 | `parseCodes (upload CSV partenaire)` | En-tête ignoré, doublons retirés, valeurs invalides rejetées |
-| `attribution UTM` | Capture d'une source valide et rejet des valeurs suspectes |
+| `attribution UTM` | Capture d'une source valide, après acceptation de la mesure (`setAudienceConsent(true)`), et rejet des valeurs suspectes |
 
 [`frontend-web/__tests__/components.test.tsx`](src:frontend-web/__tests__/components.test.tsx) teste quatre composants, avec `next/navigation` simulé par `vi.mock` :
 
@@ -53,14 +53,23 @@ npm run test:watch
 | `Button` | Un bouton en chargement est désactivé, porte `aria-busy` et n'appelle pas `onClick` |
 | `ProgressBar` | La jauge expose sa valeur aux technologies d'assistance |
 | `BarList` | Un tableau équivalent est fourni aux lecteurs d'écran |
-| `RequireRole` | Écran 403 pour un citoyen, accès pour un administrateur, avec un store Redux préchargé |
+| `RequireRole` | Écran 403 pour un citoyen, accès pour un administrateur, avec un store Redux préchargé (dont `pendingLoginTicket`) |
+
+[`frontend-web/__tests__/consent.test.tsx`](src:frontend-web/__tests__/consent.test.tsx) teste le consentement à la mesure d'audience en 8 cas :
+
+| Bloc | Vérifie |
+|---|---|
+| `consentement à la mesure d’audience` (6 cas) | Rien n'est mesuré ni stocké avant un choix ; la source en attente est écrite et la mesure démarre après acceptation ; le choix est mémorisé avec sa date et le refus efface la source ; le choix est redemandé après sa durée de validité ; le code de parrainage est conservé sans accord, pas la source ; l'ancienne opposition `bl.tracking.optout` vaut refus |
+| `ConsentBanner` (2 cas) | « Tout refuser » et « Tout accepter » sont proposés au même niveau au premier accès ; le bandeau se rouvre depuis « Gérer mes traceurs » |
+
+Les trois fichiers comptent 21 tests : 8 dans `lib.test.ts`, 5 dans `components.test.tsx` et 8 dans `consent.test.tsx`.
 
 > [!NOTE]
 > Le test « reste identique à l'algorithme mobile (valeur de référence) » compare la fonction à elle-même et ne contient aucune valeur de référence. Il ne détecterait pas une divergence avec le mobile. Cette fonction n'a d'ailleurs plus d'effet sur le portefeuille réel (voir [Authentification](authentification.md#adresse-calculee-cote-client)).
 
 ### Ce qui n'est pas couvert
 
-Aucun test ne porte sur les pages, les hooks (`useAuth`, `useBlockLuckyWallet`, `useSocket`), les endpoints RTK Query ni la table des erreurs de transaction. Il n'y a pas de test de bout en bout (Playwright ou Cypress), ni de mesure de couverture. Les parcours sont vérifiés à la main contre un backend local, avec les comptes du seed (voir [Comptes de démonstration et connexion](../demarrage/comptes-et-connexion.md)). Les priorités raisonnables pour un repreneur sont `getErrorMessage`, `notifyChainError` et le parcours de connexion avec code.
+Aucun test ne porte sur les pages, les hooks (`useAuth`, `useBlockLuckyWallet`, `useSocket`, `useSound`), les endpoints RTK Query ni la table des erreurs de transaction. Il n'y a pas de test de bout en bout (Playwright ou Cypress), ni de mesure de couverture. Les parcours sont vérifiés à la main contre un backend local, avec les comptes du seed (voir [Comptes de démonstration et connexion](../demarrage/comptes-et-connexion.md)). Les priorités raisonnables pour un repreneur sont `getErrorMessage`, `notifyChainError` et le parcours de connexion avec code.
 
 ## Build Next.js
 

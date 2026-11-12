@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import ListGroup from '../../components/profile/ListGroup';
+import SwitchRow from '../../components/profile/SwitchRow';
 import usePreferenceSaver from '../../components/settings/usePreferenceSaver';
 import AppText from '../../components/ui/AppText';
 import Card from '../../components/ui/Card';
@@ -9,6 +11,7 @@ import Screen from '../../components/ui/Screen';
 import ScreenHeader from '../../components/ui/ScreenHeader';
 import Icon, { IconName } from '../../components/ui/icons/Icon';
 import useAppTheme from '../../hooks/useAppTheme';
+import { useSoundPreference } from '../../hooks/useSound';
 import { useRootNavigation } from '../../navigation/hooks';
 import { LanguageCode, ThemeMode } from '../../types/user.types';
 
@@ -49,6 +52,7 @@ const DisplaySettingsScreen: React.FC = () => {
   const { colors, mode, language, setThemeMode, setLanguage, t } = useAppTheme();
   const navigation = useRootNavigation();
   const { save, errorMessage } = usePreferenceSaver();
+  const { soundEnabled, setSoundEnabled } = useSoundPreference();
 
   const handleTheme = (next: ThemeMode) => {
     if (next === mode) return;
@@ -68,7 +72,10 @@ const DisplaySettingsScreen: React.FC = () => {
     <Screen showSecurityFooter>
       <ScreenHeader
         title={t('Affichage', 'Display')}
-        subtitle={t('Apparence et langue de l’application', 'App appearance and language')}
+        subtitle={t(
+          'Apparence, langue et sons de l’application',
+          'App appearance, language and sounds',
+        )}
         onBack={() => navigation.goBack()}
       />
 
@@ -104,6 +111,20 @@ const DisplaySettingsScreen: React.FC = () => {
             onChange={handleLanguage}
           />
         </ChoiceCard>
+
+        <ListGroup>
+          <SwitchRow
+            icon={soundEnabled ? 'volume' : 'volumeOff'}
+            iconTone="sun"
+            title={t('Sons', 'Sounds')}
+            subtitle={t(
+              'Roue et compte à rebours du grand tirage, sur cet appareil',
+              'Draw wheel and countdown, on this device',
+            )}
+            value={soundEnabled}
+            onValueChange={setSoundEnabled}
+          />
+        </ListGroup>
       </View>
 
       {errorMessage ? (

@@ -31,7 +31,7 @@ Deux conséquences de cet ordre :
 | Limiteur | Fenêtre | Requêtes par adresse IP | Portée |
 |---|---|---|---|
 | `globalRateLimiter` | 15 minutes | 300 | Toute l'API sous `/api` |
-| `authRateLimiter` | 10 minutes | 30 | `POST /api/auth/signup`, `/signin`, `/password/forgot`, `/password/reset`, `/password/change`, `/email/change`, `/email/confirm`, `/oauth/google`, `/oauth/apple`, `/login`, `/2fa/verify`, `/2fa/disable` |
+| `authRateLimiter` | 10 minutes | 30 | `POST /api/auth/signup`, `/signin`, `/password/forgot`, `/password/reset`, `/password/change`, `/email/change`, `/email/confirm`, `/oauth/google`, `/login`, `/2fa/verify`, `/2fa/disable` |
 | `identityUploadRateLimiter` | 1 heure | 10 | `POST /api/user/identity` |
 | `supportRateLimiter` | 1 heure | 5, comptées par compte (`user:<id>`) et non par adresse IP, sauf requête sans utilisateur | `POST /api/user/support` |
 

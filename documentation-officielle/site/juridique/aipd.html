@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analyse d&#39;impact relative à la protection des données | Documentation BlockLucky</title>
+<meta name="description" content="Cette page est l&#39;analyse d&#39;impact relative à la protection des données (AIPD) de BlockLucky, prévue par l&#39;article 35 du RGPD. Elle suit la méthode de la CNIL en">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/doc.css">
+<script src="../assets/js/theme.js"></script>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/search.js" defer></script>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="topbar">
+  <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-controls="navigation" aria-expanded="false"><span></span></button>
+  <a class="brand" href="../index.html">
+    <img src="../assets/img/logo.svg" alt="" width="28" height="28">
+    <span class="brand-name">BlockLucky</span>
+    <span class="brand-tag">Documentation officielle</span>
+  </a>
+  <div class="search" role="search">
+    <label class="visually-hidden" for="recherche">Rechercher dans la documentation</label>
+    <input id="recherche" type="search" placeholder="Rechercher" autocomplete="off" spellcheck="false" aria-controls="resultats" aria-expanded="false">
+    <kbd class="search-key">Ctrl K</kbd>
+    <div id="resultats" class="search-results" role="listbox" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Changer de thème"><span class="theme-icon"></span></button>
+  <a class="repo-link" href="https://github.com/MarceauTDML/BlockLucky" target="_blank" rel="noopener noreferrer">GitHub</a>
+</header>
+<div class="layout">
+  <nav id="navigation" class="sidebar" aria-label="Sommaire de la documentation"><div class="nav-group"><ul><li><div class="nav-row"><a href="../index.html">Accueil</a></div></li><li><div class="nav-row"><a href="../accueil/lire-la-documentation.html">Comment lire cette documentation</a></div></li><li><div class="nav-row"><a href="../accueil/projet-en-chiffres.html">Le projet en chiffres</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">1. Présentation du projet</p><ul><li><div class="nav-row"><a href="../presentation/contexte.html">Contexte et kickoff</a></div></li><li><div class="nav-row"><a href="../presentation/besoins.html">Besoins des parties prenantes</a></div></li><li><div class="nav-row"><a href="../presentation/objectifs-indicateurs.html">Objectifs et indicateurs</a></div></li><li><div class="nav-row"><a href="../presentation/profils-parcours.html">Profils et parcours</a></div></li><li><div class="nav-row"><a href="../presentation/fonctionnalites.html">Catalogue des fonctionnalités</a></div></li><li><div class="nav-row"><a href="../presentation/marketing.html">Volet marketing</a></div></li><li><div class="nav-row"><a href="../presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></div></li><li><div class="nav-row"><a href="../presentation/competences.html">Grille de compétences</a></div></li><li><div class="nav-row"><a href="../presentation/historique.html">Historique et feuille de route</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">2. Démarrage rapide</p><ul><li><div class="nav-row"><a href="../demarrage/prerequis.html">Prérequis</a></div></li><li><div class="nav-row"><a href="../demarrage/infrastructure-locale.html">Infrastructure locale</a></div></li><li><div class="nav-row"><a href="../demarrage/lancer-les-applications.html">Lancer les applications</a></div></li><li><div class="nav-row"><a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></div></li><li><div class="nav-row"><a href="../demarrage/stack-conteneurs.html">Stack complète en conteneurs</a></div></li><li><div class="nav-row"><a href="../demarrage/depannage.html">Dépannage</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">3. Architecture</p><ul><li><div class="nav-row"><a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../architecture/organisation-depot.html">Organisation du dépôt</a></div></li><li><div class="nav-row"><a href="../architecture/choix-techniques.html">Choix techniques</a></div></li><li><div class="nav-row"><a href="../architecture/versions.html">Versions de la stack</a></div></li><li class="has-children"><div class="nav-row"><a href="../architecture/adr/index.html">Décisions d&#39;architecture</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Décisions d&#39;architecture" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/adr/0001-monolithe-modulaire.html">0001 Monolithe modulaire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">0002 Redis et repli mémoire</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0003-migrations-expand-contract.html">0003 Migrations expand et contract</a></div></li><li><div class="nav-row"><a href="../architecture/adr/0004-smart-contract-portefeuille-integre.html">0004 Smart contract et portefeuille intégré</a></div></li></ul></li><li class="has-children"><div class="nav-row"><a href="../architecture/flux/index.html">Flux métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Flux métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../architecture/flux/inscription.html">Inscription et portefeuille</a></div></li><li><div class="nav-row"><a href="../architecture/flux/achat-cadeau.html">Achat et cadeau de ticket</a></div></li><li><div class="nav-row"><a href="../architecture/flux/tirage.html">Tirage et versement de la cagnotte</a></div></li><li><div class="nav-row"><a href="../architecture/flux/annulation.html">Annulation et remboursement</a></div></li><li><div class="nav-row"><a href="../architecture/flux/disjoncteur.html">Disjoncteur</a></div></li><li><div class="nav-row"><a href="../architecture/flux/recompense.html">Échange de récompense</a></div></li><li><div class="nav-row"><a href="../architecture/flux/suppression-rgpd.html">Suppression RGPD</a></div></li></ul></li><li><div class="nav-row"><a href="../architecture/conventions.html">Conventions de code</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">4. Smart contracts</p><ul><li><div class="nav-row"><a href="../smart-contracts/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../smart-contracts/choix.html">Pourquoi Ethereum, Hardhat et Chainlink</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blocklucky.html">Contrat BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-blocklucky.html">Référence de BlockLucky</a></div></li><li><div class="nav-row"><a href="../smart-contracts/chainlink-vrf.html">Tirage Chainlink VRF</a></div></li><li><div class="nav-row"><a href="../smart-contracts/automation.html">Chainlink Automation</a></div></li><li><div class="nav-row"><a href="../smart-contracts/poap.html">Badge POAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/reference-poap.html">Référence de BlockLuckyPOAP</a></div></li><li><div class="nav-row"><a href="../smart-contracts/securite.html">Sécurité du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/tests.html">Tests, fuzzing et couverture</a></div></li><li><div class="nav-row"><a href="../smart-contracts/blockchain-locale.html">Blockchain locale</a></div></li><li><div class="nav-row"><a href="../smart-contracts/sepolia.html">Déploiement sur Sepolia</a></div></li><li><div class="nav-row"><a href="../smart-contracts/remix.html">Utiliser Remix</a></div></li><li><div class="nav-row"><a href="../smart-contracts/exploitation.html">Exploitation du contrat</a></div></li><li><div class="nav-row"><a href="../smart-contracts/limites.html">Limites connues</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">5. Intégration blockchain du backend</p><ul><li><div class="nav-row"><a href="../integration-blockchain/index.html">Vue d&#39;ensemble</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/actions.html">File d&#39;actions on-chain</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/relais-temps-reel.html">Relais temps réel</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/metadonnees-poap.html">Métadonnées POAP</a></div></li><li><div class="nav-row"><a href="../integration-blockchain/tests.html">Tests sur une vraie chaîne</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">6. Base de données</p><ul><li><div class="nav-row"><a href="../base-de-donnees/modele.html">Modèle de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/dictionnaire.html">Dictionnaire de données</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/index-contraintes.html">Index et contraintes</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/redis.html">Données Redis</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/migrations.html">Migrations</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/seed.html">Seed</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a></div></li><li><div class="nav-row"><a href="../base-de-donnees/performance-sauvegardes.html">Performance et sauvegardes</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">7. Backend</p><ul><li><div class="nav-row"><a href="../backend/structure.html">Structure et cycle d&#39;une requête</a></div></li><li><div class="nav-row"><a href="../backend/configuration.html">Configuration</a></div></li><li><div class="nav-row"><a href="../backend/variables-environnement.html">Variables d&#39;environnement</a></div></li><li class="has-children"><div class="nav-row"><a href="../backend/modules/index.html">Modules métier</a><button class="nav-toggle" type="button" aria-label="Déplier ou replier Modules métier" aria-expanded="false"></button></div><ul><li><div class="nav-row"><a href="../backend/modules/auth.html">Authentification</a></div></li><li><div class="nav-row"><a href="../backend/modules/loterie.html">Loterie</a></div></li><li><div class="nav-row"><a href="../backend/modules/boutique.html">Boutique et récompenses</a></div></li><li><div class="nav-row"><a href="../backend/modules/partenaires.html">Partenaires</a></div></li><li><div class="nav-row"><a href="../backend/modules/utilisateur.html">Utilisateur et RGPD</a></div></li><li><div class="nav-row"><a href="../backend/modules/analytique.html">Analytique</a></div></li><li><div class="nav-row"><a href="../backend/modules/administration.html">Administration Mairie</a></div></li><li><div class="nav-row"><a href="../backend/modules/webhooks-systeme.html">Webhooks et système</a></div></li></ul></li><li><div class="nav-row"><a href="../backend/reference-api.html">Référence de l&#39;API</a></div></li><li><div class="nav-row"><a href="../backend/reponses-erreurs.html">Réponses et erreurs</a></div></li><li><div class="nav-row"><a href="../backend/services.html">Services transverses</a></div></li><li><div class="nav-row"><a href="../backend/socket-io.html">Temps réel Socket.IO</a></div></li><li><div class="nav-row"><a href="../backend/files-workers.html">Files et workers</a></div></li><li><div class="nav-row"><a href="../backend/observabilite.html">Observabilité</a></div></li><li><div class="nav-row"><a href="../backend/tests.html">Tests</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">8. Frontend web</p><ul><li><div class="nav-row"><a href="../web/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../web/pages.html">Pages et espaces</a></div></li><li><div class="nav-row"><a href="../web/authentification.html">Authentification et routes protégées</a></div></li><li><div class="nav-row"><a href="../web/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../web/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../web/temps-reel.html">Temps réel</a></div></li><li><div class="nav-row"><a href="../web/design-system.html">Design system</a></div></li><li><div class="nav-row"><a href="../web/i18n.html">Internationalisation</a></div></li><li><div class="nav-row"><a href="../web/analytique-consentement.html">Analytique et consentement</a></div></li><li><div class="nav-row"><a href="../web/accessibilite.html">Accessibilité et responsive</a></div></li><li><div class="nav-row"><a href="../web/securite-navigateur.html">Sécurité du navigateur</a></div></li><li><div class="nav-row"><a href="../web/tests-build.html">Tests et build</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">9. Application mobile</p><ul><li><div class="nav-row"><a href="../mobile/structure.html">Stack et structure</a></div></li><li><div class="nav-row"><a href="../mobile/navigation-ecrans.html">Navigation et écrans</a></div></li><li><div class="nav-row"><a href="../mobile/authentification.html">Authentification et stockage sécurisé</a></div></li><li><div class="nav-row"><a href="../mobile/etat-api.html">État et appels API</a></div></li><li><div class="nav-row"><a href="../mobile/portefeuille-loterie.html">Portefeuille et loterie</a></div></li><li><div class="nav-row"><a href="../mobile/temps-reel-notifications.html">Temps réel et notifications</a></div></li><li><div class="nav-row"><a href="../mobile/theme-composants.html">Thème et composants</a></div></li><li><div class="nav-row"><a href="../mobile/resilience.html">Résilience réseau</a></div></li><li><div class="nav-row"><a href="../mobile/builds-publication.html">Builds et publication</a></div></li><li><div class="nav-row"><a href="../mobile/telephone-physique.html">Tester sur un téléphone</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">10. Office de Tourisme</p><ul><li><div class="nav-row"><a href="../office-tourisme/role.html">Rôle dans le projet</a></div></li><li><div class="nav-row"><a href="../office-tourisme/pages.html">Pages et parcours</a></div></li><li><div class="nav-row"><a href="../office-tourisme/architecture.html">Architecture JavaScript</a></div></li><li><div class="nav-row"><a href="../office-tourisme/contenus.html">Contenus</a></div></li><li><div class="nav-row"><a href="../office-tourisme/billetterie.html">Billetterie et commande</a></div></li><li><div class="nav-row"><a href="../office-tourisme/charte.html">Charte graphique et médias</a></div></li><li><div class="nav-row"><a href="../office-tourisme/accessibilite.html">Accessibilité et vie privée</a></div></li><li><div class="nav-row"><a href="../office-tourisme/deploiement.html">Servir et déployer</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">11. Sécurité</p><ul><li><div class="nav-row"><a href="../securite/menaces.html">Modèle de menaces</a></div></li><li><div class="nav-row"><a href="../securite/authentification.html">Authentification et 2FA</a></div></li><li><div class="nav-row"><a href="../securite/sessions.html">Sessions</a></div></li><li><div class="nav-row"><a href="../securite/autorisations.html">Autorisations et matrice des droits</a></div></li><li><div class="nav-row"><a href="../securite/validation.html">Validation des entrées</a></div></li><li><div class="nav-row"><a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a></div></li><li><div class="nav-row"><a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a></div></li><li><div class="nav-row"><a href="../securite/protection-api.html">Protection des API</a></div></li><li><div class="nav-row"><a href="../securite/navigateur-mobile.html">Navigateur et mobile</a></div></li><li><div class="nav-row"><a href="../securite/chaine-logicielle.html">Chaîne logicielle</a></div></li><li><div class="nav-row"><a href="../securite/audits.html">Audits et checklists</a></div></li><li><div class="nav-row"><a href="../securite/signalement.html">Signaler une vulnérabilité</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">12. Juridique et conformité</p><ul><li><div class="nav-row"><a href="veille-juridique.html">Veille juridique</a></div></li><li><div class="nav-row"><a href="crypto-actifs.html">Crypto-actifs et MiCA</a></div></li><li><div class="nav-row"><a href="rgpd.html">RGPD</a></div></li><li><div class="nav-row"><a href="registre-traitements.html">Registre des traitements</a></div></li><li><div class="nav-row"><a href="aipd.html" aria-current="page">Analyse d&#39;impact (AIPD)</a></div></li><li><div class="nav-row"><a href="blockchain-donnees.html">Blockchain et données personnelles</a></div></li><li><div class="nav-row"><a href="cookies-mentions.html">Cookies, mentions et CGU</a></div></li><li><div class="nav-row"><a href="reglement-participation.html">Règlement de participation</a></div></li><li><div class="nav-row"><a href="accessibilite.html">Accessibilité numérique</a></div></li><li><div class="nav-row"><a href="licences.html">Licences</a></div></li><li><div class="nav-row"><a href="registre-risques.html">Registre des risques</a></div></li><li><div class="nav-row"><a href="points-a-valider.html">Points à valider</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">13. Infrastructure et exploitation</p><ul><li><div class="nav-row"><a href="../infrastructure/docker-compose.html">Docker Compose</a></div></li><li><div class="nav-row"><a href="../infrastructure/images.html">Images Docker</a></div></li><li><div class="nav-row"><a href="../infrastructure/environnements.html">Environnements</a></div></li><li><div class="nav-row"><a href="../infrastructure/ci.html">Intégration continue</a></div></li><li><div class="nav-row"><a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a></div></li><li><div class="nav-row"><a href="../infrastructure/publier-documentation.html">Publier la documentation</a></div></li><li><div class="nav-row"><a href="../infrastructure/slo-metriques.html">Objectifs de service et métriques</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks.html">Runbooks</a></div></li><li><div class="nav-row"><a href="../infrastructure/runbooks-blockchain.html">Runbooks blockchain</a></div></li><li><div class="nav-row"><a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a></div></li><li><div class="nav-row"><a href="../infrastructure/incidents.html">Réponse aux incidents</a></div></li><li><div class="nav-row"><a href="../infrastructure/tests-charge.html">Tests de charge</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">14. Contribuer</p><ul><li><div class="nav-row"><a href="../contribuer/workflow-git.html">Workflow Git</a></div></li><li><div class="nav-row"><a href="../contribuer/standards.html">Standards de code</a></div></li><li><div class="nav-row"><a href="../contribuer/tests-qualite.html">Tests et qualité</a></div></li><li><div class="nav-row"><a href="../contribuer/dependances.html">Dépendances</a></div></li><li><div class="nav-row"><a href="../contribuer/documentation.html">Écrire la documentation</a></div></li><li><div class="nav-row"><a href="../contribuer/mise-en-production.html">Avant une mise en production</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">15. Guides pratiques</p><ul><li><div class="nav-row"><a href="../guides/ajouter-endpoint.html">Ajouter un endpoint</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-migration.html">Ajouter une migration</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-page-web.html">Ajouter une page web</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-ecran-mobile.html">Ajouter un écran mobile</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-email.html">Ajouter un email</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-variable.html">Ajouter une variable d&#39;environnement</a></div></li><li><div class="nav-row"><a href="../guides/ajouter-partenaire.html">Ajouter un commerçant partenaire</a></div></li><li><div class="nav-row"><a href="../guides/modifier-contrat.html">Modifier le contrat</a></div></li><li><div class="nav-row"><a href="../guides/indexer-evenement.html">Indexer un nouvel événement</a></div></li><li><div class="nav-row"><a href="../guides/redeployer-sepolia.html">Redéployer sur Sepolia</a></div></li><li><div class="nav-row"><a href="../guides/soutenance.html">Préparer la soutenance</a></div></li></ul></div><div class="nav-group"><p class="nav-group-title">16. Annexes</p><ul><li><div class="nav-row"><a href="../annexes/glossaire.html">Glossaire</a></div></li><li><div class="nav-row"><a href="../annexes/faq.html">FAQ</a></div></li><li><div class="nav-row"><a href="../annexes/dette-technique.html">Dette technique et limites</a></div></li><li><div class="nav-row"><a href="../annexes/fichiers-cles.html">Index des fichiers clés</a></div></li><li><div class="nav-row"><a href="../annexes/scripts-npm.html">Scripts npm</a></div></li><li><div class="nav-row"><a href="../annexes/journal.html">Journal des versions</a></div></li></ul></div></nav>
+  <main id="contenu" class="content" tabindex="-1">
+    <div class="breadcrumb"><span>12. Juridique et conformité</span></div>
+    <article class="markdown">
+<h1>Analyse d&#39;impact relative à la protection des données</h1>
+<p>Cette page est l&#39;analyse d&#39;impact relative à la protection des données (AIPD) de BlockLucky, prévue par l&#39;article 35 du RGPD. Elle suit la méthode de la CNIL en quatre temps : description du traitement, nécessité et proportionnalité, appréciation des risques sur la vie privée, puis plan d&#39;action. Elle s&#39;appuie sur le code du dépôt et sur les pages <a href="rgpd.html">RGPD</a>, <a href="registre-traitements.html">Registre des traitements</a>, <a href="registre-risques.html">Registre des risques</a> et la partie <a href="../securite/menaces.html">Sécurité</a>. C&#39;est une version de travail, rédigée par l&#39;équipe projet : <strong>l&#39;avis du DPO reste à recueillir</strong> avant toute exploitation réelle. Elle ne constitue pas un avis juridique.</p>
+<h2 id="pourquoi-une-aipd"><a class="anchor" href="#pourquoi-une-aipd" aria-hidden="true" tabindex="-1">#</a>Pourquoi une AIPD</h2>
+<p>Le traitement réunit plusieurs critères des lignes directrices du CEPD et de la liste de la CNIL :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Critère</th>
+<th>Situation dans BlockLucky</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Usage innovant d&#39;une technologie</td>
+<td>Inscription des participations sur une blockchain, portefeuille intégré conservé par le service</td>
+</tr>
+<tr>
+<td>Données à caractère hautement personnel</td>
+<td>Photos du recto et du verso de la pièce d&#39;identité, examinées par un agent</td>
+</tr>
+<tr>
+<td>Données publiques et immuables</td>
+<td>Adresses, montants et événements visibles par tous sur un réseau public de test, impossibles à effacer</td>
+</tr>
+<tr>
+<td>Personnes potentiellement nombreuses</td>
+<td>Objectif de 10 000 participants pour un service communal</td>
+</tr>
+<tr>
+<td>Croisement de données</td>
+<td>Mesure d&#39;audience rattachée au compte, lien entre compte et adresse de portefeuille</td>
+</tr>
+</tbody></table></div>
+<p>Deux critères suffisent en général à rendre l&#39;analyse obligatoire. La question était ouverte sous le numéro DPO-7 dans <a href="points-a-valider.html">Points à valider</a>.</p>
+<h2 id="1-description-du-traitement"><a class="anchor" href="#1-description-du-traitement" aria-hidden="true" tabindex="-1">#</a>1. Description du traitement</h2>
+<h3 id="responsable-et-perimetre"><a class="anchor" href="#responsable-et-perimetre" aria-hidden="true" tabindex="-1">#</a>Responsable et périmètre</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Responsable de traitement</td>
+<td>Ville d&#39;EtherBay (collectivité fictive du scénario pédagogique), Direction des Systèmes d&#39;Information, 1 place de la Mairie, 00000 EtherBay</td>
+</tr>
+<tr>
+<td>Délégué à la protection des données</td>
+<td><a href="mailto:dpo@etherbay.fr">dpo@etherbay.fr</a></td>
+</tr>
+<tr>
+<td>Appui technique</td>
+<td>Équipe BlockLucky (Epitech Digital School)</td>
+</tr>
+<tr>
+<td>Interfaces</td>
+<td>Frontend web (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web</code></a>), application mobile (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app</code></a>), API (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>backend</code></a>), contrat (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract</code></a>)</td>
+</tr>
+<tr>
+<td>Hébergement de la démonstration</td>
+<td>Microsoft Azure (Microsoft Ireland Operations Limited), machine virtuelle en région Danemark Est, domaine <code>etherbay.tech</code></td>
+</tr>
+<tr>
+<td>Hors périmètre</td>
+<td>Site de l&#39;Office de Tourisme, qui ne transmet aucune donnée à un serveur</td>
+</tr>
+</tbody></table></div>
+<h3 id="finalites"><a class="anchor" href="#finalites" aria-hidden="true" tabindex="-1">#</a>Finalités</h3>
+<p>Tirage au sort citoyen gratuit en ETH de test, programme de fidélité EtherPoints avec des commerçants partenaires, cadeau et parrainage, vérification de l&#39;âge, assistance, sécurité des comptes et mesure d&#39;audience. Le détail par traitement figure dans le <a href="registre-traitements.html">registre des traitements</a>.</p>
+<h3 id="donnees-et-cycle-de-vie"><a class="anchor" href="#donnees-et-cycle-de-vie" aria-hidden="true" tabindex="-1">#</a>Données et cycle de vie</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Données</th>
+<th>Support</th>
+<th>Durée</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Inscription et connexion</td>
+<td>Email, empreinte bcrypt du mot de passe (mobile), connexion Google éventuelle, code temporaire, tranche d&#39;âge et majorité déclarées (web)</td>
+<td>PostgreSQL, Redis</td>
+<td>Codes 10 minutes ; compte pour la durée du pilote</td>
+</tr>
+<tr>
+<td>Paramètres</td>
+<td>Prénom et nom facultatifs, préférences d&#39;affichage, catégories de notifications</td>
+<td>PostgreSQL, Redis</td>
+<td>Durée du compte</td>
+</tr>
+<tr>
+<td>Vérification de l&#39;âge</td>
+<td>Photos recto et verso de la pièce, statut, dates, motif d&#39;un refus, agent</td>
+<td>Table <code>IdentityDocument</code> (images chiffrées AES-256-GCM), <code>User</code>, journal d&#39;administration</td>
+<td>Photos effacées à la décision ; statut pour la durée du compte</td>
+</tr>
+<tr>
+<td>Portefeuille</td>
+<td>Adresse, clé privée chiffrée, hash de la dotation</td>
+<td>PostgreSQL ; adresse sur la chaîne</td>
+<td>Clé détruite à l&#39;effacement ; adresse publique sans limite</td>
+</tr>
+<tr>
+<td>Participation</td>
+<td>Un ticket par tour, hash de transaction, adresse payeuse, gain ou remboursement</td>
+<td>PostgreSQL et chaîne</td>
+<td>Durée du pilote ; sur la chaîne sans limite</td>
+</tr>
+<tr>
+<td>Fidélité</td>
+<td>Points, récompenses, codes promo</td>
+<td>PostgreSQL</td>
+<td>Durée du compte puis rattachement à l&#39;identifiant anonymisé</td>
+</tr>
+<tr>
+<td>Cadeau</td>
+<td>Email du bénéficiaire, message, lien de parrainage</td>
+<td>PostgreSQL</td>
+<td>Comme le compte</td>
+</tr>
+<tr>
+<td>Assistance</td>
+<td>Objet, message, email, prénom et nom</td>
+<td>Email vers <code>SUPPORT_EMAIL</code>, aucune copie en base</td>
+<td>Selon la messagerie de la Mairie</td>
+</tr>
+<tr>
+<td>Mesure d&#39;audience web</td>
+<td>Type d&#39;événement, source UTM, page, identifiant du compte connecté</td>
+<td><code>localStorage</code> après consentement, table <code>Analytics</code></td>
+<td>Choix 6 mois sur l&#39;appareil ; 13 mois au plus côté serveur (purge à implémenter)</td>
+</tr>
+<tr>
+<td>Journaux</td>
+<td>Journal d&#39;administration, journaux techniques</td>
+<td>Table <code>Analytics</code>, sortie du serveur</td>
+<td>1 an pour le journal d&#39;administration ; journaux techniques à fixer</td>
+</tr>
+</tbody></table></div>
+<h3 id="supports"><a class="anchor" href="#supports" aria-hidden="true" tabindex="-1">#</a>Supports</h3>
+<p>API Express, PostgreSQL, Redis, files BullMQ, serveur SMTP, nœud RPC Ethereum (Hardhat en local, Sepolia s&#39;il est déployé), stockage local du navigateur et stockage sécurisé du téléphone. L&#39;architecture est décrite dans <a href="../architecture/vue-ensemble.html">Vue d&#39;ensemble</a>.</p>
+<h2 id="2-necessite-et-proportionnalite"><a class="anchor" href="#2-necessite-et-proportionnalite" aria-hidden="true" tabindex="-1">#</a>2. Nécessité et proportionnalité</h2>
+<h3 id="principes"><a class="anchor" href="#principes" aria-hidden="true" tabindex="-1">#</a>Principes</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Principe</th>
+<th>Appréciation</th>
+<th>Écart restant</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Finalités déterminées</td>
+<td>Chaque traitement a une finalité inscrite au registre</td>
+<td>Aucun</td>
+</tr>
+<tr>
+<td>Base légale</td>
+<td>Exécution des conditions et du règlement ; intérêt légitime pour la sécurité ; consentement pour la mesure d&#39;audience web depuis le bandeau</td>
+<td>Base de la vérification d&#39;âge et du compte créé pour le bénéficiaire d&#39;un cadeau à valider (DPO-1, DPO-2, DPO-12)</td>
+</tr>
+<tr>
+<td>Minimisation</td>
+<td>Aucune donnée bancaire ; date de naissance et numéro de pièce non saisis ; email jamais publié sur la chaîne</td>
+<td>La photo de la pièce montre toutes ses mentions ; une solution de vérification d&#39;âge sans transmission d&#39;identité serait moins intrusive (JUR-14)</td>
+</tr>
+<tr>
+<td>Exactitude</td>
+<td>Rectification du prénom, du nom et de l&#39;email dans l&#39;application mobile</td>
+<td>Pas d&#39;écran de rectification sur le web</td>
+</tr>
+<tr>
+<td>Durées limitées</td>
+<td>Codes, jetons et photos effacés automatiquement</td>
+<td>Purges des comptes, de l&#39;audience et des journaux non implémentées (DPO-4)</td>
+</tr>
+</tbody></table></div>
+<h3 id="droits-des-personnes"><a class="anchor" href="#droits-des-personnes" aria-hidden="true" tabindex="-1">#</a>Droits des personnes</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Droit</th>
+<th>Mise en œuvre</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Information</td>
+<td>Politique de confidentialité, politique relative aux traceurs, conditions et règlement, publiés sur le web et dans l&#39;application (<code>/confidentialite</code>, <code>/traceurs</code>, écran Informations légales)</td>
+</tr>
+<tr>
+<td>Consentement</td>
+<td>Bandeau <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/layout/ConsentBanner.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ConsentBanner.tsx</code></a> avec « Tout refuser » et « Tout accepter » au même niveau ; retrait par « Gérer mes traceurs » ; aucune origine de visite ni aucun événement de mesure avant accord (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/lib/consent.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/lib/consent.ts</code></a>)</td>
+</tr>
+<tr>
+<td>Accès et portabilité</td>
+<td>Export JSON en libre-service (<code>GET /api/user/gdpr/export</code>) ; export incomplet pour les données Redis (DPO-9)</td>
+</tr>
+<tr>
+<td>Effacement</td>
+<td>Demande puis confirmation par email valable 24 heures ; anonymisation de la fiche du compte ; traces pseudonymes conservées (DPO-5)</td>
+</tr>
+<tr>
+<td>Opposition et limitation</td>
+<td>Demande au DPO ; retrait du consentement en un clic pour la mesure web</td>
+</tr>
+<tr>
+<td>Intervention humaine</td>
+<td>Le tirage est automatisé ; examen humain sur demande à <a href="mailto:support@etherbay.fr">support@etherbay.fr</a> ; la vérification d&#39;âge est une décision humaine</td>
+</tr>
+</tbody></table></div>
+<h3 id="sous-traitants-et-transferts"><a class="anchor" href="#sous-traitants-et-transferts" aria-hidden="true" tabindex="-1">#</a>Sous-traitants et transferts</h3>
+<p>Hébergeur (Microsoft Azure, Union européenne), fournisseur SMTP et fournisseur RPC à désigner par contrat (DPO-11). Google intervient seulement si la personne choisit cette connexion. Les adresses pseudonymes inscrites sur un réseau public sont répliquées dans le monde entier (DPO-6).</p>
+<h2 id="3-risques"><a class="anchor" href="#3-risques" aria-hidden="true" tabindex="-1">#</a>3. Risques</h2>
+<p>L&#39;échelle suit la méthode de la CNIL : gravité et vraisemblance de 1 (négligeable) à 4 (maximale). La cotation tient compte des mesures déjà présentes dans le dépôt. Elle est une proposition à valider par le DPO.</p>
+<h3 id="acces-illegitime-a-des-donnees"><a class="anchor" href="#acces-illegitime-a-des-donnees" aria-hidden="true" tabindex="-1">#</a>Accès illégitime à des données</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Analyse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sources de risque</td>
+<td>Attaquant externe, agent de la Mairie qui outrepasse ses droits, compte administrateur compromis, prestataire</td>
+</tr>
+<tr>
+<td>Menaces</td>
+<td>Fuite de la base ou d&#39;une sauvegarde, vol de <code>ENCRYPTION_KEY</code>, consultation abusive des pièces d&#39;identité, recoupement d&#39;une adresse publique avec une personne, lecture d&#39;un jeton dans un journal ou une URL</td>
+</tr>
+<tr>
+<td>Données les plus sensibles</td>
+<td>Photos de pièce d&#39;identité en attente, clés privées chiffrées, email</td>
+</tr>
+<tr>
+<td>Impacts</td>
+<td>Usurpation d&#39;identité à partir de la pièce, hameçonnage ciblé, perte des fonds de test, révélation de la participation d&#39;une personne</td>
+</tr>
+<tr>
+<td>Mesures existantes</td>
+<td>Chiffrement AES-256-GCM des pièces et des clés, rôle ADMIN avec double authentification, journalisation de chaque consultation de pièce, effacement des photos à la décision, mots de passe hachés, limites de débit, révocation des sessions (voir <a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a>, <a href="../securite/autorisations.html">Autorisations</a>, <a href="../securite/protection-api.html">Protection des API</a>)</td>
+</tr>
+<tr>
+<td>Gravité</td>
+<td>3 (importante), en raison des pièces d&#39;identité</td>
+</tr>
+<tr>
+<td>Vraisemblance</td>
+<td>2 (limitée)</td>
+</tr>
+</tbody></table></div>
+<h3 id="modification-non-desiree-de-donnees"><a class="anchor" href="#modification-non-desiree-de-donnees" aria-hidden="true" tabindex="-1">#</a>Modification non désirée de données</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Analyse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sources de risque</td>
+<td>Attaquant externe, opérateur disposant des rôles du contrat, propriétaire VRF du contrat</td>
+</tr>
+<tr>
+<td>Menaces</td>
+<td>Tirage manipulé par remplacement du coordinateur VRF, annulation ciblée d&#39;un tour, altération d&#39;une décision sur l&#39;âge, double achat</td>
+</tr>
+<tr>
+<td>Impacts</td>
+<td>Perte de confiance dans le tirage, exclusion injustifiée d&#39;un participant, gain attribué à tort</td>
+</tr>
+<tr>
+<td>Mesures existantes</td>
+<td>Chainlink VRF sur Sepolia, coordinateur simulé et signalé comme tel en local, événements publics du contrat, unicité d&#39;un ticket par participant, idempotence côté serveur, décision d&#39;âge journalisée, charte de transparence qui distingue les environnements</td>
+</tr>
+<tr>
+<td>Gravité</td>
+<td>2 (limitée) : gains sans valeur monétaire</td>
+</tr>
+<tr>
+<td>Vraisemblance</td>
+<td>2 (limitée) ; le transfert de propriété VRF est implémenté dans les scripts de déploiement mais pas encore exécuté sur Sepolia, où rien n&#39;est déployé (SC8, DSI-1)</td>
+</tr>
+</tbody></table></div>
+<h3 id="disparition-de-donnees"><a class="anchor" href="#disparition-de-donnees" aria-hidden="true" tabindex="-1">#</a>Disparition de données</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Analyse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sources de risque</td>
+<td>Panne, erreur d&#39;exploitation, perte d&#39;un secret</td>
+</tr>
+<tr>
+<td>Menaces</td>
+<td>Perte de la base ou de Redis, rotation ou perte de <code>ENCRYPTION_KEY</code> rendant les portefeuilles inutilisables, effacement irréversible demandé par erreur</td>
+</tr>
+<tr>
+<td>Impacts</td>
+<td>Perte de l&#39;historique et des points, portefeuilles inaccessibles, gains en attente perdus</td>
+</tr>
+<tr>
+<td>Mesures existantes</td>
+<td>Sauvegardes prévues (<a href="../infrastructure/sauvegardes.html">Sauvegardes et reprise</a>), la chaîne fait foi et permet de reconstruire les participations, confirmation par email de toute suppression, fonds fictifs</td>
+</tr>
+<tr>
+<td>Gravité</td>
+<td>2 (limitée)</td>
+</tr>
+<tr>
+<td>Vraisemblance</td>
+<td>2 (limitée) ; aucun outil de re-chiffrement (DSI-3)</td>
+</tr>
+</tbody></table></div>
+<h3 id="synthese"><a class="anchor" href="#synthese" aria-hidden="true" tabindex="-1">#</a>Synthèse</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Risque</th>
+<th>Gravité</th>
+<th>Vraisemblance</th>
+<th>Niveau</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Accès illégitime</td>
+<td>3</td>
+<td>2</td>
+<td>À réduire en priorité</td>
+</tr>
+<tr>
+<td>Modification non désirée</td>
+<td>2</td>
+<td>2</td>
+<td>Acceptable pour une démonstration, à réduire avant une exploitation</td>
+</tr>
+<tr>
+<td>Disparition</td>
+<td>2</td>
+<td>2</td>
+<td>Acceptable pour une démonstration</td>
+</tr>
+</tbody></table></div>
+<h2 id="4-mesures-prevues-et-plan-d-action"><a class="anchor" href="#4-mesures-prevues-et-plan-d-action" aria-hidden="true" tabindex="-1">#</a>4. Mesures prévues et plan d&#39;action</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>N°</th>
+<th>Mesure</th>
+<th>Risque réduit</th>
+<th>Responsable</th>
+<th>État</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A1</td>
+<td>Bandeau de consentement web, blocage de l&#39;origine de visite et des événements de mesure avant accord, retrait en un clic</td>
+<td>Accès illégitime (audience)</td>
+<td>Équipe front</td>
+<td>Fait</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>Textes publics complets : CGU, règlement, mentions légales, confidentialité, traceurs, charte, sur le web et le mobile</td>
+<td>Information des personnes</td>
+<td>Équipe</td>
+<td>Fait</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>Délai maximal de conservation d&#39;une pièce d&#39;identité jamais traitée, avec purge automatique</td>
+<td>Accès illégitime</td>
+<td>Équipe backend</td>
+<td>À faire</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>Rôle dédié aux agents habilités à consulter les pièces, distinct d&#39;ADMIN</td>
+<td>Accès illégitime</td>
+<td>DSI</td>
+<td>À décider (DSI-8)</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>Purges planifiées des comptes inactifs, des événements d&#39;audience de plus de 13 mois, du journal d&#39;administration de plus d&#39;un an et des jetons expirés</td>
+<td>Accès illégitime</td>
+<td>Équipe backend</td>
+<td>À faire</td>
+</tr>
+<tr>
+<td>A6</td>
+<td>Effacement des données Redis et de <code>Ticket.payerWallet</code> à l&#39;anonymisation, après avis du DPO</td>
+<td>Accès illégitime</td>
+<td>Équipe backend</td>
+<td>À décider (DPO-5)</td>
+</tr>
+<tr>
+<td>A7</td>
+<td>Transfert de la propriété VRF à un multisig de la Mairie</td>
+<td>Modification non désirée</td>
+<td>DSI</td>
+<td>Implémenté dans <code>deploy-sepolia.ts</code> (<code>transferOwnership</code> puis <code>acceptOwnership</code> par le multisig) ; à exécuter au déploiement Sepolia (DSI-1)</td>
+</tr>
+<tr>
+<td>A8</td>
+<td>Outil de re-chiffrement et sauvegarde séparée de <code>ENCRYPTION_KEY</code></td>
+<td>Disparition</td>
+<td>DSI</td>
+<td>À faire (DSI-3)</td>
+</tr>
+<tr>
+<td>A9</td>
+<td>Contrats de sous-traitance (hébergeur, SMTP, RPC)</td>
+<td>Accès illégitime</td>
+<td>Mairie</td>
+<td>À faire (DPO-11)</td>
+</tr>
+<tr>
+<td>A10</td>
+<td>Invitation suivie d&#39;une acceptation pour le bénéficiaire d&#39;un cadeau, au lieu de la création d&#39;un compte à son insu</td>
+<td>Information des personnes</td>
+<td>Équipe backend</td>
+<td>À décider (DPO-2)</td>
+</tr>
+<tr>
+<td>A11</td>
+<td>Étude d&#39;une vérification d&#39;âge sans transmission de l&#39;identité</td>
+<td>Accès illégitime</td>
+<td>Mairie</td>
+<td>À étudier (JUR-14)</td>
+</tr>
+</tbody></table></div>
+<p>Les mesures A3, A5 et A7 conditionnent un déploiement public sur Sepolia avec de vrais participants.</p>
+<h2 id="5-avis-du-dpo"><a class="anchor" href="#5-avis-du-dpo" aria-hidden="true" tabindex="-1">#</a>5. Avis du DPO</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rubrique</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Avis du DPO</td>
+<td>À recueillir</td>
+</tr>
+<tr>
+<td>Date</td>
+<td></td>
+</tr>
+<tr>
+<td>Décision du responsable de traitement</td>
+<td>À rendre après l&#39;avis</td>
+</tr>
+<tr>
+<td>Consultation préalable de la CNIL</td>
+<td>Nécessaire seulement si des risques élevés subsistent après les mesures prévues</td>
+</tr>
+<tr>
+<td>Révision</td>
+<td>À chaque nouvelle donnée collectée, avant un déploiement sur Sepolia et après tout incident</td>
+</tr>
+</tbody></table></div>
+
+    </article>
+    <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="registre-traitements.html"><span>Précédent</span><strong>Registre des traitements</strong></a><a class="pager-next" href="blockchain-donnees.html"><span>Suivant</span><strong>Blockchain et données personnelles</strong></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/documentation-officielle/content/juridique/aipd.md" target="_blank" rel="noopener noreferrer">Modifier cette page sur GitHub</a>
+      <span>Ville d'EtherBay, projet BlockLucky</span>
+    </footer>
+  </main>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#pourquoi-une-aipd">Pourquoi une AIPD</a></li><li class="toc-h2"><a href="#1-description-du-traitement">1. Description du traitement</a></li><li class="toc-h3"><a href="#responsable-et-perimetre">Responsable et périmètre</a></li><li class="toc-h3"><a href="#finalites">Finalités</a></li><li class="toc-h3"><a href="#donnees-et-cycle-de-vie">Données et cycle de vie</a></li><li class="toc-h3"><a href="#supports">Supports</a></li><li class="toc-h2"><a href="#2-necessite-et-proportionnalite">2. Nécessité et proportionnalité</a></li><li class="toc-h3"><a href="#principes">Principes</a></li><li class="toc-h3"><a href="#droits-des-personnes">Droits des personnes</a></li><li class="toc-h3"><a href="#sous-traitants-et-transferts">Sous-traitants et transferts</a></li><li class="toc-h2"><a href="#3-risques">3. Risques</a></li><li class="toc-h3"><a href="#acces-illegitime-a-des-donnees">Accès illégitime à des données</a></li><li class="toc-h3"><a href="#modification-non-desiree-de-donnees">Modification non désirée de données</a></li><li class="toc-h3"><a href="#disparition-de-donnees">Disparition de données</a></li><li class="toc-h3"><a href="#synthese">Synthèse</a></li><li class="toc-h2"><a href="#4-mesures-prevues-et-plan-d-action">4. Mesures prévues et plan d&#39;action</a></li><li class="toc-h2"><a href="#5-avis-du-dpo">5. Avis du DPO</a></li></ul></aside>
+</div>
+<div class="backdrop" hidden></div>
+</body>
+</html>

@@ -12,7 +12,8 @@ export type EmailTemplateName =
   | 'welcome'
   | 'security-alert'
   | 'identity-decision'
-  | 'support-request';
+  | 'support-request'
+  | 'staff-invitation';
 
 export interface EmailSendOptions {
   replyTo?: string | undefined;

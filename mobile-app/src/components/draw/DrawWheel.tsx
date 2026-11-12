@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 
 import useAppTheme from '../../hooks/useAppTheme';
+import useSound, { SOUNDS } from '../../hooks/useSound';
 import AppText from '../ui/AppText';
 import Icon from '../ui/icons/Icon';
 
@@ -43,6 +44,7 @@ export const DrawWheel: React.FC<DrawWheelProps> = ({
   const settledFor = useRef<number | null>(null);
   const mounted = useRef(true);
   const onSettledRef = useRef(onSettled);
+  const { play: playSpin, stop: stopSpin } = useSound(SOUNDS.wheel);
 
   useEffect(() => {
     onSettledRef.current = onSettled;
@@ -53,12 +55,14 @@ export const DrawWheel: React.FC<DrawWheelProps> = ({
     return () => {
       mounted.current = false;
       rotation.stopAnimation();
+      stopSpin();
     };
-  }, [rotation]);
+  }, [rotation, stopSpin]);
 
   const settle = useCallback(
     (target: number, delay: number) => {
       mode.current = 'settling';
+      playSpin();
       rotation.setValue(0);
       const sectorAngle = SECTOR_ANGLE * target;
       const final = -sectorAngle - 360 * MIN_TURNS;
@@ -72,12 +76,13 @@ export const DrawWheel: React.FC<DrawWheelProps> = ({
         }),
       ]).start(({ finished }) => {
         if (!finished || !mounted.current) return;
+        stopSpin();
         mode.current = 'settled';
         settledFor.current = target;
         onSettledRef.current?.();
       });
     },
-    [rotation],
+    [rotation, playSpin, stopSpin],
   );
 
   const spinOnce = useCallback(() => {
@@ -96,10 +101,11 @@ export const DrawWheel: React.FC<DrawWheelProps> = ({
         spinOnce();
       } else {
         mode.current = 'idle';
+        stopSpin();
         rotation.setValue(0);
       }
     });
-  }, [rotation, settle]);
+  }, [rotation, settle, stopSpin]);
 
   useEffect(() => {
     pending.current = { target: targetIndex, spinning };
@@ -116,9 +122,10 @@ export const DrawWheel: React.FC<DrawWheelProps> = ({
     if (spinning && (mode.current === 'idle' || mode.current === 'settled')) {
       mode.current = 'looping';
       settledFor.current = null;
+      playSpin({ loop: true });
       spinOnce();
     }
-  }, [spinning, targetIndex, settle, spinOnce]);
+  }, [spinning, targetIndex, settle, spinOnce, playSpin]);
 
   const rotate = rotation.interpolate({ inputRange: [-360, 0], outputRange: ['-360deg', '0deg'] });
   const scale = size / 300;

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useEffect } from 'react';
 import PublicShell from '@/components/layout/PublicShell';
 import TransparencyCharter from '@/components/lottery/TransparencyCharter';
@@ -16,26 +17,26 @@ export default function TransparencePage() {
   }, []);
 
   const rules = [
-    t('Participation réservée aux personnes majeures (18 ans et plus).', 'Adults only (18 and over).'),
     t(
-      'Un ticket coûte 0,01 ether fictif. Il est payé, frais réseau compris, par votre portefeuille BlockLucky intégré, alimenté par une dotation de bienvenue de la Mairie.',
-      'A ticket costs 0.01 test ether. It is paid, network fees included, by your integrated BlockLucky wallet, funded by a City Hall welcome grant.'
+      'Participation réservée aux personnes majeures dont l’âge a été vérifié par la Mairie.',
+      'Adults only, with age verified by City Hall.'
     ),
+    t(
+      'Un ticket coûte 0,01 ether de test par défaut, payé par votre portefeuille BlockLucky intégré grâce à la dotation de bienvenue de la Mairie.',
+      'A ticket costs 0.01 test ether by default, paid by your integrated BlockLucky wallet from the City Hall welcome grant.'
+    ),
+    t('Un seul ticket par participant et par tirage.', 'One ticket per participant per draw.'),
     t(
       'Chaque ticket rapporte 50 EtherPoints et un certificat commémoratif POAP.',
       'Each ticket earns 50 EtherPoints and a commemorative POAP certificate.'
     ),
     t(
-      'Les participations ferment à l échéance affichée. Le tirage est réalisé par Chainlink VRF.',
-      'Entries close at the displayed deadline. The draw is performed by Chainlink VRF.'
+      'Les participations ferment à l’échéance affichée. Le contrat sélectionne le ticket gagnant à partir d’une demande d’aléa.',
+      'Entries close at the displayed deadline. The contract selects the winning ticket from a randomness request.'
     ),
     t(
-      'Un plafond personnel de tickets par tirage peut être défini à tout moment (jeu responsable).',
-      'A personal ticket cap per draw can be set at any time (responsible play).'
-    ),
-    t(
-      'En cas d annulation, toutes les participations sont remboursées automatiquement.',
-      'If cancelled, all entries are refunded automatically.'
+      'Si le seuil minimum n’est pas atteint, le tour est annulé et le ticket est remboursé en ETH de test.',
+      'If the minimum threshold is not met, the round is cancelled and the ticket is refunded in test ETH.'
     ),
   ];
 
@@ -65,6 +66,11 @@ export default function TransparencePage() {
               </li>
             ))}
           </ol>
+          <p className="mt-4 text-small font-semibold">
+            <Link href="/reglement" className="underline underline-offset-2">
+              {t('Lire le règlement de participation complet', 'Read the full participation rules')}
+            </Link>
+          </p>
           <div className="mt-6 max-w-xs">
             <LinkButton href="/connexion" variant="secondary">
               {t('Je participe', 'I want to take part')}

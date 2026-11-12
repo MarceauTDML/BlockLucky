@@ -54,3 +54,43 @@ export const identityDecisionSchema = z.object({
       path: ['note'],
     }),
 });
+
+export const listStaffAccountsSchema = z.object({
+  query: z.object({
+    role: z.enum(['ADMIN', 'PARTNER']).optional(),
+    search: z.string().trim().max(120, 'Recherche trop longue').optional(),
+    page: z.coerce.number().int().min(1).optional(),
+    limit: z.coerce.number().int().min(1).max(100).optional(),
+  }),
+});
+
+const optionalName = z
+  .string()
+  .trim()
+  .max(80, 'Le nom ne doit pas dépasser 80 caractères')
+  .optional()
+  .transform((value) => (value ? value : undefined));
+
+export const createStaffAccountSchema = z.object({
+  body: z
+    .object({
+      email: z.string().trim().toLowerCase().email('Adresse email invalide'),
+      role: z.enum(['PARTNER', 'ADMIN'], { error: 'Le rôle doit être PARTNER ou ADMIN' }),
+      firstName: optionalName,
+      lastName: optionalName,
+      partnerId: z.string().uuid('Identifiant d\'établissement invalide').optional(),
+    })
+    .refine((value) => value.role === 'PARTNER' || !value.partnerId, {
+      message: 'Un établissement ne peut être rattaché qu\'à un compte partenaire',
+      path: ['partnerId'],
+    }),
+});
+
+export const updateStaffRoleSchema = z.object({
+  params: z.object({
+    id: z.string().uuid('Identifiant de compte invalide'),
+  }),
+  body: z.object({
+    role: z.enum(['USER', 'PARTNER', 'ADMIN'], { error: 'Le rôle doit être USER, PARTNER ou ADMIN' }),
+  }),
+});

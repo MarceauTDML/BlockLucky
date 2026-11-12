@@ -40,9 +40,11 @@ Termes métier et techniques employés dans le code et dans cette documentation,
 
 **Commission.** Part des mises prélevée pour la Mairie, en points de base (`feeBps`, 1 000 par défaut, soit 10 %, plafonnée à 2 000). Elle s'accumule dans `accruedFees` et est versée à l'adresse de trésorerie par `withdrawFees`.
 
-**Compte opérateur.** Compte Ethereum du backend, dont la clé est `RELAYER_PRIVATE_KEY`. Il détient `OPERATOR_ROLE`, `PAUSER_ROLE` et `MINTER_ROLE`, paie le gas du keeper et des badges, et verse la dotation de bienvenue. Voir [Client RPC et compte opérateur](../integration-blockchain/client-rpc.md).
+**Compte opérateur.** Compte Ethereum du backend, dont la clé est `RELAYER_PRIVATE_KEY`. Il détient `OPERATOR_ROLE`, `PAUSER_ROLE` (sauf si `PAUSER_ADDRESS` désigne un autre compte) et `MINTER_ROLE`, plus `DEFAULT_ADMIN_ROLE` en local sauf avec `LOCAL_STRICT_ROLES=true` ; il paie le gas du keeper et des badges, et verse la dotation de bienvenue. Voir [Client RPC et compte opérateur](../integration-blockchain/client-rpc.md).
 
 **Confirmations.** Nombre de blocs attendus après celui d'une transaction avant de la considérer comme définitive. Variable `CHAIN_CONFIRMATIONS` pour l'indexeur (0 en local, 2 conseillé sur Sepolia) ; `requestConfirmations` pour VRF.
+
+**Consentement aux traceurs.** Choix du visiteur du site web sur la mesure d'audience (origine de la visite, étapes du parcours), demandé par un bandeau et conservé 6 mois dans le navigateur (`bl.consent.choice`). Sans accord, aucun événement n'est envoyé et la source UTM n'est pas gardée. Voir [Cookies et mentions](../juridique/cookies-mentions.md).
 
 **Consommateur VRF.** Contrat autorisé à tirer sur un abonnement VRF.
 
@@ -134,7 +136,7 @@ Termes métier et techniques employés dans le code et dans cette documentation,
 
 **Office de Tourisme.** Site vitrine statique de la destination EtherBay, livré en bonus du projet.
 
-**OAuth.** Connexion déléguée à Google ou à Apple. L'application mobile obtient un jeton d'identité signé par le fournisseur, que le backend vérifie avant de créer ou d'ouvrir le compte de la même adresse email. Inactive tant que `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` est vide.
+**OAuth.** Connexion déléguée à Google. L'application mobile obtient un jeton d'identité signé par le fournisseur, que le backend vérifie avant de créer ou d'ouvrir le compte de la même adresse email. Inactive tant que `GOOGLE_CLIENT_IDS` est vide.
 
 **Oracle.** Service qui apporte à la chaîne une donnée extérieure, ici l'aléa du tirage. En local, l'oracle est simulé par `local-vrf-responder.ts`.
 
@@ -164,7 +166,7 @@ Termes métier et techniques employés dans le code et dans cette documentation,
 
 **Réorganisation** (reorg). Remplacement des derniers blocs d'une chaîne par une version concurrente. Les confirmations en protègent l'indexeur.
 
-**Rôles du contrat.** `DEFAULT_ADMIN_ROLE` (Mairie : configuration, trésorerie, attribution des rôles), `OPERATOR_ROLE` (tirage, annulation, relance, commission), `PAUSER_ROLE` (disjoncteur), `MINTER_ROLE` sur le contrat POAP (émission des badges).
+**Rôles du contrat.** `DEFAULT_ADMIN_ROLE` (Mairie : configuration, trésorerie, attribution des rôles), `OPERATOR_ROLE` (tirage, annulation, relance, commission), `PAUSER_ROLE` (disjoncteur), `MINTER_ROLE` sur le contrat POAP (émission des badges). S'y ajoute le propriétaire Chainlink (`owner`), transféré en deux temps (`transferOwnership` puis `acceptOwnership`) à `VRF_OWNER_ADDRESS`. La répartition est faite par [`scripts/lib/roles.ts`](src:smart-contract/scripts/lib/roles.ts).
 
 **RPC** (Remote Procedure Call). Interface JSON-RPC d'un nœud Ethereum, par laquelle le backend lit et envoie des transactions. Variables `RPC_URL` et `FALLBACK_RPC_URL`.
 
@@ -193,6 +195,8 @@ Termes métier et techniques employés dans le code et dans cette documentation,
 **Ticket.** Participation à un tour, numérotée à partir de 0 dans le tour (`ticketIndex`) et affichée sur cinq chiffres (voir Numéro de ticket). Un seul ticket par participant et par tour : `maxTicketsPerPlayer` vaut 1 au déploiement et le backend refuse un second achat en 409.
 
 **Ticket à gratter.** Achat en EtherPoints (`POST /marketplace/scratch`) d'une carte qui tire au hasard une offre partenaire en stock : offre « violet » à 50 points et « lucky » à 100 par défaut (`SCRATCH_COST_VIOLET`, `SCRATCH_COST_LUCKY`). Proposé sur mobile seulement.
+
+**Ticket de connexion** (`loginTicket`). Valeur aléatoire de 256 bits remise après le premier facteur (mot de passe, code email ou Google) à un compte protégé par une application d'authentification. Gardée 10 minutes dans Redis et utilisable une seule fois, elle doit accompagner le code de l'application envoyé à `POST /auth/2fa/verify`.
 
 **TOTP** (Time-based One-Time Password). Code à six chiffres renouvelé toutes les 30 secondes par une application d'authentification, l'une des deux méthodes de double authentification avec le code par email.
 

@@ -264,4 +264,4 @@ La relation est facultative : un visiteur non connecté peut produire des évén
 - Le solde en ethers fictifs des portefeuilles : il est lu sur la chaîne à chaque demande.
 - Les remboursements (`RefundClaimed`), la commission accumulée et la configuration des tours : seulement sur la chaîne.
 - Les badges POAP : seulement sur la chaîne, lus par `badgeOf` et `tokenURI`.
-- Les préférences, quêtes réalisées, limites de jeu responsable et lots de codes promo des partenaires : dans Redis, sans persistance en base (voir [Données Redis](redis.md)).
+- Les préférences, quêtes réalisées et lots de codes promo des partenaires : dans Redis, sans persistance en base (voir [Données Redis](redis.md)).

@@ -50,8 +50,9 @@ L'oracle tourne au premier plan tant que le terminal reste ouvert. Sans lui, les
 
 | Index | Adresse | Rôle dans BlockLucky |
 |---|---|---|
-| 0 | `0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266` | Mairie : déployeur, administrateur, opérateur, pauseur, frappeur, propriétaire `ConfirmedOwner` ; opérateur par défaut du backend |
-| 1 | `0x70997970C51812dc3A010C7d01b50e0d17dc79C8` | Trésorerie |
+| 0 | `0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266` | Déployeur ; opérateur par défaut du backend, qui garde alors `OPERATOR_ROLE`, `PAUSER_ROLE`, `MINTER_ROLE` et `DEFAULT_ADMIN_ROLE` |
+| 1 | `0x70997970C51812dc3A010C7d01b50e0d17dc79C8` | Trésorerie (`LOCAL_TREASURY_ACCOUNT_INDEX`) |
+| 2 | `0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC` | Administrateur de la Mairie (`DEFAULT_ADMIN_ROLE` sur les deux contrats) et propriétaire `ConfirmedOwner` (`LOCAL_ADMIN_ACCOUNT_INDEX`) |
 | 9 | `0xa0Ee7A142d267C1f36714E4a8F75612F20a79720` | Signataire de l'oracle VRF local |
 
 La clé privée du compte 0 est la valeur par défaut de `RELAYER_PRIVATE_KEY` dans [`backend/src/config/env.config.ts`](src:backend/src/config/env.config.ts). Ces clés sont publiques : elles ne doivent jamais recevoir de vrais fonds ni servir hors de la chaîne locale.
@@ -71,7 +72,7 @@ La clé privée du compte 0 est la valeur par défaut de `RELAYER_PRIVATE_KEY` d
 | 3 | Déploiement de `BlockLucky` | `0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9` |
 | 4 | `addConsumer(subId, lottery)` | `BlockLucky` autorisé à demander de l'aléa |
 | 5 | Déploiement de `BlockLuckyPOAP` | `0x5FC8d32690cc91D4c39d9d3abcBD16989F875707` |
-| 6 et suivants | Rôles et approvisionnement de l'opérateur, si configuré | Voir plus bas |
+| 6 et suivants | Rôles, propriété VRF et approvisionnement de l'opérateur | Voir plus bas |
 
 ### Pourquoi les adresses sont déterministes
 
@@ -91,15 +92,32 @@ Le tour est configuré par `roundConfigFromEnv` avec une durée par défaut de 3
 | `nativePayment` | `false` |
 | `drawTimeout` | 600 secondes |
 
-### L'opérateur du backend
+### Répartition des rôles
 
-Si `OPERATOR_ADDRESS` ou `OPERATOR_PRIVATE_KEY` désigne un compte différent du compte 0, le script lui accorde `OPERATOR_ROLE` et `PAUSER_ROLE` sur `BlockLucky`, `MINTER_ROLE` sur `BlockLuckyPOAP`, et lui envoie `OPERATOR_FUNDING_ETH` ethers (1 000 par défaut). L'opérateur paie en effet le gaz du keeper, des frappes de badges et les dotations de bienvenue.
+Les deux contrats sont construits avec le compte 0 comme administrateur provisoire. Le script calcule ensuite un plan de rôles avec `planRoles` de [`scripts/lib/roles.ts`](src:smart-contract/scripts/lib/roles.ts), le même module que pour Sepolia, l'applique avec `applyRoles`, puis le contrôle avec `roleProblems` : il s'arrête sur « Rôles incohérents » si un titulaire attendu manque. Il affiche enfin le tableau des titulaires (`roleSummaryRows`).
 
-Dans `docker-compose.yml`, `OPERATOR_PRIVATE_KEY` reçoit `RELAYER_PRIVATE_KEY`. Si cette variable est vide, le backend utilise le compte 0, qui a déjà tous les rôles, et le script n'a rien à faire.
+| Rôle | Titulaire en local |
+|---|---|
+| `DEFAULT_ADMIN_ROLE` sur les deux contrats | Compte 2 ; l'opérateur le reçoit aussi, en administrateur additionnel, sauf si `LOCAL_STRICT_ROLES=true` |
+| `OPERATOR_ROLE` et `MINTER_ROLE` | Opérateur : `OPERATOR_ADDRESS`, sinon l'adresse de `OPERATOR_PRIVATE_KEY`, sinon le compte 0 |
+| `PAUSER_ROLE` | `PAUSER_ADDRESS`, sinon l'opérateur |
+| Trésorerie (`setTreasury`) | Compte 1 |
+| Propriétaire `ConfirmedOwner` | Compte 2 : `transferOwnership` par le compte 0, puis `acceptOwnership` signé par le compte 2 dans le même script |
+
+L'administrateur additionnel existe pour le reversement de commission de l'espace Mairie : le backend y appelle `setTreasury`, réservé à `DEFAULT_ADMIN_ROLE`, quand l'adresse saisie diffère de la trésorerie enregistrée. Le script le rappelle à la fin de son exécution.
+
+Le compte 0 perd `OPERATOR_ROLE`, `MINTER_ROLE` et `PAUSER_ROLE` s'il n'est pas l'opérateur ou le pauseur, et renonce à `DEFAULT_ADMIN_ROLE` s'il n'est ni l'administrateur ni un administrateur additionnel. Deux cas en découlent :
+
+| Clé opérateur | État final du compte 0 |
+|---|---|
+| Aucune, ou la clé de développement par défaut (développement avec `npm run dev`) | Opérateur, pauseur, frappeur et administrateur additionnel ; seule la propriété VRF passe au compte 2 |
+| Une autre clé (profil `app` de Compose) | Aucun rôle ; l'opérateur reçoit en plus `OPERATOR_FUNDING_ETH` ethers (1 000 par défaut), car il paie le gaz du keeper, des frappes de badges et les dotations de bienvenue |
+
+Dans `docker-compose.yml`, `OPERATOR_PRIVATE_KEY` reçoit `RELAYER_PRIVATE_KEY`.
 
 ### Fichier de déploiement
 
-Le script écrit `smart-contract/deployments/localhost.json` (ou dans `DEPLOYMENTS_DIR`), ignoré par Git. Il contient le réseau, le chain ID, la date, le bloc de déploiement, l'administrateur, l'opérateur éventuel, la trésorerie, les trois adresses, la key hash, l'identifiant d'abonnement et la configuration des tours. L'oracle local le relit au démarrage.
+Le script écrit `smart-contract/deployments/localhost.json` (ou dans `DEPLOYMENTS_DIR`), ignoré par Git. Il contient le réseau, le chain ID, la date, le bloc de déploiement, l'administrateur, l'opérateur, la trésorerie, les trois adresses, la configuration VRF (key hash, identifiant d'abonnement, `nativePayment`, propriétaire de l'abonnement, consommateur ajouté), le plan de rôles appliqué (`roles`), les arguments des deux constructeurs (`constructorArgs`) et la configuration des tours. L'oracle local le relit au démarrage.
 
 ## L'oracle local
 
@@ -144,7 +162,11 @@ Le service compose ajoute `cap_drop: [ALL]`, `no-new-privileges` et `restart: un
 |---|---|---|---|
 | `LOCAL_RPC_URL` | `hardhat.config.ts` | `http://127.0.0.1:8545` | URL du réseau `localhost` |
 | `OPERATOR_ADDRESS` | `deploy-local.ts` | vide | Opérateur à habiliter et approvisionner |
-| `OPERATOR_PRIVATE_KEY` | `deploy-local.ts` | vide | Alternative : l'adresse est dérivée de la clé |
+| `OPERATOR_PRIVATE_KEY` | `deploy-local.ts` | vide | Alternative : l'adresse est dérivée de la clé ; sans les deux, l'opérateur est le compte 0 |
+| `PAUSER_ADDRESS` | `deploy-local.ts` | opérateur | Titulaire de `PAUSER_ROLE` |
+| `LOCAL_ADMIN_ACCOUNT_INDEX` | `deploy-local.ts` | `2` | Compte administrateur et propriétaire VRF |
+| `LOCAL_TREASURY_ACCOUNT_INDEX` | `deploy-local.ts` | `1` | Compte de trésorerie |
+| `LOCAL_STRICT_ROLES` | `deploy-local.ts` | vide | `true` : l'opérateur ne garde pas `DEFAULT_ADMIN_ROLE` |
 | `OPERATOR_FUNDING_ETH` | `deploy-local.ts` | `1000` | Ethers envoyés à l'opérateur |
 | `POAP_BASE_URI` | `deploy-local.ts` | `http://localhost:2053/api/v1/lottery/poap/` | Préfixe des métadonnées des badges |
 | `TICKET_PRICE_WEI` | `lib/deployment.ts` | `10000000000000000` | Prix du ticket |

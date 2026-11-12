@@ -1,13 +1,13 @@
 # Administration Mairie
 
-Le module `admin` sert l'espace d'administration de la Mairie d'EtherBay : tableau de bord, disjoncteur du smart contract, reversement de la commission à la trésorerie, suspension des partenaires, vérification des pièces d'identité, export de rapports et journal d'audit. Le tirage et l'annulation d'un tour, aussi réservés à l'ADMIN, sont dans le module [Loterie](loterie.md#post-lottery-draw).
+Le module `admin` sert l'espace d'administration de la Mairie d'EtherBay : tableau de bord, disjoncteur du smart contract, reversement de la commission à la trésorerie, suspension des partenaires, gestion des comptes Mairie et partenaires, vérification des pièces d'identité, export de rapports et journal d'audit. Le tirage et l'annulation d'un tour, aussi réservés à l'ADMIN, sont dans le module [Loterie](loterie.md#post-lottery-draw).
 
 | Fichier | Contenu |
 |---|---|
-| [`backend/src/api/admin/admin.routes.ts`](src:backend/src/api/admin/admin.routes.ts) | 9 routes, protection au niveau du routeur |
-| [`backend/src/api/admin/admin.validators.ts`](src:backend/src/api/admin/admin.validators.ts) | 6 schémas Zod |
+| [`backend/src/api/admin/admin.routes.ts`](src:backend/src/api/admin/admin.routes.ts) | 12 routes, protection au niveau du routeur |
+| [`backend/src/api/admin/admin.validators.ts`](src:backend/src/api/admin/admin.validators.ts) | 9 schémas Zod |
 | [`backend/src/api/admin/admin.services.ts`](src:backend/src/api/admin/admin.services.ts) | Règles métier et écriture de l'audit |
-| [`backend/src/api/admin/admin.repo.ts`](src:backend/src/api/admin/admin.repo.ts) | Agrégats, audit, statut des partenaires, demandes de vérification d'identité |
+| [`backend/src/api/admin/admin.repo.ts`](src:backend/src/api/admin/admin.repo.ts) | Agrégats, audit, statut des partenaires, demandes de vérification d'identité, comptes Mairie et partenaires |
 | [`backend/src/services/blockchain.service.ts`](src:backend/src/services/blockchain.service.ts) | Disjoncteur et trésorerie en mode simulé |
 
 ## Protection
@@ -36,6 +36,9 @@ Pendant une maintenance (`MAINTENANCE_MODE=true`), seules les routes appelées p
 | `GET /api/v1/admin/identity-verifications` | `validate(listIdentityVerificationsSchema)` | File des pièces d'identité par statut | non |
 | `GET /api/v1/admin/identity-verifications/:id` | `validate(identityVerificationIdSchema)` | Consultation d'une pièce | `IDENTITY_DOCUMENT_VIEWED` |
 | `POST /api/v1/admin/identity-verifications/:id/decision` | `validate(identityDecisionSchema)` | Approbation ou refus | `IDENTITY_VERIFICATION_DECISION` |
+| `GET /api/v1/admin/accounts` | `validate(listStaffAccountsSchema)` | Liste des comptes Mairie et partenaires | non |
+| `POST /api/v1/admin/accounts` | `validate(createStaffAccountSchema)` | Création d'un compte ou attribution d'un rôle, invitation par email | `STAFF_ACCOUNT_CREATED` ou `STAFF_ROLE_CHANGED` |
+| `PATCH /api/v1/admin/accounts/:id/role` | `validate(updateStaffRoleSchema)` | Changement ou retrait du rôle | `STAFF_ROLE_CHANGED` ou `STAFF_ROLE_REVOKED` |
 | `GET /api/v1/admin/audit-logs` | aucun | Journal d'audit | non |
 
 ## GET /admin/dashboard
@@ -97,7 +100,7 @@ L'état courant est exposé par `GET /health` (`network.isPaused`) et `GET /lott
 
 Mode onchain, dans [`lotteryGateway.withdrawFees`](src:backend/src/blockchain/lottery.gateway.ts) :
 
-1. si `multisigWallet` diffère de la trésorerie enregistrée dans le contrat, le compte opérateur appelle `setTreasury(multisigWallet)`, qui exige le rôle d'administrateur du contrat ;
+1. si `multisigWallet` diffère de la trésorerie enregistrée dans le contrat, le compte opérateur appelle `setTreasury(multisigWallet)`, qui exige `DEFAULT_ADMIN_ROLE`. L'opérateur détient ce rôle en local (sauf `LOCAL_STRICT_ROLES=true`), mais pas sur Sepolia, où il est réservé au multisig de la Mairie : il faut y saisir l'adresse `MAIRIE_TREASURY_ADDRESS` déjà en place ;
 2. il lit `accruedFees`, puis appelle `withdrawFees()`, qui verse la totalité de la commission accumulée à la trésorerie.
 
 > [!IMPORTANT]
@@ -197,6 +200,62 @@ La décision est écrite dans une transaction qui ne s'applique qu'à une demand
 
 L'administrateur reçoit `{ "decision": { "id", "userId", "status", "reviewedAt", "note" } }`. Le citoyen reçoit l'email `identity-decision`, avec le motif en cas de refus ; il peut alors envoyer une nouvelle pièce. Un compte sans email n'est pas prévenu.
 
+## Comptes Mairie et partenaires
+
+Ces trois routes servent la page `/mairie/comptes` du web (voir [Pages et espaces](../../web/pages.md)). Elles remplacent la promotion d'un compte par une requête SQL : seul le tout premier compte ADMIN doit encore être créé en base (voir [Comptes de démonstration et connexion](../../demarrage/comptes-et-connexion.md)).
+
+### GET /admin/accounts
+
+| Paramètre | Règles |
+|---|---|
+| `role` | facultatif, `ADMIN` ou `PARTNER` ; sans valeur, les deux rôles sont listés |
+| `search` | facultatif, 120 caractères au plus ; recherche sans tenir compte de la casse dans l'email, le prénom et le nom |
+| `page`, `limit` | pagination, `limit` de 1 à 100 |
+
+Les comptes supprimés sont exclus et la liste est triée du plus récent au plus ancien. Chaque compte contient `id`, `email`, `role`, `firstName`, `lastName`, `isTwoFactorEnabled`, `createdAt` et, pour un partenaire, `partners`, la liste de ses établissements (`id`, `name`, `isActive`). La réponse porte un objet `meta` de pagination.
+
+### POST /admin/accounts
+
+Crée un compte Mairie ou partenaire, ou attribue ce rôle à un compte existant, puis envoie une invitation par email.
+
+| Champ | Type | Règles |
+|---|---|---|
+| `email` | chaîne | email valide, passé en minuscules |
+| `role` | énumération | `ADMIN` ou `PARTNER` |
+| `firstName`, `lastName` | chaîne | facultatifs, 80 caractères au plus ; ne remplacent pas un prénom ou un nom déjà renseigné |
+| `partnerId` | UUID | facultatif, établissement à rattacher ; refusé si `role` n'est pas `PARTNER` (`Un établissement ne peut être rattaché qu'à un compte partenaire`) |
+
+| Situation | Effet | Audit | Réponse |
+|---|---|---|---|
+| Aucun compte pour cet email | Création du compte avec le rôle demandé, un portefeuille intégré chiffré et `isEmailVerified = false`, sans mot de passe ; rattachement de l'établissement s'il est fourni | `STAFF_ACCOUNT_CREATED` | `201 Compte créé et invitation envoyée`, `created: true` |
+| Compte existant, autre rôle | Changement de rôle, rattachement de l'établissement, révocation de toutes ses sessions | `STAFF_ROLE_CHANGED` | `200 Rôle attribué et invitation envoyée`, `created: false` |
+
+La réponse contient `{ "account": {...}, "created": true }`, avec le compte sous la même forme que dans la liste. L'invitation utilise le modèle [`staff-invitation.html`](src:backend/src/templates/emails/staff-invitation.html) : elle rappelle l'identifiant de connexion, l'établissement rattaché, la façon de se connecter (« Mot de passe oublié » sur le mobile, code email sur le web) et l'obligation d'activer la 2FA pour l'espace Mairie. Un échec de mise en file est seulement journalisé.
+
+| Cas | Réponse |
+|---|---|
+| Compte supprimé | `409 Ce compte a été supprimé et ne peut pas recevoir de rôle.` |
+| Son propre compte | `403 Vous ne pouvez pas modifier votre propre rôle.` |
+| Rôle déjà attribué | `409 Ce compte a déjà le rôle Mairie.` ou `Partenaire.` |
+| Retrait du dernier compte ADMIN | `409 Impossible de retirer le dernier compte Mairie.` |
+| Établissement inconnu | `404 Établissement partenaire introuvable` |
+| Établissement déjà rattaché à un autre compte | `409 Cet établissement est déjà rattaché à un autre compte partenaire.` |
+
+### PATCH /admin/accounts/:id/role
+
+| Champ | Type | Règles |
+|---|---|---|
+| `id` (chemin) | UUID | `400 Identifiant de compte invalide` sinon |
+| `role` | énumération | `USER`, `PARTNER` ou `ADMIN` ; `USER` retire le rôle |
+
+1. Son propre compte est refusé : `403 Vous ne pouvez pas modifier votre propre rôle.`
+2. Un compte inconnu ou supprimé renvoie `404 Compte introuvable` ; un rôle identique `409 Ce compte a déjà le rôle ...` ; le retrait du dernier ADMIN `409 Impossible de retirer le dernier compte Mairie.`
+3. Le rôle est changé dans une transaction. Un compte qui quitte le rôle `PARTNER` est détaché de ses établissements (`ownerId` remis à `null`), qui ne sont plus gérables que par la Mairie.
+4. Toutes les sessions du compte sont révoquées : le nouveau rôle s'applique à la prochaine connexion.
+5. L'action est tracée : `STAFF_ROLE_REVOKED` pour un passage à `USER`, `STAFF_ROLE_CHANGED` sinon. Aucun email n'est envoyé.
+
+La réponse vaut `{ "account": {...} }`, avec le message `Rôle retiré` ou `Rôle du compte mis à jour`.
+
 ## Journal d'audit
 
 Chaque action sensible écrit une ligne `Analytics` avec `eventType = ADMIN_AUDIT:<action>`, `userId` de l'administrateur, `utmSource = admin-dashboard` et le détail en `metadata`. Les clients ne peuvent pas écrire de lignes avec ce préfixe (voir [Analytique](analytique.md#post-analytics-track)).
@@ -209,6 +268,9 @@ Chaque action sensible écrit une ligne `Analytics` avec `eventType = ADMIN_AUDI
 | `EXPORT_REPORT_CSV`, `EXPORT_REPORT_PDF` | `format`, `timestamp` |
 | `IDENTITY_DOCUMENT_VIEWED` | `verificationId`, `userId`, `imagesShown` |
 | `IDENTITY_VERIFICATION_DECISION` | `verificationId`, `userId`, `approved`, `status`, `note` s'il est fourni |
+| `STAFF_ACCOUNT_CREATED` | `userId`, `email`, `role`, `partnerId` et `partnerName` si un établissement est rattaché |
+| `STAFF_ROLE_CHANGED` | `userId`, `email`, `previousRole`, `role`, `partnerId` et `partnerName` (création par `POST`) ou `detachedPartnerIds` (perte du rôle `PARTNER`) |
+| `STAFF_ROLE_REVOKED` | `userId`, `email`, `previousRole`, `role` (`USER`), `detachedPartnerIds` pour un ancien partenaire |
 
 L'audit est écrit après l'action : une action qui échoue n'est pas tracée, et un échec d'écriture de l'audit après une transaction réussie renvoie une erreur alors que l'action a eu lieu. Le tirage et l'annulation de tour (`POST /lottery/draw`, `/refund`) ne sont pas audités.
 

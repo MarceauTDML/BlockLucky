@@ -31,9 +31,9 @@ Niveaux de priorité :
 - appelle `setTreasury(adresse)` si l'adresse diffère de la trésorerie actuelle, sans vérifier qu'il s'agit d'un portefeuille multi-signatures ;
 - verse **toute** la commission accumulée (`accruedFees`), quel que soit `amountEth`, qui n'est conservé que dans le journal d'audit (`requestedAmountEth`).
 
-De plus, `setTreasury` exige `DEFAULT_ADMIN_ROLE`, que le compte opérateur ne reçoit pas des scripts de déploiement (il n'a que `OPERATOR_ROLE` et `PAUSER_ROLE`). Dès que l'opérateur n'est pas aussi l'administrateur, ce qui est le cas dans la stack Docker et sur Sepolia, un retrait vers une adresse autre que la trésorerie actuelle échoue avec `AccessControlUnauthorizedAccount`.
+De plus, `setTreasury` exige `DEFAULT_ADMIN_ROLE`. En local, [`deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) laisse ce rôle à l'opérateur pour que le reversement fonctionne vers n'importe quelle adresse, sauf avec `LOCAL_STRICT_ROLES=true`. Sur Sepolia, [`deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) réserve ce rôle à `MAIRIE_ADMIN_ADDRESS` : un retrait vers la trésorerie enregistrée (`MAIRIE_TREASURY_ADDRESS`) fonctionne, un retrait vers une autre adresse échoue avec `AccessControlUnauthorizedAccount`, et changer de trésorerie passe par l'administrateur. Le script n'impose pas que `MAIRIE_ADMIN_ADDRESS` soit réellement un portefeuille multi-signatures.
 
-À faire : retirer le libellé multi-signatures ou le rendre vrai, ne pas exposer de montant ignoré, et réserver le changement de trésorerie à la Mairie.
+À faire : retirer le libellé multi-signatures du formulaire ou le rendre vrai, ne pas exposer de montant ignoré, et ne proposer en production que la trésorerie enregistrée.
 
 ### Export « PDF »
 
@@ -49,12 +49,6 @@ De plus, `setTreasury` exige `DEFAULT_ADMIN_ROLE`, que le compte opérateur ne r
 
 ## Comptes et vérification d'âge
 
-### Code TOTP accepté avec le seul identifiant du compte
-
-**Priorité haute.** `POST /api/auth/2fa/verify` est public (`optionalAuthenticate`). Le contrôleur prend `req.user?.userId`, sinon le `userId` du corps ([`auth.controllers.ts`](src:backend/src/api/auth/auth.controllers.ts)). Quand aucun défi email n'est en attente pour cet identifiant, `verify2FA` de [`auth.services.ts`](src:backend/src/api/auth/auth.services.ts) vérifie un code TOTP ou un code de secours du compte et ouvre une session. Pour un compte en 2FA `APP`, un code TOTP valide et l'identifiant suffisent donc : ni le mot de passe, ni le code email, ni une session préalable ne sont exigés. Le TOTP remplace le premier facteur au lieu de s'y ajouter. L'identifiant interne n'est pas secret : il est renvoyé par `/auth/signin` et diffusé à tous les clients par l'événement `points:awarded`. Le verrouillage (10 échecs par heure et par compte) limite la recherche du code sans supprimer le défaut. Ce comportement existait avant les comptes avec mot de passe et n'a pas été corrigé.
-
-À faire : faire émettre par `/auth/signin` et `/auth/login` un jeton de défi signé et de courte durée, et exiger ce jeton à la place du `userId`.
-
 ### Codes de parrainage peu lisibles
 
 **Priorité basse.** `User.referralCode` vaut `@default(uuid())` dans [`schema.prisma`](src:backend/prisma/schema.prisma) : un code de 36 caractères, difficile à dicter ou à recopier. La maquette Figma de l'écran Parrains montre un code court, et l'application affiche le code complet dans `ReferralCodeCard`. Aucun lien profond ne préremplit le code à l'inscription mobile (voir [Navigation et écrans](../mobile/navigation-ecrans.md)).
@@ -67,29 +61,25 @@ De plus, `setTreasury` exige `DEFAULT_ADMIN_ROLE`, que le compte opérateur ne r
 
 Le web n'a pas ce défaut : le hook `useAgeVerification` relit `GET /user/identity` et met le profil stocké à jour (voir [Portefeuille et loterie](../web/portefeuille-loterie.md#verification-d-identite)).
 
-### Plafond de jeu responsable sans objet
-
-**Priorité basse.** La page [`profil/securite/page.tsx`](src:frontend-web/src/app/(citoyen)/profil/securite/page.tsx) propose toujours un plafond personnel de 5, 10, 25, 50 ou 100 tickets par tirage, enregistré par `PUT /user/responsible-limit`. Depuis que le contrat et le backend n'acceptent qu'un ticket par participant et par tour, et que la billetterie n'achète plus qu'un ticket, ce plafond n'a plus d'effet. Les pages publiques `/` et `/transparence` le présentent encore comme une garantie de jeu responsable.
-
-À faire : retirer le réglage, ou le remplacer par une mesure qui a un sens avec un ticket par tirage (par exemple une pause volontaire de participation).
-
 ### Pièces d'identité sans contrôle d'unicité
 
 **Priorité basse.** Les images sont effacées dès la décision et aucune empreinte n'est conservée : rien n'empêche une même pièce de valider plusieurs comptes. C'est le prix de la minimisation des données ; la règle est à valider avec la Mairie (voir [Points à valider](../juridique/points-a-valider.md)).
 
-### Nom complet Apple ignoré
-
-**Priorité basse.** `appleOAuthSchema` accepte `fullName`, que le mobile envoie à la première connexion Apple, mais `oauthLogin` ne l'enregistre pas. Apple ne le transmet qu'une fois.
-
 ### Comptes OAuth rattachés par l'adresse seule
 
-**Priorité moyenne.** `oauthLogin` de [`auth.services.ts`](src:backend/src/api/auth/auth.services.ts) retrouve le compte par l'email du jeton Google ou Apple et n'enregistre pas l'identifiant `sub` du fournisseur. Une adresse relais Apple ou un changement d'adresse chez le fournisseur crée un compte distinct, et la sécurité d'un compte BlockLucky dépend de celle du compte Google ou Apple de même adresse (voir [Authentification et 2FA](../securite/authentification.md#rattachement-par-adresse-email)).
+**Priorité moyenne.** `oauthLogin` de [`auth.services.ts`](src:backend/src/api/auth/auth.services.ts) retrouve le compte par l'email du jeton Google et n'enregistre pas l'identifiant `sub` du fournisseur. Un changement d'adresse chez Google crée un compte distinct, et la sécurité d'un compte BlockLucky dépend de celle du compte Google de même adresse (voir [Authentification et 2FA](../securite/authentification.md#rattachement-par-adresse-email)).
 
 À faire : une table des identités externes (`provider`, `sub`, `userId`), et une confirmation explicite avant de rattacher un fournisseur à un compte qui a déjà un mot de passe.
 
 ### Mot de passe non imposé et énumération à l'inscription
 
 **Priorité moyenne.** Un compte qui a un mot de passe reste joignable par `/auth/login`, par simple code email, et par OAuth. `/auth/signup` répond 409 pour une adresse déjà inscrite, ce qui révèle l'existence du compte, alors que `/auth/signin` et `/auth/password/forgot` répondent de façon identique. Aucun contrôle des mots de passe compromis n'est fait, et le hachage par `bcryptjs` en JavaScript, au coût 12, occupe le processus Node à chaque tentative : la limite de 30 requêtes par 10 minutes et par IP est la seule protection contre une saturation par `/auth/signin`.
+
+### Acceptation des conditions non conservée
+
+**Priorité moyenne.** `/auth/signup` exige `acceptTerms: true` et `isAdultConfirmed: true`, et `/auth/login` refuse `acceptTerms` s'il est présent et différent de `true` ([`auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts)). Aucune de ces routes n'enregistre la date de l'acceptation ni la version des documents acceptés (`LEGAL_VERSION` de [`legal.ts`](src:frontend-web/src/content/legal.ts)). Le choix de mesure d'audience du web n'existe que dans le navigateur (`bl.consent.choice`). La preuve du consentement ne peut donc pas être produite.
+
+À faire : enregistrer en base la date et la version acceptées à l'inscription et à la connexion web, et redemander l'acceptation quand la version change.
 
 ### Conservation des pièces d'identité en attente
 
@@ -129,7 +119,7 @@ Le web n'a pas ce défaut : le hook `useAgeVerification` relit `GET /user/identi
 
 ### Code mort après la refonte
 
-**Priorité basse.** Plusieurs éléments ne sont plus utilisés par aucun écran : les composants `IntegratedWalletCard`, `IntegratedWalletButton` et `ExplorerLink`, `generateDeterministicWallet` de `useCitizenWallet`, `triggerSimulatedOsPush`, les fenêtres globales `retryModal`, `queueModal` et `sentryModal` du slice `ui`, les endpoints `getOnboarding` et `setResponsibleLimit`. Le plafond de jeu responsable n'est plus réglable sur mobile. Les dépendances `axios`, `expo-notifications`, `expo-crypto`, `lottie-react-native` et `react-native-gesture-handler` ne sont importées nulle part, et les polices `assets/fonts/Inter-*.ttf` ne sont plus lues depuis le passage à `@expo-google-fonts/inter`. Le détail est dans [Stack et structure](../mobile/structure.md#code-mort-a-connaitre).
+**Priorité basse.** Plusieurs éléments ne sont plus utilisés par aucun écran : les composants `IntegratedWalletCard`, `IntegratedWalletButton` et `ExplorerLink`, `generateDeterministicWallet` de `useCitizenWallet`, `triggerSimulatedOsPush`, les fenêtres globales `retryModal`, `queueModal` et `sentryModal` du slice `ui`, et l'endpoint `getOnboarding`. Les dépendances `axios`, `expo-notifications`, `expo-crypto`, `lottie-react-native` et `react-native-gesture-handler` ne sont importées nulle part, et les polices `assets/fonts/Inter-*.ttf` ne sont plus lues depuis le passage à `@expo-google-fonts/inter`. Le détail est dans [Stack et structure](../mobile/structure.md#code-mort-a-connaitre).
 
 ## Données et cohérence
 
@@ -141,11 +131,10 @@ Le web n'a pas ce défaut : le hook `useAgeVerification` relit `GET /user/identi
 | --- | --- |
 | `partner:codes:<récompense>` | codes promotionnels importés par les partenaires |
 | `partner:offer_expiry:<offre>` | date d'expiration d'une offre |
-| `user:ticket_limit:<compte>` | limite personnelle de jeu responsable |
 | `user:prefs:<compte>` | thème et langue |
 | `user:quests:<compte>` | quêtes déjà validées |
 
-Si Redis est perdu, ces données disparaissent : un citoyen perd sa limite de jeu responsable, les codes importés sont perdus et les quêtes peuvent être validées une seconde fois. Si Redis est seulement indisponible, l'API bascule sur une mémoire locale propre à chaque processus, vide au démarrage.
+Si Redis est perdu, ces données disparaissent : les codes importés sont perdus, les offres perdent leur date d'expiration, les préférences reviennent aux valeurs par défaut et les quêtes peuvent être validées une seconde fois. Si Redis est seulement indisponible, l'API bascule sur une mémoire locale propre à chaque processus, vide au démarrage.
 
 Les lectures et écritures de ces clés ne sont pas atomiques (lecture, modification en mémoire, réécriture). Deux échanges simultanés de la même récompense peuvent recevoir le même code partenaire ; deux validations simultanées d'une quête peuvent créditer les points deux fois.
 
@@ -258,3 +247,13 @@ Voir [Objectifs de service et métriques](../infrastructure/slo-metriques.md).
 - Les tests de `mobile-app/__tests__/` ne peuvent pas s'exécuter : le `package.json` mobile ne déclare ni Jest ni script `test`.
 
 Voir [Chaîne logicielle](../securite/chaine-logicielle.md).
+
+## Points résolus
+
+Ces entrées figuraient dans les versions précédentes de cette page. Elles sont gardées ici pour mémoire.
+
+| Ancienne entrée | Correction | Où |
+| --- | --- | --- |
+| Code TOTP accepté avec le seul identifiant du compte | Après le premier facteur, un compte en 2FA `APP` reçoit un `loginTicket` aléatoire de 256 bits, stocké dans Redis sous `auth:login-ticket:<HMAC>` pendant 10 minutes et à usage unique. `POST /auth/2fa/verify` n'accepte un code de l'application qu'avec ce ticket, ou avec la session du même compte (activation). `/auth/login` envoie d'abord le code email à un compte en 2FA `APP`, puis délivre le ticket. | [`auth.services.ts`](src:backend/src/api/auth/auth.services.ts), [`otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts), [Authentification et 2FA](../securite/authentification.md) |
+| Plafond de jeu responsable sans objet | Le réglage de `/profil/securite`, la route `PUT /user/responsible-limit` et la lecture de `user:ticket_limit` ont été retirés. Le profil renvoie toujours `responsibleGaming.maxTicketsPerRound: 1`, et la page explique la règle d'un ticket par habitant et par tirage. | [`user.services.ts`](src:backend/src/api/user/user.services.ts), [`profil/securite/page.tsx`](src:frontend-web/src/app/(citoyen)/profil/securite/page.tsx) |
+| Nom complet Apple ignoré | La connexion Apple a été retirée du backend et du mobile : seul Google reste proposé. | [`oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) |

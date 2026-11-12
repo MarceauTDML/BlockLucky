@@ -23,12 +23,16 @@ const ACTION_LABELS: Record<string, [string, string, 'danger' | 'primary' | 'sec
   EXPORT_REPORT_PDF: ['Export PDF', 'PDF export', 'neutral'],
   IDENTITY_DOCUMENT_VIEWED: ["Consultation d'identité", 'Identity viewed', 'secondary'],
   IDENTITY_VERIFICATION_DECISION: ["Décision d'identité", 'Identity decision', 'warning'],
+  STAFF_ACCOUNT_CREATED: ['Compte créé', 'Account created', 'secondary'],
+  STAFF_ROLE_CHANGED: ['Rôle modifié', 'Role changed', 'warning'],
+  STAFF_ROLE_REVOKED: ['Rôle retiré', 'Role revoked', 'danger'],
 };
 
 const summarize = (log: AuditLogEntry): string => {
   const m = log.metadata || {};
   const parts: string[] = [];
   if (typeof m.reason === 'string') parts.push(m.reason);
+  if (typeof m.email === 'string') parts.push(typeof m.role === 'string' ? `${m.email} (${m.role})` : m.email);
   if (typeof m.partnerName === 'string') parts.push(m.partnerName);
   if (m.amountEth !== undefined) parts.push(`${m.amountEth} ETH`);
   if (typeof m.note === 'string') parts.push(m.note);
