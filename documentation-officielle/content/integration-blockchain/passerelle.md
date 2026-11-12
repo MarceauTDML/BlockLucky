@@ -27,7 +27,7 @@ Les services appelants sont [`backend/src/api/lottery/lottery.services.ts`](src:
 |---|---|
 | `status` | Indice de l'énumération Solidity vers `OPEN`, `LOCKED`, `COMPLETED`, `CANCELLED` (`Drawing` devient `LOCKED`) ; `OPEN` si l'indice est inconnu |
 | `ticketPriceWei`, `totalCollectedWei`, `prizeWei` | `bigint` en wei, sans conversion |
-| `ticketCount`, `maxTickets`, `maxTicketsPerPlayer` | `number` |
+| `ticketCount`, `maxTickets`, `minTicketsToDraw`, `maxTicketsPerPlayer` | `number` |
 | `winner`, `winningTicket` | `null` si le gagnant est l'adresse nulle ; adresse en minuscules sinon |
 | `startTime`, `endTime` | `Date` (secondes Unix multipliées par 1 000) |
 | `vrfRequestId` | Chaîne décimale, `null` si `0` |
@@ -46,6 +46,8 @@ Les montants restent en `bigint` dans la passerelle. Les services les convertiss
 | `claimPrize(gagnant, id)` | Portefeuille du gagnant | `claimPrize(id)` | « Le versement de la cagnotte a échoué. » |
 | `setPaused(booléen)` | Opérateur | `pause()` ou `unpause()` | « Le changement d'état du disjoncteur a échoué. » |
 | `withdrawFees(trésorerie)` | Opérateur | `setTreasury` si besoin, puis `withdrawFees()` | « Le reversement de la commission à la trésorerie a échoué. » |
+
+La lecture `ticketsOf(tour, adresse)` renvoie le nombre de tickets d'une adresse sur un tour. Le service de loterie l'appelle avant chaque achat et chaque cadeau pour refuser un second ticket avant d'envoyer la transaction.
 
 ### Achat
 
@@ -120,7 +122,7 @@ Le test d'intégration vérifie exactement ce cas (`blocked.status` 503 et `bloc
 | `RoundNotOpen` | 409 | Le tirage de ce tour est en cours, les achats reprendront au tour suivant. | |
 | `RoundExpired` | 409 | Ce tour est terminé, le tirage va être lancé. | |
 | `RoundSoldOut` | 409 | Tous les tickets de ce tour ont été vendus. | |
-| `PlayerLimitReached` | 400 | Limite de tickets par participant atteinte pour ce tour. | |
+| `PlayerLimitReached` | 409 | Vous avez déjà votre ticket pour ce grand tirage. | Pour un cadeau, le service remplace le message par « Cette personne a déjà son ticket pour ce grand tirage. » |
 | `InvalidQuantity` | 400 | Quantité de tickets invalide. | |
 | `IncorrectPayment` | 400 | Montant incorrect pour cet achat. | |
 | `DrawNotReady` | 409 | Le tirage ne peut pas encore être lancé (participants ou durée insuffisants). | |

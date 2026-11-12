@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Utilisateur et RGPD | Documentation BlockLucky</title>
-<meta name="description" content="Le module user regroupe tout ce qui concerne le compte du citoyen connecté : profil, parrainage, quêtes sociales, limite de jeu responsable, préférences d&#39;affic">
+<meta name="description" content="Le module user regroupe tout ce qui concerne le compte du citoyen connecté : profil, vérification d&#39;âge par pièce d&#39;identité, parrainage, quêtes sociales, limit">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../assets/css/doc.css">
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>7. Backend</span><span>Modules métier</span></div>
     <article class="markdown">
 <h1>Utilisateur et RGPD</h1>
-<p>Le module <code>user</code> regroupe tout ce qui concerne le compte du citoyen connecté : profil, parrainage, quêtes sociales, limite de jeu responsable, préférences d&#39;affichage, notifications et exercice des droits RGPD (export et suppression). Toutes les routes portent sur le compte du jeton : aucune ne prend d&#39;identifiant d&#39;utilisateur en paramètre. Une partie des données de ce module vit dans Redis et non en base.</p>
+<p>Le module <code>user</code> regroupe tout ce qui concerne le compte du citoyen connecté : profil, vérification d&#39;âge par pièce d&#39;identité, parrainage, quêtes sociales, limite de jeu responsable, préférences d&#39;affichage, notifications et exercice des droits RGPD (export et suppression). Toutes les routes portent sur le compte du jeton : aucune ne prend d&#39;identifiant d&#39;utilisateur en paramètre. Une partie des données de ce module vit dans Redis et non en base.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -47,11 +47,11 @@
 </thead>
 <tbody><tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.routes.ts</code></a></td>
-<td>10 routes</td>
+<td>12 routes</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.validators.ts</code></a></td>
-<td>4 schémas Zod</td>
+<td>5 schémas Zod</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a></td>
@@ -59,7 +59,15 @@
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.repo.ts</code></a></td>
-<td>Profil, export, jetons de suppression, anonymisation</td>
+<td>Profil, pièce d&#39;identité, export, jetons de suppression, anonymisation</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/identity-image.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/utils/identity-image.util.ts</code></a></td>
+<td>Décodage et contrôle des images de la pièce d&#39;identité</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/age-verification.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/age-verification.middleware.ts</code></a></td>
+<td><code>requireAgeVerification</code>, utilisé par les modules loterie et boutique</td>
 </tr>
 </tbody></table></div>
 <p>Les obligations juridiques couvertes par ces routes sont analysées dans <a href="../../juridique/rgpd.html">RGPD</a> et le parcours de suppression dans <a href="../../architecture/flux/suppression-rgpd.html">Suppression RGPD</a>.</p>
@@ -78,6 +86,18 @@
 <td>connecté</td>
 <td><code>authenticate</code></td>
 <td>Profil, statistiques, limite et préférences</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/user/identity</code></td>
+<td>connecté</td>
+<td><code>identityUploadRateLimiter</code>, <code>authenticate</code>, <code>identityUploadJsonParser</code>, <code>validate(submitIdentitySchema)</code></td>
+<td>Envoi du recto et du verso de la pièce d&#39;identité</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/user/identity</code></td>
+<td>connecté</td>
+<td><code>authenticate</code></td>
+<td>Statut de la vérification d&#39;âge</td>
 </tr>
 <tr>
 <td><code>GET /api/v1/user/referrals</code></td>
@@ -176,6 +196,8 @@
       <span class="hljs-attr">&quot;referralLink&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://localhost:3000/invite/6f1d2c3b-4a5e-4f60-8b7c-9d0e1f2a3b4c&quot;</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;isTwoFactorEnabled&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;twoFactorMethod&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;hasPassword&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;ageVerificationStatus&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;VERIFIED&quot;</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;stats&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;ticketsCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;claimedRewardsCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;referralsCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;responsibleGaming&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;maxTicketsPerRound&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">50</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;preferences&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;theme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;DARK&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;language&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;FR&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;pushNotificationsEnabled&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
@@ -183,6 +205,90 @@
     <span class="hljs-punctuation">}</span>
   <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span></code></pre></div>
+<h2 id="verification-d-age"><a class="anchor" href="#verification-d-age" aria-hidden="true" tabindex="-1">#</a>Vérification d&#39;âge</h2>
+<p>Le citoyen prouve sa majorité en envoyant une photo du recto et du verso de sa pièce d&#39;identité. Un agent de la Mairie l&#39;examine dans l&#39;espace d&#39;administration et l&#39;approuve ou la refuse (voir <a href="administration.html#verification-des-pieces-d-identite">Administration</a>). Tant que le statut n&#39;est pas <code>VERIFIED</code>, le middleware <code>requireAgeVerification</code> refuse l&#39;achat et le cadeau de tickets, l&#39;échange d&#39;une récompense et le ticket à gratter.</p>
+<div class="diagram"><pre class="mermaid">stateDiagram-v2
+    [*] --&gt; NONE
+    NONE --&gt; PENDING: POST /user/identity
+    PENDING --&gt; VERIFIED: décision approuvée
+    PENDING --&gt; REJECTED: décision refusée avec motif
+    REJECTED --&gt; PENDING: nouvel envoi
+    PENDING --&gt; PENDING: nouvel envoi avant décision</pre></div>
+<h3 id="post-user-identity"><a class="anchor" href="#post-user-identity" aria-hidden="true" tabindex="-1">#</a>POST /user/identity</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>front</code></td>
+<td>chaîne</td>
+<td>recto, image JPEG ou PNG en base64, avec ou sans préfixe <code>data:image/...;base64,</code></td>
+</tr>
+<tr>
+<td><code>back</code></td>
+<td>chaîne</td>
+<td>verso, mêmes règles</td>
+</tr>
+</tbody></table></div>
+<p>La route lit son corps avec une limite propre de 12 Mo (<code>identityUploadJsonParser</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/body-parser.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>body-parser.middleware.ts</code></a>) ; toutes les autres routes gardent la limite de 1 Mo. <code>identityUploadRateLimiter</code> limite chaque IP à 10 envois par heure, avec un compteur Redis à part.</p>
+<p>Chaque image est contrôlée par <code>decodeIdentityImage</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Contrôle</th>
+<th>Refus</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Base64 valide, longueur multiple de 4</td>
+<td><code>400 Image recto invalide : une photo JPEG ou PNG encodée en base64 est attendue.</code></td>
+</tr>
+<tr>
+<td>Taille de 1 Ko à 4 Mo</td>
+<td>au-delà, <code>400</code> du schéma Zod sur la longueur de la chaîne, ou <code>413 Image recto trop volumineuse : 4 Mo au plus.</code> après décodage ; en deçà, 400</td>
+</tr>
+<tr>
+<td>Premiers octets d&#39;un JPEG (<code>FF D8 FF</code>) ou d&#39;un PNG</td>
+<td>400, même si le préfixe annonce un autre type</td>
+</tr>
+</tbody></table></div>
+<p>Le message cite le recto ou le verso. Un compte déjà vérifié reçoit <code>409 Votre âge est déjà vérifié.</code></p>
+<p>Les deux images sont chiffrées par <code>encryptBuffer</code> (AES-256-GCM avec <code>ENCRYPTION_KEY</code>, vecteur d&#39;initialisation aléatoire) et enregistrées dans <code>IdentityDocument</code>, avec le type détecté du recto. Un nouvel envoi remplace le précédent. Dans la même transaction, le compte passe à <code>PENDING</code>, son motif de refus et sa date de vérification sont effacés. Les images ne sont pas réencodées : les métadonnées éventuelles d&#39;un JPEG sont conservées telles qu&#39;envoyées.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Pièce d&#x27;identité transmise à la Mairie pour vérification&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;PENDING&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;submittedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-12T09:15:00.000Z&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span></code></pre></div>
+<h3 id="get-user-identity"><a class="anchor" href="#get-user-identity" aria-hidden="true" tabindex="-1">#</a>GET /user/identity</h3>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Statut de la vérification d&#x27;âge récupéré&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;REJECTED&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;submittedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-12T09:15:00.000Z&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;reviewedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-12T10:02:41.000Z&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;note&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Photo floue&quot;</span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p><code>status</code> vaut <code>NONE</code>, <code>PENDING</code>, <code>VERIFIED</code> ou <code>REJECTED</code>. <code>note</code> est le motif du dernier refus, <code>null</code> sinon. Les images ne sont jamais renvoyées au citoyen.</p>
+<h3 id="controle-a-l-achat"><a class="anchor" href="#controle-a-l-achat" aria-hidden="true" tabindex="-1">#</a>Contrôle à l&#39;achat</h3>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/age-verification.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>requireAgeVerification</code></a> est placé après <code>authenticate</code> sur quatre routes : <code>POST /lottery/buy</code>, <code>POST /lottery/gift</code>, <code>POST /marketplace/claim</code> et <code>POST /marketplace/scratch</code>. Il relit le statut en base à chaque requête.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cas</th>
+<th>Réponse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>AGE_VERIFICATION_REQUIRED=false</code></td>
+<td>aucun contrôle ; valeur refusée en production par le schéma d&#39;environnement</td>
+</tr>
+<tr>
+<td>Statut différent de <code>VERIFIED</code></td>
+<td><code>403 Vérifiez votre âge pour jouer.</code>, avec <code>errors: { &quot;code&quot;: &quot;AGE_VERIFICATION_REQUIRED&quot;, &quot;status&quot;: &quot;&lt;statut&gt;&quot; }</code></td>
+</tr>
+<tr>
+<td>Base indisponible</td>
+<td><code>503 Vérification de l&#39;âge impossible pour le moment</code></td>
+</tr>
+</tbody></table></div>
+<p>Pour un cadeau, seul l&#39;expéditeur est contrôlé : le destinataire reçoit son ticket sans vérification.</p>
 <h2 id="get-user-referrals"><a class="anchor" href="#get-user-referrals" aria-hidden="true" tabindex="-1">#</a>GET /user/referrals</h2>
 <p>Le code de parrainage est l&#39;UUID <code>User.referralCode</code>, généré à la création du compte. La réponse contient <code>referralCode</code>, <code>referralLink</code> (<code>FRONTEND_URL/invite/&lt;code&gt;</code>), <code>referralsCount</code>, la liste <code>referrals</code> des filleuls (identifiant, adresse tronquée <code>0x2c4e...91ab</code>, date d&#39;inscription) et trois liens de partage préremplis :</p>
 <div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
@@ -253,7 +359,10 @@
 <td>1 à 500, messages <code>La limite doit être d&#39;au moins 1 ticket</code> et <code>La limite maximale autorisée est de 500 tickets</code></td>
 </tr>
 </tbody></table></div>
-<p>La valeur est écrite dans <code>user:ticket_limit:&lt;userId&gt;</code> et appliquée par <a href="loterie.html#post-lottery-buy"><code>POST /lottery/buy</code></a>. Elle s&#39;applique immédiatement dans les deux sens : une hausse ne comporte ni délai de réflexion ni confirmation. En mode onchain, la limite du contrat (<code>maxTicketsPerPlayer</code>, 100 sur le déploiement local) s&#39;applique aussi, si bien qu&#39;une valeur supérieure n&#39;a pas d&#39;effet au-delà.</p>
+<p>La valeur est écrite dans <code>user:ticket_limit:&lt;userId&gt;</code> et lue par <a href="loterie.html#post-lottery-buy"><code>POST /lottery/buy</code></a>. Elle s&#39;applique immédiatement dans les deux sens : une hausse ne comporte ni délai de réflexion ni confirmation.</p>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Depuis le passage à un ticket par participant et par grand tirage, cette limite n&#39;a plus d&#39;effet pratique : <code>/lottery/buy</code> refuse un second ticket (409) avant même de la comparer, et la plus petite valeur admise est 1. La route et la clé Redis sont conservées, mais l&#39;application mobile ne propose plus de la régler.</p>
+</div>
 <div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Limite d&#x27;achat Jeu Responsable enregistrée&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;maxTicketsPerRound&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">10</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T16:00:00.000Z&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span></code></pre></div>
 <h2 id="put-user-preferences"><a class="anchor" href="#put-user-preferences" aria-hidden="true" tabindex="-1">#</a>PUT /user/preferences</h2>
 <div class="table-wrap"><table>
@@ -298,7 +407,7 @@
 </tr>
 <tr>
 <td><code>personalData</code></td>
-<td>identifiant, adresse, email, rôle, solde, code de parrainage, état de la 2FA, dates</td>
+<td>identifiant, adresse, email, rôle, solde, code de parrainage, état de la 2FA, statut et date de la vérification d&#39;âge, dates</td>
 </tr>
 <tr>
 <td><code>ticketsHistory</code></td>
@@ -317,7 +426,7 @@
 <td>tous les événements analytiques rattachés au compte</td>
 </tr>
 </tbody></table></div>
-<p>L&#39;export ne contient pas les données Redis du compte (préférences, limite, quêtes). Les secrets (clé de portefeuille chiffrée, secret TOTP, codes de secours) sont exclus.</p>
+<p>L&#39;export ne contient pas les données Redis du compte (préférences, limite, quêtes) ni les images de la pièce d&#39;identité. Les secrets (empreinte du mot de passe, clé de portefeuille chiffrée, secret TOTP, codes de secours) sont exclus.</p>
 <h2 id="suppression-du-compte"><a class="anchor" href="#suppression-du-compte" aria-hidden="true" tabindex="-1">#</a>Suppression du compte</h2>
 <p>La suppression se fait en deux temps pour éviter qu&#39;un jeton volé suffise à effacer un compte.</p>
 <div class="diagram"><pre class="mermaid">sequenceDiagram
@@ -375,7 +484,7 @@
 <td><code>0xdeleted_gdpr_</code> suivi des 8 premiers caractères de l&#39;identifiant</td>
 </tr>
 <tr>
-<td><code>walletEncryptedKey</code>, <code>welcomeGrantTxHash</code>, <code>email</code></td>
+<td><code>walletEncryptedKey</code>, <code>welcomeGrantTxHash</code>, <code>email</code>, <code>passwordHash</code>, <code>ageVerificationNote</code></td>
 <td><code>null</code></td>
 </tr>
 <tr>
@@ -391,7 +500,7 @@
 <td>date courante</td>
 </tr>
 </tbody></table></div>
-<p>Le jeton utilisé est supprimé, puis toutes les sessions du compte sont révoquées.</p>
+<p>La ligne <code>IdentityDocument</code> du compte, images comprises si elles n&#39;avaient pas encore été effacées, est supprimée dans la même transaction. Le jeton utilisé est supprimé, puis toutes les sessions du compte sont révoquées. <code>ageVerificationStatus</code> et <code>ageVerifiedAt</code> ne sont pas modifiés.</p>
 <div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Compte anonymisé et supprimé conformément au RGPD&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;deleted&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;anonymized&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;deletedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-12T08:00:00.000Z&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span></code></pre></div>
 <p>Ce qui reste après l&#39;anonymisation : la ligne <code>User</code> (identifiant, rôle, solde, code de parrainage), les tickets, les mouvements de points, les récompenses obtenues et les événements analytiques, rattachés à l&#39;identifiant. Sur la chaîne, l&#39;ancienne adresse du portefeuille reste visible dans les événements du contrat ; la clé privée étant effacée, les ethers fictifs et un éventuel gain non versé deviennent inaccessibles. Ces limites sont discutées dans <a href="../../juridique/blockchain-donnees.html">Blockchain et données personnelles</a>.</p>
 <h2 id="erreurs-du-module"><a class="anchor" href="#erreurs-du-module" aria-hidden="true" tabindex="-1">#</a>Erreurs du module</h2>
@@ -406,7 +515,27 @@
 <tbody><tr>
 <td>400</td>
 <td><code>Erreur de validation des données</code></td>
-<td>quêtes, limite, préférences, confirmation</td>
+<td>quêtes, limite, préférences, confirmation, image manquante</td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>Image recto invalide : ...</code>, <code>Image verso invalide : ...</code></td>
+<td><code>identity</code></td>
+</tr>
+<tr>
+<td>403</td>
+<td><code>Vérifiez votre âge pour jouer.</code></td>
+<td>routes protégées par <code>requireAgeVerification</code></td>
+</tr>
+<tr>
+<td>409</td>
+<td><code>Votre âge est déjà vérifié.</code></td>
+<td><code>identity</code></td>
+</tr>
+<tr>
+<td>413</td>
+<td><code>Image recto trop volumineuse : 4 Mo au plus.</code></td>
+<td><code>identity</code></td>
 </tr>
 <tr>
 <td>400</td>
@@ -426,7 +555,7 @@
 <tr>
 <td>404</td>
 <td><code>Utilisateur introuvable</code></td>
-<td><code>referrals</code>, <code>gdpr/export</code>, <code>gdpr/delete-request</code></td>
+<td><code>identity</code>, <code>referrals</code>, <code>gdpr/export</code>, <code>gdpr/delete-request</code></td>
 </tr>
 <tr>
 <td>404</td>
@@ -442,7 +571,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#donnees-stockees-dans-redis">Données stockées dans Redis</a></li><li class="toc-h2"><a href="#get-user-profile">GET /user/profile</a></li><li class="toc-h2"><a href="#get-user-referrals">GET /user/referrals</a></li><li class="toc-h2"><a href="#quetes-sociales">Quêtes sociales</a></li><li class="toc-h2"><a href="#put-user-responsible-limit">PUT /user/responsible-limit</a></li><li class="toc-h2"><a href="#put-user-preferences">PUT /user/preferences</a></li><li class="toc-h2"><a href="#get-user-notifications">GET /user/notifications</a></li><li class="toc-h2"><a href="#get-user-gdpr-export">GET /user/gdpr/export</a></li><li class="toc-h2"><a href="#suppression-du-compte">Suppression du compte</a></li><li class="toc-h3"><a href="#post-user-gdpr-delete-request">POST /user/gdpr/delete-request</a></li><li class="toc-h3"><a href="#post-user-gdpr-confirm-delete">POST /user/gdpr/confirm-delete</a></li><li class="toc-h2"><a href="#erreurs-du-module">Erreurs du module</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#donnees-stockees-dans-redis">Données stockées dans Redis</a></li><li class="toc-h2"><a href="#get-user-profile">GET /user/profile</a></li><li class="toc-h2"><a href="#verification-d-age">Vérification d&#39;âge</a></li><li class="toc-h3"><a href="#post-user-identity">POST /user/identity</a></li><li class="toc-h3"><a href="#get-user-identity">GET /user/identity</a></li><li class="toc-h3"><a href="#controle-a-l-achat">Contrôle à l&#39;achat</a></li><li class="toc-h2"><a href="#get-user-referrals">GET /user/referrals</a></li><li class="toc-h2"><a href="#quetes-sociales">Quêtes sociales</a></li><li class="toc-h2"><a href="#put-user-responsible-limit">PUT /user/responsible-limit</a></li><li class="toc-h2"><a href="#put-user-preferences">PUT /user/preferences</a></li><li class="toc-h2"><a href="#get-user-notifications">GET /user/notifications</a></li><li class="toc-h2"><a href="#get-user-gdpr-export">GET /user/gdpr/export</a></li><li class="toc-h2"><a href="#suppression-du-compte">Suppression du compte</a></li><li class="toc-h3"><a href="#post-user-gdpr-delete-request">POST /user/gdpr/delete-request</a></li><li class="toc-h3"><a href="#post-user-gdpr-confirm-delete">POST /user/gdpr/confirm-delete</a></li><li class="toc-h2"><a href="#erreurs-du-module">Erreurs du module</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

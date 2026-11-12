@@ -1,6 +1,6 @@
 # Tirage et versement de la cagnotte
 
-Le tirage se fait en deux transactions séparées par l'oracle Chainlink VRF. La première, envoyée par le keeper du backend ou par un administrateur, demande un nombre aléatoire et fige le tour. La seconde, envoyée par le coordinateur VRF, apporte ce nombre : le contrat désigne alors lui-même le gagnant dans `fulfillRandomWords`, calcule la cagnotte et ouvre le tour suivant. Le backend découvre le résultat en lisant les événements, l'annonce en direct, puis réclame la cagnotte pour le compte du gagnant.
+Le tirage se fait en deux transactions séparées par l'oracle Chainlink VRF. Il est précédé d'une salle d'attente : quand les achats se ferment, le keeper attend `DRAW_REVEAL_DELAY_SECONDS` (600 s par défaut) avant de demander le tirage, pour que les participants suivent la roue en direct. La première transaction, envoyée par le keeper du backend ou par un administrateur, demande un nombre aléatoire et fige le tour. La seconde, envoyée par le coordinateur VRF, apporte ce nombre : le contrat désigne alors lui-même le gagnant dans `fulfillRandomWords`, calcule la cagnotte et ouvre le tour suivant. Le backend découvre le résultat en lisant les événements, l'annonce en direct, puis réclame la cagnotte pour le compte du gagnant.
 
 ## Diagramme de séquence
 
@@ -20,6 +20,8 @@ sequenceDiagram
   K->>R: setIfAbsent chain:keeper-lock
   K->>BL: paused, isDrawReady
   BL-->>K: true
+  K->>R: setIfAbsent chain:draw-ready-at:tour
+  K->>K: attente tant que maintenant < instant prêt + DRAW_REVEAL_DELAY_SECONDS
   K->>BL: requestDraw par le compte opérateur
   BL->>VRF: requestRandomWords, numWords 1
   BL-->>K: reçu avec DrawRequested
@@ -50,11 +52,11 @@ sequenceDiagram
 1. Rien en mode `simulated`.
 2. Verrou `chain:keeper-lock` posé par `redis.setIfAbsent`, pour une durée égale à l'intervalle avec un minimum de 5 s. Si une autre instance le détient, le passage s'arrête.
 3. Si le contrat est en pause (`paused()`), rien.
-4. Si `isDrawReady()` : appel de `requestDraw()` avec le compte opérateur `chainClient.operator`, attente du reçu, puis `lotteryIndexer.processReceipt(receipt)`.
+4. Si `isDrawReady()` : le keeper lit le tour courant, enregistre l'instant où il est devenu prêt dans `chain:draw-ready-at:<tour>` s'il ne l'est pas déjà (le plus petit de maintenant et de `endTime`), puis compare l'heure à cet instant plus `DRAW_REVEAL_DELAY_SECONDS`. Avant cette heure, la passe renvoie `waiting-room` sans rien envoyer. Après, appel de `requestDraw()` avec le compte opérateur `chainClient.operator`, attente du reçu, puis `lotteryIndexer.processReceipt(receipt)`.
 5. Sinon, si `isExpiredWithoutDraw()` : annulation du tour. Voir [Annulation et remboursement](annulation.md).
 6. Le verrou est supprimé dans le bloc `finally`. Les erreurs `DrawNotReady` et `RoundNotCancellable` (un autre acteur a été plus rapide) ne sont pas journalisées ; les autres le sont en avertissement.
 
-`isDrawReady` ([`smart-contract/contracts/BlockLucky.sol`](src:smart-contract/contracts/BlockLucky.sol)) est vraie quand le tour est `Open`, compte au moins `minTicketsToDraw` tickets, et est complet ou a atteint `endTime`. Le tirage peut donc partir dès le dernier ticket vendu, au plus `KEEPER_INTERVAL_MS` après.
+`isDrawReady` ([`smart-contract/contracts/BlockLucky.sol`](src:smart-contract/contracts/BlockLucky.sol)) est vraie quand le tour est `Open`, compte au moins `minTicketsToDraw` tickets, et est complet ou a atteint `endTime`. Le keeper demande donc le tirage `DRAW_REVEAL_DELAY_SECONDS` après le dernier ticket vendu ou la fin du temps, à `KEEPER_INTERVAL_MS` près. `GET /lottery/status` lit le même instant pour publier `phase: 'WAITING_ROOM'` et `revealAt`, ce qui aligne le compte à rebours des clients sur le keeper (voir [Loterie](../../backend/modules/loterie.md#phases-du-tour)).
 
 ### Par un administrateur
 
@@ -64,7 +66,7 @@ sequenceDiagram
 2. Le tour courant est relu et recopié en base.
 3. La réponse 200 contient `vrfProof.status: 'PENDING'`, l'identifiant de requête VRF et le hash de la transaction. Le gagnant n'est pas encore connu.
 
-Le champ `roundId` du corps est ignoré : on ne peut tirer que le tour courant. `requestDraw` n'exige aucun rôle dans le contrat : n'importe quel compte peut la déclencher dès que les conditions sont remplies, ce que fait aussi Chainlink Automation par `performUpkeep` s'il est configuré. Voir [Chainlink Automation](../../smart-contracts/automation.md).
+Le champ `roundId` du corps est ignoré : on ne peut tirer que le tour courant. Cette route n'attend pas le délai de révélation : elle tire dès que `isDrawReady` est vrai, même si la salle d'attente des clients affiche encore un compte à rebours. `requestDraw` n'exige aucun rôle dans le contrat : n'importe quel compte peut la déclencher dès que les conditions sont remplies, ce que fait aussi Chainlink Automation par `performUpkeep` s'il est configuré. Le délai de révélation n'existe que dans le backend : le contrat ne le connaît pas. Voir [Chainlink Automation](../../smart-contracts/automation.md).
 
 ### Dans le contrat
 

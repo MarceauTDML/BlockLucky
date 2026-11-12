@@ -38,7 +38,7 @@
     <article class="markdown">
 <h1>Keeper du tirage</h1>
 <p>Un tour de loterie ne se termine pas tout seul : le contrat <code>BlockLucky</code> attend qu&#39;un compte appelle <code>requestDraw()</code> quand le tour est prêt, ou <code>closeExpiredRound()</code> quand il a expiré sans assez de participants. Sur un réseau public, Chainlink Automation peut jouer ce rôle grâce à <code>checkUpkeep</code> et <code>performUpkeep</code> (voir <a href="../smart-contracts/automation.html">Chainlink Automation</a>). Le backend embarque son propre automate, le keeper, pour que le cycle tourne aussi sur le nœud local et sans abonnement Automation.</p>
-<p>Le code est dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.keeper.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.keeper.ts</code></a>. Le même fichier démarre l&#39;indexeur périodique.</p>
+<p>Le code est dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.keeper.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.keeper.ts</code></a>. Le même fichier démarre l&#39;indexeur périodique. Le délai de la salle d&#39;attente est calculé par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/draw-reveal.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/draw-reveal.ts</code></a>.</p>
 <h2 id="runkeeperonce"><a class="anchor" href="#runkeeperonce" aria-hidden="true" tabindex="-1">#</a>runKeeperOnce</h2>
 <p><code>runKeeperOnce()</code> exécute une passe et renvoie l&#39;action réalisée :</p>
 <div class="table-wrap"><table>
@@ -57,20 +57,29 @@
 <td>Le keeper a appelé <code>closeExpiredRound()</code></td>
 </tr>
 <tr>
+<td><code>waiting-room</code></td>
+<td>Le tour est prêt au tirage, mais le délai de révélation n&#39;est pas écoulé</td>
+</tr>
+<tr>
 <td><code>idle</code></td>
 <td>Rien à faire, verrou déjà pris, contrat en pause, mode simulé ou erreur</td>
 </tr>
 </tbody></table></div>
+<h3 id="horloge-de-la-blockchain-locale"><a class="anchor" href="#horloge-de-la-blockchain-locale" aria-hidden="true" tabindex="-1">#</a>Horloge de la blockchain locale</h3>
+<p>Sur un nœud Hardhat, l&#39;heure du contrat (<code>block.timestamp</code>) n&#39;avance qu&#39;à chaque bloc miné, donc à chaque transaction. Sans activité, <code>isDrawReady()</code> et <code>isExpiredWithoutDraw()</code> restent fausses après la fin d&#39;un tour, et le tour ne serait jamais tiré ni annulé. Au début de chaque passe, <code>syncLocalChainClock()</code> mine donc un bloc vide (<code>evm_mine</code>) quand le dernier bloc a plus de 5 secondes de retard sur l&#39;horloge du serveur. Elle n&#39;agit qu&#39;avec <code>CHAIN_ID=31337</code>, hors production et hors relais RPC de secours ; une erreur est journalisée sans bloquer la passe.</p>
 <h3 id="deroule-d-une-passe"><a class="anchor" href="#deroule-d-une-passe" aria-hidden="true" tabindex="-1">#</a>Déroulé d&#39;une passe</h3>
 <div class="diagram"><pre class="mermaid">flowchart TD
     A[&quot;runKeeperOnce()&quot;] --&gt; B{&quot;mode onchain ?&quot;}
     B --&gt;|&quot;non&quot;| I[&quot;idle&quot;]
     B --&gt;|&quot;oui&quot;| C{&quot;verrou chain:keeper-lock obtenu ?&quot;}
     C --&gt;|&quot;non&quot;| I
-    C --&gt;|&quot;oui&quot;| D{&quot;paused() ?&quot;}
+    C --&gt;|&quot;oui&quot;| S[&quot;syncLocalChainClock()&quot;]
+    S --&gt; D{&quot;paused() ?&quot;}
     D --&gt;|&quot;oui&quot;| R[&quot;idle, verrou libéré&quot;]
     D --&gt;|&quot;non&quot;| E{&quot;isDrawReady() ?&quot;}
-    E --&gt;|&quot;oui&quot;| F[&quot;requestDraw() puis processReceipt&quot;]
+    E --&gt;|&quot;oui&quot;| W{&quot;instant prêt + DRAW_REVEAL_DELAY_SECONDS atteint ?&quot;}
+    W --&gt;|&quot;non&quot;| WR[&quot;waiting-room, verrou libéré&quot;]
+    W --&gt;|&quot;oui&quot;| F[&quot;requestDraw() puis processReceipt&quot;]
     F --&gt; G[&quot;draw-requested, verrou libéré&quot;]
     E --&gt;|&quot;non&quot;| H{&quot;isExpiredWithoutDraw() ?&quot;}
     H --&gt;|&quot;oui&quot;| J[&quot;closeExpiredRound() puis processReceipt&quot;]
@@ -94,6 +103,34 @@
 </tr>
 </tbody></table></div>
 <p>Avec la configuration du déploiement local (<code>smart-contract/deployments/localhost.json</code>), un tour dure 1 800 s, se tire à partir de 2 tickets et s&#39;arrête à 10 000 tickets.</p>
+<h3 id="salle-d-attente-et-delai-de-revelation"><a class="anchor" href="#salle-d-attente-et-delai-de-revelation" aria-hidden="true" tabindex="-1">#</a>Salle d&#39;attente et délai de révélation</h3>
+<p>Quand <code>isDrawReady()</code> devient vrai, le keeper ne tire pas tout de suite. Il lit le tour courant, puis appelle <code>markDrawReady</code> : la clé Redis <code>chain:draw-ready-at:&lt;tour&gt;</code> reçoit, si elle n&#39;existe pas encore, l&#39;instant où le tour est devenu prêt, c&#39;est-à-dire le plus petit de l&#39;heure courante et de <code>endTime</code>. La clé vit 7 jours. Tant que l&#39;heure courante est inférieure à cet instant plus <code>DRAW_REVEAL_DELAY_SECONDS</code> (600 s par défaut, de 0 à 86 400), la passe renvoie <code>waiting-room</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Instant enregistré</th>
+<th>Tirage demandé</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Fin du temps constatée après <code>endTime</code></td>
+<td><code>endTime</code></td>
+<td><code>endTime</code> + délai</td>
+</tr>
+<tr>
+<td>Dernier ticket vendu avant <code>endTime</code></td>
+<td>heure de la première passe ou lecture qui le constate</td>
+<td>cet instant + délai</td>
+</tr>
+<tr>
+<td><code>DRAW_REVEAL_DELAY_SECONDS=0</code></td>
+<td>idem</td>
+<td>à la passe suivante</td>
+</tr>
+</tbody></table></div>
+<p><code>GET /lottery/status</code> appelle le même <code>markDrawReady</code> : le premier des deux, keeper ou lecture du statut, fixe l&#39;instant, et <code>revealAt</code> publié aux clients correspond à l&#39;heure où le keeper tirera, à <code>KEEPER_INTERVAL_MS</code> près. Si Redis est vidé pendant l&#39;attente, l&#39;instant est recalculé ; avec un <code>endTime</code> dépassé, il revient à <code>endTime</code>, sinon l&#39;attente repart de zéro.</p>
+<p>Le délai ne bloque que le keeper. <code>POST /lottery/draw</code>, Chainlink Automation ou tout autre compte peuvent appeler <code>requestDraw</code> dès que le contrat l&#39;accepte. Un tour expiré sans assez de tickets est clos sans attente.</p>
 <p>Les deux transactions sont signées par le <a href="client-rpc.html#compte-operateur">compte opérateur</a>. Leur reçu est passé à <code>lotteryIndexer.processReceipt</code> : le statut <code>LOCKED</code> (événement <code>DrawRequested</code>) ou <code>CANCELLED</code> (événement <code>RoundCancelled</code>) est en base dès la fin de la passe, et les jobs de remboursement sont mis en file. Le tour suivant est ouvert par le contrat dans la même transaction pour une annulation (<code>RoundOpened</code> du tour suivant dans le même reçu) et dans la transaction de réponse de l&#39;oracle pour un tirage.</p>
 <h3 id="apres-requestdraw"><a class="anchor" href="#apres-requestdraw" aria-hidden="true" tabindex="-1">#</a>Après requestDraw</h3>
 <p>Le keeper ne désigne pas le gagnant. <code>requestDraw</code> envoie une requête à Chainlink VRF ; l&#39;oracle répond dans une transaction ultérieure qui appelle <code>fulfillRandomWords</code> et émet <code>WinnerPicked</code>. C&#39;est l&#39;<a href="indexeur.html#winnerpicked">indexeur</a> qui projette ce résultat, émet <code>draw:winner</code> et met en file le versement de la cagnotte. Sur le nœud local, la réponse est fournie par le script <code>smart-contract/scripts/local-vrf-responder.ts</code>, lancé par l&#39;image Docker de la blockchain.</p>
@@ -172,7 +209,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#runkeeperonce">runKeeperOnce</a></li><li class="toc-h3"><a href="#deroule-d-une-passe">Déroulé d&#39;une passe</a></li><li class="toc-h3"><a href="#apres-requestdraw">Après requestDraw</a></li><li class="toc-h3"><a href="#verrou">Verrou</a></li><li class="toc-h3"><a href="#erreurs">Erreurs</a></li><li class="toc-h2"><a href="#startchainservices">startChainServices</a></li><li class="toc-h2"><a href="#tirage-manuel">Tirage manuel</a></li><li class="toc-h2"><a href="#tester-le-keeper">Tester le keeper</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#runkeeperonce">runKeeperOnce</a></li><li class="toc-h3"><a href="#horloge-de-la-blockchain-locale">Horloge de la blockchain locale</a></li><li class="toc-h3"><a href="#deroule-d-une-passe">Déroulé d&#39;une passe</a></li><li class="toc-h3"><a href="#salle-d-attente-et-delai-de-revelation">Salle d&#39;attente et délai de révélation</a></li><li class="toc-h3"><a href="#apres-requestdraw">Après requestDraw</a></li><li class="toc-h3"><a href="#verrou">Verrou</a></li><li class="toc-h3"><a href="#erreurs">Erreurs</a></li><li class="toc-h2"><a href="#startchainservices">startChainServices</a></li><li class="toc-h2"><a href="#tirage-manuel">Tirage manuel</a></li><li class="toc-h2"><a href="#tester-le-keeper">Tester le keeper</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

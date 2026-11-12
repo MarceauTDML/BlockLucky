@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>7. Backend</span><span>Modules métier</span></div>
     <article class="markdown">
 <h1>Administration Mairie</h1>
-<p>Le module <code>admin</code> sert l&#39;espace d&#39;administration de la Mairie d&#39;EtherBay : tableau de bord, disjoncteur du smart contract, reversement de la commission à la trésorerie, suspension des partenaires, export de rapports et journal d&#39;audit. Le tirage et l&#39;annulation d&#39;un tour, aussi réservés à l&#39;ADMIN, sont dans le module <a href="loterie.html#post-lottery-draw">Loterie</a>.</p>
+<p>Le module <code>admin</code> sert l&#39;espace d&#39;administration de la Mairie d&#39;EtherBay : tableau de bord, disjoncteur du smart contract, reversement de la commission à la trésorerie, suspension des partenaires, vérification des pièces d&#39;identité, export de rapports et journal d&#39;audit. Le tirage et l&#39;annulation d&#39;un tour, aussi réservés à l&#39;ADMIN, sont dans le module <a href="loterie.html#post-lottery-draw">Loterie</a>.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -47,11 +47,11 @@
 </thead>
 <tbody><tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/admin/admin.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/admin/admin.routes.ts</code></a></td>
-<td>6 routes, protection au niveau du routeur</td>
+<td>9 routes, protection au niveau du routeur</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/admin/admin.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/admin/admin.validators.ts</code></a></td>
-<td>3 schémas Zod</td>
+<td>6 schémas Zod</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/admin/admin.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/admin/admin.services.ts</code></a></td>
@@ -59,7 +59,7 @@
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/admin/admin.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/admin/admin.repo.ts</code></a></td>
-<td>Agrégats, audit, statut des partenaires</td>
+<td>Agrégats, audit, statut des partenaires, demandes de vérification d&#39;identité</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/blockchain.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/blockchain.service.ts</code></a></td>
@@ -89,7 +89,7 @@
 </tr>
 <tr>
 <td>2FA active sur le compte si <code>ADMIN_MFA_REQUIRED=true</code></td>
-<td><code>403 La double authentification est obligatoire pour les comptes d&#39;administration. Activez-la depuis votre profil.</code></td>
+<td><code>403 La double authentification est obligatoire pour les comptes d&#39;administration. Activez-la depuis votre profil.</code>, avec <code>errors.code</code> à <code>ADMIN_MFA_REQUIRED</code></td>
 </tr>
 <tr>
 <td>Base de données joignable pour ces vérifications</td>
@@ -136,6 +136,24 @@
 <td>aucun</td>
 <td>Rapport CSV ou « PDF »</td>
 <td><code>EXPORT_REPORT_CSV</code> ou <code>EXPORT_REPORT_PDF</code></td>
+</tr>
+<tr>
+<td><code>GET /api/v1/admin/identity-verifications</code></td>
+<td><code>validate(listIdentityVerificationsSchema)</code></td>
+<td>File des pièces d&#39;identité par statut</td>
+<td>non</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/admin/identity-verifications/:id</code></td>
+<td><code>validate(identityVerificationIdSchema)</code></td>
+<td>Consultation d&#39;une pièce</td>
+<td><code>IDENTITY_DOCUMENT_VIEWED</code></td>
+</tr>
+<tr>
+<td><code>POST /api/v1/admin/identity-verifications/:id/decision</code></td>
+<td><code>validate(identityDecisionSchema)</code></td>
+<td>Approbation ou refus</td>
+<td><code>IDENTITY_VERIFICATION_DECISION</code></td>
 </tr>
 <tr>
 <td><code>GET /api/v1/admin/audit-logs</code></td>
@@ -315,6 +333,110 @@
 <div class="hint hint-warning"><p class="hint-title">Attention</p>
 <p>Aucun PDF n&#39;est produit : le fichier <code>.pdf</code> ne s&#39;ouvre pas dans un lecteur PDF. <code>downloadUrl</code> est construit comme <code>AWS_S3_ENDPOINT/AWS_S3_BUCKET/clé</code>, sans URL présignée : il ne fonctionne que si le bucket est public. Si le dépôt S3 échoue, l&#39;erreur est seulement journalisée et l&#39;URL renvoyée pointe vers un fichier absent.</p>
 </div>
+<h2 id="verification-des-pieces-d-identite"><a class="anchor" href="#verification-des-pieces-d-identite" aria-hidden="true" tabindex="-1">#</a>Vérification des pièces d&#39;identité</h2>
+<p>Ces trois routes servent la page <a href="../../web/pages.html">Identités</a> de l&#39;espace Mairie. Elles traitent les demandes envoyées par <code>POST /user/identity</code> (voir <a href="utilisateur.html#verification-d-age">Utilisateur</a>).</p>
+<h3 id="get-admin-identity-verifications"><a class="anchor" href="#get-admin-identity-verifications" aria-hidden="true" tabindex="-1">#</a>GET /admin/identity-verifications</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>status</code></td>
+<td><code>PENDING</code> (défaut), <code>VERIFIED</code> ou <code>REJECTED</code></td>
+</tr>
+<tr>
+<td><code>page</code>, <code>limit</code></td>
+<td>pagination, <code>limit</code> de 1 à 100</td>
+</tr>
+</tbody></table></div>
+<p>La liste est triée par date d&#39;envoi, la plus ancienne en premier. Chaque entrée contient <code>id</code>, <code>userId</code>, <code>email</code>, <code>submittedAt</code> et <code>status</code>, sans image. La réponse porte un objet <code>meta</code> de pagination.</p>
+<h3 id="get-admin-identity-verifications-id"><a class="anchor" href="#get-admin-identity-verifications-id" aria-hidden="true" tabindex="-1">#</a>GET /admin/identity-verifications/:id</h3>
+<p>L&#39;identifiant doit être un UUID (<code>400 Identifiant de demande invalide</code>) ; une demande inconnue renvoie 404. La réponse, servie avec <code>Cache-Control: no-store</code>, contient le compte (<code>email</code>, <code>walletAddress</code>, <code>accountCreatedAt</code>), le statut, les dates, l&#39;agent qui a statué, le motif d&#39;un refus et les deux images <code>front</code> et <code>back</code> sous forme d&#39;URL <code>data:</code> déchiffrées.</p>
+<p>Les images ne sont renvoyées que pour une demande <code>PENDING</code>. Après une décision, <code>front</code> et <code>back</code> valent <code>null</code>, puisque les images ont été effacées. Chaque consultation est tracée dans l&#39;audit, même sans image.</p>
+<h3 id="post-admin-identity-verifications-id-decision"><a class="anchor" href="#post-admin-identity-verifications-id-decision" aria-hidden="true" tabindex="-1">#</a>POST /admin/identity-verifications/:id/decision</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>approved</code></td>
+<td>booléen</td>
+<td>obligatoire</td>
+</tr>
+<tr>
+<td><code>note</code></td>
+<td>chaîne</td>
+<td>500 caractères au plus ; au moins 3 caractères obligatoires en cas de refus (<code>Le motif du refus est obligatoire</code>)</td>
+</tr>
+</tbody></table></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cas</th>
+<th>Réponse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Demande inconnue</td>
+<td><code>404 Demande de vérification d&#39;identité introuvable</code></td>
+</tr>
+<tr>
+<td>Demande de l&#39;administrateur lui-même</td>
+<td><code>403 Vous ne pouvez pas statuer sur votre propre pièce d&#39;identité.</code></td>
+</tr>
+<tr>
+<td>Demande déjà traitée, y compris par un autre agent au même moment</td>
+<td><code>409 Cette demande a déjà été traitée.</code></td>
+</tr>
+</tbody></table></div>
+<p>La décision est écrite dans une transaction qui ne s&#39;applique qu&#39;à une demande encore <code>PENDING</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Donnée</th>
+<th>Approbation</th>
+<th>Refus</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>IdentityDocument.status</code></td>
+<td><code>VERIFIED</code></td>
+<td><code>REJECTED</code></td>
+</tr>
+<tr>
+<td><code>frontEncrypted</code>, <code>backEncrypted</code></td>
+<td>effacés</td>
+<td>effacés</td>
+</tr>
+<tr>
+<td><code>reviewedAt</code>, <code>reviewerId</code></td>
+<td>date et agent</td>
+<td>date et agent</td>
+</tr>
+<tr>
+<td><code>User.ageVerificationStatus</code></td>
+<td><code>VERIFIED</code></td>
+<td><code>REJECTED</code></td>
+</tr>
+<tr>
+<td><code>User.ageVerifiedAt</code></td>
+<td>date de la décision</td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td><code>User.ageVerificationNote</code></td>
+<td><code>null</code></td>
+<td>motif</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;administrateur reçoit <code>{ &quot;decision&quot;: { &quot;id&quot;, &quot;userId&quot;, &quot;status&quot;, &quot;reviewedAt&quot;, &quot;note&quot; } }</code>. Le citoyen reçoit l&#39;email <code>identity-decision</code>, avec le motif en cas de refus ; il peut alors envoyer une nouvelle pièce. Un compte sans email n&#39;est pas prévenu.</p>
 <h2 id="journal-d-audit"><a class="anchor" href="#journal-d-audit" aria-hidden="true" tabindex="-1">#</a>Journal d&#39;audit</h2>
 <p>Chaque action sensible écrit une ligne <code>Analytics</code> avec <code>eventType = ADMIN_AUDIT:&lt;action&gt;</code>, <code>userId</code> de l&#39;administrateur, <code>utmSource = admin-dashboard</code> et le détail en <code>metadata</code>. Les clients ne peuvent pas écrire de lignes avec ce préfixe (voir <a href="analytique.html#post-analytics-track">Analytique</a>).</p>
 <div class="table-wrap"><table>
@@ -340,6 +462,14 @@
 <td><code>EXPORT_REPORT_CSV</code>, <code>EXPORT_REPORT_PDF</code></td>
 <td><code>format</code>, <code>timestamp</code></td>
 </tr>
+<tr>
+<td><code>IDENTITY_DOCUMENT_VIEWED</code></td>
+<td><code>verificationId</code>, <code>userId</code>, <code>imagesShown</code></td>
+</tr>
+<tr>
+<td><code>IDENTITY_VERIFICATION_DECISION</code></td>
+<td><code>verificationId</code>, <code>userId</code>, <code>approved</code>, <code>status</code>, <code>note</code> s&#39;il est fourni</td>
+</tr>
 </tbody></table></div>
 <p>L&#39;audit est écrit après l&#39;action : une action qui échoue n&#39;est pas tracée, et un échec d&#39;écriture de l&#39;audit après une transaction réussie renvoie une erreur alors que l&#39;action a eu lieu. Le tirage et l&#39;annulation de tour (<code>POST /lottery/draw</code>, <code>/refund</code>) ne sont pas audités.</p>
 <h3 id="get-admin-audit-logs"><a class="anchor" href="#get-admin-audit-logs" aria-hidden="true" tabindex="-1">#</a>GET /admin/audit-logs</h3>
@@ -362,7 +492,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#protection">Protection</a></li><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#get-admin-dashboard">GET /admin/dashboard</a></li><li class="toc-h2"><a href="#post-admin-circuit-breaker">POST /admin/circuit-breaker</a></li><li class="toc-h2"><a href="#post-admin-treasury-withdraw">POST /admin/treasury/withdraw</a></li><li class="toc-h2"><a href="#patch-admin-partners-partnerid-status">PATCH /admin/partners/:partnerId/status</a></li><li class="toc-h2"><a href="#get-admin-reports-export">GET /admin/reports/export</a></li><li class="toc-h2"><a href="#journal-d-audit">Journal d&#39;audit</a></li><li class="toc-h3"><a href="#get-admin-audit-logs">GET /admin/audit-logs</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#protection">Protection</a></li><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#get-admin-dashboard">GET /admin/dashboard</a></li><li class="toc-h2"><a href="#post-admin-circuit-breaker">POST /admin/circuit-breaker</a></li><li class="toc-h2"><a href="#post-admin-treasury-withdraw">POST /admin/treasury/withdraw</a></li><li class="toc-h2"><a href="#patch-admin-partners-partnerid-status">PATCH /admin/partners/:partnerId/status</a></li><li class="toc-h2"><a href="#get-admin-reports-export">GET /admin/reports/export</a></li><li class="toc-h2"><a href="#verification-des-pieces-d-identite">Vérification des pièces d&#39;identité</a></li><li class="toc-h3"><a href="#get-admin-identity-verifications">GET /admin/identity-verifications</a></li><li class="toc-h3"><a href="#get-admin-identity-verifications-id">GET /admin/identity-verifications/:id</a></li><li class="toc-h3"><a href="#post-admin-identity-verifications-id-decision">POST /admin/identity-verifications/:id/decision</a></li><li class="toc-h2"><a href="#journal-d-audit">Journal d&#39;audit</a></li><li class="toc-h3"><a href="#get-admin-audit-logs">GET /admin/audit-logs</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

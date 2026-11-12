@@ -94,6 +94,11 @@
 <td>403 si le rôle du jeton n&#39;est pas dans la liste, si le rôle en base diffère, si le compte est supprimé, ou si un ADMIN n&#39;a pas activé la 2FA ; 503 si la base ne répond pas</td>
 </tr>
 <tr>
+<td><code>requireAgeVerification</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/age-verification.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/age-verification.middleware.ts</code></a></td>
+<td>403 <code>AGE_VERIFICATION_REQUIRED</code> si l&#39;âge du compte n&#39;est pas vérifié par la Mairie ; 503 si la base ne répond pas ; sans effet si <code>AGE_VERIFICATION_REQUIRED</code> vaut <code>false</code></td>
+</tr>
+<tr>
 <td><code>requireWebhookSignature</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/webhooks/webhook-signature.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/webhooks/webhook-signature.ts</code></a></td>
 <td>401 si la signature HMAC est absente, fausse ou expirée</td>
@@ -112,7 +117,7 @@
 <p><code>requireRoles()</code> sans argument refuse tout le monde : l&#39;oubli d&#39;un rôle aboutit à un refus, pas à une ouverture.</p>
 <p>Toutes les routes <code>/api/...</code> existent aussi sous <code>/api/v1/...</code> avec les mêmes contrôles, car le même routeur est monté deux fois dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a>.</p>
 <h2 id="matrice-complete"><a class="anchor" href="#matrice-complete" aria-hidden="true" tabindex="-1">#</a>Matrice complète</h2>
-<p>Légende : <strong>oui</strong> accès accordé, <strong>non</strong> refusé (401 sans jeton, 403 avec un rôle insuffisant), <strong>propre</strong> limité aux données du compte ou de ses entreprises.</p>
+<p>Légende : <strong>oui</strong> accès accordé, <strong>non</strong> refusé (401 sans jeton, 403 avec un rôle insuffisant), <strong>propre</strong> limité aux données du compte ou de ses entreprises, <strong>majeur</strong> limité aux données du compte et réservé à un âge vérifié.</p>
 <h3 id="systeme-et-documentation"><a class="anchor" href="#systeme-et-documentation" aria-hidden="true" tabindex="-1">#</a>Système et documentation</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -181,6 +186,30 @@
 <tbody><tr>
 <td><code>GET /api/auth/onboarding</code></td>
 <td>Aucun</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/signup</code>, <code>/signin</code></td>
+<td><code>authRateLimiter</code></td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/password/forgot</code>, <code>/password/reset</code></td>
+<td><code>authRateLimiter</code></td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/oauth/google</code>, <code>/oauth/apple</code></td>
+<td><code>authRateLimiter</code> ; 503 si le fournisseur n&#39;est pas configuré</td>
 <td>oui</td>
 <td>oui</td>
 <td>oui</td>
@@ -273,19 +302,19 @@
 </tr>
 <tr>
 <td><code>POST /api/lottery/buy</code></td>
-<td><code>authenticate</code>, <code>idempotency</code></td>
+<td><code>authenticate</code>, <code>requireAgeVerification</code>, <code>idempotency</code></td>
 <td>non</td>
-<td>propre</td>
-<td>propre</td>
-<td>propre</td>
+<td>majeur</td>
+<td>majeur</td>
+<td>majeur</td>
 </tr>
 <tr>
 <td><code>POST /api/lottery/gift</code></td>
-<td><code>authenticate</code>, <code>idempotency</code></td>
+<td><code>authenticate</code>, <code>requireAgeVerification</code>, <code>idempotency</code></td>
 <td>non</td>
-<td>propre</td>
-<td>propre</td>
-<td>propre</td>
+<td>majeur</td>
+<td>majeur</td>
+<td>majeur</td>
 </tr>
 <tr>
 <td><code>GET /api/lottery/my-tickets</code></td>
@@ -366,11 +395,19 @@
 </tr>
 <tr>
 <td><code>POST /api/marketplace/claim</code></td>
-<td><code>authenticate</code>, <code>idempotency</code></td>
+<td><code>authenticate</code>, <code>requireAgeVerification</code>, <code>idempotency</code></td>
 <td>non</td>
-<td>propre</td>
-<td>propre</td>
-<td>propre</td>
+<td>majeur</td>
+<td>majeur</td>
+<td>majeur</td>
+</tr>
+<tr>
+<td><code>POST /api/marketplace/scratch</code></td>
+<td><code>authenticate</code>, <code>requireAgeVerification</code>, <code>idempotency</code></td>
+<td>non</td>
+<td>majeur</td>
+<td>majeur</td>
+<td>majeur</td>
 </tr>
 <tr>
 <td><code>GET /api/marketplace/my-codes</code></td>
@@ -443,6 +480,22 @@
 </thead>
 <tbody><tr>
 <td><code>GET /api/user/profile</code></td>
+<td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/user/identity</code></td>
+<td><code>identityUploadRateLimiter</code> (10 envois par adresse IP et par heure), <code>authenticate</code>, corps de 12 Mo au plus</td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>GET /api/user/identity</code></td>
 <td><code>authenticate</code></td>
 <td>non</td>
 <td>propre</td>
@@ -600,6 +653,30 @@
 <td>oui</td>
 </tr>
 <tr>
+<td><code>GET /api/admin/identity-verifications</code></td>
+<td>idem</td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>GET /api/admin/identity-verifications/:id</code></td>
+<td>idem, journalisé, <code>Cache-Control: no-store</code></td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
+<td><code>POST /api/admin/identity-verifications/:id/decision</code></td>
+<td>idem, journalisé, interdit sur sa propre pièce</td>
+<td>non</td>
+<td>non</td>
+<td>non</td>
+<td>oui</td>
+</tr>
+<tr>
 <td><code>POST /api/webhooks/blockchain</code></td>
 <td>Signature HMAC <code>x-webhook-signature</code></td>
 <td>signature</td>
@@ -609,6 +686,66 @@
 </tr>
 </tbody></table></div>
 <p>Toutes les routes ADMIN, y compris <code>/api/lottery/draw</code>, <code>/api/lottery/refund</code> et <code>/api/analytics/dashboard</code>, passent par <code>requireRoles(&#39;ADMIN&#39;)</code> et exigent donc la 2FA active sur le compte.</p>
+<h2 id="verification-d-age"><a class="anchor" href="#verification-d-age" aria-hidden="true" tabindex="-1">#</a>Vérification d&#39;âge</h2>
+<p>L&#39;achat et le cadeau d&#39;un ticket, l&#39;échange d&#39;une récompense et l&#39;achat d&#39;un ticket à gratter exigent que <code>User.ageVerificationStatus</code> vaille <code>VERIFIED</code>. Le middleware relit ce statut en base à chaque requête : il ne fait pas confiance au jeton ni au statut que le client garde en mémoire.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Statut du compte</th>
+<th>Réponse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>VERIFIED</code></td>
+<td>La requête continue</td>
+</tr>
+<tr>
+<td><code>NONE</code>, <code>PENDING</code>, <code>REJECTED</code></td>
+<td>403 « Vérifiez votre âge pour jouer. », détails <code>{ &quot;code&quot;: &quot;AGE_VERIFICATION_REQUIRED&quot;, &quot;status&quot;: &quot;&lt;statut&gt;&quot; }</code></td>
+</tr>
+<tr>
+<td>Base indisponible</td>
+<td>503, la requête est refusée</td>
+</tr>
+</tbody></table></div>
+<p><code>AGE_VERIFICATION_REQUIRED</code> vaut <code>true</code> par défaut et ne peut pas valoir <code>false</code> en production : le schéma d&#39;environnement arrête le processus. Seules les suites de tests la désactivent (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/setup-env.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/setup-env.ts</code></a>).</p>
+<p>Le statut ne change que par une décision de la Mairie. Le parcours est le suivant :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Route</th>
+<th>Contrôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Envoi du recto et du verso</td>
+<td><code>POST /api/user/identity</code></td>
+<td>Session ; refus 409 si l&#39;âge est déjà vérifié ; images JPEG ou PNG vérifiées et chiffrées (voir <a href="validation.html#pieces-d-identite">Validation des entrées</a>)</td>
+</tr>
+<tr>
+<td>Consultation du statut</td>
+<td><code>GET /api/user/identity</code></td>
+<td>Session ; renvoie le statut, les dates et le motif d&#39;un refus</td>
+</tr>
+<tr>
+<td>File de la Mairie</td>
+<td><code>GET /api/admin/identity-verifications?status=PENDING</code></td>
+<td>ADMIN avec 2FA ; ne renvoie ni image ni adresse de portefeuille</td>
+</tr>
+<tr>
+<td>Consultation d&#39;une pièce</td>
+<td><code>GET /api/admin/identity-verifications/:id</code></td>
+<td>ADMIN avec 2FA ; images déchiffrées seulement tant que la demande est <code>PENDING</code> ; entrée d&#39;audit <code>IDENTITY_DOCUMENT_VIEWED</code> à chaque consultation</td>
+</tr>
+<tr>
+<td>Décision</td>
+<td><code>POST /api/admin/identity-verifications/:id/decision</code></td>
+<td>ADMIN avec 2FA ; 403 sur sa propre pièce ; 409 si la demande est déjà traitée ; motif de 3 à 500 caractères obligatoire pour un refus</td>
+</tr>
+</tbody></table></div>
+<p>La décision est prise dans une transaction qui ne s&#39;applique qu&#39;à une demande encore <code>PENDING</code> (<code>updateMany</code> conditionnel) : deux agents qui statuent en même temps ne produisent qu&#39;une décision, l&#39;autre reçoit 409. La même transaction efface le recto et le verso et met à jour le compte. Une entrée d&#39;audit <code>IDENTITY_VERIFICATION_DECISION</code> est ensuite écrite, puis l&#39;email <code>identity-decision</code> est envoyé au citoyen. L&#39;interface est la page Identités de l&#39;espace Mairie (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/identites/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/mairie/identites/page.tsx</code></a>).</p>
+<p>Le contrôle ne couvre que les routes de l&#39;API. Une adresse qui achète directement sur le contrat, sans passer par BlockLucky, n&#39;est soumise à aucune vérification d&#39;âge (voir <a href="../smart-contracts/limites.html">Limites du contrat</a>). Le retrait d&#39;une cagnotte (<code>/lottery/claim-prize</code>) n&#39;est pas non plus soumis au contrôle, puisqu&#39;il suppose un ticket acheté.</p>
 <h2 id="controles-de-propriete-idor-partenaires"><a class="anchor" href="#controles-de-propriete-idor-partenaires" aria-hidden="true" tabindex="-1">#</a>Contrôles de propriété (IDOR partenaires)</h2>
 <p>Une entreprise partenaire appartient au compte qui l&#39;a créée, par la colonne <code>Partner.ownerId</code> (clé étrangère vers <code>User</code>, <code>ON DELETE SET NULL</code>). Le rôle <code>PARTNER</code> ne suffit pas : chaque opération sur une entreprise, une offre ou un code vérifie la propriété.</p>
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> assertPartnerAccess = (
@@ -701,6 +838,10 @@
 <td>Pas de revue périodique des accès</td>
 <td>Aucun outil ne liste les comptes ADMIN et PARTNER ; la revue se fait en base.</td>
 </tr>
+<tr>
+<td>Tout ADMIN voit les pièces d&#39;identité</td>
+<td>Aucun rôle plus fin ne restreint la consultation des pièces à des agents habilités ; la traçabilité repose sur le journal d&#39;audit.</td>
+</tr>
 </tbody></table></div>
 
     </article>
@@ -710,7 +851,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#roles">Rôles</a></li><li class="toc-h2"><a href="#briques-de-controle">Briques de contrôle</a></li><li class="toc-h2"><a href="#matrice-complete">Matrice complète</a></li><li class="toc-h3"><a href="#systeme-et-documentation">Système et documentation</a></li><li class="toc-h3"><a href="#authentification">Authentification</a></li><li class="toc-h3"><a href="#loterie">Loterie</a></li><li class="toc-h3"><a href="#boutique-et-partenaires">Boutique et partenaires</a></li><li class="toc-h3"><a href="#utilisateur-et-rgpd">Utilisateur et RGPD</a></li><li class="toc-h3"><a href="#analytique-administration-et-webhooks">Analytique, administration et webhooks</a></li><li class="toc-h2"><a href="#controles-de-propriete-idor-partenaires">Contrôles de propriété (IDOR partenaires)</a></li><li class="toc-h2"><a href="#autres-controles-d-appartenance">Autres contrôles d&#39;appartenance</a></li><li class="toc-h2"><a href="#limites-connues">Limites connues</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#roles">Rôles</a></li><li class="toc-h2"><a href="#briques-de-controle">Briques de contrôle</a></li><li class="toc-h2"><a href="#matrice-complete">Matrice complète</a></li><li class="toc-h3"><a href="#systeme-et-documentation">Système et documentation</a></li><li class="toc-h3"><a href="#authentification">Authentification</a></li><li class="toc-h3"><a href="#loterie">Loterie</a></li><li class="toc-h3"><a href="#boutique-et-partenaires">Boutique et partenaires</a></li><li class="toc-h3"><a href="#utilisateur-et-rgpd">Utilisateur et RGPD</a></li><li class="toc-h3"><a href="#analytique-administration-et-webhooks">Analytique, administration et webhooks</a></li><li class="toc-h2"><a href="#verification-d-age">Vérification d&#39;âge</a></li><li class="toc-h2"><a href="#controles-de-propriete-idor-partenaires">Contrôles de propriété (IDOR partenaires)</a></li><li class="toc-h2"><a href="#autres-controles-d-appartenance">Autres contrôles d&#39;appartenance</a></li><li class="toc-h2"><a href="#limites-connues">Limites connues</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

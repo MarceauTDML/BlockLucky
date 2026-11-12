@@ -241,7 +241,7 @@
 </tr>
 <tr>
 <td>201</td>
-<td>création : tickets, cadeau, récompense, partenaire, offre, lot de codes, événement analytique</td>
+<td>création : inscription en attente de code, tickets, cadeau, récompense, ticket à gratter, pièce d&#39;identité envoyée, partenaire, offre, lot de codes, événement analytique</td>
 </tr>
 <tr>
 <td>400</td>
@@ -253,11 +253,11 @@
 </tr>
 <tr>
 <td>402</td>
-<td>solde d&#39;ethers fictifs insuffisant pour une transaction</td>
+<td>solde d&#39;ethers fictifs insuffisant pour une transaction, EtherPoints insuffisants pour un ticket à gratter (<code>INSUFFICIENT_POINTS</code>)</td>
 </tr>
 <tr>
 <td>403</td>
-<td>rôle insuffisant, droits modifiés, 2FA administrateur manquante, entreprise d&#39;un autre partenaire, non-gagnant, rôle manquant du compte opérateur sur le contrat</td>
+<td>rôle insuffisant, droits modifiés, 2FA administrateur manquante, âge non vérifié (<code>AGE_VERIFICATION_REQUIRED</code>), décision sur sa propre pièce d&#39;identité, entreprise d&#39;un autre partenaire, non-gagnant, rôle manquant du compte opérateur sur le contrat</td>
 </tr>
 <tr>
 <td>404</td>
@@ -265,15 +265,15 @@
 </tr>
 <tr>
 <td>409</td>
-<td>conflit : état du tour, double 2FA, contrainte d&#39;unicité ou d&#39;intégrité, requête idempotente en cours, mode blockchain incompatible</td>
+<td>conflit : état du tour, ticket déjà détenu pour ce grand tirage (<code>PlayerLimitReached</code>), compte déjà existant, âge déjà vérifié, demande d&#39;identité déjà traitée, double 2FA, contrainte d&#39;unicité ou d&#39;intégrité, requête idempotente en cours, mode blockchain incompatible</td>
 </tr>
 <tr>
 <td>413</td>
-<td>corps de plus de 1 Mo</td>
+<td>corps de plus de 1 Mo (12 Mo pour l&#39;envoi d&#39;une pièce d&#39;identité), image de pièce d&#39;identité de plus de 4 Mo</td>
 </tr>
 <tr>
 <td>429</td>
-<td>rate limiting ou blocage du compte après 10 codes erronés</td>
+<td>rate limiting ou blocage du compte après 10 codes ou mots de passe erronés</td>
 </tr>
 <tr>
 <td>500</td>

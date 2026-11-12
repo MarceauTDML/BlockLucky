@@ -62,7 +62,7 @@
   API-&gt;&gt;US: confirmGdprAccountDeletion(token)
   US-&gt;&gt;UR: findValidDeletionToken, sha256, type, échéance
   US-&gt;&gt;UR: anonymizeUserAccount(userId, tokenId)
-  UR-&gt;&gt;DB: transaction : anonymisation du User, suppression du Token
+  UR-&gt;&gt;DB: transaction : anonymisation du User, suppression de IdentityDocument et du Token
   US-&gt;&gt;SS: revokeAllForUser(userId)
   SS-&gt;&gt;R: auth:revoked-before:userId, 30 jours
   US--&gt;&gt;C: 200 deleted, anonymized, deletedAt</pre></div>
@@ -85,7 +85,7 @@
 <p><strong>Service.</strong> <code>userService.confirmGdprAccountDeletion</code> :</p>
 <ol>
 <li><code>findValidDeletionToken</code> cherche un <code>Token</code> dont l&#39;empreinte SHA-256 correspond, de type <code>ACCOUNT_DELETION</code> et non expiré. Sinon : 400 « Jeton de suppression RGPD invalide ou expiré ».</li>
-<li><code>anonymizeUserAccount(userId, tokenId)</code> exécute une transaction qui met à jour le compte et supprime le jeton utilisé.</li>
+<li><code>anonymizeUserAccount(userId, tokenId)</code> exécute une transaction qui met à jour le compte, supprime sa pièce d&#39;identité et supprime le jeton utilisé.</li>
 <li><code>sessionService.revokeAllForUser</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/session.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/session.service.ts</code></a>) écrit <code>auth:revoked-before:&lt;userId&gt;</code> pour 30 jours : tout jeton émis avant cet instant est refusé par <code>authenticate</code>.</li>
 <li>Réponse 200 avec <code>deleted: true</code>, <code>anonymized: true</code>, <code>userId</code> et <code>deletedAt</code>.</li>
 </ol>
@@ -114,6 +114,18 @@
 <td>Effacés ou désactivés</td>
 </tr>
 <tr>
+<td><code>User.passwordHash</code>, <code>ageVerificationNote</code></td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td><code>IdentityDocument</code> du compte</td>
+<td>Supprimé, avec les images si la Mairie n&#39;avait pas encore statué</td>
+</tr>
+<tr>
+<td><code>ageVerificationStatus</code>, <code>ageVerifiedAt</code></td>
+<td>Conservés</td>
+</tr>
+<tr>
 <td><code>User.deletedAt</code></td>
 <td>Date de la suppression ; <code>getProfile</code> répond alors 404 et <code>requireRoles</code> refuse le compte</td>
 </tr>
@@ -127,7 +139,7 @@
 </tr>
 <tr>
 <td><code>Ticket</code>, <code>PointTransaction</code>, <code>ClaimedReward</code>, <code>Analytics</code></td>
-<td>Conservés, toujours rattachés à l&#39;identifiant du compte</td>
+<td>Conservés, toujours rattachés à l&#39;identifiant du compte ; les entrées d&#39;audit de la Mairie sur la pièce d&#39;identité, motif de refus compris, restent aussi</td>
 </tr>
 <tr>
 <td>Clés Redis <code>user:prefs:&lt;id&gt;</code>, <code>user:quests:&lt;id&gt;</code>, <code>user:ticket_limit:&lt;id&gt;</code></td>

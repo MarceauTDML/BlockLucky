@@ -68,7 +68,7 @@
   <span class="hljs-punctuation">]</span>
 <span class="hljs-punctuation">}</span></code></pre></div>
 <p>Les objets Zod sont non stricts par défaut : un champ non déclaré n&#39;est pas rejeté, il est retiré. C&#39;est ce qui protège contre l&#39;affectation de masse. Un client qui ajoute <code>&quot;role&quot;: &quot;ADMIN&quot;</code> au corps de <code>/api/auth/login</code> n&#39;a aucun effet, puisque <code>role</code> ne figure pas dans <code>socialLoginSchema</code>.</p>
-<p>Seul <code>req.body</code> est réécrit. Les paramètres d&#39;URL et de requête (<code>req.params</code>, <code>req.query</code>) peuvent être vérifiés par un schéma, mais le contrôleur lit toujours la valeur brute. En pratique, aucun schéma actuel ne déclare <code>query</code> ni <code>params</code> : ces valeurs sont converties à la main dans les contrôleurs (voir <a href="#limites-connues">Limites connues</a>).</p>
+<p>Seul <code>req.body</code> est réécrit. Les paramètres d&#39;URL et de requête (<code>req.params</code>, <code>req.query</code>) peuvent être vérifiés par un schéma, mais le contrôleur lit toujours la valeur brute. Les schémas des routes de vérification d&#39;identité de l&#39;administration sont les seuls à déclarer <code>query</code> et <code>params</code> ; ailleurs, ces valeurs sont converties à la main dans les contrôleurs (voir <a href="#limites-connues">Limites connues</a>).</p>
 <h2 id="schemas-et-bornes"><a class="anchor" href="#schemas-et-bornes" aria-hidden="true" tabindex="-1">#</a>Schémas et bornes</h2>
 <p>Chaque module a son fichier <code>*.validators.ts</code>. Le tableau résume les règles de sécurité qu&#39;ils imposent.</p>
 <div class="table-wrap"><table>
@@ -85,6 +85,21 @@
 <td>Adresse <code>^0x[0-9a-fA-F]{40}$</code> mise en minuscules ; email de 254 caractères au plus ; <code>isAdultConfirmed</code> doit valoir <code>true</code> ; <code>provider</code> et <code>ageGroup</code> en énumération ; code de parrainage 64 et UTM 100 caractères au plus</td>
 </tr>
 <tr>
+<td><code>signupSchema</code>, <code>resetPasswordSchema</code></td>
+<td>idem</td>
+<td>Mot de passe de 10 à 128 caractères avec au moins une lettre et un chiffre (<code>passwordPolicy</code>) ; email de 254 caractères au plus, mis en minuscules ; <code>acceptTerms</code> doit valoir <code>true</code> à l&#39;inscription ; code de réinitialisation de 6 chiffres</td>
+</tr>
+<tr>
+<td><code>signinSchema</code></td>
+<td>idem</td>
+<td>Mot de passe de 1 à 128 caractères, refusé au-delà avec le message générique « Email ou mot de passe incorrect. »</td>
+</tr>
+<tr>
+<td><code>googleOAuthSchema</code>, <code>appleOAuthSchema</code></td>
+<td>idem</td>
+<td>Jeton de 20 à 8 192 caractères ; nom Apple de 200 caractères au plus</td>
+</tr>
+<tr>
 <td><code>verify2FASchema</code>, <code>disable2FASchema</code></td>
 <td>idem</td>
 <td>Code de 6 à 16 caractères <code>[0-9A-Za-z-]</code>, <code>userId</code> en UUID</td>
@@ -92,7 +107,7 @@
 <tr>
 <td><code>buyTicketSchema</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.validators.ts</code></a></td>
-<td>Quantité entière de 1 à 10</td>
+<td>Quantité égale à 1 : « Un seul ticket par participant et par grand tirage. »</td>
 </tr>
 <tr>
 <td><code>giftTicketSchema</code></td>
@@ -110,6 +125,11 @@
 <td>UUID ; code promo de 4 à 64 caractères</td>
 </tr>
 <tr>
+<td><code>scratchTicketSchema</code></td>
+<td>idem</td>
+<td>Offre <code>violet</code> ou <code>lucky</code></td>
+</tr>
+<tr>
 <td><code>createPartnerSchema</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/partners/partners.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/partners/partners.validators.ts</code></a></td>
 <td>Nom de 2 à 100 caractères ; logo en URL <strong>HTTPS</strong> de 500 caractères au plus</td>
@@ -123,6 +143,11 @@
 <td><code>uploadCodesBatchSchema</code></td>
 <td>idem</td>
 <td>Au plus 5 000 codes de 3 à 64 caractères, ou un CSV de 200 000 caractères au plus</td>
+</tr>
+<tr>
+<td><code>submitIdentitySchema</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.validators.ts</code></a></td>
+<td>Recto et verso obligatoires, chaînes de 16 caractères au moins et de la taille d&#39;une image de 4 Mo encodée en base64 au plus</td>
 </tr>
 <tr>
 <td><code>setResponsibleGamingLimitSchema</code></td>
@@ -150,12 +175,44 @@
 <td>Motif d&#39;au moins 5 caractères ; adresse Ethereum ; montant positif plafonné à 1 000 ETH ; note de 500 caractères au plus</td>
 </tr>
 <tr>
+<td><code>listIdentityVerificationsSchema</code>, <code>identityDecisionSchema</code></td>
+<td>idem</td>
+<td>Statut en énumération ; identifiant de demande en UUID ; décision booléenne ; motif de refus de 3 à 500 caractères obligatoire quand <code>approved</code> vaut <code>false</code></td>
+</tr>
+<tr>
 <td><code>blockchainWebhookSchema</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/webhooks/webhooks.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/webhooks/webhooks.validators.ts</code></a></td>
 <td>Union discriminée sur <code>eventType</code> ; hash <code>^0x[0-9a-fA-F]{64}$</code> ; adresses vérifiées ; prix plafonné à 10 ETH</td>
 </tr>
 </tbody></table></div>
 <p>Les variables d&#39;environnement sont elles aussi validées par Zod au démarrage, dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/env.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/env.config.ts</code></a> : le processus s&#39;arrête si une valeur est invalide (voir <a href="cryptographie-secrets.html#secrets-refuses-en-production">Cryptographie et secrets</a>).</p>
+<h3 id="pieces-d-identite"><a class="anchor" href="#pieces-d-identite" aria-hidden="true" tabindex="-1">#</a>Pièces d&#39;identité</h3>
+<p>Le schéma de <code>POST /api/user/identity</code> ne borne que la longueur. Le contenu est contrôlé ensuite par <code>decodeIdentityImage</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/identity-image.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/utils/identity-image.util.ts</code></a>, pour le recto comme pour le verso :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Contrôle</th>
+<th>Refus</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Préfixe <code>data:image/jpeg;base64,</code> ou <code>data:image/png;base64,</code> facultatif, puis base64 strict (longueur multiple de 4, alphabet standard)</td>
+<td>400</td>
+</tr>
+<tr>
+<td>Taille décodée de 4 Mo au plus</td>
+<td>413 « Image recto trop volumineuse : 4 Mo au plus. »</td>
+</tr>
+<tr>
+<td>Taille décodée d&#39;au moins 1 Ko</td>
+<td>400</td>
+</tr>
+<tr>
+<td>Signature binaire : <code>FF D8 FF</code> pour JPEG, <code>89 50 4E 47 0D 0A 1A 0A</code> pour PNG</td>
+<td>400, quel que soit le type déclaré dans le préfixe</td>
+</tr>
+</tbody></table></div>
+<p>Le type déclaré par le client n&#39;est jamais cru : seuls les premiers octets décident. Les images sont chiffrées dès la validation (voir <a href="cryptographie-secrets.html#chiffrement-aes-256-gcm">Cryptographie et secrets</a>) et ne sont jamais écrites sur disque ni dans les journaux. Elles ne sont pas réencodées : les métadonnées EXIF d&#39;une photo envoyée par un autre client que le mobile, qui demande <code>exif: false</code>, sont conservées jusqu&#39;à l&#39;effacement. Le test <code>refuse une image trop lourde, un format inconnu ou une face manquante</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/api/identity.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/api/identity.test.ts</code></a> couvre ces règles.</p>
 <h3 id="le-cas-des-evenements-analytiques"><a class="anchor" href="#le-cas-des-evenements-analytiques" aria-hidden="true" tabindex="-1">#</a>Le cas des événements analytiques</h3>
 <p><code>POST /api/analytics/track</code> est ouvert aux anonymes. Sans contrôle, un client pourrait insérer de faux événements <code>ADMIN_AUDIT:...</code>, qui apparaîtraient dans le journal d&#39;administration puisque celui-ci est stocké dans la même table. Le schéma refuse donc tout type commençant, sans tenir compte de la casse, par <code>ADMIN_AUDIT</code>, <code>USER_SIGNUP</code> ou <code>USER_LOGIN</code>. Le test <code>refuse les événements analytiques qui imitent le journal d&#39;administration</code> le vérifie.</p>
 <h2 id="limites-de-taille"><a class="anchor" href="#limites-de-taille" aria-hidden="true" tabindex="-1">#</a>Limites de taille</h2>
@@ -170,7 +227,12 @@
 <tbody><tr>
 <td>Corps JSON</td>
 <td>1 Mo</td>
-<td><code>express.json({ limit: &#39;1mb&#39; })</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a></td>
+<td><code>globalJsonParser</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/body-parser.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/body-parser.middleware.ts</code></a>, monté dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a></td>
+</tr>
+<tr>
+<td>Corps JSON de <code>POST /api/user/identity</code></td>
+<td>12 Mo, analysé seulement après <code>authenticate</code> et la limite de 10 envois par heure</td>
+<td><code>identityUploadJsonParser</code></td>
 </tr>
 <tr>
 <td>Corps URL-encodé</td>
@@ -293,7 +355,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#le-middleware-validate">Le middleware validate</a></li><li class="toc-h2"><a href="#schemas-et-bornes">Schémas et bornes</a></li><li class="toc-h3"><a href="#le-cas-des-evenements-analytiques">Le cas des événements analytiques</a></li><li class="toc-h2"><a href="#limites-de-taille">Limites de taille</a></li><li class="toc-h2"><a href="#injections">Injections</a></li><li class="toc-h2"><a href="#echappement-des-sorties">Échappement des sorties</a></li><li class="toc-h3"><a href="#emails">Emails</a></li><li class="toc-h3"><a href="#exports-csv">Exports CSV</a></li><li class="toc-h3"><a href="#journaux">Journaux</a></li><li class="toc-h3"><a href="#frontends">Frontends</a></li><li class="toc-h2"><a href="#limites-connues">Limites connues</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#le-middleware-validate">Le middleware validate</a></li><li class="toc-h2"><a href="#schemas-et-bornes">Schémas et bornes</a></li><li class="toc-h3"><a href="#pieces-d-identite">Pièces d&#39;identité</a></li><li class="toc-h3"><a href="#le-cas-des-evenements-analytiques">Le cas des événements analytiques</a></li><li class="toc-h2"><a href="#limites-de-taille">Limites de taille</a></li><li class="toc-h2"><a href="#injections">Injections</a></li><li class="toc-h2"><a href="#echappement-des-sorties">Échappement des sorties</a></li><li class="toc-h3"><a href="#emails">Emails</a></li><li class="toc-h3"><a href="#exports-csv">Exports CSV</a></li><li class="toc-h3"><a href="#journaux">Journaux</a></li><li class="toc-h3"><a href="#frontends">Frontends</a></li><li class="toc-h2"><a href="#limites-connues">Limites connues</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

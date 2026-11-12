@@ -235,7 +235,7 @@ LIMIT <span class="hljs-number">10</span>;</code></pre></div>
 </tr>
 </thead>
 <tbody><tr>
-<td>Comptes, clés chiffrées des portefeuilles, EtherPoints, partenaires, récompenses, analytique</td>
+<td>Comptes, empreintes des mots de passe, clés chiffrées des portefeuilles, pièces d&#39;identité chiffrées en attente, EtherPoints, partenaires, récompenses, analytique</td>
 <td>PostgreSQL</td>
 <td><code>pg_dump</code> manuel</td>
 </tr>
@@ -256,7 +256,7 @@ LIMIT <span class="hljs-number">10</span>;</code></pre></div>
 </tr>
 </tbody></table></div>
 <div class="hint hint-caution"><p class="hint-title">Danger</p>
-<p>Une sauvegarde de la base sans la clé <code>ENCRYPTION_KEY</code> est inutilisable pour les portefeuilles : les clés privées chiffrées ne peuvent pas être déchiffrées. À l&#39;inverse, la sauvegarde contient les clés chiffrées et doit être protégée comme un secret : quiconque obtient le fichier et la clé contrôle les portefeuilles.</p>
+<p>Une sauvegarde de la base sans la clé <code>ENCRYPTION_KEY</code> est inutilisable pour les portefeuilles : les clés privées chiffrées ne peuvent pas être déchiffrées. À l&#39;inverse, la sauvegarde contient les clés chiffrées et les photos des pièces d&#39;identité encore en attente, et doit être protégée comme un secret : quiconque obtient le fichier et la clé contrôle les portefeuilles et lit ces pièces. Les images effacées après une décision restent présentes dans les sauvegardes antérieures, jusqu&#39;à leur destruction.</p>
 </div>
 <h3 id="sauvegarde-logique"><a class="anchor" href="#sauvegarde-logique" aria-hidden="true" tabindex="-1">#</a>Sauvegarde logique</h3>
 <p>Depuis la racine du dépôt, avec la pile Docker Compose démarrée :</p>

@@ -109,13 +109,13 @@ La sonde `GET /health/ready` exécute `SELECT 1` avec un délai de 2 s et répon
 
 | Donnée | Source de vérité | Mécanisme |
 |---|---|---|
-| Comptes, clés chiffrées des portefeuilles, EtherPoints, partenaires, récompenses, analytique | PostgreSQL | `pg_dump` manuel |
+| Comptes, empreintes des mots de passe, clés chiffrées des portefeuilles, pièces d'identité chiffrées en attente, EtherPoints, partenaires, récompenses, analytique | PostgreSQL | `pg_dump` manuel |
 | Tickets, tours, cagnottes | Smart contract `BlockLucky` | Aucun : reconstruction par l'indexeur (voir [Reconstruire depuis la chaîne](reconstruction.md)) |
 | Files de jobs, limites de jeu responsable, préférences, quêtes, lots de codes promo | Redis | Persistance AOF `appendfsync everysec` sur le volume `redisdata` |
 | Clé `ENCRYPTION_KEY` | Secret d'environnement | Hors de la base, à conserver séparément |
 
 > [!CAUTION]
-> Une sauvegarde de la base sans la clé `ENCRYPTION_KEY` est inutilisable pour les portefeuilles : les clés privées chiffrées ne peuvent pas être déchiffrées. À l'inverse, la sauvegarde contient les clés chiffrées et doit être protégée comme un secret : quiconque obtient le fichier et la clé contrôle les portefeuilles.
+> Une sauvegarde de la base sans la clé `ENCRYPTION_KEY` est inutilisable pour les portefeuilles : les clés privées chiffrées ne peuvent pas être déchiffrées. À l'inverse, la sauvegarde contient les clés chiffrées et les photos des pièces d'identité encore en attente, et doit être protégée comme un secret : quiconque obtient le fichier et la clé contrôle les portefeuilles et lit ces pièces. Les images effacées après une décision restent présentes dans les sauvegardes antérieures, jusqu'à leur destruction.
 
 ### Sauvegarde logique
 

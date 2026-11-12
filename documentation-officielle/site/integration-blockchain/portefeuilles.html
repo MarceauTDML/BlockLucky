@@ -152,7 +152,7 @@
 </div>
 <p><code>prepareWallet</code> de la passerelle enchaîne <code>ensureWallet</code> puis la dotation. Il est appelé avant chaque achat, avant chaque cadeau (pour l&#39;expéditeur) et par <code>GET /lottery/wallet</code>.</p>
 <h2 id="dotation-de-bienvenue"><a class="anchor" href="#dotation-de-bienvenue" aria-hidden="true" tabindex="-1">#</a>Dotation de bienvenue</h2>
-<p><code>grantWelcomeEthers(owner)</code> envoie au portefeuille du citoyen <code>WELCOME_GRANT_WEI</code> wei depuis le compte opérateur. La valeur par défaut est <code>100000000000000000</code>, soit 0,1 ETH fictif ; avec le prix de ticket du déploiement local (0,01 ETH), elle couvre quelques tickets et le gaz.</p>
+<p><code>grantWelcomeEthers(owner)</code> envoie au portefeuille du citoyen <code>WELCOME_GRANT_WEI</code> wei depuis le compte opérateur. La valeur par défaut est <code>500000000000000000</code>, soit 0,5 ETH fictif ; avec le prix de ticket du déploiement local (0,01 ETH), elle couvre quelques tickets et le gaz.</p>
 <p>La fonction ne fait rien et renvoie la valeur existante dans ces cas :</p>
 <ul>
 <li>le mode n&#39;est pas onchain ;</li>

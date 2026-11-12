@@ -1,13 +1,15 @@
 # Utilisateur et RGPD
 
-Le module `user` regroupe tout ce qui concerne le compte du citoyen connecté : profil, parrainage, quêtes sociales, limite de jeu responsable, préférences d'affichage, notifications et exercice des droits RGPD (export et suppression). Toutes les routes portent sur le compte du jeton : aucune ne prend d'identifiant d'utilisateur en paramètre. Une partie des données de ce module vit dans Redis et non en base.
+Le module `user` regroupe tout ce qui concerne le compte du citoyen connecté : profil, vérification d'âge par pièce d'identité, parrainage, quêtes sociales, limite de jeu responsable, préférences d'affichage, notifications et exercice des droits RGPD (export et suppression). Toutes les routes portent sur le compte du jeton : aucune ne prend d'identifiant d'utilisateur en paramètre. Une partie des données de ce module vit dans Redis et non en base.
 
 | Fichier | Contenu |
 |---|---|
-| [`backend/src/api/user/user.routes.ts`](src:backend/src/api/user/user.routes.ts) | 10 routes |
-| [`backend/src/api/user/user.validators.ts`](src:backend/src/api/user/user.validators.ts) | 4 schémas Zod |
+| [`backend/src/api/user/user.routes.ts`](src:backend/src/api/user/user.routes.ts) | 12 routes |
+| [`backend/src/api/user/user.validators.ts`](src:backend/src/api/user/user.validators.ts) | 5 schémas Zod |
 | [`backend/src/api/user/user.services.ts`](src:backend/src/api/user/user.services.ts) | Règles métier, catalogue des quêtes |
-| [`backend/src/api/user/user.repo.ts`](src:backend/src/api/user/user.repo.ts) | Profil, export, jetons de suppression, anonymisation |
+| [`backend/src/api/user/user.repo.ts`](src:backend/src/api/user/user.repo.ts) | Profil, pièce d'identité, export, jetons de suppression, anonymisation |
+| [`backend/src/utils/identity-image.util.ts`](src:backend/src/utils/identity-image.util.ts) | Décodage et contrôle des images de la pièce d'identité |
+| [`backend/src/middlewares/age-verification.middleware.ts`](src:backend/src/middlewares/age-verification.middleware.ts) | `requireAgeVerification`, utilisé par les modules loterie et boutique |
 
 Les obligations juridiques couvertes par ces routes sont analysées dans [RGPD](../../juridique/rgpd.md) et le parcours de suppression dans [Suppression RGPD](../../architecture/flux/suppression-rgpd.md).
 
@@ -16,6 +18,8 @@ Les obligations juridiques couvertes par ces routes sont analysées dans [RGPD](
 | Méthode et chemin | Accès | Middlewares | Rôle |
 |---|---|---|---|
 | `GET /api/v1/user/profile` | connecté | `authenticate` | Profil, statistiques, limite et préférences |
+| `POST /api/v1/user/identity` | connecté | `identityUploadRateLimiter`, `authenticate`, `identityUploadJsonParser`, `validate(submitIdentitySchema)` | Envoi du recto et du verso de la pièce d'identité |
+| `GET /api/v1/user/identity` | connecté | `authenticate` | Statut de la vérification d'âge |
 | `GET /api/v1/user/referrals` | connecté | `authenticate` | Code et lien de parrainage, filleuls |
 | `GET /api/v1/user/quests` | connecté | `authenticate` | Quêtes et leur état |
 | `POST /api/v1/user/quests/complete` | connecté | `authenticate`, `validate(completeSocialQuestSchema)` | Validation d'une quête |
@@ -55,6 +59,8 @@ Un compte supprimé (`deletedAt` renseigné) renvoie `404 Profil utilisateur int
       "referralLink": "http://localhost:3000/invite/6f1d2c3b-4a5e-4f60-8b7c-9d0e1f2a3b4c",
       "isTwoFactorEnabled": false,
       "twoFactorMethod": null,
+      "hasPassword": true,
+      "ageVerificationStatus": "VERIFIED",
       "stats": { "ticketsCount": 3, "claimedRewardsCount": 1, "referralsCount": 0 },
       "responsibleGaming": { "maxTicketsPerRound": 50 },
       "preferences": { "theme": "DARK", "language": "FR", "pushNotificationsEnabled": true },
@@ -63,6 +69,69 @@ Un compte supprimé (`deletedAt` renseigné) renvoie `404 Profil utilisateur int
   }
 }
 ```
+
+## Vérification d'âge
+
+Le citoyen prouve sa majorité en envoyant une photo du recto et du verso de sa pièce d'identité. Un agent de la Mairie l'examine dans l'espace d'administration et l'approuve ou la refuse (voir [Administration](administration.md#verification-des-pieces-d-identite)). Tant que le statut n'est pas `VERIFIED`, le middleware `requireAgeVerification` refuse l'achat et le cadeau de tickets, l'échange d'une récompense et le ticket à gratter.
+
+```mermaid
+stateDiagram-v2
+    [*] --> NONE
+    NONE --> PENDING: POST /user/identity
+    PENDING --> VERIFIED: décision approuvée
+    PENDING --> REJECTED: décision refusée avec motif
+    REJECTED --> PENDING: nouvel envoi
+    PENDING --> PENDING: nouvel envoi avant décision
+```
+
+### POST /user/identity
+
+| Champ | Type | Règles |
+|---|---|---|
+| `front` | chaîne | recto, image JPEG ou PNG en base64, avec ou sans préfixe `data:image/...;base64,` |
+| `back` | chaîne | verso, mêmes règles |
+
+La route lit son corps avec une limite propre de 12 Mo (`identityUploadJsonParser` de [`body-parser.middleware.ts`](src:backend/src/middlewares/body-parser.middleware.ts)) ; toutes les autres routes gardent la limite de 1 Mo. `identityUploadRateLimiter` limite chaque IP à 10 envois par heure, avec un compteur Redis à part.
+
+Chaque image est contrôlée par `decodeIdentityImage` :
+
+| Contrôle | Refus |
+|---|---|
+| Base64 valide, longueur multiple de 4 | `400 Image recto invalide : une photo JPEG ou PNG encodée en base64 est attendue.` |
+| Taille de 1 Ko à 4 Mo | au-delà, `400` du schéma Zod sur la longueur de la chaîne, ou `413 Image recto trop volumineuse : 4 Mo au plus.` après décodage ; en deçà, 400 |
+| Premiers octets d'un JPEG (`FF D8 FF`) ou d'un PNG | 400, même si le préfixe annonce un autre type |
+
+Le message cite le recto ou le verso. Un compte déjà vérifié reçoit `409 Votre âge est déjà vérifié.`
+
+Les deux images sont chiffrées par `encryptBuffer` (AES-256-GCM avec `ENCRYPTION_KEY`, vecteur d'initialisation aléatoire) et enregistrées dans `IdentityDocument`, avec le type détecté du recto. Un nouvel envoi remplace le précédent. Dans la même transaction, le compte passe à `PENDING`, son motif de refus et sa date de vérification sont effacés. Les images ne sont pas réencodées : les métadonnées éventuelles d'un JPEG sont conservées telles qu'envoyées.
+
+```json
+{ "success": true, "message": "Pièce d'identité transmise à la Mairie pour vérification", "data": { "status": "PENDING", "submittedAt": "2026-11-12T09:15:00.000Z" } }
+```
+
+### GET /user/identity
+
+```json
+{
+  "success": true,
+  "message": "Statut de la vérification d'âge récupéré",
+  "data": { "status": "REJECTED", "submittedAt": "2026-11-12T09:15:00.000Z", "reviewedAt": "2026-11-12T10:02:41.000Z", "note": "Photo floue" }
+}
+```
+
+`status` vaut `NONE`, `PENDING`, `VERIFIED` ou `REJECTED`. `note` est le motif du dernier refus, `null` sinon. Les images ne sont jamais renvoyées au citoyen.
+
+### Contrôle à l'achat
+
+[`requireAgeVerification`](src:backend/src/middlewares/age-verification.middleware.ts) est placé après `authenticate` sur quatre routes : `POST /lottery/buy`, `POST /lottery/gift`, `POST /marketplace/claim` et `POST /marketplace/scratch`. Il relit le statut en base à chaque requête.
+
+| Cas | Réponse |
+|---|---|
+| `AGE_VERIFICATION_REQUIRED=false` | aucun contrôle ; valeur refusée en production par le schéma d'environnement |
+| Statut différent de `VERIFIED` | `403 Vérifiez votre âge pour jouer.`, avec `errors: { "code": "AGE_VERIFICATION_REQUIRED", "status": "<statut>" }` |
+| Base indisponible | `503 Vérification de l'âge impossible pour le moment` |
+
+Pour un cadeau, seul l'expéditeur est contrôlé : le destinataire reçoit son ticket sans vérification.
 
 ## GET /user/referrals
 
@@ -116,7 +185,10 @@ Le catalogue est codé en dur dans `QUESTS_CATALOG`.
 |---|---|---|
 | `maxTicketsPerRound` | entier | 1 à 500, messages `La limite doit être d'au moins 1 ticket` et `La limite maximale autorisée est de 500 tickets` |
 
-La valeur est écrite dans `user:ticket_limit:<userId>` et appliquée par [`POST /lottery/buy`](loterie.md#post-lottery-buy). Elle s'applique immédiatement dans les deux sens : une hausse ne comporte ni délai de réflexion ni confirmation. En mode onchain, la limite du contrat (`maxTicketsPerPlayer`, 100 sur le déploiement local) s'applique aussi, si bien qu'une valeur supérieure n'a pas d'effet au-delà.
+La valeur est écrite dans `user:ticket_limit:<userId>` et lue par [`POST /lottery/buy`](loterie.md#post-lottery-buy). Elle s'applique immédiatement dans les deux sens : une hausse ne comporte ni délai de réflexion ni confirmation.
+
+> [!NOTE]
+> Depuis le passage à un ticket par participant et par grand tirage, cette limite n'a plus d'effet pratique : `/lottery/buy` refuse un second ticket (409) avant même de la comparer, et la plus petite valeur admise est 1. La route et la clé Redis sont conservées, mais l'application mobile ne propose plus de la régler.
 
 ```json
 { "success": true, "message": "Limite d'achat Jeu Responsable enregistrée", "data": { "userId": "019a7c3e-...", "maxTicketsPerRound": 10, "updatedAt": "2026-11-11T16:00:00.000Z" } }
@@ -143,13 +215,13 @@ Renvoie l'export des données du compte :
 | Champ | Contenu |
 |---|---|
 | `exportedAt`, `gdprCompliant`, `controller` | métadonnées ; le responsable de traitement est « Mairie d'EtherBay — Direction des Systèmes d'Information (DSI) » |
-| `personalData` | identifiant, adresse, email, rôle, solde, code de parrainage, état de la 2FA, dates |
+| `personalData` | identifiant, adresse, email, rôle, solde, code de parrainage, état de la 2FA, statut et date de la vérification d'âge, dates |
 | `ticketsHistory` | tous les tickets avec leur tour |
 | `pointsLedger` | tous les mouvements d'EtherPoints |
 | `claimedRewards` | toutes les récompenses avec offre et partenaire |
 | `analyticsEvents` | tous les événements analytiques rattachés au compte |
 
-L'export ne contient pas les données Redis du compte (préférences, limite, quêtes). Les secrets (clé de portefeuille chiffrée, secret TOTP, codes de secours) sont exclus.
+L'export ne contient pas les données Redis du compte (préférences, limite, quêtes) ni les images de la pièce d'identité. Les secrets (empreinte du mot de passe, clé de portefeuille chiffrée, secret TOTP, codes de secours) sont exclus.
 
 ## Suppression du compte
 
@@ -202,12 +274,12 @@ Route publique : le jeton suffit. Un jeton inconnu ou expiré renvoie `400 Jeton
 | Champ de `User` | Nouvelle valeur |
 |---|---|
 | `walletAddress` | `0xdeleted_gdpr_` suivi des 8 premiers caractères de l'identifiant |
-| `walletEncryptedKey`, `welcomeGrantTxHash`, `email` | `null` |
+| `walletEncryptedKey`, `welcomeGrantTxHash`, `email`, `passwordHash`, `ageVerificationNote` | `null` |
 | `twoFactorSecret`, `twoFactorMethod` | `null` |
 | `twoFactorBackupCodes`, `isTwoFactorEnabled` | `[]`, `false` |
 | `deletedAt` | date courante |
 
-Le jeton utilisé est supprimé, puis toutes les sessions du compte sont révoquées.
+La ligne `IdentityDocument` du compte, images comprises si elles n'avaient pas encore été effacées, est supprimée dans la même transaction. Le jeton utilisé est supprimé, puis toutes les sessions du compte sont révoquées. `ageVerificationStatus` et `ageVerifiedAt` ne sont pas modifiés.
 
 ```json
 { "success": true, "message": "Compte anonymisé et supprimé conformément au RGPD", "data": { "deleted": true, "anonymized": true, "userId": "019a7c3e-...", "deletedAt": "2026-11-12T08:00:00.000Z" } }
@@ -219,9 +291,13 @@ Ce qui reste après l'anonymisation : la ligne `User` (identifiant, rôle, solde
 
 | Statut | Message | Route |
 |---|---|---|
-| 400 | `Erreur de validation des données` | quêtes, limite, préférences, confirmation |
+| 400 | `Erreur de validation des données` | quêtes, limite, préférences, confirmation, image manquante |
+| 400 | `Image recto invalide : ...`, `Image verso invalide : ...` | `identity` |
+| 403 | `Vérifiez votre âge pour jouer.` | routes protégées par `requireAgeVerification` |
+| 409 | `Votre âge est déjà vérifié.` | `identity` |
+| 413 | `Image recto trop volumineuse : 4 Mo au plus.` | `identity` |
 | 400 | `Vous avez déjà complété cette quête sociale` | `quests/complete` |
 | 400 | `Jeton de suppression RGPD invalide ou expiré` | `gdpr/confirm-delete` |
 | 404 | `Profil utilisateur introuvable ou supprimé` | `profile` |
-| 404 | `Utilisateur introuvable` | `referrals`, `gdpr/export`, `gdpr/delete-request` |
+| 404 | `Utilisateur introuvable` | `identity`, `referrals`, `gdpr/export`, `gdpr/delete-request` |
 | 404 | `Quête sociale introuvable` | `quests/complete`, inatteignable car Zod filtre avant |

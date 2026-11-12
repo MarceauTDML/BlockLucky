@@ -15,7 +15,7 @@ backend/src/
 │   └── webhooks/           webhook blockchain signé (mode simulé)
 ├── blockchain/             client RPC, passerelle du contrat, indexeur, keeper, file d'actions, ABI
 ├── config/                 env, Prisma, Redis, Nodemailer, Swagger
-├── middlewares/            auth, RBAC, validation Zod, idempotence, rate limiting, erreurs, contexte
+├── middlewares/            auth, RBAC, âge, validation Zod, idempotence, rate limiting, corps JSON, erreurs, contexte
 ├── observability/          métriques Prometheus, contexte de requête, arrêt propre
 ├── queues/                 producteurs BullMQ (emails, ledger) et options communes
 ├── workers/                consommateurs BullMQ et indexeur du webhook simulé
@@ -48,7 +48,7 @@ flowchart TD
     B --> C["httpMetricsMiddleware : histogramme et requêtes en cours"]
     C --> D["helmet : en-têtes de sécurité"]
     D --> E["cors : origines autorisées"]
-    E --> F["express.json 1 Mo et urlencoded"]
+    E --> F["globalJsonParser 1 Mo, sauf envoi de pièce d'identité, et urlencoded"]
     F --> G{"Route système ou /metrics ?"}
     G -- oui --> G1["Réponse /health, /api/config, /metrics"]
     G -- non --> H{"MAINTENANCE_MODE ?"}
@@ -73,8 +73,8 @@ flowchart TD
 | 2 | `httpMetricsMiddleware` | Démarre le chronomètre de `http_request_duration_seconds` et incrémente `http_requests_in_flight`. Inactif si `METRICS_ENABLED=false`. |
 | 3 | `helmet()` | En-têtes de sécurité par défaut (CSP, HSTS, `X-Content-Type-Options`, etc.). |
 | 4 | `cors` | Accepte les requêtes sans en-tête `Origin` (mobile, curl) et les origines de `FRONTEND_URL` et `CORS_ORIGINS`. Une origine inconnue ne reçoit pas d'en-tête `Access-Control-Allow-Origin`. Expose `X-Request-Id`, `RateLimit`, `RateLimit-Policy` et `Retry-After`. |
-| 5 | `express.json` | Corps limité à 1 Mo. Pour les URL `/api/webhooks/` et `/api/v1/webhooks/`, le corps brut est conservé dans `req.rawBody` pour vérifier la signature HMAC. |
-| 6 | `express.urlencoded` | Formulaires, même limite de 1 Mo. |
+| 5 | `globalJsonParser` | `express.json` avec un corps limité à 1 Mo, défini dans [`body-parser.middleware.ts`](src:backend/src/middlewares/body-parser.middleware.ts). Pour les URL `/api/webhooks/` et `/api/v1/webhooks/`, le corps brut est conservé dans `req.rawBody` pour vérifier la signature HMAC. La requête `POST /api/user/identity` (ou `/api/v1/user/identity`) n'est pas lue ici : son corps est lu plus loin par `identityUploadJsonParser`, limité à 12 Mo, après le rate limiting et l'authentification. |
+| 6 | `globalUrlencodedParser` | Formulaires, même limite de 1 Mo. |
 | 7 | `systemRoutes` | `/health`, `/health/live`, `/health/ready`, `/health/deep` et `/api/config`. Montées avant la maintenance et le rate limiting : elles répondent toujours. |
 | 8 | `GET /metrics` | Exposition Prometheus, protégée par `METRICS_TOKEN` s'il est défini. |
 | 9 | Maintenance | Si `MAINTENANCE_MODE=true`, toute route `/api/*` dont le chemin ne commence pas par `/api/admin` reçoit un 503. |
@@ -93,15 +93,17 @@ Ils sont déclarés route par route dans les fichiers `*.routes.ts`, toujours da
 
 | Middleware | Fichier | Rôle |
 |---|---|---|
-| `authRateLimiter` | [`backend/src/middlewares/rateLimiter.middleware.ts`](src:backend/src/middlewares/rateLimiter.middleware.ts) | 30 requêtes par 10 minutes et par IP sur `/auth/login`, `/auth/2fa/verify` et `/auth/2fa/disable`. |
+| `authRateLimiter`, `identityUploadRateLimiter` | [`backend/src/middlewares/rateLimiter.middleware.ts`](src:backend/src/middlewares/rateLimiter.middleware.ts) | 30 requêtes par 10 minutes et par IP sur les routes de connexion, d'inscription, de mot de passe, OAuth et 2FA ; 10 envois par heure et par IP sur `POST /user/identity`. |
 | `authenticate` | [`backend/src/middlewares/auth.middleware.ts`](src:backend/src/middlewares/auth.middleware.ts) | Exige `Authorization: Bearer <jeton>`, vérifie signature, émetteur, audience, expiration et révocation, remplit `req.user` et `req.session`. |
 | `optionalAuthenticate` | même fichier | Remplit `req.user` si un jeton valide est présent, laisse passer sinon. |
 | `requireRoles(...)` | [`backend/src/middlewares/rbac.middleware.ts`](src:backend/src/middlewares/rbac.middleware.ts) | Compare le rôle du jeton à la liste, puis relit le compte en base (rôle inchangé, compte non supprimé, 2FA active pour un ADMIN). |
+| `requireAgeVerification` | [`backend/src/middlewares/age-verification.middleware.ts`](src:backend/src/middlewares/age-verification.middleware.ts) | Relit `ageVerificationStatus` en base et répond 403 `AGE_VERIFICATION_REQUIRED` s'il ne vaut pas `VERIFIED`. Inactif si `AGE_VERIFICATION_REQUIRED=false`. |
 | `idempotency` | [`backend/src/middlewares/idempotency.middleware.ts`](src:backend/src/middlewares/idempotency.middleware.ts) | Rejoue la réponse d'une requête déjà traitée avec le même en-tête `Idempotency-Key`. |
+| `identityUploadJsonParser` | [`backend/src/middlewares/body-parser.middleware.ts`](src:backend/src/middlewares/body-parser.middleware.ts) | Lit le corps JSON de l'envoi de pièce d'identité, jusqu'à 12 Mo. |
 | `validate(schema)` | [`backend/src/middlewares/validate.middleware.ts`](src:backend/src/middlewares/validate.middleware.ts) | Valide `body`, `query` et `params` avec Zod. Seul `req.body` est remplacé par la valeur transformée (valeurs par défaut, minuscules, conversions). |
 
 > [!NOTE]
-> `validate` ne réécrit ni `req.query` ni `req.params`. Les contrôleurs relisent la query brute : `limit` du classement et des journaux d'audit, `page` et `limit` de `my-tickets`, `format` de l'export. Aucun schéma Zod ne porte sur ces paramètres.
+> `validate` ne réécrit ni `req.query` ni `req.params`. Les contrôleurs relisent la query brute : `limit` du classement et des journaux d'audit, `page` et `limit` de `my-tickets`, `format` de l'export. Aucun schéma Zod ne porte sur ces paramètres, sauf pour la liste des vérifications d'identité, dont le schéma rejette un statut ou une pagination invalides avant que le contrôleur ne relise la query brute.
 
 `idempotency` est placé avant `validate` : une réponse 400 de validation est mémorisée comme les autres réponses inférieures à 500. Une nouvelle tentative avec la même clé et un corps corrigé rejoue donc le 400 pendant 24 heures. Il faut générer une nouvelle clé après une erreur de validation.
 

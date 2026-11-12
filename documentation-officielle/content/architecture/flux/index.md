@@ -8,12 +8,12 @@ Toutes les pages décrivent le mode `BLOCKCHAIN_MODE=onchain`, celui de la produ
 
 | Flux | Déclencheur | Point d'entrée | Synchrone | Asynchrone | Page |
 |---|---|---|---|---|---|
-| Inscription et portefeuille | Citoyen | `POST /api/v1/auth/login` puis `POST /api/v1/auth/2fa/verify` | Défi OTP, création du compte et du portefeuille, EtherPoints de bienvenue, JWT | Email du code, dotation de bienvenue, email de bienvenue | [Inscription et portefeuille](inscription.md) |
-| Achat et cadeau | Citoyen | `POST /api/v1/lottery/buy`, `POST /api/v1/lottery/gift` | Transaction signée par le citoyen, attente du reçu, indexation, EtherPoints | Frappe du badge POAP, événement `points:awarded` | [Achat et cadeau de ticket](achat-cadeau.md) |
-| Tirage et cagnotte | Keeper ou Mairie | `runKeeperOnce`, `POST /api/v1/lottery/draw` | Demande VRF | Réponse VRF, indexation de `WinnerPicked`, annonce `draw:winner`, retrait de la cagnotte | [Tirage et versement de la cagnotte](tirage.md) |
+| Inscription et portefeuille | Citoyen | `POST /api/v1/auth/signup` (mobile) ou `/auth/login` (web), puis `POST /api/v1/auth/2fa/verify` ; ensuite `POST /api/v1/user/identity` | Défi OTP, création du compte et du portefeuille, EtherPoints de bienvenue, JWT, envoi chiffré de la pièce d'identité | Email du code, dotation de bienvenue, email de bienvenue, décision de la Mairie et son email | [Inscription et portefeuille](inscription.md) |
+| Achat et cadeau | Citoyen dont l'âge est vérifié | `POST /api/v1/lottery/buy`, `POST /api/v1/lottery/gift` | Contrôle de l'âge et du ticket unique, transaction signée par le citoyen, attente du reçu, indexation, EtherPoints | Frappe du badge POAP, événement `points:awarded` | [Achat et cadeau de ticket](achat-cadeau.md) |
+| Tirage et cagnotte | Keeper ou Mairie | `runKeeperOnce`, `POST /api/v1/lottery/draw` | Salle d'attente de `DRAW_REVEAL_DELAY_SECONDS` côté keeper, demande VRF | Réponse VRF, indexation de `WinnerPicked`, annonce `draw:winner`, retrait de la cagnotte | [Tirage et versement de la cagnotte](tirage.md) |
 | Annulation et remboursement | Keeper ou Mairie | `runKeeperOnce`, `POST /api/v1/lottery/refund` | Annulation dans le contrat | Retrait des remboursements pour chaque payeur | [Annulation et remboursement](annulation.md) |
 | Disjoncteur | Mairie | `POST /api/v1/admin/circuit-breaker` | `pause()` ou `unpause()`, journal d'audit | - | [Disjoncteur](disjoncteur.md) |
-| Échange de récompense | Citoyen, puis commerçant | `POST /api/v1/marketplace/claim`, `POST /api/v1/marketplace/redeem` | Débit des points, code promo, décrément du stock | Email du code promo | [Échange de récompense](recompense.md) |
+| Échange de récompense | Citoyen dont l'âge est vérifié, puis commerçant | `POST /api/v1/marketplace/claim` ou `/scratch`, `POST /api/v1/marketplace/redeem` | Débit des points, code promo, décrément du stock | Email du code promo | [Échange de récompense](recompense.md) |
 | Suppression RGPD | Citoyen | `POST /api/v1/user/gdpr/delete-request` puis `POST /api/v1/user/gdpr/confirm-delete` | Jeton, anonymisation, révocation des sessions | Email de confirmation | [Suppression RGPD](suppression-rgpd.md) |
 
 ## Vue d'ensemble de la loterie
@@ -42,7 +42,7 @@ Chaque passage à `Completed` ou `Cancelled` ouvre immédiatement le tour suivan
 Toutes les requêtes HTTP traversent la même chaîne, montée dans [`backend/src/app.ts`](src:backend/src/app.ts) : contexte de requête, métriques, Helmet, CORS, parsing JSON, mode maintenance, rate limit global (300 requêtes par 15 minutes et par IP), puis le routeur du module. Dans le routeur, l'ordre est toujours :
 
 ```text
-authenticate -> requireRoles -> idempotency -> validate -> controller -> service -> repo ou passerelle
+authenticate -> requireRoles ou requireAgeVerification -> idempotency -> validate -> controller -> service -> repo ou passerelle
 ```
 
 Le controller appelle un service, puis répond avec `sendSuccess`. Toute exception remonte par `next(error)` jusqu'à `errorHandler` ([`backend/src/middlewares/error.middleware.ts`](src:backend/src/middlewares/error.middleware.ts)). Voir [Réponses et erreurs](../../backend/reponses-erreurs.md).
@@ -54,8 +54,9 @@ Le controller appelle un service, puis répond avec `sendSuccess`. Toute excepti
 | 400 | Corps invalide selon le schéma Zod (`errors` liste les champs), JSON mal formé | `validate`, `errorHandler` |
 | 401 | Jeton absent, expiré, révoqué ou invalide | `authenticate` dans [`backend/src/middlewares/auth.middleware.ts`](src:backend/src/middlewares/auth.middleware.ts) |
 | 403 | Rôle insuffisant, rôle modifié depuis la connexion, compte supprimé, ou administrateur sans 2FA alors que `ADMIN_MFA_REQUIRED=true` | `requireRoles` dans [`backend/src/middlewares/rbac.middleware.ts`](src:backend/src/middlewares/rbac.middleware.ts) |
+| 403 | Âge non vérifié (`AGE_VERIFICATION_REQUIRED`) sur l'achat, le cadeau, l'échange et le ticket à gratter | `requireAgeVerification` dans [`backend/src/middlewares/age-verification.middleware.ts`](src:backend/src/middlewares/age-verification.middleware.ts) |
 | 409 | Unicité ou contrainte CHECK violée en base, conflit de transaction | `errorHandler` |
-| 413 | Corps supérieur à 1 Mo | `errorHandler` |
+| 413 | Corps supérieur à 1 Mo, ou à 12 Mo pour l'envoi d'une pièce d'identité | `errorHandler` |
 | 429 | Rate limit global ou d'authentification dépassé | [`backend/src/middlewares/rateLimiter.middleware.ts`](src:backend/src/middlewares/rateLimiter.middleware.ts) |
 | 503 | Mode maintenance, délai de requête PostgreSQL dépassé, vérification des droits impossible | `app.ts`, `errorHandler`, `requireRoles` |
 

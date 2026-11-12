@@ -35,7 +35,9 @@ Les réponses de l'API indiquent le mode. `GET /lottery/status` renvoie `guarant
 ### Ce qui ne change pas
 
 - Les EtherPoints sont crédités dans les deux modes : 50 par ticket acheté, 75 pour l'expéditeur d'un ticket offert. En mode onchain, c'est l'[indexeur](indexeur.md#points-attribues) qui les crédite, et le destinataire d'un cadeau reçoit aussi ses 50 points de ticket ; en mode simulé, c'est le service de loterie, et seul l'expéditeur d'un cadeau est crédité.
-- La limite de jeu responsable (clé Redis `user:ticket_limit:<userId>`, 50 tickets par défaut) est vérifiée en base avant l'achat dans les deux modes. En mode onchain, le contrat applique en plus sa propre limite `maxTicketsPerPlayer`.
+- Un participant n'a qu'un ticket par tour : le contrôle est fait en base dans les deux modes, et en mode onchain aussi sur le contrat (`ticketsOf`, puis `maxTicketsPerPlayer` qui vaut 1 avec la configuration de déploiement par défaut). La limite de jeu responsable (clé Redis `user:ticket_limit:<userId>`, 50 tickets par défaut) est encore lue, mais ne peut plus être atteinte.
+- La vérification d'âge (`AGE_VERIFICATION_REQUIRED`) et les phases du tour (`OPEN`, `WAITING_ROOM`, `DRAWING`, `COMPLETED`, `CANCELLED`) existent dans les deux modes. En mode simulé, la salle d'attente s'ouvre à la fin des 48 heures et `revealAt` est calculé sans le keeper : aucun tirage n'a lieu automatiquement, il faut appeler `POST /lottery/draw`.
+- `GET /lottery/wallet` renvoie `balanceEth: null` en mode simulé : il n'y a pas de solde d'ethers à afficher.
 - Le schéma de base de données est identique. Les colonnes propres au mode onchain (`ticketIndex`, `payerWallet`, `ticketPriceWei`, `prizeWei`…) restent vides en mode simulé.
 
 ## Règle de production

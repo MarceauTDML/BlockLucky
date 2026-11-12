@@ -100,13 +100,13 @@
 </thead>
 <tbody><tr>
 <td><code>auth:otp:&lt;sujet&gt;</code></td>
-<td>JSON du défi : empreinte du code, usage, tentatives, échéance, éventuelle inscription en attente</td>
+<td>JSON du défi : empreinte du code, usage (<code>LOGIN</code>, <code>SIGNUP</code>, <code>SETUP</code>, <code>PASSWORD_RESET</code>), tentatives, échéance, éventuelle inscription en attente avec l&#39;empreinte bcrypt du mot de passe. Le sujet est l&#39;identifiant du compte, un identifiant provisoire d&#39;inscription ou <code>password-reset:&lt;userId&gt;</code></td>
 <td>600 s (avec gigue) ; réécrite avec la durée restante après une erreur</td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/otp-challenge.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/otp-challenge.service.ts</code></a></td>
 </tr>
 <tr>
 <td><code>auth:otp-failures:&lt;sujet&gt;</code></td>
-<td>Nombre d&#39;erreurs de code</td>
+<td>Nombre d&#39;erreurs de code ou de mot de passe. Pour une adresse sans compte, le sujet est <code>signin:&lt;HMAC&gt;</code> ou <code>password-reset:&lt;HMAC&gt;</code> de l&#39;adresse</td>
 <td>3 600 s (avec gigue)</td>
 <td>idem</td>
 </tr>
@@ -167,6 +167,12 @@
 <td><code>1</code> : un process exécute le keeper</td>
 <td><code>max(5, KEEPER_INTERVAL_MS / 1000)</code> s, 10 s par défaut ; supprimée en fin de passe</td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.keeper.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.keeper.ts</code></a></td>
+</tr>
+<tr>
+<td><code>chain:draw-ready-at:&lt;tour&gt;</code></td>
+<td>Instant, en millisecondes, où le tour est devenu prêt au tirage ; début de la salle d&#39;attente</td>
+<td>7 jours, <code>setIfAbsent</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/draw-reveal.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/draw-reveal.ts</code></a>, appelé par le keeper et <code>GET /lottery/status</code></td>
 </tr>
 <tr>
 <td><code>wallet:grant-lock:&lt;userId&gt;</code></td>
@@ -250,6 +256,11 @@
 <td><code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:ratelimit:auth:&lt;ip&gt;</code></td>
 <td>Ajouté explicitement</td>
 <td>Compteur du limiteur d&#39;authentification, fenêtre de 10 min, 30 requêtes</td>
+</tr>
+<tr>
+<td><code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:ratelimit:identity:&lt;ip&gt;</code></td>
+<td>Ajouté explicitement</td>
+<td>Compteur des envois de pièce d&#39;identité, fenêtre d&#39;une heure, 10 requêtes</td>
 </tr>
 <tr>
 <td>Canal <code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:socket-events</code></td>

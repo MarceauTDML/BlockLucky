@@ -260,7 +260,7 @@
 <tbody><tr>
 <td><code>otp-code</code></td>
 <td><code>CODE</code>, <code>EXPIRES_MINUTES</code></td>
-<td>connexion, inscription, activation de la 2FA par email</td>
+<td>connexion, inscription, activation de la 2FA par email, réinitialisation du mot de passe</td>
 </tr>
 <tr>
 <td><code>welcome</code></td>
@@ -270,12 +270,17 @@
 <tr>
 <td><code>security-alert</code></td>
 <td><code>EVENT</code>, <code>DATE</code></td>
-<td>activation ou désactivation de la 2FA, utilisation d&#39;un code de secours</td>
+<td>activation ou désactivation de la 2FA, utilisation d&#39;un code de secours, mot de passe réinitialisé ou défini</td>
 </tr>
 <tr>
 <td><code>reward-claim</code></td>
 <td><code>REWARD_TITLE</code>, <code>PARTNER_NAME</code>, <code>PROMO_CODE</code></td>
-<td>échange de récompense</td>
+<td>échange de récompense, ticket à gratter</td>
+</tr>
+<tr>
+<td><code>identity-decision</code></td>
+<td><code>DECISION</code>, <code>DETAILS</code></td>
+<td>décision de la Mairie sur une pièce d&#39;identité</td>
 </tr>
 <tr>
 <td><code>gdpr-deletion</code></td>
@@ -422,7 +427,17 @@
 <tr>
 <td><code>hashValue</code>, <code>compareHash</code></td>
 <td><code>crypto.util.ts</code></td>
-<td>bcrypt à 12 tours ; non utilisés par le code actuel</td>
+<td>bcrypt à 12 tours, pour les mots de passe</td>
+</tr>
+<tr>
+<td><code>encryptBuffer</code>, <code>decryptBuffer</code></td>
+<td><code>crypto.util.ts</code></td>
+<td>AES-256-GCM sur des octets, au format binaire vecteur d&#39;initialisation de 12 octets, étiquette de 16 octets puis données ; utilisés pour les images des pièces d&#39;identité</td>
+</tr>
+<tr>
+<td><code>decodeIdentityImage</code>, <code>detectImageMime</code>, <code>toDataUrl</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/identity-image.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>identity-image.util.ts</code></a></td>
+<td>décodage du base64, contrôle de la taille et des octets d&#39;un JPEG ou d&#39;un PNG, URL <code>data:</code> pour l&#39;affichage Mairie</td>
 </tr>
 </tbody></table></div>
 <p>Les choix cryptographiques sont justifiés dans <a href="../securite/cryptographie-secrets.html">Cryptographie et secrets</a>.</p>

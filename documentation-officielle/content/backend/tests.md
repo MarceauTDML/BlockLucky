@@ -46,9 +46,10 @@ Le chemin `onchain` des services (passerelle, indexeur réel, keeper, file d'act
 process.env.LOGIN_EMAIL_CODE_REQUIRED = 'false';
 process.env.ADMIN_MFA_REQUIRED = 'false';
 process.env.BLOCKCHAIN_MODE = 'simulated';
+process.env.AGE_VERIFICATION_REQUIRED = 'false';
 ```
 
-Jest définit `NODE_ENV=test`, ce qui coupe la création du client Redis, l'envoi SMTP, le dépôt S3, les logs et les métriques par défaut, et relève les limites de débit à 10 000 requêtes. Les suites qui testent le code email ou la 2FA obligatoire des administrateurs modifient `env.LOGIN_EMAIL_CODE_REQUIRED` et `env.ADMIN_MFA_REQUIRED` au début de la suite et les restaurent à la fin.
+Jest définit `NODE_ENV=test`, ce qui coupe la création du client Redis, l'envoi SMTP, le dépôt S3, les logs et les métriques par défaut, et relève les limites de débit à 10 000 requêtes. Les suites qui testent le code email, la 2FA obligatoire des administrateurs ou la vérification d'âge modifient `env.LOGIN_EMAIL_CODE_REQUIRED`, `env.ADMIN_MFA_REQUIRED` ou `env.AGE_VERIFICATION_REQUIRED` au début du test ou de la suite et les restaurent à la fin. La vérification d'âge n'est réactivée que dans des blocs de `lottery.test.ts` et `marketplace.test.ts`.
 
 ## Doublures de Prisma et Redis
 
@@ -72,7 +73,7 @@ import app from '../../src/app';
 
 | Doublure | Fichier | Comportement |
 |---|---|---|
-| `prismaMock` | [`backend/__tests__/__mocks__/prisma.mock.ts`](src:backend/__tests__/__mocks__/prisma.mock.ts) | une `Map` par modèle (`user`, `token`, `lotteryRound`, `ticket`, `pointTransaction`, `partner`, `rewardCatalog`, `claimedReward`, `analytics`) et des fonctions `jest.fn` qui imitent les requêtes utilisées par le code ; `resetPrismaMockStore()` vide tout |
+| `prismaMock` | [`backend/__tests__/__mocks__/prisma.mock.ts`](src:backend/__tests__/__mocks__/prisma.mock.ts) | une `Map` par modèle (`user`, `identityDocument`, `token`, `lotteryRound`, `ticket`, `pointTransaction`, `partner`, `rewardCatalog`, `claimedReward`, `analytics`) et des fonctions `jest.fn` qui imitent les requêtes utilisées par le code ; `resetPrismaMockStore()` vide tout |
 | `redisMock` | [`backend/__tests__/__mocks__/redis.mock.ts`](src:backend/__tests__/__mocks__/redis.mock.ts) | une `Map` ; `get`, `set`, `setIfAbsent`, `del`, `ping` (`disabled`), `close` ; `getRawClient()` renvoie `null` ; `resetRedisMockStore()` vide tout |
 
 Ces doublures ont des limites à garder en tête en écrivant un test :
@@ -93,15 +94,19 @@ Une nouvelle requête Prisma dans le code doit être ajoutée à la doublure, si
 |---|---|---|
 | `api/auth-security.test.ts` | 10 | code email exigé avant création du compte ; code invalidé après 5 essais ; révocation à la déconnexion ; rejet d'un JWT d'un autre algorithme ou sans émetteur ; 2FA imposée aux administrateurs ; rôle du jeton relu en base ; rejet du rejeu TOTP ; ré-authentification pour désactiver la 2FA ; types analytiques réservés ; isolation entre partenaires |
 | `api/auth.test.ts` | 3 | écrans d'accueil ; refus sans certification 18+ ; inscription, +25 points, configuration et vérification TOTP |
-| `api/lottery.test.ts` | 4 | statut et paliers ; achat et +50 points ; cadeau ; métadonnées POAP |
+| `api/auth-password.test.ts` | 10 | inscription après code email ; refus d'une seconde inscription ; politique de mot de passe et conditions ; activation d'un compte créé par un cadeau ; message unique d'échec ; blocage après 10 échecs, adresse inconnue comprise ; code TOTP demandé ; réinitialisation et révocation des sessions ; mot de passe défini sur un compte sans mot de passe ; `hasPassword` et `ageVerificationStatus` dans le profil |
+| `api/auth-oauth.test.ts` | 8 | jetons Google et Apple vérifiés avec audience, émetteur et clés ; email non vérifié ou jeton rejeté ; 503 sans configuration ; création puis reconnexion par email ; 2FA demandée avant la session |
+| `api/identity.test.ts` | 7 | envoi chiffré au repos et statut `PENDING` ; corps de plus de 1 Mo accepté sur cette route seule ; image trop lourde, format inconnu ou face manquante ; session exigée ; consultation, approbation, effacement des images et email ; motif obligatoire puis nouvel envoi ; routes réservées à l'ADMIN et interdiction de statuer sur sa propre pièce |
+| `api/lottery.test.ts` | 11 | statut et paliers ; phase, salle d'attente et participants ; achats refusés en salle d'attente ; ticket unique, +50 points et numéro ; second ticket refusé ; cadeau ; cadeau à une personne qui a déjà son ticket ; numéro et résultat dans `my-tickets` ; achat, cadeau et échange refusés sans âge vérifié, puis achat accepté ; métadonnées POAP |
 | `api/idempotency.test.ts` | 2 | rejeu d'un achat avec la même clé sans second ticket ; refus d'une clé mal formée |
-| `api/marketplace.test.ts` | 1 | catalogue, échange, QR code dans « Mes codes » |
+| `api/marketplace.test.ts` | 5 | catalogue, échange, QR code dans « Mes codes » ; ticket à gratter : débit et récompense en stock, refus sans points et sans débit, 404 sans récompense, offre inconnue et âge exigé |
 | `api/partners.test.ts` | 1 | création d'entreprise et d'offre, import CSV, statistiques |
 | `api/user.test.ts` | 1 | quêtes, limite de jeu responsable, export RGPD, suppression confirmée |
 | `api/admin.test.ts` | 2 | refus 403 pour un USER ; tableau de bord, disjoncteur, trésorerie, export CSV, audit pour un ADMIN |
 | `api/system.test.ts` | 8 | sondes de vivacité et de disponibilité, `X-Request-Id`, `/api/config`, préfixe `/api/v1`, `/metrics`, JSON mal formé, CORS |
 | `integration/blockchain-indexer.test.ts` | 4 | indexation idempotente par webhook signé, rejeu ignoré, signature absente ou périmée, corps invalide |
 | `integration/full-draw-flow.test.ts` | 1 | inscription, achat, tirage simulé, gagnant |
+| `services/keeper.test.ts` | 3 | attente de `DRAW_REVEAL_DELAY_SECONDS` avant `requestDraw` ; tirage immédiat si le délai vaut 0 ; clôture sans attente d'un tour expiré sans assez de participants |
 | `services/ledger.test.ts` | 2 | crédit et débit avec historique, refus d'un débit supérieur au solde |
 | `services/totp.test.ts` | 2 | secret, code, QR code et vérification ; format des codes de secours |
 
@@ -109,9 +114,9 @@ Plusieurs suites (`admin`, `auth-security`, `partners`, `full-draw-flow`) signen
 
 ## Test sur une vraie chaîne
 
-[`backend/__tests__/chain/onchain-lottery.chain.ts`](src:backend/__tests__/chain/onchain-lottery.chain.ts) contient deux tests, avec un délai de 120 secondes par test ([`backend/jest.chain.config.json`](src:backend/jest.chain.config.json)). Sa préparation [`setup-chain-env.ts`](src:backend/__tests__/chain/setup-chain-env.ts) force `BLOCKCHAIN_MODE=onchain`, `NODE_ENV=development`, les adresses des contrats locaux et désactive le code email et la 2FA obligatoire.
+[`backend/__tests__/chain/onchain-lottery.chain.ts`](src:backend/__tests__/chain/onchain-lottery.chain.ts) contient deux tests, avec un délai de 120 secondes par test ([`backend/jest.chain.config.json`](src:backend/jest.chain.config.json)). Sa préparation [`setup-chain-env.ts`](src:backend/__tests__/chain/setup-chain-env.ts) force `BLOCKCHAIN_MODE=onchain`, `NODE_ENV=development`, les adresses des contrats locaux, désactive le code email, la 2FA obligatoire et la vérification d'âge, et met `DRAW_REVEAL_DELAY_SECONDS` à 0 s'il n'est pas défini.
 
-1. **Achat, cadeau, tirage et versement.** Deux citoyens se connectent ; leur portefeuille intégré est différent de l'adresse envoyée et a reçu la dotation. Alice achète 2 tickets, Bob 1, puis Bob en offre 1 à Alice. Le test avance le temps du nœud (`evm_increaseTime`, `evm_mine`) au-delà de la fin du tour, appelle `runKeeperOnce()` qui demande le tirage, attend que l'indexeur enregistre le gagnant, vérifie que la cagnotte vaut 90 % des 4 tickets, attend le versement par le worker `chain-actions` puis la frappe des POAP visibles dans `my-tickets`.
+1. **Achat, cadeau, tirage et versement.** Deux citoyens se connectent ; leur portefeuille intégré est différent de l'adresse envoyée et a reçu la dotation. Le statut est en phase `OPEN` sans `revealAt`. Alice achète son ticket, dont le numéro a 5 chiffres, puis un second achat est refusé en 409 `PlayerLimitReached`. Bob achète le sien, en offre un à Dave, puis se voit refuser un cadeau à Alice, qui a déjà son ticket. Le test avance le temps du nœud (`evm_increaseTime`, `evm_mine`) au-delà de la fin du tour, appelle `runKeeperOnce()` qui demande le tirage, attend que l'indexeur enregistre le gagnant, vérifie que la cagnotte vaut 90 % des 3 tickets et que l'historique donne le numéro gagnant et `isWinner`, attend le versement par le worker `chain-actions` puis la frappe des POAP visibles dans `my-tickets`.
 2. **Disjoncteur.** Un administrateur met le contrat en pause par `POST /api/v1/admin/circuit-breaker` ; `paused()` vaut `true` sur la chaîne ; un achat renvoie 503 avec `circuitBreaker: true` ; la reprise remet `paused()` à `false`.
 
 Prérequis : PostgreSQL et Redis joignables, nœud Hardhat lancé avec les contrats et l'oracle VRF local (conteneur `blockchain` de `docker-compose.yml`), base migrée et vierge, cohérente avec l'état de la chaîne. Le test crée ses comptes avec un suffixe unique et suppose un tour ouvert sur la chaîne.

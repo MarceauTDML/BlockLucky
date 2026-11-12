@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tirage et versement de la cagnotte | Documentation BlockLucky</title>
-<meta name="description" content="Le tirage se fait en deux transactions séparées par l&#39;oracle Chainlink VRF. La première, envoyée par le keeper du backend ou par un administrateur, demande un n">
+<meta name="description" content="Le tirage se fait en deux transactions séparées par l&#39;oracle Chainlink VRF. Il est précédé d&#39;une salle d&#39;attente : quand les achats se ferment, le keeper attend">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../assets/css/doc.css">
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>3. Architecture</span><span>Flux métier</span></div>
     <article class="markdown">
 <h1>Tirage et versement de la cagnotte</h1>
-<p>Le tirage se fait en deux transactions séparées par l&#39;oracle Chainlink VRF. La première, envoyée par le keeper du backend ou par un administrateur, demande un nombre aléatoire et fige le tour. La seconde, envoyée par le coordinateur VRF, apporte ce nombre : le contrat désigne alors lui-même le gagnant dans <code>fulfillRandomWords</code>, calcule la cagnotte et ouvre le tour suivant. Le backend découvre le résultat en lisant les événements, l&#39;annonce en direct, puis réclame la cagnotte pour le compte du gagnant.</p>
+<p>Le tirage se fait en deux transactions séparées par l&#39;oracle Chainlink VRF. Il est précédé d&#39;une salle d&#39;attente : quand les achats se ferment, le keeper attend <code>DRAW_REVEAL_DELAY_SECONDS</code> (600 s par défaut) avant de demander le tirage, pour que les participants suivent la roue en direct. La première transaction, envoyée par le keeper du backend ou par un administrateur, demande un nombre aléatoire et fige le tour. La seconde, envoyée par le coordinateur VRF, apporte ce nombre : le contrat désigne alors lui-même le gagnant dans <code>fulfillRandomWords</code>, calcule la cagnotte et ouvre le tour suivant. Le backend découvre le résultat en lisant les événements, l&#39;annonce en direct, puis réclame la cagnotte pour le compte du gagnant.</p>
 <h2 id="diagramme-de-sequence"><a class="anchor" href="#diagramme-de-sequence" aria-hidden="true" tabindex="-1">#</a>Diagramme de séquence</h2>
 <div class="diagram"><pre class="mermaid">sequenceDiagram
   autonumber
@@ -54,6 +54,8 @@
   K-&gt;&gt;R: setIfAbsent chain:keeper-lock
   K-&gt;&gt;BL: paused, isDrawReady
   BL--&gt;&gt;K: true
+  K-&gt;&gt;R: setIfAbsent chain:draw-ready-at:tour
+  K-&gt;&gt;K: attente tant que maintenant &lt; instant prêt + DRAW_REVEAL_DELAY_SECONDS
   K-&gt;&gt;BL: requestDraw par le compte opérateur
   BL-&gt;&gt;VRF: requestRandomWords, numWords 1
   BL--&gt;&gt;K: reçu avec DrawRequested
@@ -80,11 +82,11 @@
 <li>Rien en mode <code>simulated</code>.</li>
 <li>Verrou <code>chain:keeper-lock</code> posé par <code>redis.setIfAbsent</code>, pour une durée égale à l&#39;intervalle avec un minimum de 5 s. Si une autre instance le détient, le passage s&#39;arrête.</li>
 <li>Si le contrat est en pause (<code>paused()</code>), rien.</li>
-<li>Si <code>isDrawReady()</code> : appel de <code>requestDraw()</code> avec le compte opérateur <code>chainClient.operator</code>, attente du reçu, puis <code>lotteryIndexer.processReceipt(receipt)</code>.</li>
+<li>Si <code>isDrawReady()</code> : le keeper lit le tour courant, enregistre l&#39;instant où il est devenu prêt dans <code>chain:draw-ready-at:&lt;tour&gt;</code> s&#39;il ne l&#39;est pas déjà (le plus petit de maintenant et de <code>endTime</code>), puis compare l&#39;heure à cet instant plus <code>DRAW_REVEAL_DELAY_SECONDS</code>. Avant cette heure, la passe renvoie <code>waiting-room</code> sans rien envoyer. Après, appel de <code>requestDraw()</code> avec le compte opérateur <code>chainClient.operator</code>, attente du reçu, puis <code>lotteryIndexer.processReceipt(receipt)</code>.</li>
 <li>Sinon, si <code>isExpiredWithoutDraw()</code> : annulation du tour. Voir <a href="annulation.html">Annulation et remboursement</a>.</li>
 <li>Le verrou est supprimé dans le bloc <code>finally</code>. Les erreurs <code>DrawNotReady</code> et <code>RoundNotCancellable</code> (un autre acteur a été plus rapide) ne sont pas journalisées ; les autres le sont en avertissement.</li>
 </ol>
-<p><code>isDrawReady</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a>) est vraie quand le tour est <code>Open</code>, compte au moins <code>minTicketsToDraw</code> tickets, et est complet ou a atteint <code>endTime</code>. Le tirage peut donc partir dès le dernier ticket vendu, au plus <code>KEEPER_INTERVAL_MS</code> après.</p>
+<p><code>isDrawReady</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a>) est vraie quand le tour est <code>Open</code>, compte au moins <code>minTicketsToDraw</code> tickets, et est complet ou a atteint <code>endTime</code>. Le keeper demande donc le tirage <code>DRAW_REVEAL_DELAY_SECONDS</code> après le dernier ticket vendu ou la fin du temps, à <code>KEEPER_INTERVAL_MS</code> près. <code>GET /lottery/status</code> lit le même instant pour publier <code>phase: &#39;WAITING_ROOM&#39;</code> et <code>revealAt</code>, ce qui aligne le compte à rebours des clients sur le keeper (voir <a href="../../backend/modules/loterie.html#phases-du-tour">Loterie</a>).</p>
 <h3 id="par-un-administrateur"><a class="anchor" href="#par-un-administrateur" aria-hidden="true" tabindex="-1">#</a>Par un administrateur</h3>
 <p><code>POST /api/v1/lottery/draw</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.routes.ts</code></a> : <code>authenticate</code>, <code>requireRoles(&#39;ADMIN&#39;)</code>, <code>validate(triggerDrawSchema)</code>. <code>lotteryController.triggerDraw</code> appelle <code>lotteryService.executeChainlinkDraw</code>, qui délègue à <code>drawOnchain</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.services.ts</code></a>) :</p>
 <ol>
@@ -92,7 +94,7 @@
 <li>Le tour courant est relu et recopié en base.</li>
 <li>La réponse 200 contient <code>vrfProof.status: &#39;PENDING&#39;</code>, l&#39;identifiant de requête VRF et le hash de la transaction. Le gagnant n&#39;est pas encore connu.</li>
 </ol>
-<p>Le champ <code>roundId</code> du corps est ignoré : on ne peut tirer que le tour courant. <code>requestDraw</code> n&#39;exige aucun rôle dans le contrat : n&#39;importe quel compte peut la déclencher dès que les conditions sont remplies, ce que fait aussi Chainlink Automation par <code>performUpkeep</code> s&#39;il est configuré. Voir <a href="../../smart-contracts/automation.html">Chainlink Automation</a>.</p>
+<p>Le champ <code>roundId</code> du corps est ignoré : on ne peut tirer que le tour courant. Cette route n&#39;attend pas le délai de révélation : elle tire dès que <code>isDrawReady</code> est vrai, même si la salle d&#39;attente des clients affiche encore un compte à rebours. <code>requestDraw</code> n&#39;exige aucun rôle dans le contrat : n&#39;importe quel compte peut la déclencher dès que les conditions sont remplies, ce que fait aussi Chainlink Automation par <code>performUpkeep</code> s&#39;il est configuré. Le délai de révélation n&#39;existe que dans le backend : le contrat ne le connaît pas. Voir <a href="../../smart-contracts/automation.html">Chainlink Automation</a>.</p>
 <h3 id="dans-le-contrat"><a class="anchor" href="#dans-le-contrat" aria-hidden="true" tabindex="-1">#</a>Dans le contrat</h3>
 <p><code>requestDraw</code> (<code>whenNotPaused</code>, <code>nonReentrant</code>) vérifie <code>isDrawReady</code>, puis <code>_requestRandomness</code> passe le tour à <code>Drawing</code>, note <code>drawRequestedAt</code>, appelle <code>s_vrfCoordinator.requestRandomWords</code> avec la configuration <code>vrfConfig</code> (key hash, abonnement, confirmations, limite de gaz du rappel, paiement natif ou LINK), mémorise <code>roundByRequestId[requestId]</code> et émet <code>DrawRequested(roundId, requestId, ticketCount)</code>.</p>
 <p><code>onDrawRequested</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.indexer.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.indexer.ts</code></a>) passe le tour à <code>LOCKED</code> en base avec <code>chainlinkRequestId</code> et <code>drawRequestedAt</code>. À partir de ce moment, les achats sont refusés par le contrat (<code>RoundNotOpen</code>) et par la passerelle (409).</p>
