@@ -1,4 +1,6 @@
+import crypto from 'crypto';
 import QRCode from 'qrcode';
+import { env } from '../../config/env.config';
 import marketplaceRepository from './marketplace.repo';
 import authRepository from '../auth/auth.repo';
 import ledgerService from '../../services/ledger.service';
@@ -9,7 +11,102 @@ import { AppError } from '../../utils/response.util';
 import { businessEventsTotal } from '../../observability/metrics';
 import { assertPartnerAccess, PartnerActor } from '../partners/partners.services';
 
+export type ScratchOffer = 'violet' | 'lucky';
+
+export const scratchCostOf = (offer: ScratchOffer): number =>
+  offer === 'lucky' ? env.SCRATCH_COST_LUCKY : env.SCRATCH_COST_VIOLET;
+
 export class MarketplaceService {
+  private async nextPromoCode(rewardId: string, partnerName: string): Promise<string> {
+    let uniqueCode = generatePromoCode(partnerName.slice(0, 4).toUpperCase().replace(/[^A-Z]/g, 'EBAY'));
+    const poolStr = await redis.get(`partner:codes:${rewardId}`);
+    if (poolStr) {
+      try {
+        const pool: string[] = JSON.parse(poolStr);
+        if (pool.length > 0) {
+          uniqueCode = pool.shift()!;
+          await redis.set(`partner:codes:${rewardId}`, JSON.stringify(pool));
+        }
+      } catch {}
+    }
+    return uniqueCode;
+  }
+
+  public async buyScratchTicket(userId: string, offer: ScratchOffer) {
+    const cost = scratchCostOf(offer);
+    const user = await authRepository.findById(userId);
+    if (!user || user.deletedAt) throw new AppError('Utilisateur introuvable', 404);
+
+    const available = await marketplaceRepository.listScratchableRewards();
+    if (available.length === 0) {
+      throw new AppError("Aucune récompense n'est disponible pour le moment dans les tickets à gratter.", 404);
+    }
+    if (user.pointsBalance < cost) {
+      throw new AppError(
+        `EtherPoints insuffisants pour ce ticket à gratter (${user.pointsBalance} disponibles, ${cost} requis).`,
+        402,
+        { code: 'INSUFFICIENT_POINTS', balance: user.pointsBalance, cost }
+      );
+    }
+
+    const worthy = available.filter((reward) => reward.costInPoints >= cost);
+    const pool = worthy.length > 0 ? worthy : available;
+    const picked = pool[crypto.randomInt(pool.length)]!;
+    const reward = await marketplaceRepository.findRewardById(picked.id);
+    if (!reward) throw new AppError("Aucune récompense n'est disponible pour le moment dans les tickets à gratter.", 404);
+
+    const uniqueCode = await this.nextPromoCode(reward.id, reward.partner.name);
+    const result = await marketplaceRepository.drawScratchReward({
+      userId,
+      rewardId: reward.id,
+      cost,
+      uniqueCode,
+      description: `Ticket à gratter ${offer} : ${reward.title} (${reward.partner.name})`,
+    });
+    if (result.outcome === 'INSUFFICIENT_POINTS') {
+      throw new AppError(`EtherPoints insuffisants pour ce ticket à gratter (${cost} requis).`, 402, {
+        code: 'INSUFFICIENT_POINTS',
+        cost,
+      });
+    }
+
+    const { claimed } = result;
+    const qrCodeDataUrl = await QRCode.toDataURL(
+      JSON.stringify({ claimId: claimed.id, uniqueCode: claimed.uniqueCode, partner: reward.partner.name })
+    );
+
+    if (user.email) {
+      await enqueueEmail({
+        to: user.email,
+        subject: `Votre code promo ${reward.partner.name} - BlockLucky`,
+        templateName: 'reward-claim',
+        variables: { REWARD_TITLE: reward.title, PARTNER_NAME: reward.partner.name, PROMO_CODE: claimed.uniqueCode },
+      });
+    }
+    businessEventsTotal.inc({ event: 'scratch_ticket_bought' });
+
+    return {
+      offer,
+      claim: {
+        id: claimed.id,
+        uniqueCode: claimed.uniqueCode,
+        isUsed: claimed.isUsed,
+        claimedAt: claimed.claimedAt,
+        rewardTitle: reward.title,
+        costInPoints: reward.costInPoints,
+        partnerName: reward.partner.name,
+        partnerLogo: reward.partner.logoUrl,
+        partner: { id: reward.partner.id, name: reward.partner.name, logoUrl: reward.partner.logoUrl },
+        qrCodeDataUrl,
+        scratchCardReady: true,
+      },
+      remainingStock: result.remainingStock,
+      pointsSpent: cost,
+      newBalance: result.balance,
+      newPointsBalance: result.balance,
+    };
+  }
+
   public async getCatalog() {
     const rewards = await marketplaceRepository.getCatalogWithPartners();
     return rewards.map((r) => ({
@@ -74,17 +171,7 @@ export class MarketplaceService {
       `Échange récompense : ${reward.title} (${reward.partner.name})`
     );
 
-    let uniqueCode = generatePromoCode(reward.partner.name.slice(0, 4).toUpperCase().replace(/[^A-Z]/g, 'EBAY'));
-    const poolStr = await redis.get(`partner:codes:${reward.id}`);
-    if (poolStr) {
-      try {
-        const pool: string[] = JSON.parse(poolStr);
-        if (pool.length > 0) {
-          uniqueCode = pool.shift()!;
-          await redis.set(`partner:codes:${reward.id}`, JSON.stringify(pool));
-        }
-      } catch {}
-    }
+    const uniqueCode = await this.nextPromoCode(reward.id, reward.partner.name);
 
     const { claimed, updatedReward } = await marketplaceRepository.decrementStockAndCreateClaim({
       userId,

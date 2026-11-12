@@ -34,6 +34,17 @@ export class MarketplaceController {
     }
   }
 
+  public async buyScratchTicket(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new AppError('Authentification requise', 401);
+      const result = await marketplaceService.buyScratchTicket(userId, req.body.offer);
+      sendSuccess(res, result, 'Ticket à gratter acheté ! Grattez pour découvrir votre récompense.', 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async getMyCodes(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?.userId;

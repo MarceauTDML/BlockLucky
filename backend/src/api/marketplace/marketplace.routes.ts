@@ -4,7 +4,8 @@ import { authenticate } from '../../middlewares/auth.middleware';
 import { requireRoles } from '../../middlewares/rbac.middleware';
 import { validate } from '../../middlewares/validate.middleware';
 import { idempotency } from '../../middlewares/idempotency.middleware';
-import { claimRewardSchema, usePromoCodeSchema } from './marketplace.validators';
+import { requireAgeVerification } from '../../middlewares/age-verification.middleware';
+import { claimRewardSchema, scratchTicketSchema, usePromoCodeSchema } from './marketplace.validators';
 
 const router = Router();
 
@@ -49,9 +50,26 @@ router.get('/points', authenticate, (req, res, next) =>
 router.post(
   '/claim',
   authenticate,
+  requireAgeVerification,
   idempotency,
   validate(claimRewardSchema),
   (req, res, next) => marketplaceController.claimReward(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/marketplace/scratch:
+ *   post:
+ *     tags: [Marketplace]
+ *     summary: Acheter un ticket à gratter en EtherPoints (violet ou lucky, âge vérifié requis) qui attribue au hasard une récompense partenaire en stock
+ */
+router.post(
+  '/scratch',
+  authenticate,
+  requireAgeVerification,
+  idempotency,
+  validate(scratchTicketSchema),
+  (req, res, next) => marketplaceController.buyScratchTicket(req, res, next)
 );
 
 /**
