@@ -19,7 +19,7 @@ flowchart LR
   T -->|"HTTP EXPO_PUBLIC_API_URL"| B["Backend : port 2053"]
   T -->|"WebSocket EXPO_PUBLIC_WS_URL"| B
   B --> DB["PostgreSQL, Redis, blockchain locale"]
-  B --> MP["Mailpit : codes de connexion"]
+  B --> MP["Mailpit : codes de vérification"]
 ```
 
 Le téléphone télécharge le code JavaScript depuis Metro, puis appelle directement le backend. Dans `.env.example`, l'API est `http://localhost:2053/api` : sur un téléphone, `localhost` désigne le téléphone lui-même, et toutes les requêtes échouent. Il faut remplacer `localhost` par l'adresse de l'ordinateur sur le réseau local.
@@ -59,7 +59,7 @@ EXPO_PUBLIC_SENTRY_DSN=
 EXPO_PUBLIC_WEB3AUTH_CLIENT_ID=blocklucky-etherbay-client
 ```
 
-Seules les deux premières lignes comptent (voir [Stack et structure](structure.md#configuration)). Le fichier `.env` est ignoré par Git.
+Seules les deux premières lignes comptent (voir [Stack et structure](structure.md#configuration)). Pour tester la connexion Google, renseigner `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` ou `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`, vides dans `.env.example`. Le fichier `.env` est ignoré par Git.
 
 | Cible | Adresse à utiliser |
 |---|---|
@@ -95,10 +95,16 @@ Metro affiche un QR code. Le scanner avec l'appareil photo (iOS) ou depuis Expo 
 
 ## Étape 5 : se connecter
 
-> [!NOTE]
-> La connexion se fait par code envoyé par email, comme sur le web : en local, le code arrive dans Mailpit sur `http://localhost:8025` du poste qui fait tourner le backend. Si l'application affiche « Impossible de vous connecter au serveur », vérifier l'adresse de l'API dans `mobile-app/.env` et le pare-feu du poste.
+Les trois comptes du seed (`citoyen@etherbay.fr`, `boulangerie@etherbay.fr`, `maire@etherbay.fr`) ont le mot de passe de démonstration `EtherBay2026demo` et un âge déjà vérifié : l'écran « Connexion » ouvre directement les onglets, sans passer par la vérification d'âge. Les comptes sont décrits dans [Comptes de démonstration et connexion](../demarrage/comptes-et-connexion.md).
 
-Avec ce réglage, l'email prérempli `citoyen@etherbay.fr`, après la case de majorité, ouvre directement les onglets. Les comptes de démonstration sont décrits dans [Comptes de démonstration et connexion](../demarrage/comptes-et-connexion.md). Une fois le défaut corrigé, le code de connexion se lira dans Mailpit, publié sur `http://127.0.0.1:8025` de l'ordinateur uniquement.
+Pour un nouveau compte créé depuis « Inscription », le code de vérification arrive dans Mailpit, publié sur `http://127.0.0.1:8025` de l'ordinateur uniquement. En développement, l'écran de saisie propose aussi le code renvoyé par le backend (`devOtpPreview`). Le nouveau compte doit ensuite envoyer sa pièce d'identité et être validé dans l'espace Mairie du web avant de pouvoir acheter un ticket.
+
+> [!NOTE]
+> Si l'application affiche « Connexion impossible. Vérifiez votre connexion et réessayez. », vérifier l'adresse de l'API dans `mobile-app/.env` et le pare-feu du poste.
+
+La connexion Google n'est disponible que si `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` ou `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` est défini dans `mobile-app/.env` et que `GOOGLE_CLIENT_IDS` est renseigné côté backend. La connexion Apple n'apparaît que sur iOS, et le backend n'accepte que les audiences listées dans `APPLE_CLIENT_IDS`. Sans ces réglages, les boutons sont désactivés ou masqués.
+
+La photo de la pièce d'identité fonctionne sur un téléphone physique avec l'appareil photo ou la galerie ; sur un émulateur ou un simulateur, choisir une image de la galerie.
 
 La session n'est pas conservée : après avoir fermé complètement l'application, il faut se reconnecter.
 
@@ -107,20 +113,20 @@ La session n'est pas conservée : après avoir fermé complètement l'applicatio
 | Élément | En local |
 |---|---|
 | Liens vers l'explorateur | Absents : `EXPLORER_URL` est vide dans `backend/.env.example`, donc le backend ne renvoie aucune URL |
-| Visuels POAP | Chargés depuis l'URI du badge ; si elle désigne `localhost`, le téléphone ne peut pas la joindre et l'écran affiche le repli textuel |
-| Mode de la blockchain | `BLOCKCHAIN_MODE=onchain` sur la blockchain locale par défaut, ou `simulated` ; l'application affiche « Mode démonstration » dans le second cas |
+| Mode de la blockchain | `BLOCKCHAIN_MODE=onchain` sur la blockchain locale par défaut, ou `simulated` ; dans le second cas, aucun solde en ETH n'est affiché et le retrait des gains est masqué |
 | HTTP non chiffré | Accepté par Expo Go en développement ; un build de production devra utiliser HTTPS (voir [Builds et publication](builds-publication.md#variables-d-environnement-au-build)) |
 
 ## Dépannage
 
 | Symptôme | Cause probable | Solution |
 |---|---|---|
-| « Impossible de vous connecter au serveur » dès la connexion | API injoignable depuis le téléphone | Vérifier l'adresse de l'API dans `mobile-app/.env`, puis ouvrir `/health/live` depuis le navigateur du téléphone |
+| « Connexion impossible. Vérifiez votre connexion et réessayez. » | API injoignable depuis le téléphone | Vérifier l'adresse de l'API dans `mobile-app/.env`, puis ouvrir `/health/live` depuis le navigateur du téléphone |
 | Écrans vides, chargement infini | `EXPO_PUBLIC_API_URL` contient `localhost` ou une ancienne adresse | Corriger `.env`, puis `npx expo start -c` |
 | Le QR code ne s'ouvre pas | Téléphone et ordinateur sur des réseaux différents | Même Wi-Fi, ou partage de connexion |
 | Expo Go refuse le projet | Version d'Expo Go incompatible avec le SDK 58 | Mettre à jour Expo Go, ou utiliser un émulateur |
 | Discussion et salle d'attente inactives | `EXPO_PUBLIC_WS_URL` incorrecte | Même adresse que l'API, sans `/api` |
-| Messages de discussion en double | Écouteurs Socket.IO dupliqués (défaut connu) | Voir [Temps réel et notifications](temps-reel-notifications.md) |
+| Bouton Google désactivé | Identifiant client absent dans `mobile-app/.env`, ou `GOOGLE_CLIENT_IDS` vide côté backend (503) | Renseigner les deux, puis `npx expo start -c` |
+| « Vérifiez votre âge pour jouer. » à l'achat | Compte dont l'âge n'est pas validé | Envoyer la pièce d'identité, puis la valider dans l'espace Mairie du web, ou utiliser un compte du seed |
 | Erreur 429 ou file d'attente | Limite de débit du backend atteinte après de nombreux essais | Attendre la fin de la fenêtre de limitation |
 
 Les autres problèmes d'environnement sont traités dans [Dépannage](../demarrage/depannage.md).

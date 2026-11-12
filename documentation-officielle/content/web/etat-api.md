@@ -36,11 +36,11 @@ Aucune requête n'envoie d'en-tête `Idempotency-Key`, bien que `POST /lottery/b
 
 ## Les tags de cache
 
-`baseApi` déclare dix types de tags. Une requête qui fournit un tag est rejouée automatiquement quand une mutation l'invalide, si un composant l'observe encore.
+`baseApi` déclare onze types de tags. Une requête qui fournit un tag est rejouée automatiquement quand une mutation l'invalide, si un composant l'observe encore.
 
 | Tag | Fourni par | Invalidé par |
 |---|---|---|
-| `User` | `getProfile`, `getReferrals` | `socialLogin`, `verify2FA`, `disable2FA`, `completeQuest`, `setResponsibleLimit`, `updatePreferences`, `buyTicket`, `giftTicket`, `claimReward` |
+| `User` | `getProfile`, `getReferrals` | `socialLogin`, `verify2FA`, `disable2FA`, `completeQuest`, `setResponsibleLimit`, `updatePreferences`, `buyTicket`, `giftTicket`, `claimReward`, `submitIdentity` |
 | `Lottery` | `getLotteryStatus`, `getLeaderboard`, `getMyTransactions` | `buyTicket`, `giftTicket`, `claimPrize`, `triggerDraw`, `refundRound`, `toggleCircuitBreaker` ; événement `draw:winner` |
 | `Wallet` | `getWallet` | `buyTicket`, `giftTicket`, `claimPrize` ; erreurs de solde ; événement `draw:winner` |
 | `Marketplace` | `getCatalog`, `getRewardDetail`, `getMyCodes` | `claimReward`, `redeemCode`, `setPartnerStatus`, `createOffer`, `uploadCodes` |
@@ -49,7 +49,8 @@ Aucune requête n'envoie d'en-tête `Idempotency-Key`, bien que `POST /lottery/b
 | `Notifications` | `getNotifications` | aucune mutation |
 | `Admin` | `getAdminDashboard`, `getAnalyticsDashboard` | `triggerDraw`, `refundRound`, `toggleCircuitBreaker`, `withdrawTreasury`, `setPartnerStatus` ; événement `draw:winner` |
 | `Partners` | `getPartners`, `getPartnerConsumption` | `createPartner`, `createOffer`, `uploadCodes`, `redeemCode`, `setPartnerStatus` |
-| `Audit` | `getAuditLogs` | `toggleCircuitBreaker`, `withdrawTreasury`, `setPartnerStatus`, `exportReport` |
+| `Audit` | `getAuditLogs` | `toggleCircuitBreaker`, `withdrawTreasury`, `setPartnerStatus`, `exportReport`, `decideIdentityVerification` |
+| `Identity` | `getIdentityVerifications`, `getIdentityStatus` | `decideIdentityVerification`, `submitIdentity` |
 
 Le tag `Notifications` n'est jamais invalidé : la liste des notifications ne change qu'au rechargement ou par `refetchNotifications`.
 
@@ -70,6 +71,8 @@ Les hooks sont générés par RTK Query : `useXxxQuery` pour une lecture, `useXx
 | `disable2FA` | `POST /auth/2fa/disable` | mutation |
 | `logout` | `POST /auth/logout` (jeton passé en argument) | mutation |
 | `getProfile` | `GET /user/profile` | query |
+| `getIdentityStatus` | `GET /user/identity` : statut de la vérification d'âge, dates d'envoi et de décision, motif d'un refus ; appelé par le hook `useAgeVerification`, relancé au montage et au retour du focus | query |
+| `submitIdentity` | `POST /user/identity` avec `front` et `back` en data URL | mutation |
 | `getReferrals` | `GET /user/referrals` | query |
 | `getQuests` | `GET /user/quests` | query |
 | `completeQuest` | `POST /user/quests/complete` | mutation |
@@ -125,6 +128,9 @@ Les hooks sont générés par RTK Query : `useXxxQuery` pour une lecture, `useXx
 | `setPartnerStatus` | `PATCH /admin/partners/:partnerId/status` avec `isActive` | mutation |
 | `getAuditLogs` | `GET /admin/audit-logs?limit=100` par défaut | query |
 | `exportReport` | `GET /admin/reports/export?format=CSV` ou `PDF` | mutation |
+| `getIdentityVerifications` | `GET /admin/identity-verifications` avec `status`, `page`, `limit` | query |
+| `getIdentityVerification` | `GET /admin/identity-verifications/:id` ; `keepUnusedDataFor: 0`, les images ne restent pas en cache après la fermeture du panneau | query |
+| `decideIdentityVerification` | `POST /admin/identity-verifications/:id/decision` avec `approved` et `note` | mutation |
 
 ### partnersApi
 

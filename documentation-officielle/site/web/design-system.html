@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Design system | Documentation BlockLucky</title>
-<meta name="description" content="Le design system du web tient en deux endroits : les variables CSS et les utilitaires de frontend-web/src/app/globals.css, et une dizaine de composants dans fro">
+<meta name="description" content="Le design system du web tient en deux endroits : les variables CSS et les utilitaires de frontend-web/src/app/globals.css, et une douzaine de composants dans fr">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -37,10 +37,11 @@
     <div class="breadcrumb"><span>8. Frontend web</span></div>
     <article class="markdown">
 <h1>Design system</h1>
-<p>Le design system du web tient en deux endroits : les variables CSS et les utilitaires de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/globals.css" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/globals.css</code></a>, et une dizaine de composants dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/components/ui" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/components/ui</code></a>. Il reprend la palette, les rayons et l&#39;échelle typographique de l&#39;application mobile (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/theme/colors.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/theme/colors.ts</code></a>), pour que les deux supports se ressemblent. Il n&#39;existe pas de maquette Figma de référence dans le dépôt : <code>globals.css</code> fait foi.</p>
+<p>Le design system du web tient en deux endroits : les variables CSS et les utilitaires de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/globals.css" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/globals.css</code></a>, et une douzaine de composants dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/components/ui" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/components/ui</code></a>. Il reprend la charte de l&#39;application mobile, issue de la maquette Figma : fond gris très clair, cartes blanches très arrondies, jaune « soleil » <code>#FFDA38</code> pour les mises en avant, encre bleu nuit <code>#1D2637</code> pour le texte et les boutons sombres, teintes pastel (lavande, menthe, pêche) pour distinguer les familles d&#39;information, police Inter et icônes SVG (voir <a href="../mobile/theme-composants.html">Thème et composants du mobile</a>). Les valeurs sont recopiées depuis <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/theme/colors.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/theme/colors.ts</code></a> : les deux applications ne partagent aucun fichier, la parité se maintient à la main. Aucune maquette du web n&#39;est versionnée dans le dépôt : <code>globals.css</code> fait foi.</p>
 <p>Tailwind CSS 4 est chargé par <code>@import &#39;tailwindcss&#39;</code> et le plugin PostCSS <code>@tailwindcss/postcss</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/postcss.config.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>postcss.config.mjs</code></a>). Il n&#39;y a pas de fichier <code>tailwind.config</code> : la configuration passe par le bloc <code>@theme inline</code> du CSS.</p>
 <h2 id="tokens-de-couleur"><a class="anchor" href="#tokens-de-couleur" aria-hidden="true" tabindex="-1">#</a>Tokens de couleur</h2>
-<p>Les couleurs sont définies deux fois : sur <code>:root</code> pour le thème clair et sur <code>[data-theme=&#39;dark&#39;]</code> pour le thème sombre. Le bloc <code>@theme inline</code> les expose ensuite comme couleurs Tailwind, ce qui permet d&#39;écrire <code>bg-surface</code> ou <code>text-fg-muted</code>.</p>
+<p>Les couleurs sont définies deux fois : sur <code>:root</code> pour le thème clair et sur <code>[data-theme=&#39;dark&#39;]</code> pour le thème sombre. Le bloc <code>@theme inline</code> les expose ensuite comme couleurs Tailwind, ce qui permet d&#39;écrire <code>bg-surface</code>, <code>bg-sun</code> ou <code>text-fg-muted</code>.</p>
+<h3 id="base"><a class="anchor" href="#base" aria-hidden="true" tabindex="-1">#</a>Base</h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -54,111 +55,244 @@
 <tbody><tr>
 <td><code>--bg</code></td>
 <td><code>bg-background</code></td>
-<td><code>#f7f6f2</code></td>
-<td><code>#141413</code></td>
+<td><code>#f6f7fa</code></td>
+<td><code>#0f1626</code></td>
 <td>Fond de page</td>
 </tr>
 <tr>
 <td><code>--surface</code></td>
 <td><code>bg-surface</code></td>
 <td><code>#ffffff</code></td>
-<td><code>#1e1e1c</code></td>
+<td><code>#1a2333</code></td>
 <td>Cartes, barre latérale, feuilles</td>
 </tr>
 <tr>
 <td><code>--surface-elevated</code></td>
 <td><code>bg-surface-elevated</code></td>
-<td><code>#efece6</code></td>
-<td><code>#282826</code></td>
-<td>Zones en retrait, état actif, badges</td>
+<td><code>#f0f2f6</code></td>
+<td><code>#222c3e</code></td>
+<td>Zones en retrait, survol, squelettes, bouton désactivé</td>
+</tr>
+<tr>
+<td><code>--surface-muted</code></td>
+<td><code>bg-surface-muted</code></td>
+<td><code>#f5f6f9</code></td>
+<td><code>#222c3e</code></td>
+<td>Fonds secondaires</td>
 </tr>
 <tr>
 <td><code>--primary</code></td>
 <td><code>bg-primary</code>, <code>text-primary</code></td>
-<td><code>#253d2c</code></td>
-<td><code>#4e7a5b</code></td>
-<td>Vert EtherBay : actions principales, liens</td>
+<td><code>#1d2637</code></td>
+<td><code>#f3f5f9</code></td>
+<td>Encre : bouton <code>secondary</code>, liens forts. S&#39;inverse en sombre</td>
 </tr>
 <tr>
 <td><code>--primary-light</code></td>
 <td><code>bg-primary-light</code></td>
-<td><code>#3b5e46</code></td>
-<td><code>#6b9b79</code></td>
-<td>Survol du bouton principal</td>
+<td><code>#2c3a52</code></td>
+<td><code>#d5dae3</code></td>
+<td>Survol du bouton <code>secondary</code></td>
+</tr>
+<tr>
+<td><code>--on-primary</code></td>
+<td><code>text-on-primary</code></td>
+<td><code>#ffffff</code></td>
+<td><code>#1d2637</code></td>
+<td>Texte posé sur l&#39;encre</td>
 </tr>
 <tr>
 <td><code>--secondary</code></td>
-<td><code>text-secondary</code>, <code>bg-secondary</code></td>
-<td><code>#c86d51</code></td>
-<td><code>#c86d51</code></td>
-<td>Terracotta : surtitres, points, bouton secondaire, contour de focus</td>
+<td><code>text-secondary</code></td>
+<td><code>#a95837</code></td>
+<td><code>#f0a07f</code></td>
+<td>Terracotta, gardé pour compatibilité</td>
 </tr>
 <tr>
 <td><code>--text</code></td>
 <td><code>text-fg</code></td>
-<td><code>#18181b</code></td>
-<td><code>#f5f4f0</code></td>
+<td><code>#1d2637</code></td>
+<td><code>#f3f5f9</code></td>
 <td>Texte principal</td>
 </tr>
 <tr>
 <td><code>--text-secondary</code></td>
 <td><code>text-fg-secondary</code></td>
-<td><code>#52525b</code></td>
-<td><code>#a1a09a</code></td>
+<td><code>#657084</code></td>
+<td><code>#a3acbd</code></td>
 <td>Texte courant atténué</td>
 </tr>
 <tr>
 <td><code>--text-muted</code></td>
 <td><code>text-fg-muted</code></td>
-<td><code>#8e8e93</code></td>
-<td><code>#6e6d68</code></td>
+<td><code>#8a93a5</code></td>
+<td><code>#7d879a</code></td>
 <td>Mentions, horodatages</td>
 </tr>
 <tr>
 <td><code>--border</code></td>
 <td><code>border-line</code></td>
-<td><code>#e4e2dd</code></td>
-<td><code>#2e2e2b</code></td>
-<td>Bordures</td>
+<td><code>#e2e5eb</code></td>
+<td><code>#2c3649</code></td>
+<td>Bordures des champs et séparateurs</td>
 </tr>
 <tr>
 <td><code>--success</code></td>
 <td><code>bg-success</code></td>
-<td><code>#2e6f40</code></td>
-<td><code>#4e7a5b</code></td>
+<td><code>#356c58</code></td>
+<td><code>#7fc4a6</code></td>
 <td>Pastilles d&#39;état</td>
 </tr>
 <tr>
 <td><code>--warning</code></td>
 <td><code>text-warning</code></td>
-<td><code>#b45309</code></td>
-<td><code>#d97706</code></td>
+<td><code>#a95837</code></td>
+<td><code>#f0a07f</code></td>
 <td>Mode démonstration, pause</td>
 </tr>
 <tr>
 <td><code>--error</code></td>
-<td><code>text-error</code>, <code>bg-error</code></td>
-<td><code>#b91c1c</code></td>
-<td><code>#dc2626</code></td>
+<td><code>text-error</code></td>
+<td><code>#b4472b</code></td>
+<td><code>#f0a07f</code></td>
 <td>Erreurs, actions destructrices</td>
-</tr>
-<tr>
-<td><code>--on-primary</code></td>
-<td><code>text-on-primary</code></td>
-<td><code>#f7f6f2</code></td>
-<td><code>#f7f6f2</code></td>
-<td>Texte sur fond coloré</td>
 </tr>
 <tr>
 <td><code>--overlay</code></td>
 <td><code>bg-[var(--overlay)]</code></td>
-<td>noir à 48 %</td>
+<td><code>rgba(15, 23, 38, 0.5)</code></td>
 <td>noir à 60 %</td>
 <td>Fond des feuilles modales</td>
 </tr>
 </tbody></table></div>
+<h3 id="famille-soleil"><a class="anchor" href="#famille-soleil" aria-hidden="true" tabindex="-1">#</a>Famille soleil</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable CSS</th>
+<th>Classe Tailwind</th>
+<th>Clair</th>
+<th>Sombre</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--sun</code></td>
+<td><code>bg-sun</code></td>
+<td><code>#ffda38</code></td>
+<td><code>#ffda38</code></td>
+<td>Bouton principal, carte du tirage, pastille des points, onglet actif des sélecteurs</td>
+</tr>
+<tr>
+<td><code>--sun-light</code></td>
+<td><code>bg-sun-light</code></td>
+<td><code>#ffe979</code></td>
+<td><code>#ffe979</code></td>
+<td>Survol du bouton principal</td>
+</tr>
+<tr>
+<td><code>--sun-soft</code></td>
+<td><code>bg-sun-soft</code></td>
+<td><code>#fff4b8</code></td>
+<td><code>#fff4b8</code></td>
+<td>Encarts posés sur la carte jaune</td>
+</tr>
+<tr>
+<td><code>--sun-chip</code></td>
+<td><code>bg-sun-chip</code></td>
+<td><code>#fff7d3</code></td>
+<td><code>#3a3420</code></td>
+<td>Surtitres en pilule, badges d&#39;avertissement, paliers débloqués</td>
+</tr>
+<tr>
+<td><code>--sun-nav</code></td>
+<td><code>bg-sun-nav</code></td>
+<td><code>#fff3b5</code></td>
+<td><code>#3a3420</code></td>
+<td>Entrée de navigation active</td>
+</tr>
+<tr>
+<td><code>--on-sun</code>, <code>--on-sun-muted</code></td>
+<td><code>text-on-sun</code>, <code>text-on-sun-muted</code></td>
+<td><code>#1d2637</code>, <code>#4a5263</code></td>
+<td>identiques</td>
+<td>Texte posé sur le jaune</td>
+</tr>
+<tr>
+<td><code>--on-sun-nav</code></td>
+<td><code>text-on-sun-nav</code></td>
+<td><code>#1d2637</code></td>
+<td><code>#ffe979</code></td>
+<td>Texte de l&#39;entrée de navigation active</td>
+</tr>
+</tbody></table></div>
+<p>En thème sombre, <code>--sun-chip</code> devient un brun foncé : le texte posé dessus passe en jaune grâce à la classe <code>dark:text-sun</code> ajoutée à chaque pilule. Le mobile garde au contraire <code>sunChip</code> clair dans les deux thèmes.</p>
+<h3 id="teintes-d-accompagnement"><a class="anchor" href="#teintes-d-accompagnement" aria-hidden="true" tabindex="-1">#</a>Teintes d&#39;accompagnement</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable CSS</th>
+<th>Classe Tailwind</th>
+<th>Clair</th>
+<th>Sombre</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--lavender</code>, <code>--violet</code></td>
+<td><code>bg-lavender</code>, <code>text-violet</code></td>
+<td><code>#eee9ff</code>, <code>#7357b1</code></td>
+<td><code>#2a2546</code>, <code>#b9a6f0</code></td>
+<td>Informations, EtherPoints, bouton <code>soft</code>, contour de focus</td>
+</tr>
+<tr>
+<td><code>--mint</code>, <code>--green</code></td>
+<td><code>bg-mint</code>, <code>text-green</code></td>
+<td><code>#e6efea</code>, <code>#356c58</code></td>
+<td><code>#1e3329</code>, <code>#7fc4a6</code></td>
+<td>Succès, âge vérifié, portefeuille</td>
+</tr>
+<tr>
+<td><code>--peach</code>, <code>--terracotta</code></td>
+<td><code>bg-peach</code>, <code>text-terracotta</code></td>
+<td><code>#ffe5d8</code>, <code>#a95837</code></td>
+<td><code>#3d2a22</code>, <code>#f0a07f</code></td>
+<td>Erreurs, accès refusé</td>
+</tr>
+<tr>
+<td><code>--coral</code></td>
+<td><code>bg-coral</code></td>
+<td><code>#e87f69</code></td>
+<td><code>#e87f69</code></td>
+<td>Pastille des notifications non lues, accent ponctuel</td>
+</tr>
+</tbody></table></div>
+<h3 id="ombres"><a class="anchor" href="#ombres" aria-hidden="true" tabindex="-1">#</a>Ombres</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable CSS</th>
+<th>Clair</th>
+<th>Sombre</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--card-shadow</code></td>
+<td><code>0 8px 24px rgba(29, 38, 55, 0.06)</code></td>
+<td>aucune</td>
+<td>Ombre douce des cartes et des pilules flottantes</td>
+</tr>
+<tr>
+<td><code>--card-border</code></td>
+<td>transparent</td>
+<td><code>#2c3649</code></td>
+<td>Bordure des cartes : invisible en clair, elle remplace l&#39;ombre en sombre</td>
+</tr>
+</tbody></table></div>
+<p>Les cartes jaunes (compte à rebours, roue) portent en plus une ombre dorée <code>0 14px 32px rgba(172, 141, 10, 0.22)</code>.</p>
 <p>Chaque thème déclare aussi <code>color-scheme</code>, ce qui adapte les contrôles natifs (barres de défilement, champs) au mode courant.</p>
-<p>Le layout racine déclare les mêmes fonds dans <code>viewport.themeColor</code> (<code>#F7F6F2</code> en clair, <code>#141413</code> en sombre) pour colorer la barre du navigateur mobile.</p>
+<p>Le layout racine déclare les mêmes fonds dans <code>viewport.themeColor</code> (<code>#F6F7FA</code> en clair, <code>#0F1626</code> en sombre) pour colorer la barre du navigateur mobile.</p>
 <h2 id="rayons-typographie-et-polices"><a class="anchor" href="#rayons-typographie-et-polices" aria-hidden="true" tabindex="-1">#</a>Rayons, typographie et polices</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -170,25 +304,31 @@
 </thead>
 <tbody><tr>
 <td><code>--radius-sm</code></td>
-<td>6 px</td>
+<td>10 px</td>
 <td><code>rounded-sm</code></td>
 </tr>
 <tr>
 <td><code>--radius-md</code></td>
-<td>10 px</td>
+<td>14 px</td>
 <td><code>rounded-md</code></td>
 </tr>
 <tr>
 <td><code>--radius-lg</code></td>
-<td>14 px</td>
+<td>20 px</td>
 <td><code>rounded-lg</code></td>
 </tr>
 <tr>
 <td><code>--radius-xl</code></td>
-<td>18 px</td>
+<td>24 px</td>
 <td><code>rounded-xl</code></td>
 </tr>
+<tr>
+<td><code>--radius-2xl</code></td>
+<td>28 px</td>
+<td><code>rounded-2xl</code></td>
+</tr>
 </tbody></table></div>
+<p>Les composants écrivent aussi souvent leur rayon en valeur fixe (<code>rounded-[16px]</code>, <code>rounded-[24px]</code>, <code>rounded-[28px]</code>) pour coller à la maquette mobile : 24 px pour les cartes, 16 px pour les boutons et les encarts, 28 px pour les feuilles, la barre latérale et la carte du tirage, <code>rounded-full</code> pour les pilules.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -244,10 +384,14 @@
 <td><code>--text-display</code></td>
 <td>44 / 52 px</td>
 <td><code>text-display</code></td>
-<td>Accroche de la page publique</td>
+<td>Accroche de la page publique, cagnotte</td>
 </tr>
 </tbody></table></div>
-<p>Les polices sont celles du système (<code>ui-sans-serif, system-ui, -apple-system, &#39;Segoe UI&#39;, Roboto...</code>) et <code>ui-monospace</code> pour les adresses et les hash. Aucune police web n&#39;est chargée, ce qui évite toute requête vers un service tiers.</p>
+<p>La police est Inter, servie par le site lui-même. <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/layout.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>layout.tsx</code></a> la charge avec <code>next/font/local</code> depuis <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/app/fonts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/fonts</code></a> en cinq fichiers : 400, 500, 600, 700 et 700 italique (ce dernier sert au « Lucky » du logo). Next.js expose la famille dans la variable <code>--font-inter</code>, posée sur <code>&lt;html&gt;</code>, et <code>--font-sans</code> la place en tête de la pile de polices système (<code>ui-sans-serif, system-ui, -apple-system, &#39;Segoe UI&#39;, Roboto...</code>), qui sert de repli pendant le chargement (<code>display: &#39;swap&#39;</code>). Les fichiers sont recopiés depuis le paquet <code>@expo-google-fonts/inter</code> du mobile, avec la licence SIL Open Font License dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/fonts/LICENSE-inter.txt" class="external" target="_blank" rel="noopener noreferrer"><code>LICENSE-inter.txt</code></a>. Aucune requête ne part vers un service de polices tiers. <code>ui-monospace</code> reste utilisé pour les adresses et les hash.</p>
+<p>Le <code>body</code> applique un espacement des lettres de -0,1 px et le lissage <code>antialiased</code>. Les titres de page sont en gras avec un espacement négatif (-0,4 px).</p>
+<h2 id="icones-et-logo"><a class="anchor" href="#icones-et-logo" aria-hidden="true" tabindex="-1">#</a>Icônes et logo</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/Icon.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Icon.tsx</code></a> affiche une icône SVG en ligne à partir de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/iconData.ts" class="external" target="_blank" rel="noopener noreferrer"><code>iconData.ts</code></a>, copie du jeu d&#39;icônes du mobile (45 icônes : onglets, cloche, étoile, ticket, roue, bouclier, logo...). Il reçoit <code>name</code> (type <code>IconName</code>), <code>size</code> (20 px par défaut, la hauteur suit les proportions de l&#39;icône) et <code>className</code>. Les tracés utilisent <code>currentColor</code> : l&#39;icône prend la couleur du texte du parent. Elle est toujours <code>aria-hidden</code>, le libellé doit donc être porté par le bouton ou le lien qui la contient. Aucune bibliothèque d&#39;icônes n&#39;est installée.</p>
+<p>Le logo est le « B » encre sur carré jaune <code>#FFDA38</code> du mobile (icône <code>logoSymbol</code>, identique à <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/assets/icons/logo-symbol.svg" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/assets/icons/logo-symbol.svg</code></a>). Il sert aussi de favicon par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/icon.svg" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/icon.svg</code></a>, que Next.js déclare automatiquement. <code>Brand</code> l&#39;accompagne du mot « Block<em>Lucky</em> » avec « Lucky » en italique, comme <code>BrandLogo</code> sur mobile.</p>
 <h2 id="utilitaires-et-animations"><a class="anchor" href="#utilitaires-et-animations" aria-hidden="true" tabindex="-1">#</a>Utilitaires et animations</h2>
 <p><code>globals.css</code> définit trois utilitaires Tailwind (<code>@utility</code>) :</p>
 <div class="table-wrap"><table>
@@ -259,7 +403,7 @@
 </thead>
 <tbody><tr>
 <td><code>card</code></td>
-<td>Fond <code>--surface</code>, bordure <code>--border</code>, rayon 14 px</td>
+<td>Fond <code>--surface</code>, bordure <code>--card-border</code>, rayon 24 px, ombre <code>--card-shadow</code></td>
 </tr>
 <tr>
 <td><code>eyebrow-caps</code></td>
@@ -270,8 +414,8 @@
 <td>Chiffres à chasse fixe pour les montants et les compteurs</td>
 </tr>
 </tbody></table></div>
-<p>Et cinq animations préfixées <code>bl-</code> : <code>animate-bl-spin</code> (indicateur de chargement), <code>animate-bl-shimmer</code> (squelettes, reçu en attente), <code>animate-bl-slide-up</code> (ouverture des feuilles), <code>animate-bl-fade-in</code> (fond des feuilles), <code>animate-bl-drop-in</code> (bandeau de notification). Toutes sont réduites à 0,01 ms quand <code>prefers-reduced-motion: reduce</code> est actif (voir <a href="accessibilite.html">Accessibilité et responsive</a>).</p>
-<p>La couche <code>base</code> fixe le fond et la couleur du <code>body</code>, la couleur de sélection, le contour <code>:focus-visible</code> (2 px, couleur <code>--secondary</code>, décalé de 2 px) et le curseur des boutons. La classe <code>no-print</code> masque un élément à l&#39;impression.</p>
+<p>Et cinq animations préfixées <code>bl-</code> : <code>animate-bl-spin</code> (indicateur de chargement, rotation de la roue du tirage), <code>animate-bl-shimmer</code> (squelettes, reçu en attente, pastille « Tirage... »), <code>animate-bl-slide-up</code> (ouverture des feuilles), <code>animate-bl-fade-in</code> (fond des feuilles), <code>animate-bl-drop-in</code> (bandeau de notification). Toutes sont réduites à 0,01 ms quand <code>prefers-reduced-motion: reduce</code> est actif (voir <a href="accessibilite.html">Accessibilité et responsive</a>).</p>
+<p>La couche <code>base</code> fixe le fond, la couleur et la police du <code>body</code>, la sélection de texte (fond <code>--sun</code>, texte <code>--on-sun</code>), le contour <code>:focus-visible</code> (2 px, couleur <code>--violet</code>, décalé de 2 px) et le curseur des boutons. Les champs de saisie remplacent ce contour par une bordure couleur <code>--text</code> et un halo jaune (<code>ring-4 ring-sun/30</code>). La classe <code>no-print</code> masque un élément à l&#39;impression.</p>
 <h2 id="themes-clair-et-sombre"><a class="anchor" href="#themes-clair-et-sombre" aria-hidden="true" tabindex="-1">#</a>Thèmes clair et sombre</h2>
 <p>Le thème est un attribut <code>data-theme</code> sur <code>&lt;html&gt;</code>, posé par deux mécanismes :</p>
 <ol>
@@ -300,7 +444,7 @@
 <tbody><tr>
 <td><code>Button</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/Button.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Button.tsx</code></a></td>
-<td>Variantes <code>primary</code>, <code>secondary</code>, <code>outline</code>, <code>danger</code>, <code>ghost</code> ; tailles <code>md</code> (48 px de haut) et <code>sm</code> ; <code>loading</code> remplace le texte par un <code>Spinner</code>, désactive le bouton et pose <code>aria-busy</code> ; pleine largeur par défaut</td>
+<td>Variantes <code>primary</code> (jaune soleil, texte encre, ombre dorée), <code>secondary</code> (encre, texte blanc), <code>outline</code> (surface bordée), <code>danger</code> (surface bordée, texte rouge, survol pêche), <code>ghost</code> (transparent), <code>soft</code> (lavande, texte violet) ; tailles <code>md</code> (52 px de haut, rayon 16 px) et <code>sm</code> (40 px, rayon 12 px) ; <code>loading</code> remplace le texte par un <code>Spinner</code>, désactive le bouton et pose <code>aria-busy</code> ; pleine largeur par défaut</td>
 </tr>
 <tr>
 <td><code>LinkButton</code></td>
@@ -315,17 +459,22 @@
 <tr>
 <td><code>Card</code>, <code>CardTitle</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/Card.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Card.tsx</code></a></td>
-<td>Conteneur avec <code>tone</code> (<code>surface</code> ou <code>elevated</code>), <code>padding</code> (<code>sm</code>, <code>md</code>, <code>lg</code>) et balise configurable (<code>as</code>)</td>
+<td>Conteneur de rayon 24 px avec <code>tone</code> (<code>surface</code> avec ombre douce, <code>elevated</code>, <code>sun</code>, <code>sunSoft</code>, <code>lavender</code>, <code>mint</code>, <code>peach</code>, <code>ink</code> sur fond <code>#1d2637</code>), <code>padding</code> (<code>sm</code>, <code>md</code>, <code>lg</code>) et balise configurable (<code>as</code>)</td>
+</tr>
+<tr>
+<td><code>Icon</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/Icon.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Icon.tsx</code></a></td>
+<td>Icône SVG en ligne, voir <a href="#icones-et-logo">Icônes et logo</a></td>
 </tr>
 <tr>
 <td><code>Input</code>, <code>Textarea</code>, <code>Select</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/Input.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Input.tsx</code></a></td>
-<td>Champ avec libellé associé, <code>hint</code>, <code>errorText</code> relié par <code>aria-describedby</code>, <code>aria-invalid</code> en cas d&#39;erreur</td>
+<td>Champ de rayon 14 px avec libellé associé, <code>hint</code>, <code>errorText</code> relié par <code>aria-describedby</code>, <code>aria-invalid</code> en cas d&#39;erreur ; au focus, bordure encre et halo jaune</td>
 </tr>
 <tr>
 <td><code>Loader</code>, <code>Skeleton</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/Loader.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Loader.tsx</code></a></td>
-<td>Indicateur avec message (<code>aria-live=&quot;polite&quot;</code>) et lignes de squelette</td>
+<td>Indicateur avec message (<code>aria-live=&quot;polite&quot;</code>) et squelettes de 52 px de haut, rayon 16 px</td>
 </tr>
 <tr>
 <td><code>Spinner</code></td>
@@ -335,52 +484,52 @@
 <tr>
 <td><code>PageHeader</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/Misc.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Misc.tsx</code></a></td>
-<td>Titre <code>h1</code> de page, sous-titre, surtitre et zone d&#39;actions</td>
+<td>Titre <code>h1</code> de page, sous-titre, surtitre en pilule <code>sun-chip</code> et zone d&#39;actions</td>
 </tr>
 <tr>
 <td><code>EmptyState</code></td>
 <td>même fichier</td>
-<td>Carte d&#39;état vide avec titre, description et action</td>
+<td>Carte d&#39;état vide avec pastille jaune, titre, description et action</td>
 </tr>
 <tr>
 <td><code>Alert</code></td>
 <td>même fichier</td>
-<td>Message de ton <code>success</code>, <code>info</code>, <code>warning</code> ou <code>error</code> ; <code>role=&quot;alert&quot;</code> pour une erreur, <code>role=&quot;status&quot;</code> sinon</td>
+<td>Encart arrondi (16 px) teinté selon le ton : <code>success</code> menthe, <code>info</code> lavande, <code>warning</code> jaune pâle, <code>error</code> pêche ; <code>role=&quot;alert&quot;</code> pour une erreur, <code>role=&quot;status&quot;</code> sinon</td>
 </tr>
 <tr>
 <td><code>Badge</code>, <code>StatusDot</code></td>
 <td>même fichier</td>
-<td>Étiquette colorée et pastille d&#39;état décorative</td>
+<td>Pilule teintée (<code>neutral</code>, <code>primary</code> menthe, <code>secondary</code> lavande, <code>danger</code> pêche, <code>warning</code> jaune) et pastille d&#39;état décorative</td>
 </tr>
 <tr>
 <td><code>CheckboxCard</code></td>
 <td>même fichier</td>
-<td>Case à cocher native dans une carte cliquable</td>
+<td>Case à cocher native dans une carte cliquable de rayon 16 px, bordure jaune et fond <code>sun-chip</code> une fois cochée</td>
 </tr>
 <tr>
 <td><code>ProgressBar</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/ProgressBar.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ProgressBar.tsx</code></a></td>
-<td>Jauge <code>role=&quot;progressbar&quot;</code> avec paliers (<code>milestones</code>)</td>
+<td>Jauge <code>role=&quot;progressbar&quot;</code> remplie en jaune, compteur en pilule ; paliers (<code>milestones</code>) affichés en tuiles, sur deux colonnes à partir de <code>sm</code>, jaunes une fois débloqués</td>
 </tr>
 <tr>
 <td><code>SegmentedTabs</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/SegmentedTabs.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SegmentedTabs.tsx</code></a></td>
-<td>Onglets <code>role=&quot;tablist&quot;</code> / <code>role=&quot;tab&quot;</code></td>
+<td>Onglets <code>role=&quot;tablist&quot;</code> / <code>role=&quot;tab&quot;</code> dans une pilule blanche, onglet actif en jaune</td>
 </tr>
 <tr>
 <td><code>ChoicePills</code></td>
 <td>même fichier</td>
-<td>Choix unique <code>role=&quot;radiogroup&quot;</code> / <code>role=&quot;radio&quot;</code> (quantités, tranches d&#39;âge)</td>
+<td>Choix unique <code>role=&quot;radiogroup&quot;</code> / <code>role=&quot;radio&quot;</code> (quantités, tranches d&#39;âge), pilules dont l&#39;option choisie passe en encre</td>
 </tr>
 <tr>
 <td><code>Sheet</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/Sheet.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Sheet.tsx</code></a></td>
-<td>Feuille modale : basse sur mobile, centrée à partir de <code>md</code>, piège de focus, Échap, retour du focus, ton <code>danger</code></td>
+<td>Feuille modale de rayon 28 px : basse sur mobile avec une poignée, centrée à partir de <code>md</code>, bouton de fermeture rond avec l&#39;icône <code>close</code>, surtitre violet (rouge en ton <code>danger</code>), piège de focus, Échap, retour du focus</td>
 </tr>
 <tr>
 <td><code>BackButton</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/BackButton.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>BackButton.tsx</code></a></td>
-<td>Lien de retour vers <code>href</code>, ou <code>router.back()</code> sans <code>href</code></td>
+<td>Pilule blanche avec une flèche dans un rond ; lien vers <code>href</code>, ou <code>router.back()</code> sans <code>href</code></td>
 </tr>
 </tbody></table></div>
 <p>Un bouton désactivé (<code>disabled</code>) prend toujours le fond <code>surface-elevated</code> et le texte <code>fg-muted</code>, quelle que soit sa variante. Un bouton en <code>loading</code> garde sa couleur.</p>
@@ -399,7 +548,7 @@
 </thead>
 <tbody><tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/components/layout" class="external" target="_blank" rel="noopener noreferrer"><code>components/layout</code></a></td>
-<td><code>AppShell</code> (barre latérale, en-tête, onglets bas), <code>PublicShell</code>, <code>LegalPage</code>, <code>Brand</code>, <code>PreferenceToggles</code>, <code>RequireRole</code>, <code>AccessDenied</code>, <code>GlobalOverlays</code></td>
+<td><code>AppShell</code> (barre latérale, en-tête, onglets bas), <code>PublicShell</code>, <code>LegalPage</code>, <code>Brand</code>, <code>SecurityFooter</code>, <code>PreferenceToggles</code>, <code>RequireRole</code>, <code>AccessDenied</code>, <code>GlobalOverlays</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/components/lottery" class="external" target="_blank" rel="noopener noreferrer"><code>components/lottery</code></a></td>
@@ -414,9 +563,36 @@
 <td><code>BarList</code>, <code>RingMeter</code>, <code>KpiTile</code>, sans dépendance externe</td>
 </tr>
 </tbody></table></div>
+<h3 id="coquilles"><a class="anchor" href="#coquilles" aria-hidden="true" tabindex="-1">#</a>Coquilles</h3>
+<p><code>AppShell</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/layout/AppShell.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>AppShell.tsx</code></a>) reprend la structure des écrans mobiles :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Zone</th>
+<th>Rendu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Barre latérale (à partir de <code>lg</code>)</td>
+<td>Carte flottante de 272 px de large, rayon 28 px, décollée des bords de 16 px ; logo, nom de l&#39;espace en pilule <code>sun-chip</code>, entrées avec leur icône, entrée active sur fond <code>sun-nav</code> ; en bas, thème et langue, adresse du portefeuille avec un bouton rond de déconnexion, puis <code>SecurityFooter</code></td>
+</tr>
+<tr>
+<td>En-tête</td>
+<td>Bandeau translucide flouté ; pour l&#39;espace citoyen, pilule du portefeuille (icône ticket sur fond menthe, adresse raccourcie, masquée sous <code>sm</code>), pilule jaune des points avec une étoile, bouton rond de la cloche avec une pastille corail quand des notifications sont non lues</td>
+</tr>
+<tr>
+<td>Barre basse (sous <code>lg</code>)</td>
+<td>Barre blanche aux coins supérieurs arrondis (24 px), icône au-dessus du libellé, onglet actif sur fond <code>sun-nav</code>, menu « Plus » (icône <code>settings</code>) au-delà de cinq entrées, <code>SecurityFooter</code> en dessous</td>
+</tr>
+</tbody></table></div>
+<p>Chaque entrée de navigation (<code>NavItem</code>) accepte un champ facultatif <code>icon</code>, de type <code>IconName</code>. Les trois layouts d&#39;espace le renseignent : par exemple <code>tabHome</code> pour Accueil et Pilotage, <code>ticket</code>, <code>trophy</code> et <code>bag</code> pour Tickets, Tirage et Boutique, <code>idCard</code>, <code>shield</code> et <code>document</code> pour Identités, Sécurité et Audit. Une entrée sans icône garde la place vide dans la barre basse.</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/layout/SecurityFooter.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SecurityFooter.tsx</code></a> affiche la mention « Application sécurisée · Aucun argent réel » avec un bouclier, comme le composant du même nom sur mobile. On la retrouve dans <code>AppShell</code>, <code>PublicShell</code>, <code>AccessDenied</code> et les pages de connexion.</p>
+<p><code>PublicShell</code> garde son en-tête (logo, lien vers les règles, préférences, bouton « Participer » ou « Mon espace ») et met son pied de page dans une carte, avec des liens en pilules. <code>LegalPage</code> ouvre sur un surtitre en pilule jaune. <code>AccessDenied</code> présente une carte avec une icône sur fond pêche. <code>GlobalOverlays</code> utilise les mêmes feuilles et pilules que le reste de l&#39;interface.</p>
+<h3 id="graphiques"><a class="anchor" href="#graphiques" aria-hidden="true" tabindex="-1">#</a>Graphiques</h3>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/charts/Charts.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Charts.tsx</code></a> exporte <code>CHART_COLORS</code>, une palette de cinq tons (<code>sun</code>, <code>violet</code>, <code>green</code>, <code>terracotta</code>, <code>coral</code>). <code>BarList</code> et <code>RingMeter</code> acceptent un <code>tone</code> facultatif (<code>sun</code> par défaut). <code>KpiTile</code> accepte en plus de <code>label</code>, <code>value</code>, <code>hint</code> et <code>tone</code> (<code>default</code>, <code>primary</code> sur fond jaune, <code>secondary</code> en violet) trois props facultatives : <code>icon</code> (pastille ronde en tête de tuile), <code>accent</code> (<code>sun</code>, <code>lavender</code>, <code>mint</code> ou <code>peach</code>, couleur de cette pastille) et <code>className</code>.</p>
 <p>Les composants de loterie sont décrits dans <a href="portefeuille-loterie.html">Portefeuille et loterie</a>.</p>
 <h2 id="modifier-la-charte"><a class="anchor" href="#modifier-la-charte" aria-hidden="true" tabindex="-1">#</a>Modifier la charte</h2>
-<p>Pour changer une couleur, modifier la variable dans les deux blocs (<code>:root</code> et <code>[data-theme=&#39;dark&#39;]</code>) de <code>globals.css</code>, puis reporter la valeur dans <code>mobile-app/src/theme/colors.ts</code> pour garder la parité. Vérifier ensuite le contraste dans les deux thèmes : plusieurs combinaisons actuelles sont déjà sous le seuil AA pour le petit texte (détail dans <a href="accessibilite.html#contrastes">Accessibilité et responsive</a>). Le splash et l&#39;icône du mobile utilisent une autre couleur (<code>#1A0B2E</code> dans <code>app.json</code>), héritée d&#39;une ancienne charte.</p>
+<p>Pour changer une couleur, modifier la variable dans les deux blocs (<code>:root</code> et <code>[data-theme=&#39;dark&#39;]</code>) de <code>globals.css</code>. Les jetons du web étant recopiés depuis <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/theme/colors.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/theme/colors.ts</code></a>, reporter la même valeur côté mobile pour garder les deux supports identiques. Quelques composants écrivent encore l&#39;encre en dur (<code>#1d2637</code> dans <code>Card</code> ton <code>ink</code>, <code>ChoicePills</code>, <code>CheckboxCard</code>, la roue et le texte de la carte à gratter) : les modifier aussi si l&#39;encre change. Vérifier ensuite le contraste dans les deux thèmes : quelques combinaisons restent sous le seuil AA pour le petit texte (détail dans <a href="accessibilite.html#contrastes">Accessibilité et responsive</a>).</p>
 
     </article>
     <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="temps-reel.html"><span>Précédent</span><strong>Temps réel</strong></a><a class="pager-next" href="i18n.html"><span>Suivant</span><strong>Internationalisation</strong></a></nav>
@@ -425,7 +601,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#tokens-de-couleur">Tokens de couleur</a></li><li class="toc-h2"><a href="#rayons-typographie-et-polices">Rayons, typographie et polices</a></li><li class="toc-h2"><a href="#utilitaires-et-animations">Utilitaires et animations</a></li><li class="toc-h2"><a href="#themes-clair-et-sombre">Thèmes clair et sombre</a></li><li class="toc-h2"><a href="#composants-de-src-components-ui">Composants de src/components/ui</a></li><li class="toc-h2"><a href="#composants-de-mise-en-page-et-metier">Composants de mise en page et métier</a></li><li class="toc-h2"><a href="#modifier-la-charte">Modifier la charte</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#tokens-de-couleur">Tokens de couleur</a></li><li class="toc-h3"><a href="#base">Base</a></li><li class="toc-h3"><a href="#famille-soleil">Famille soleil</a></li><li class="toc-h3"><a href="#teintes-d-accompagnement">Teintes d&#39;accompagnement</a></li><li class="toc-h3"><a href="#ombres">Ombres</a></li><li class="toc-h2"><a href="#rayons-typographie-et-polices">Rayons, typographie et polices</a></li><li class="toc-h2"><a href="#icones-et-logo">Icônes et logo</a></li><li class="toc-h2"><a href="#utilitaires-et-animations">Utilitaires et animations</a></li><li class="toc-h2"><a href="#themes-clair-et-sombre">Thèmes clair et sombre</a></li><li class="toc-h2"><a href="#composants-de-src-components-ui">Composants de src/components/ui</a></li><li class="toc-h2"><a href="#composants-de-mise-en-page-et-metier">Composants de mise en page et métier</a></li><li class="toc-h3"><a href="#coquilles">Coquilles</a></li><li class="toc-h3"><a href="#graphiques">Graphiques</a></li><li class="toc-h2"><a href="#modifier-la-charte">Modifier la charte</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

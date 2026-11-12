@@ -1,8 +1,15 @@
 # Navigation et écrans
 
-L'application mobile utilise React Navigation 7 avec deux types de navigateurs : des piles natives (`createNativeStackNavigator`) et une barre d'onglets (`createBottomTabNavigator`) dessinée par un composant maison. Tous les en-têtes natifs sont masqués (`headerShown: false`) : chaque écran affiche son propre titre et, si besoin, un `BackButton`.
+L'application mobile utilise React Navigation 7 avec deux types de navigateurs : des piles natives (`createNativeStackNavigator`) et une barre d'onglets (`createBottomTabNavigator`) dessinée par un composant maison. Tous les en-têtes natifs sont masqués (`headerShown: false`) : chaque écran affiche son propre en-tête avec `ScreenHeader` et, si besoin, un bouton retour.
 
-Les quatre navigateurs sont dans [`mobile-app/src/navigation`](src:mobile-app/src/navigation) et leurs paramètres sont typés dans [`mobile-app/src/types/navigation.types.ts`](src:mobile-app/src/types/navigation.types.ts).
+Les trois navigateurs sont dans [`mobile-app/src/navigation`](src:mobile-app/src/navigation). Leurs paramètres sont typés dans [`mobile-app/src/types/navigation.types.ts`](src:mobile-app/src/types/navigation.types.ts), et [`mobile-app/src/navigation/hooks.ts`](src:mobile-app/src/navigation/hooks.ts) fournit deux hooks typés :
+
+| Hook | Type renvoyé | Utilisé par |
+|---|---|---|
+| `useRootNavigation()` | Composition de la pile racine (`RootStackParamList`) et des onglets (`MainTabsParamList`) | Écrans connectés : un même objet ouvre un écran empilé ou change d'onglet |
+| `useAuthNavigation()` | Pile d'authentification (`AuthStackParamList`) | Écrans non connectés |
+
+Les écrans ne reçoivent plus de prop `navigation: any` : un nom de route ou un paramètre erroné est refusé par `npm run typecheck`.
 
 ## Arbre de navigation
 
@@ -10,17 +17,16 @@ Les quatre navigateurs sont dans [`mobile-app/src/navigation`](src:mobile-app/sr
 flowchart TD
   ROOT["RootNavigator : pile racine"] -->|"isAuthenticated faux"| AUTH["AuthStack"]
   ROOT -->|"isAuthenticated vrai"| MAIN["Main : MainTabs"]
-  ROOT --> PUSH["Écrans empilés : BuyTicket, LiveDraw, TransactionHistory, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, Setup2FA"]
+  ROOT --> PUSH["Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, Security, Setup2FA, GDPR, HelpSupport"]
   AUTH --> A1["Onboarding"]
-  AUTH --> A2["Login"]
+  AUTH --> A2["SignIn, SignUp"]
   AUTH --> A3["Verify2FA"]
-  AUTH --> A4["Setup2FA"]
+  AUTH --> A4["ForgotPassword, ResetPassword"]
+  AUTH --> A5["Setup2FA"]
   MAIN --> T1["HomeTab : HomeScreen"]
-  MAIN --> T2["BuyTicketTab : BuyTicketScreen"]
-  MAIN --> T3["LiveDrawTab : LiveDrawScreen"]
-  MAIN --> T4["MarketplaceTab : RewardsCatalogScreen"]
-  MAIN --> T5["SettingsTab : SettingsStack"]
-  T5 --> S1["ProfileMain, Security, Setup2FA, GDPR, HelpSupport"]
+  MAIN --> T2["TicketsTab : MyTicketsScreen"]
+  MAIN --> T3["SponsorsTab : SponsorsScreen"]
+  MAIN --> T4["ProfileTab : ProfileScreen"]
 ```
 
 ### RootNavigator
@@ -30,57 +36,95 @@ flowchart TD
 | État | Écrans enregistrés |
 |---|---|
 | Non connecté | `Auth` (tout l'`AuthStack`) |
-| Connecté | `Main` (les onglets), puis `BuyTicket`, `LiveDraw`, `TransactionHistory`, `RewardsCatalog`, `RewardDetail`, `ScratchCard`, `MyCodes`, `Setup2FA` |
+| Connecté | `Main` (les onglets), puis les 17 écrans empilés de l'arbre ci-dessus |
 
 Ce rendu conditionnel est le mécanisme de garde : quand `setCredentials` passe `isAuthenticated` à vrai, React Navigation démonte l'`AuthStack` et affiche les onglets ; `logout` fait l'inverse. Aucune navigation explicite n'est nécessaire après la connexion.
 
-`RootNavigator` rend aussi, au-dessus de la navigation, le bandeau de notification simulé et cinq `BottomSheet` globales pilotées par le slice `ui` : points crédités, réseau encombré, file d'attente, information réseau et tiroir des notifications (voir [État et appels API](etat-api.md#slice-ui)).
+Tous les écrans secondaires sont poussés sur cette pile racine : ils s'affichent en plein écran, sans barre d'onglets, et le retour ramène à l'onglet d'origine. Il n'y a plus de pile imbriquée dans un onglet.
+
+#### Ouverture automatique de la vérification d'âge
+
+Après la connexion, `RootNavigator` ouvre de lui-même l'écran `VerifyAge` quand le profil stocké indique `ageVerificationStatus` égal à `NONE` ou `REJECTED`. La fonction `promptAgeVerification` est appelée 400 ms après le passage à l'état connecté et à `onReady` du conteneur. Une référence `agePromptShown` limite l'ouverture à une fois par session ; elle est remise à zéro à la déconnexion. Un statut `PENDING` ou `VERIFIED` n'ouvre rien. Le citoyen peut fermer l'écran : l'achat, le cadeau et les échanges lui seront alors refusés par le backend (403 `AGE_VERIFICATION_REQUIRED`), et chaque écran concerné propose de rouvrir `VerifyAge` (voir [Portefeuille et loterie](portefeuille-loterie.md#verification-d-age-requise)).
+
+#### Fenêtres globales
+
+`RootNavigator` rend aussi, au-dessus de la navigation, un bandeau de notification simulé et quatre `ResultDialog` pilotés par le slice `ui` : points crédités, réseau encombré, forte affluence et information réseau (voir [État et appels API](etat-api.md#slice-ui)).
 
 ### AuthStack
 
-[`AuthStack.tsx`](src:mobile-app/src/navigation/AuthStack.tsx) démarre sur `Onboarding` si `hasSeenOnboarding` est faux, sinon sur `Login`. `hasSeenOnboarding` n'est pas persisté : l'introduction réapparaît à chaque démarrage à froid de l'application.
+[`AuthStack.tsx`](src:mobile-app/src/navigation/AuthStack.tsx) démarre sur `Onboarding` si `hasSeenOnboarding` est faux, sinon sur `SignIn`. `hasSeenOnboarding` n'est pas persisté : l'introduction réapparaît à chaque démarrage à froid de l'application.
+
+| Route | Paramètres |
+|---|---|
+| `Onboarding` | aucun |
+| `SignIn` | aucun |
+| `SignUp` | `referralCode` facultatif |
+| `Verify2FA` | `userId`, `method` (`APP` ou `EMAIL`), `email`, `purpose` (`signin` ou `signup`), `devOtpPreview` |
+| `ForgotPassword` | `email` facultatif |
+| `ResetPassword` | `email`, `devOtpPreview` |
+| `Setup2FA` | aucun |
 
 `Setup2FA` est enregistré dans cette pile, mais aucun écran non connecté n'y mène et l'écran exige un utilisateur connecté pour fonctionner.
 
 ### MainTabs
 
-[`MainTabs.tsx`](src:mobile-app/src/navigation/MainTabs.tsx) déclare cinq onglets avec des libellés traduits : Accueil, Tickets, Tirage, Boutique, Profil. La barre `CustomTabBar` remplace celle de React Navigation : fond `surface`, bordure haute, marge basse égale à l'encart de sécurité (10 au minimum), onglet actif sur fond `surfaceElevated` avec un trait de couleur primaire au-dessus du libellé. Il n'y a pas d'icône.
+[`MainTabs.tsx`](src:mobile-app/src/navigation/MainTabs.tsx) déclare quatre onglets avec des libellés traduits :
 
-`CustomTabBar` émet l'événement `tabPress` avant de naviguer, comme la barre standard, mais ne gère pas l'appui long.
+| Route | Libellé | Écran | Icône |
+|---|---|---|---|
+| `HomeTab` | Accueil | [`HomeScreen.tsx`](src:mobile-app/src/screens/lottery/HomeScreen.tsx) | `tabHome` |
+| `TicketsTab` | Mes tickets | [`MyTicketsScreen.tsx`](src:mobile-app/src/screens/lottery/MyTicketsScreen.tsx) | `tabTickets` |
+| `SponsorsTab` | Parrains | [`SponsorsScreen.tsx`](src:mobile-app/src/screens/sponsors/SponsorsScreen.tsx) | `tabSponsors` |
+| `ProfileTab` | Profil | [`ProfileScreen.tsx`](src:mobile-app/src/screens/settings/ProfileScreen.tsx) | `tabProfile` |
 
-### SettingsStack
+La barre `TabBar` remplace celle de React Navigation : fond `surface` aux coins supérieurs arrondis (24), ombre portée, icône SVG au-dessus du libellé, onglet actif sur fond `sunNav` avec icône et texte `onSun` en gras. Sous les onglets, `SecurityFooter` rappelle « Application sécurisée · Aucun argent réel ». La marge basse suit l'encart de sécurité de l'appareil.
 
-`SettingsStack` était la pile de l'onglet Profil : `ProfileMain` (écran d'accueil), `Security`, `Setup2FA`, `GDPR`, `HelpSupport`. La barre d'onglets reste visible sur ces écrans.
+La rangée porte `accessibilityRole="tablist"` et chaque onglet `accessibilityRole="tab"`, `accessibilityState={{ selected }}` et son libellé : les lecteurs d'écran annoncent l'onglet sélectionné. `TabBar` émet l'événement `tabPress` avant de naviguer, comme la barre standard, mais ne gère pas l'appui long.
 
-### Écrans enregistrés plusieurs fois
+## Les 27 écrans
 
-| Écran | Enregistrements | Conséquence |
+### Avant connexion
+
+| Écran | Fichier | Rôle | Données et actions |
+|---|---|---|---|
+| Introduction | [`OnboardingScreen.tsx`](src:mobile-app/src/screens/auth/OnboardingScreen.tsx) | Trois diapositives (grand tirage, tirage en direct, portefeuille offert et accès réservé aux 18 ans et plus) | Texte codé en dur ; `markOnboardingComplete` puis `replace('SignIn')` ou `replace('SignUp')` |
+| Connexion | [`SignInScreen.tsx`](src:mobile-app/src/screens/auth/SignInScreen.tsx) | Email et mot de passe, lien « Mot de passe oublié ? », boutons Google et Apple, lien vers l'inscription | `signInWithPassword` (`POST /auth/signin`) ; `navigate('Verify2FA')` si la 2FA est active |
+| Inscription | [`SignUpScreen.tsx`](src:mobile-app/src/screens/auth/SignUpScreen.tsx) | Email, mot de passe et confirmation avec règles affichées, code de parrainage repliable, acceptation des conditions, boutons Google et Apple | `signUpWithPassword` (`POST /auth/signup`) puis `navigate('Verify2FA', { purpose: 'signup' })` |
+| Vérification du code | [`Verify2FAScreen.tsx`](src:mobile-app/src/screens/auth/Verify2FAScreen.tsx) | Code à 6 chiffres reçu par email ou donné par l'application TOTP, ou code de secours | `verifyOtpCode` (`POST /auth/2fa/verify`) ; la connexion bascule seule vers les onglets |
+| Mot de passe oublié | [`ForgotPasswordScreen.tsx`](src:mobile-app/src/screens/auth/ForgotPasswordScreen.tsx) | Saisie de l'email | `requestPasswordReset` (`POST /auth/password/forgot`) puis `navigate('ResetPassword')` |
+| Nouveau mot de passe | [`ResetPasswordScreen.tsx`](src:mobile-app/src/screens/auth/ResetPasswordScreen.tsx) | Code reçu, nouveau mot de passe et confirmation, renvoi du code | `resetPassword` (`POST /auth/password/reset`), puis `popTo('SignIn')` |
+| Configuration 2FA | [`Setup2FAScreen.tsx`](src:mobile-app/src/screens/auth/Setup2FAScreen.tsx) | Choix application TOTP ou email, QR code, clé et codes de secours copiables, confirmation | `setup2FA` (`POST /auth/2fa/setup`), `verifyOtpCode` |
+
+### Onglets
+
+| Écran | Rôle | Données et actions |
 |---|---|---|
-| `BuyTicketScreen` | onglet `BuyTicketTab` et écran racine `BuyTicket` | L'accueil ouvre `BuyTicket` (empilé, sans barre d'onglets, avec `giftMode`) ; l'onglet ouvre la version sans paramètre |
-| `LiveDrawScreen` | onglet `LiveDrawTab` et écran racine `LiveDraw` | Seul l'onglet est utilisé par les écrans actuels |
-| `RewardsCatalogScreen` | onglet `MarketplaceTab` et écran racine `RewardsCatalog` | Seul l'onglet est utilisé |
-| `Setup2FAScreen` | `AuthStack`, `SettingsStack` et pile racine | L'écran de sécurité ouvre celui de `SettingsStack` |
+| Accueil | Logo et bouton des notifications, carte du grand tirage (cagnotte, phase, échéance, participants, paliers), achat ou accès à la salle, cadeau, tickets à gratter, points et offres, mission suivante, partage du code de parrainage ; tirer pour rafraîchir | `GET /lottery/status` toutes les 30 s, `GET /lottery/wallet`, `GET /lottery/my-tickets`, `GET /user/referrals`, `GET /user/quests`, `GET /marketplace/catalog`, `usePoints`, `usePushNotifications` |
+| Mes tickets | Ticket du tirage en cours, filtres, résultats des tirages passés, codes obtenus par grattage, accès à l'historique | `GET /lottery/status` toutes les 30 s, `GET /lottery/my-tickets`, `GET /marketplace/my-codes` |
+| Parrains | Code de parrainage (copie et partage), étapes du parrainage, classement des citoyens par EtherPoints, missions à valider | `GET /user/referrals`, `GET /lottery/leaderboard`, `GET /user/quests`, `POST /user/quests/complete` |
+| Profil | Carte d'identité du compte avec statut d'âge, résumé (ETH fictifs, EtherPoints, tickets joués), raccourcis (codes, boutique, historique), liens vers les réglages, déconnexion confirmée | `GET /user/profile`, `GET /lottery/wallet`, `signOut` |
 
-## Les 16 écrans
+### Écrans empilés
 
-| Écran | Fichier | Route | Rôle | Données et actions |
-|---|---|---|---|---|
-| Onboarding | [`OnboardingScreen.tsx`](src:mobile-app/src/screens/auth/OnboardingScreen.tsx) | `Onboarding` | Quatre diapositives (loterie, portefeuille intégré, EtherPoints, tirage), boutons « Passer » et « Suivant » | Texte codé en dur dans l'écran ; `markOnboardingComplete` puis `replace('Login')` |
-| Connexion | [`SignInScreen.tsx`](src:mobile-app/src/screens/auth/SignInScreen.tsx) | `Login` | Majorité 18+ (modale ouverte d'office), tranche d'âge, email (prérempli `citoyen@etherbay.fr`), parrainage, choix FR ou EN, boutons Google et email | `loginWithSocial` (`POST /auth/login`), `navigate('Verify2FA')` si un code est demandé |
-| Vérification 2FA | [`Verify2FAScreen.tsx`](src:mobile-app/src/screens/auth/Verify2FAScreen.tsx) | `Verify2FA` (`userId`, `method`, `email`) | Saisie du code à 6 chiffres | `verifyOtpCode` (`POST /auth/2fa/verify`) ; la connexion bascule seule vers les onglets |
-| Configuration 2FA | [`Setup2FAScreen.tsx`](src:mobile-app/src/screens/auth/Setup2FAScreen.tsx) | `Setup2FA` | Choix application TOTP ou email, affichage de la clé et des codes de secours, confirmation | `setup2FA` (`POST /auth/2fa/setup`), `verifyOtpCode` ; prérempli par `devOtpPreview` en développement |
-| Accueil | [`HomeScreen.tsx`](src:mobile-app/src/screens/lottery/HomeScreen.tsx) | `HomeTab` | Portefeuille, points, alertes, compte à rebours, garantie, achat d'un ticket, cadeau, accès au tirage, jauge, classement | `GET /lottery/status`, `GET /lottery/leaderboard`, `GET /lottery/wallet`, `usePoints`, `usePushNotifications`, `purchaseTickets(1, 0)` |
-| Billetterie | [`BuyTicketScreen.tsx`](src:mobile-app/src/screens/lottery/BuyTicketScreen.tsx) | `BuyTicketTab`, `BuyTicket` (`giftMode`) | Achat de 1, 2, 5 ou 10 tickets, ou cadeau par email ; carte du portefeuille ; message de confirmation et lien vers l'explorateur | `GET /lottery/status`, `purchaseTickets`, `sendGiftTicket` (`POST /lottery/buy`, `POST /lottery/gift`), `IntegratedWalletCard` |
-| Tirage en direct | [`LiveDrawScreen.tsx`](src:mobile-app/src/screens/lottery/LiveDrawScreen.tsx) | `LiveDrawTab`, `LiveDraw` | Salle d'attente, roue, certification VRF ou mode démonstration, retrait des gains, discussion | `GET /lottery/status`, `GET /lottery/wallet`, `useSocket(round.id)`, `WinnerClaimCard` |
-| Historique et POAP | [`TransactionHistoryScreen.tsx`](src:mobile-app/src/screens/lottery/TransactionHistoryScreen.tsx) | `TransactionHistory` | Tickets avec liens vers l'explorateur, galerie des badges POAP | `GET /lottery/my-tickets` |
-| Catalogue | [`RewardsCatalogScreen.tsx`](src:mobile-app/src/screens/marketplace/RewardsCatalogScreen.tsx) | `MarketplaceTab`, `RewardsCatalog` | Offres des commerces, solde et intégrité du registre de points, accès aux codes | `GET /marketplace/catalog`, `usePoints` (`GET /marketplace/points`) |
-| Détail d'offre | [`RewardDetailScreen.tsx`](src:mobile-app/src/screens/marketplace/RewardDetailScreen.tsx) | `RewardDetail` (`rewardId`) | Coût, disponibilité, échange contre des points | `GET /marketplace/rewards/:id`, `POST /marketplace/claim`, puis `replace('ScratchCard', { claim })` |
-| Carte à gratter | [`ScratchCardScreen.tsx`](src:mobile-app/src/screens/marketplace/ScratchCardScreen.tsx) | `ScratchCard` (`claim`) | Zone à gratter au doigt qui révèle le code | Aucun appel : le code arrive dans les paramètres de route |
-| Mes codes | [`MyCodesScreen.tsx`](src:mobile-app/src/screens/marketplace/MyCodesScreen.tsx) | `MyCodes` | Codes obtenus, actifs ou utilisés | `GET /marketplace/my-codes` |
-| Profil | [`ProfileScreen.tsx`](src:mobile-app/src/screens/settings/ProfileScreen.tsx) | `ProfileMain` | Portefeuille, thème et langue, parrainage (copie du lien, partage WhatsApp), missions, accès sécurité, RGPD, aide, déconnexion | `GET /user/referrals`, `GET /user/quests`, `POST /user/quests/complete`, `PUT /user/preferences`, `IntegratedWalletCard` |
-| Sécurité | [`SecurityScreen.tsx`](src:mobile-app/src/screens/settings/SecurityScreen.tsx) | `Security` | Plafond de tickets par tirage, état et désactivation de la 2FA, rappel RBAC avec écran 403 simulé | `PUT /user/responsible-limit`, `POST /auth/2fa/disable` |
-| RGPD | [`GDPRScreen.tsx`](src:mobile-app/src/screens/settings/GDPRScreen.tsx) | `GDPR` | Export JSON affiché à l'écran, demande puis confirmation d'anonymisation | `GET /user/gdpr/export`, `POST /user/gdpr/delete-request`, `POST /user/gdpr/confirm-delete`, puis `signOut` |
-| Charte et aide | [`HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx) | `HelpSupport` | Charte de transparence et notification simulée | `GET /lottery/transparency-charter`, `triggerSimulatedOsPush` |
+| Écran | Route | Rôle | Données et actions |
+|---|---|---|---|
+| [`BuyTicketScreen.tsx`](src:mobile-app/src/screens/lottery/BuyTicketScreen.tsx) | `BuyTicket` | Achat du ticket unique du grand tirage, solde avant et après | `GET /lottery/status`, `GET /lottery/wallet`, `GET /lottery/my-tickets`, `purchaseTickets` (`POST /lottery/buy`) |
+| [`GiftTicketScreen.tsx`](src:mobile-app/src/screens/lottery/GiftTicketScreen.tsx) | `GiftTicket` (`ticketId` facultatif) | Cadeau d'un ticket par email avec message | `sendGiftTicket` (`POST /lottery/gift`) |
+| [`WaitingRoomScreen.tsx`](src:mobile-app/src/screens/lottery/WaitingRoomScreen.tsx) | `WaitingRoom` | Salle d'attente : compte à rebours de révélation, ticket du citoyen, présence, discussion | `GET /lottery/status` toutes les 5 s, `useSocket`, puis `replace('LiveDraw')` |
+| [`LiveDrawScreen.tsx`](src:mobile-app/src/screens/lottery/LiveDrawScreen.tsx) | `LiveDraw` | Roue animée, numéro gagnant, résultat du citoyen, retrait des gains | `GET /lottery/status` toutes les 4 s, `useSocket`, `claimPrize` (`POST /lottery/claim-prize`) |
+| [`TransactionHistoryScreen.tsx`](src:mobile-app/src/screens/lottery/TransactionHistoryScreen.tsx) | `TransactionHistory` | Portefeuille, tickets et badges POAP avec liens vers l'explorateur | `GET /lottery/wallet`, `GET /lottery/my-tickets` |
+| [`HowItWorksScreen.tsx`](src:mobile-app/src/screens/lottery/HowItWorksScreen.tsx) | `HowItWorks` | Règles, calendrier d'un tirage, engagements, charte, lien vers le contrat | `GET /lottery/status`, `GET /lottery/transparency-charter` |
+| [`NotificationsScreen.tsx`](src:mobile-app/src/screens/settings/NotificationsScreen.tsx) | `Notifications` | Liste des notifications, marquées vues à la sortie | `GET /user/notifications` |
+| [`RewardsCatalogScreen.tsx`](src:mobile-app/src/screens/marketplace/RewardsCatalogScreen.tsx) | `RewardsCatalog` | Boutique : solde de points, offres des commerces, accès aux tickets à gratter et aux codes | `GET /marketplace/catalog`, `usePoints` |
+| [`RewardDetailScreen.tsx`](src:mobile-app/src/screens/marketplace/RewardDetailScreen.tsx) | `RewardDetail` (`rewardId`) | Coût, disponibilité, échange confirmé | `GET /marketplace/rewards/:id`, `POST /marketplace/claim`, puis `replace('ScratchCard', { claim })` |
+| [`ScratchCardScreen.tsx`](src:mobile-app/src/screens/marketplace/ScratchCardScreen.tsx) | `ScratchCard` (`claim` ou `offer`) | Choix et achat d'un ticket à gratter, ou révélation d'un code déjà obtenu | `POST /marketplace/scratch`, puis `replace('MyCodes')` |
+| [`MyCodesScreen.tsx`](src:mobile-app/src/screens/marketplace/MyCodesScreen.tsx) | `MyCodes` | Codes obtenus, actifs ou utilisés | `GET /marketplace/my-codes` |
+| [`VerifyAgeScreen.tsx`](src:mobile-app/src/screens/settings/VerifyAgeScreen.tsx) | `VerifyAge` | Photo du recto et du verso de la pièce d'identité, statut de la vérification | `GET /user/identity`, `POST /user/identity` |
+| [`SettingsScreen.tsx`](src:mobile-app/src/screens/settings/SettingsScreen.tsx) | `Settings` | Mode sombre, langue, notifications push | `GET /user/profile`, `PUT /user/preferences` |
+| [`SecurityScreen.tsx`](src:mobile-app/src/screens/settings/SecurityScreen.tsx) | `Security` | État, activation et désactivation de la 2FA, portefeuille intégré, déconnexion de tous les appareils | `GET /user/profile`, `POST /auth/2fa/disable`, `signOutEverywhere` |
+| [`Setup2FAScreen.tsx`](src:mobile-app/src/screens/auth/Setup2FAScreen.tsx) | `Setup2FA` | Comme dans l'`AuthStack` | `POST /auth/2fa/setup`, `POST /auth/2fa/verify` |
+| [`GDPRScreen.tsx`](src:mobile-app/src/screens/settings/GDPRScreen.tsx) | `GDPR` | Export JSON partagé par la feuille système, demande puis confirmation d'anonymisation | `GET /user/gdpr/export`, `POST /user/gdpr/delete-request`, `POST /user/gdpr/confirm-delete`, puis `signOut` |
+| [`HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx) | `HelpSupport` | Liens vers le fonctionnement du tirage, le contact de la Mairie par email et les notifications, puis charte de transparence | `GET /lottery/transparency-charter` |
 
 Toutes les routes appelées depuis les écrans connectés exigent un jeton, sauf `GET /lottery/status`, `/leaderboard`, `/transparency-charter`, `GET /marketplace/catalog` et `/rewards/:id`, qui sont publiques. Le rôle n'est pas vérifié côté mobile : l'application ne propose aucun écran réservé à `ADMIN` ou `PARTNER`. Un compte Mairie ou partenaire qui se connecte voit l'interface citoyenne.
 
@@ -88,23 +132,30 @@ Toutes les routes appelées depuis les écrans connectés exigent un jeton, sauf
 
 ```mermaid
 flowchart LR
-  ON["Onboarding"] --> LO["Login"]
-  LO -->|"code demandé"| VE["Verify2FA"]
-  VE --> HO["Accueil"]
-  HO -->|"Offrir un ticket"| BT["BuyTicket giftMode"]
-  HO -->|"portefeuille"| TH["TransactionHistory"]
-  HO -->|"points"| RC["Catalogue"]
-  RC --> RD["RewardDetail"]
-  RD -->|"replace"| SC["ScratchCard"]
+  ON["Onboarding"] --> SI["SignIn"]
+  ON --> SU["SignUp"]
+  SU -->|"code email"| VE["Verify2FA"]
+  SI -->|"2FA active"| VE
+  SI --> AC["Accueil"]
+  VE --> AC
+  AC -->|"âge NONE ou REJECTED"| VA["VerifyAge"]
+  AC --> BT["BuyTicket"]
+  AC --> GT["GiftTicket"]
+  AC -->|"phase WAITING_ROOM ou DRAWING"| WR["WaitingRoom"]
+  WR -->|"replace"| LD["LiveDraw"]
+  AC --> SC["ScratchCard"]
   SC -->|"replace"| MC["MyCodes"]
+  AC --> RC["RewardsCatalog"]
+  RC --> RD["RewardDetail"]
+  RD -->|"replace"| SC
 ```
 
-L'échange d'une récompense remplace l'écran de détail par la carte à gratter, puis la carte par la liste des codes : le retour arrière ne repasse pas par une carte déjà grattée.
+L'échange d'une récompense remplace l'écran de détail par la carte à gratter, puis la carte par la liste des codes : le retour arrière ne repasse pas par une carte déjà grattée. De même, la salle d'attente est remplacée par l'écran du tirage dès que la phase devient `DRAWING` ou `COMPLETED`.
 
 ## Ce que la navigation ne fait pas
 
-- **Pas de liens profonds.** Le `NavigationContainer` n'a pas de configuration `linking` et `app.json` ne déclare pas de `scheme`. Un lien de parrainage `/invite/<code>` ouvert sur le téléphone ne mène pas à l'application ; le code doit être saisi à la main.
+- **Pas de liens profonds.** `app.json` déclare désormais `"scheme": "blocklucky"`, utilisé par le retour de la connexion Google (`expo-web-browser`), mais le `NavigationContainer` n'a pas de configuration `linking`. Un lien de parrainage `/invite/<code>` ouvert sur le téléphone ne mène pas à un écran ; le code doit être saisi à la main dans l'inscription.
 - **Pas de restauration de session.** Au démarrage, `isAuthenticated` vaut toujours faux, même si un jeton est stocké (voir [Authentification et stockage sécurisé](authentification.md#session-au-demarrage)).
-- **Pas de typage strict des écrans de pile racine.** Plusieurs écrans reçoivent `navigation: any`, ce qui masque les erreurs de nom de route au typecheck.
+- **Pas de garde par statut d'âge.** L'ouverture automatique de `VerifyAge` est une invitation : aucun écran n'est bloqué côté application, c'est le backend qui refuse les opérations.
 
 Pour ajouter un écran, suivre [Ajouter un écran mobile](../guides/ajouter-ecran-mobile.md).

@@ -6,7 +6,7 @@
 <title>Portefeuille et loterie | Documentation BlockLucky</title>
 <meta name="description" content="Sur mobile comme sur le web, le citoyen n&#39;a pas de portefeuille à installer ni à connecter. Il n&#39;y a ni MetaMask, ni WalletConnect, ni clé privée sur le télépho">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 
@@ -37,8 +37,49 @@
     <div class="breadcrumb"><span>9. Application mobile</span></div>
     <article class="markdown">
 <h1>Portefeuille et loterie</h1>
-<p>Sur mobile comme sur le web, le citoyen n&#39;a pas de portefeuille à installer ni à connecter. Il n&#39;y a ni MetaMask, ni WalletConnect, ni clé privée sur le téléphone. Le backend crée à l&#39;inscription un portefeuille Ethereum intégré, chiffre sa clé, le crédite d&#39;une dotation de bienvenue en ethers fictifs et signe chaque transaction pour le compte du citoyen. L&#39;application se contente d&#39;appeler l&#39;API, d&#39;afficher l&#39;adresse, le solde et les reçus, et d&#39;ouvrir l&#39;explorateur de blocs.</p>
+<p>Sur mobile comme sur le web, le citoyen n&#39;a pas de portefeuille à installer ni à connecter. Il n&#39;y a ni MetaMask, ni WalletConnect, ni clé privée sur le téléphone. Le backend crée à l&#39;inscription un portefeuille Ethereum intégré, chiffre sa clé, le crédite d&#39;une dotation de bienvenue de 0,5 ETH fictif (<code>WELCOME_GRANT_WEI</code>) et signe chaque transaction pour le compte du citoyen. L&#39;application se contente d&#39;appeler l&#39;API, d&#39;afficher le solde, le ticket et les reçus, et d&#39;ouvrir l&#39;explorateur de blocs.</p>
 <p>Le fonctionnement serveur est décrit dans <a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a> et <a href="../integration-blockchain/passerelle.html">Passerelle du contrat et erreurs</a>. La version web de cette page est <a href="../web/portefeuille-loterie.html">Portefeuille et loterie du web</a>.</p>
+<h2 id="regles-du-grand-tirage"><a class="anchor" href="#regles-du-grand-tirage" aria-hidden="true" tabindex="-1">#</a>Règles du grand tirage</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Règle</th>
+<th>Source</th>
+<th>Effet dans l&#39;application</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Un seul ticket par participant et par grand tirage</td>
+<td><code>MAX_TICKETS_PER_PLAYER</code> (1 par défaut) au déploiement du contrat, contrôle du backend, quantité limitée à 1 par <code>buyTicketSchema</code></td>
+<td>Aucun choix de quantité ; une fois le ticket acheté, le bouton affiche « Ticket déjà validé »</td>
+</tr>
+<tr>
+<td>Un cadeau compte comme le ticket du destinataire</td>
+<td>Backend : 409 « Cette personne a déjà son ticket pour ce grand tirage. »</td>
+<td>Fenêtre d&#39;information dédiée</td>
+</tr>
+<tr>
+<td>Numéro de ticket sur 5 chiffres</td>
+<td><code>ticketNumber</code> des réponses (index du ticket plus un, complété par des zéros)</td>
+<td>Affiché sur la carte du ticket, la roue et les résultats</td>
+</tr>
+<tr>
+<td>Phases du tour</td>
+<td><code>round.phase</code> de <code>GET /lottery/status</code> : <code>OPEN</code>, <code>WAITING_ROOM</code>, <code>DRAWING</code>, <code>COMPLETED</code>, <code>CANCELLED</code></td>
+<td>Bouton d&#39;achat, accès à la salle, écran du tirage</td>
+</tr>
+<tr>
+<td>Délai de révélation</td>
+<td><code>round.revealAt</code>, calculé avec <code>DRAW_REVEAL_DELAY_SECONDS</code> (600 par défaut)</td>
+<td>Compte à rebours de la salle d&#39;attente</td>
+</tr>
+<tr>
+<td>Âge vérifié</td>
+<td><code>AGE_VERIFICATION_REQUIRED</code> côté backend</td>
+<td>Fenêtre qui mène à <code>VerifyAge</code> (voir <a href="#verification-d-age-requise">Vérification d&#39;âge requise</a>)</td>
+</tr>
+</tbody></table></div>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/lottery/lotteryFormat.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lotteryFormat.ts</code></a> et <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/draw/drawFormat.ts" class="external" target="_blank" rel="noopener noreferrer"><code>drawFormat.ts</code></a> regroupent les calculs partagés : <code>resolvePhase</code> déduit la phase de <code>status</code> et <code>inWaitingRoom</code> si le backend ne la fournit pas, <code>resolveParticipants</code> lit <code>participants</code> et <code>maxParticipants</code> du tour, <code>purchaseDeadline</code> renvoie <code>waitingRoomOpensAt</code> ou <code>drawTargetTime</code>, et <code>findCurrentRoundTicket</code> retrouve le ticket du tour courant dans <code>GET /lottery/my-tickets</code>.</p>
 <h2 id="mode-onchain-et-mode-demonstration"><a class="anchor" href="#mode-onchain-et-mode-demonstration" aria-hidden="true" tabindex="-1">#</a>Mode onchain et mode démonstration</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -51,142 +92,47 @@
 <tbody><tr>
 <td><code>guarantees.simulated</code></td>
 <td><code>GET /lottery/status</code></td>
-<td><code>BuyTicketScreen</code>, <code>LiveDrawScreen</code> (textes et masquage du retrait)</td>
+<td><code>LiveDrawScreen</code> (masquage du retrait des gains), <code>HowItWorksScreen</code> (certification VRF)</td>
 </tr>
 <tr>
-<td><code>guarantees.paused</code></td>
-<td><code>GET /lottery/status</code></td>
-<td><code>BuyTicketScreen</code> (boutons désactivés et avertissement)</td>
-</tr>
-<tr>
-<td><code>mode</code></td>
+<td><code>balanceEth</code></td>
 <td><code>GET /lottery/wallet</code></td>
-<td><code>IntegratedWalletCard</code> : badge « Mode démonstration » si <code>mode !== &#39;onchain&#39;</code></td>
+<td>Accueil, billetterie, cadeau, profil</td>
 </tr>
 <tr>
-<td><code>explorerUrl</code>, <code>etherscanUrl</code>, <code>blockchain.lotteryExplorerUrl</code></td>
-<td>portefeuille, tickets, retrait, statut</td>
-<td><code>ExplorerLink</code>, qui ne s&#39;affiche que si l&#39;URL existe</td>
+<td><code>etherscanUrl</code>, <code>explorerUrl</code>, <code>blockchain.lotteryExplorerUrl</code></td>
+<td>tickets, portefeuille, badges, statut</td>
+<td><code>TransactionHistoryScreen</code> et <code>HowItWorksScreen</code>, qui n&#39;affichent le lien que si l&#39;URL existe</td>
 </tr>
 </tbody></table></div>
-<p>En mode <code>simulated</code>, les URL d&#39;explorateur sont <code>null</code> : aucun lien n&#39;apparaît et l&#39;interface signale le mode démonstration. Voir <a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a>.</p>
-<h2 id="composants"><a class="anchor" href="#composants" aria-hidden="true" tabindex="-1">#</a>Composants</h2>
-<p>Ils sont dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/web3" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/components/web3</code></a> et <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/lottery" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/components/lottery</code></a>.</p>
-<h3 id="integratedwalletcard"><a class="anchor" href="#integratedwalletcard" aria-hidden="true" tabindex="-1">#</a>IntegratedWalletCard</h3>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/web3/IntegratedWalletCard.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>IntegratedWalletCard.tsx</code></a> appelle <code>useGetWalletQuery()</code> et affiche :</p>
+<p>En mode <code>simulated</code>, les URL d&#39;explorateur sont <code>null</code> et aucun lien n&#39;apparaît. Depuis la refonte, aucun écran n&#39;affiche plus d&#39;étiquette « Mode démonstration » : seule <code>IntegratedWalletCard</code>, qui n&#39;est plus utilisée, savait le faire. Le mode simulé ne renvoie pas non plus de solde en ETH : <code>walletService.balanceOf</code> renvoie <code>null</code>, donc <code>balanceEth</code> vaut <code>null</code>, la tuile « ETH fictifs » du profil disparaît, et la billetterie considère le solde comme suffisant (<code>sufficient</code> vaut vrai quand le solde est inconnu). Voir <a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a>.</p>
+<h2 id="composants-web3"><a class="anchor" href="#composants-web3" aria-hidden="true" tabindex="-1">#</a>Composants web3</h2>
+<p>Les trois composants de <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/web3" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/components/web3</code></a> n&#39;ont plus d&#39;appelant depuis la refonte de l&#39;interface. Ils sont conservés dans le dépôt.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
-<th>Élément</th>
-<th>Donnée</th>
+<th>Composant</th>
+<th>Rôle d&#39;origine</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Titre « Portefeuille BlockLucky intégré »</td>
-<td>fixe</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/web3/IntegratedWalletCard.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>IntegratedWalletCard.tsx</code></a></td>
+<td>Carte « Portefeuille BlockLucky intégré » : adresse raccourcie, solde, étiquette « Mode démonstration », lien vers l&#39;explorateur</td>
 </tr>
 <tr>
-<td>Étiquette « Mode démonstration »</td>
-<td>si le portefeuille existe et que <code>mode</code> n&#39;est pas <code>onchain</code></td>
+<td><code>IntegratedWalletButton</code></td>
+<td>Pastille compacte de l&#39;ancien en-tête de l&#39;accueil (voir ci-dessous)</td>
 </tr>
 <tr>
-<td>Adresse raccourcie (6 caractères de chaque côté)</td>
-<td><code>walletAddress</code>, ou la prop <code>fallbackAddress</code>, ou « Création en cours... »</td>
-</tr>
-<tr>
-<td>Solde</td>
-<td><code>balanceEth</code> formaté par <code>formatEthBalance</code>, sinon « Chargement du solde... », « Solde momentanément indisponible » ou « Solde non disponible »</td>
-</tr>
-<tr>
-<td>Explication</td>
-<td>Transactions signées par ce portefeuille conservé par BlockLucky, prix et frais réglés avec la dotation de bienvenue</td>
-</tr>
-<tr>
-<td><code>ExplorerLink</code></td>
-<td><code>explorerUrl</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/web3/ExplorerLink.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ExplorerLink.tsx</code></a></td>
+<td>Bouton texte qui appelle <code>Linking.openURL(url)</code>, utilisé seulement par <code>IntegratedWalletCard</code></td>
 </tr>
 </tbody></table></div>
-<p>Le composant est utilisé dans <code>BuyTicketScreen</code> et <code>ProfileScreen</code>.</p>
 <h3 id="integratedwalletbutton"><a class="anchor" href="#integratedwalletbutton" aria-hidden="true" tabindex="-1">#</a>IntegratedWalletButton</h3>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/web3/IntegratedWalletButton.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>IntegratedWalletButton.tsx</code></a> est la pastille compacte de l&#39;en-tête de l&#39;accueil. Il reçoit ses données en props : <code>walletAddress</code>, <code>balanceEth</code>, <code>providerLabel</code> et <code>onPress</code>. Il affiche une pastille de couleur (primaire si l&#39;adresse existe), le libellé, l&#39;adresse raccourcie ou « Création en cours », et le solde s&#39;il est connu. Sur l&#39;accueil, <code>HomeScreen</code> lui passe l&#39;adresse et le solde de <code>GET /lottery/wallet</code> et l&#39;appui ouvre <code>TransactionHistory</code>.</p>
-<p>Il remplace <code>WalletConnectButton</code>, supprimé, dont le libellé « Connecter » évoquait un portefeuille externe.</p>
-<h3 id="explorerlink"><a class="anchor" href="#explorerlink" aria-hidden="true" tabindex="-1">#</a>ExplorerLink</h3>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/web3/ExplorerLink.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ExplorerLink.tsx</code></a> est un bouton texte qui appelle <code>Linking.openURL(url)</code> et ignore l&#39;échec éventuel. Il ne rend rien si <code>url</code> est vide. Utilisations :</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Écran ou composant</th>
-<th>URL</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>IntegratedWalletCard</code></td>
-<td>adresse du portefeuille</td>
-</tr>
-<tr>
-<td><code>HomeScreen</code></td>
-<td>contrat de loterie (<code>blockchain.lotteryExplorerUrl</code>)</td>
-</tr>
-<tr>
-<td><code>BuyTicketScreen</code></td>
-<td>transaction d&#39;achat ou de cadeau</td>
-</tr>
-<tr>
-<td><code>TicketCard</code> (historique)</td>
-<td>transaction du ticket</td>
-</tr>
-<tr>
-<td><code>WinnerClaimCard</code></td>
-<td>transaction de retrait</td>
-</tr>
-</tbody></table></div>
-<p>Le lien s&#39;ouvre dans le navigateur du téléphone, en dehors de l&#39;application.</p>
-<h3 id="winnerclaimcard"><a class="anchor" href="#winnerclaimcard" aria-hidden="true" tabindex="-1">#</a>WinnerClaimCard</h3>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/lottery/WinnerClaimCard.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/components/lottery/WinnerClaimCard.tsx</code></a> reçoit <code>contractRoundId</code> et <code>prizePool</code>. Contrairement au web, il ne décide pas lui-même s&#39;il doit s&#39;afficher : c&#39;est <code>LiveDrawScreen</code> qui le monte quand trois conditions sont réunies.</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Condition</th>
-<th>Calcul dans <code>LiveDrawScreen</code></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Un gagnant est connu</td>
-<td><code>lastWinnerAnnouncement</code>, sinon <code>round.winnerWallet</code> si le tour est <code>COMPLETED</code></td>
-</tr>
-<tr>
-<td>C&#39;est le compte connecté</td>
-<td>Adresse du gagnant égale, en minuscules, à celle de <code>GET /lottery/wallet</code> ou de <code>user.walletAddress</code></td>
-</tr>
-<tr>
-<td>Le mode est réel</td>
-<td><code>guarantees.simulated</code> faux</td>
-</tr>
-</tbody></table></div>
-<p>La carte affiche « Félicitations, vous avez gagné ! » avec la cagnotte, puis un bouton « Retirer mes gains » qui appelle <code>claimPrize(contractRoundId)</code>. Selon le résultat :</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Résultat</th>
-<th>Affichage</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>CLAIMED</code></td>
-<td>Message avec le nouveau solde, lien vers la transaction, bouton masqué</td>
-</tr>
-<tr>
-<td><code>ALREADY_CLAIMED</code></td>
-<td>« Cagnotte déjà versée sur votre portefeuille », bouton masqué</td>
-</tr>
-<tr>
-<td><code>FAILED</code></td>
-<td>Message d&#39;erreur, bouton conservé pour un nouvel essai</td>
-</tr>
-</tbody></table></div>
-<p>L&#39;état est réinitialisé si <code>contractRoundId</code> change. La carte n&#39;apparaît que sur l&#39;écran du tirage, pas sur l&#39;accueil.</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/web3/IntegratedWalletButton.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>IntegratedWalletButton.tsx</code></a> reçoit <code>walletAddress</code>, <code>balanceEth</code>, <code>providerLabel</code> et <code>onPress</code>. Il remplaçait <code>WalletConnectButton</code>, supprimé, dont le libellé « Connecter » évoquait un portefeuille externe. L&#39;accueil actuel affiche à sa place le logo et le bouton des notifications ; le solde est visible sur le profil, la billetterie et l&#39;historique.</p>
+<p>Les écrans ouvrent désormais l&#39;explorateur directement avec <code>Linking.openURL</code>, dans le navigateur du téléphone.</p>
 <h2 id="le-hook-usecitizenwallet"><a class="anchor" href="#le-hook-usecitizenwallet" aria-hidden="true" tabindex="-1">#</a>Le hook useCitizenWallet</h2>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useCitizenWallet.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/hooks/useCitizenWallet.ts</code></a> est l&#39;équivalent mobile de <code>useBlockLuckyWallet</code>.</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useCitizenWallet.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/hooks/useCitizenWallet.ts</code></a> est l&#39;équivalent mobile de <code>useBlockLuckyWallet</code>. Les fonctions d&#39;achat et de cadeau renvoient un résultat typé au lieu d&#39;ouvrir elles-mêmes des fenêtres : c&#39;est l&#39;écran qui choisit l&#39;affichage.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -195,12 +141,16 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>purchaseTickets(quantity, retryAttempt)</code></td>
-<td><code>POST /lottery/buy</code> ; en cas de succès, met à jour les points et ouvre « Points crédités » ; renvoie la réponse ou <code>null</code></td>
+<td><code>purchaseTickets(retryAttempt)</code></td>
+<td><code>POST /lottery/buy</code> avec <code>quantity: 1</code> ; met à jour les points ; renvoie <code>SUCCESS</code>, <code>ALREADY_OWNED</code>, <code>AGE_REQUIRED</code> ou <code>FAILED</code></td>
 </tr>
 <tr>
 <td><code>sendGiftTicket(recipientEmail, personalMessage)</code></td>
-<td><code>POST /lottery/gift</code> ; met à jour les points de l&#39;expéditeur ; renvoie la réponse ou <code>null</code></td>
+<td><code>POST /lottery/gift</code> ; met à jour les points de l&#39;expéditeur ; mêmes résultats</td>
+</tr>
+<tr>
+<td><code>retryPurchaseFromQueue(retryAttempt)</code></td>
+<td>Relance l&#39;achat depuis la fenêtre globale « Réseau encombré » et ouvre la fenêtre suivante selon le résultat</td>
 </tr>
 <tr>
 <td><code>claimPrize(contractRoundId)</code></td>
@@ -208,16 +158,51 @@
 </tr>
 <tr>
 <td><code>generateDeterministicWallet(seed)</code></td>
-<td>Adresse factice calculée depuis l&#39;email, envoyée au login et ignorée par le backend à la création du compte</td>
+<td>Ancienne adresse factice calculée depuis l&#39;email, plus appelée</td>
 </tr>
 <tr>
 <td><code>isBuying</code>, <code>isGifting</code>, <code>isClaiming</code></td>
 <td>États de chargement des mutations</td>
 </tr>
 </tbody></table></div>
-<p>Le hook n&#39;envoie aucun événement analytique, contrairement au web.</p>
+<p>Le hook n&#39;envoie aucun événement analytique, contrairement au web, et n&#39;envoie pas d&#39;en-tête <code>Idempotency-Key</code>.</p>
 <h3 id="messages-d-erreur"><a class="anchor" href="#messages-d-erreur" aria-hidden="true" tabindex="-1">#</a>Messages d&#39;erreur</h3>
-<p><code>describeBlockchainError(err)</code> lit <code>err.status</code> et les détails dans <code>err.data.errors</code> (ou <code>err.data.details</code>) :</p>
+<p><code>classifyTicketError(err, alreadyOwnedMessage)</code> lit <code>err.status</code> et les détails dans <code>err.data.errors</code> (ou <code>err.data.details</code>), dans cet ordre :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Résultat</th>
+<th>Message</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>403</code> et <code>code === &#39;AGE_VERIFICATION_REQUIRED&#39;</code></td>
+<td><code>AGE_REQUIRED</code></td>
+<td>Message du backend, « Vérifiez votre âge pour jouer. »</td>
+</tr>
+<tr>
+<td><code>409</code> avec <code>contractError === &#39;PlayerLimitReached&#39;</code> ou sans <code>contractError</code></td>
+<td><code>ALREADY_OWNED</code></td>
+<td>Message du backend, sinon « Vous avez déjà votre ticket pour ce grand tirage. » ou son équivalent pour un cadeau</td>
+</tr>
+<tr>
+<td><code>429</code></td>
+<td><code>FAILED</code>, <code>queued</code></td>
+<td>« Forte affluence »</td>
+</tr>
+<tr>
+<td>reconnu par <code>describeBlockchainError</code></td>
+<td><code>FAILED</code> sans nouvel essai</td>
+<td>Titre et message de la table suivante</td>
+</tr>
+<tr>
+<td><code>503</code>, <code>canRetry</code>, absence de statut ou <code>FETCH_ERROR</code></td>
+<td><code>FAILED</code>, <code>canRetry</code></td>
+<td>« L&#39;achat n&#39;a pas abouti. » et message du backend</td>
+</tr>
+</tbody></table></div>
+<p><code>describeBlockchainError(err)</code> traduit trois cas :</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -239,57 +224,140 @@
 <tr>
 <td><code>status === 409</code></td>
 <td>Opération impossible</td>
-<td>Message du backend (tour fermé, expiré, complet...)</td>
-</tr>
-<tr>
-<td>autre</td>
-<td>aucun</td>
-<td>la fonction renvoie <code>null</code></td>
+<td>Message du backend</td>
 </tr>
 </tbody></table></div>
-<p><code>purchaseTickets</code> applique ensuite cet ordre :</p>
-<ol>
-<li><code>status === 429</code> : feuille « File d&#39;attente active » (position 245 fixe) ;</li>
-<li>erreur reconnue par <code>describeBlockchainError</code> : feuille d&#39;information avec son titre et son message ;</li>
-<li><code>status === 503</code> ou <code>canRetry</code> : feuille « Réseau encombré » avec le bouton « Réessayer l&#39;achat » ;</li>
-<li>sinon : rapport local <code>sentryClient.captureException</code> et feuille « Oups, réseau instable ».</li>
-</ol>
-<p><code>sendGiftTicket</code> utilise <code>describeBlockchainError</code>, puis une feuille « Envoi différé ». <code>claimPrize</code> distingue d&#39;abord <code>409</code> avec <code>PrizeAlreadyClaimed</code> (déjà versé) et <code>403</code> (« Ce portefeuille n&#39;est pas le gagnant de ce tour »), puis <code>describeBlockchainError</code>, puis un message générique.</p>
-<p>Différences avec le web à connaître :</p>
+<p>Les échecs non relançables sont aussi enregistrés par <code>sentryClient.captureException</code>. <code>claimPrize</code> distingue d&#39;abord <code>409</code> avec <code>PrizeAlreadyClaimed</code> (déjà versé) et <code>403</code> (« Ce portefeuille n&#39;est pas le gagnant de ce tour »), puis <code>describeBlockchainError</code>, puis un message générique.</p>
+<p>Points à connaître :</p>
 <ul>
-<li>les titres et messages de <code>describeBlockchainError</code> et des feuilles de <code>purchaseTickets</code> sont en français seulement, sans <code>t()</code> ;</li>
-<li>aucune erreur n&#39;invalide le cache : après une pause ou un solde insuffisant, le statut et le solde ne sont pas rechargés automatiquement ;</li>
-<li>la feuille « Réseau encombré » relance un seul ticket, quelle que soit la quantité initiale (voir <a href="etat-api.html#slice-ui">État et appels API</a>).</li>
+<li>un 409 sans <code>contractError</code>, par exemple « Ce tour est terminé, le tirage va être lancé. » en mode simulé, est classé <code>ALREADY_OWNED</code> : le message du backend s&#39;affiche, mais dans la fenêtre prévue pour un ticket déjà acheté ;</li>
+<li>les titres et messages du hook sont en français seulement, sans <code>t()</code>.</li>
 </ul>
+<h3 id="verification-d-age-requise"><a class="anchor" href="#verification-d-age-requise" aria-hidden="true" tabindex="-1">#</a>Vérification d&#39;âge requise</h3>
+<p>Quand le backend répond 403 avec <code>errors.code === &#39;AGE_VERIFICATION_REQUIRED&#39;</code>, la billetterie, le cadeau, le détail d&#39;une récompense et le ticket à gratter ouvrent une fenêtre qui propose d&#39;aller à <code>VerifyAge</code>. Pour la boutique, la détection est faite par <code>isAgeVerificationError</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/marketplace/apiErrors.ts" class="external" target="_blank" rel="noopener noreferrer"><code>apiErrors.ts</code></a>. L&#39;envoi de la pièce d&#39;identité est décrit dans <a href="authentification.html#verification-d-age">Authentification et stockage sécurisé</a>.</p>
 <h2 id="billetterie"><a class="anchor" href="#billetterie" aria-hidden="true" tabindex="-1">#</a>Billetterie</h2>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/BuyTicketScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>BuyTicketScreen.tsx</code></a> propose deux modes, « pour moi » et « cadeau ». Le mode cadeau est actif d&#39;emblée si l&#39;écran est ouvert avec <code>giftMode: true</code>, ce que fait le bouton « Offrir un ticket » de l&#39;accueil.</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/BuyTicketScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>BuyTicketScreen.tsx</code></a> achète le ticket unique du grand tirage :</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
-<th>Mode</th>
-<th>Contenu</th>
-<th>Action</th>
+<th>Élément</th>
+<th>Donnée</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Pour moi</td>
-<td>Choix de 1, 2, 5 ou 10 tickets, prix unitaire de <code>round.ticketPriceEth</code> (repli 0,01), total</td>
-<td><code>purchaseTickets(quantity, 0)</code> puis message « n ticket(s) enregistré(s) sur la blockchain (+n pts) » avec le solde restant (<code>walletBalanceEth</code>) et un lien vers la transaction</td>
+<td>Carte du grand tirage</td>
+<td>Cagnotte (<code>prizePool</code>), numéro du tour (<code>#001</code>), compte à rebours jusqu&#39;à <code>waitingRoomOpensAt</code>, participants</td>
 </tr>
 <tr>
-<td>Cadeau</td>
-<td>Email du destinataire (<code>isValidEmail</code>), message personnel prérempli</td>
-<td><code>sendGiftTicket</code> puis « Ticket envoyé à... Vous avez reçu +n pts » et un lien vers la transaction</td>
+<td>Récapitulatif</td>
+<td>Prix (<code>round.ticketPriceEth</code>), solde actuel et solde après achat (<code>GET /lottery/wallet</code>)</td>
+</tr>
+<tr>
+<td>Pied fixe</td>
+<td>« Total · 1 ticket », bouton, rappel « En confirmant, vous acceptez le règlement du tirage. »</td>
 </tr>
 </tbody></table></div>
-<p>Les boutons sont désactivés quand <code>guarantees.paused</code> est vrai. <code>IntegratedWalletCard</code> est affiché en tête et un lien mène à l&#39;historique.</p>
-<p>Par rapport au web, l&#39;écran n&#39;a ni case « Je comprends que j&#39;engage des ethers fictifs », ni rappel du plafond de jeu responsable, ni reçu à deux états, et il ne désactive pas l&#39;achat quand le tour n&#39;est pas <code>OPEN</code> : c&#39;est alors le backend qui répond 409.</p>
-<p>L&#39;accueil propose aussi « Acheter 1 ticket avec mon portefeuille », qui appelle <code>purchaseTickets(1, 0)</code> puis relance <code>GET /lottery/status</code>.</p>
+<p>Le bouton change de libellé et se désactive dans trois cas : ticket déjà présent dans <code>GET /lottery/my-tickets</code> (« Ticket déjà validé »), phase différente de <code>OPEN</code> (« Achats clos pour ce tirage ») ou solde connu inférieur au prix (« Solde insuffisant »). Après un succès, une fenêtre confirme le ticket et ses points, puis mène à l&#39;accueil ou à « Mes tickets ». Un échec relançable incrémente <code>retryAttempt</code> (5 au plus) pour le nouvel essai.</p>
+<h3 id="cadeau"><a class="anchor" href="#cadeau" aria-hidden="true" tabindex="-1">#</a>Cadeau</h3>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/GiftTicketScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>GiftTicketScreen.tsx</code></a> offre un ticket à un proche désigné par son email, avec un message facultatif. Les règles de désactivation sont les mêmes (phase, solde). Le backend refuse de s&#39;offrir un ticket à soi-même et un destinataire qui a déjà son ticket. Le paramètre de route <code>ticketId</code>, passé depuis « Mes tickets », n&#39;est pas lu par l&#39;écran.</p>
+<h2 id="accueil-et-mes-tickets"><a class="anchor" href="#accueil-et-mes-tickets" aria-hidden="true" tabindex="-1">#</a>Accueil et Mes tickets</h2>
+<p>L&#39;accueil (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/HomeScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>HomeScreen.tsx</code></a>) rafraîchit le statut toutes les 30 secondes. Selon la phase, la carte du grand tirage propose « Mon ticket · 0,01 ETH » (achat), « Voir mon ticket » si le citoyen a déjà son ticket, « Entrer dans la salle d&#39;attente » en <code>WAITING_ROOM</code> ou « Suivre le tirage en direct » en <code>DRAWING</code> ; les deux derniers ouvrent <code>WaitingRoom</code>. Le compte à rebours vise <code>revealAt</code> en salle d&#39;attente et <code>waitingRoomOpensAt</code> sinon. <code>MilestonesPanel</code> affiche les paliers renvoyés par le backend (5 000, 7 500, 9 000 et 10 000 participants) et <code>DeadlineCard</code> l&#39;échéance.</p>
+<p>« Mes tickets » (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/MyTicketsScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>MyTicketsScreen.tsx</code></a>) affiche le ticket du tour courant (<code>CurrentTicketCard</code>, avec le délai avant révélation), puis, avec des filtres, les résultats des grands tirages passés (<code>isWinner</code>, <code>winningTicketNumber</code>, <code>prizeEth</code>) et les codes obtenus aux tickets à gratter.</p>
+<h2 id="salle-d-attente"><a class="anchor" href="#salle-d-attente" aria-hidden="true" tabindex="-1">#</a>Salle d&#39;attente</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/WaitingRoomScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>WaitingRoomScreen.tsx</code></a> interroge le statut toutes les 5 secondes.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Affichage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Phase <code>WAITING_ROOM</code> et ticket du citoyen trouvé</td>
+<td>Salle active : compte à rebours minutes et secondes jusqu&#39;à <code>revealAt</code>, ticket du citoyen et adresse raccourcie, présence (<code>onlineWaitingUsers</code>), discussion <code>RoomChat</code></td>
+</tr>
+<tr>
+<td>Autre phase ou pas de ticket</td>
+<td><code>WaitingRoomClosed</code>, avec l&#39;accès à l&#39;achat</td>
+</tr>
+<tr>
+<td>Phase <code>DRAWING</code> ou <code>COMPLETED</code>, compte à rebours arrivé à zéro, gagnant annoncé (<code>draw:winner</code>) pour le tour suivi, ou tour courant plus récent que celui du ticket</td>
+<td><code>replace(&#39;LiveDraw&#39;, { contractRoundId })</code>, avec le numéro du tour où le citoyen a son ticket</td>
+</tr>
+</tbody></table></div>
+<p>Sans <code>revealAt</code>, le compte à rebours part de <code>waitingRoomOpensAt</code> plus <code>WAITING_ROOM_SECONDS</code> (600, valeur codée dans <code>drawFormat.ts</code>). Les messages d&#39;ambiance changent selon le temps écoulé. La connexion Socket.IO n&#39;est ouverte que lorsque la salle est active (voir <a href="temps-reel-notifications.html">Temps réel et notifications</a>).</p>
 <h2 id="tirage-en-direct"><a class="anchor" href="#tirage-en-direct" aria-hidden="true" tabindex="-1">#</a>Tirage en direct</h2>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/LiveDrawScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>LiveDrawScreen.tsx</code></a> affiche la salle d&#39;attente (<code>onlineWaitingUsers</code>), <code>WinnerClaimCard</code> dans les conditions vues plus haut, la roue (<code>RouletteAnimation</code>), un bloc « Certification Chainlink VRF v2.5 » ou « Mode démonstration », et la discussion (<code>ChatBox</code>). Il appelle <code>useSocket(round.id)</code> pour rejoindre la salle du tour (voir <a href="temps-reel-notifications.html">Temps réel et notifications</a>).</p>
-<p>Le bouton « Simuler la roue de tirage » lance seulement l&#39;animation pendant 3,5 secondes ; il ne tire aucun gagnant. Le statut de la loterie n&#39;est pas interrogé périodiquement : la fin du tirage n&#39;apparaît que par l&#39;événement <code>draw:winner</code> ou à la réouverture de l&#39;écran.</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/LiveDrawScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>LiveDrawScreen.tsx</code></a> interroge le statut toutes les 4 secondes et rejoint la salle Socket.IO pendant les phases <code>DRAWING</code>, <code>COMPLETED</code> et <code>CANCELLED</code>. Hors tirage, il affiche le dernier tour terminé du citoyen.</p>
+<p>Ouvert avec <code>contractRoundId</code> depuis la salle d&#39;attente, l&#39;écran suit ce tour même si le contrat en a déjà ouvert un autre : la roue tourne tant que le résultat n&#39;est pas connu (liste des tickets relue toutes les 4 secondes), puis s&#39;arrête sur le numéro gagnant dès que le ticket du citoyen le donne. Sur la blockchain locale, le choix du gagnant et l&#39;ouverture du tour suivant sont quasi immédiats : sans ce suivi, le statut montrait déjà le nouveau tour et la roue n&#39;apparaissait que dans l&#39;historique. La salle d&#39;attente transmet aussi le nombre de participants, le plafond et la cagnotte de ce tour (<code>participants</code>, <code>maxParticipants</code>, <code>prizePool</code>) : l&#39;écran les utilise tant que le statut affiche un autre tour, pour que la roue garde tous ses secteurs jusqu&#39;à l&#39;arrêt au lieu de se vider avec le nouveau tour, encore sans participant.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Comportement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DrawWheel</code></td>
+<td>Roue de 10 secteurs animée avec <code>Animated</code> : rotation en boucle pendant le tirage, puis arrêt sur le secteur du numéro gagnant</td>
+</tr>
+<tr>
+<td>Étiquettes de la roue</td>
+<td>Numéros à 5 chiffres répartis sur le nombre de participants ; le numéro gagnant et celui du citoyen y figurent toujours</td>
+</tr>
+<tr>
+<td>Résultat</td>
+<td>Numéro gagnant, gagné ou perdu (<code>isWinner</code> du ticket, ou adresse du gagnant égale à celle du portefeuille), annoncé par <code>accessibilityLiveRegion</code></td>
+</tr>
+<tr>
+<td>Retrait des gains</td>
+<td>Bouton affiché au gagnant si <code>guarantees.simulated</code> est faux ; message selon <code>CLAIMED</code>, <code>ALREADY_CLAIMED</code> ou <code>FAILED</code></td>
+</tr>
+<tr>
+<td>Tour annulé</td>
+<td>Message dédié, sans roue arrêtée</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;annonce <code>draw:winner</code> reçue par le socket est prise en compte si elle concerne le même <code>contractRoundId</code>. La roue ne tire rien : le gagnant vient toujours du contrat ou du backend.</p>
 <h2 id="historique-et-poap"><a class="anchor" href="#historique-et-poap" aria-hidden="true" tabindex="-1">#</a>Historique et POAP</h2>
-<p><code>TransactionHistoryScreen</code> appelle <code>GET /lottery/my-tickets</code> et affiche les tickets avec <code>TicketCard</code> (lien vers la transaction) et les badges avec <code>POAPBadge</code>. Le visuel du badge est chargé depuis <code>badge.imageUrl</code> avec <code>SvgUri</code> de <code>react-native-svg</code> ; en cas d&#39;échec, un repli textuel s&#39;affiche. Les badges sont décrits dans <a href="../smart-contracts/poap.html">Badge POAP</a>.</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/TransactionHistoryScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>TransactionHistoryScreen.tsx</code></a> appelle <code>GET /lottery/wallet</code> et <code>GET /lottery/my-tickets</code>. Il affiche le portefeuille avec un lien vers l&#39;explorateur, les tickets avec leur numéro et le lien vers la transaction, et les badges POAP sous forme de lignes (titre, édition, date de frappe, lien vers l&#39;explorateur). Le visuel SVG des badges n&#39;est plus chargé. Les badges sont décrits dans <a href="../smart-contracts/poap.html">Badge POAP</a>.</p>
+<h2 id="tickets-a-gratter"><a class="anchor" href="#tickets-a-gratter" aria-hidden="true" tabindex="-1">#</a>Tickets à gratter</h2>
+<p>Les tickets à gratter s&#39;achètent en EtherPoints, sans ETH. <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/marketplace/ScratchCardScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ScratchCardScreen.tsx</code></a> a deux usages :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ouverture</th>
+<th>Comportement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ScratchCard</code> avec <code>offer</code> (<code>violet</code> ou <code>lucky</code>), ou sans paramètre</td>
+<td>Choix de l&#39;offre, confirmation, <code>POST /marketplace/scratch</code>, puis zone à gratter sur la récompense tirée au hasard par le backend</td>
+</tr>
+<tr>
+<td><code>ScratchCard</code> avec <code>claim</code></td>
+<td>Révélation d&#39;un code déjà obtenu par <code>POST /marketplace/claim</code> depuis <code>RewardDetail</code></td>
+</tr>
+</tbody></table></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Offre</th>
+<th>Coût affiché</th>
+<th>Variable du backend</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Violet</td>
+<td>50 EtherPoints</td>
+<td><code>SCRATCH_COST_VIOLET</code></td>
+</tr>
+<tr>
+<td>Lucky</td>
+<td>100 EtherPoints</td>
+<td><code>SCRATCH_COST_LUCKY</code></td>
+</tr>
+</tbody></table></div>
+<p>Les coûts affichés sont codés dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/marketplace/scratchOffers.ts" class="external" target="_blank" rel="noopener noreferrer"><code>scratchOffers.ts</code></a> : si les variables du backend changent, l&#39;application affiche un prix faux, mais c&#39;est le backend qui débite. Après l&#39;achat, le nouveau solde (<code>newBalance</code>) est écrit dans le profil par <code>setPointsBalance</code>. Les erreurs sont traduites par statut : 402 ou 400 « EtherPoints insuffisants », 404 ou 409 « Aucune récompense disponible », 403 de vérification d&#39;âge vers <code>VerifyAge</code>. Une fois le code révélé, l&#39;écran mène à « Mes codes » par <code>replace(&#39;MyCodes&#39;)</code>.</p>
 
     </article>
     <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="etat-api.html"><span>Précédent</span><strong>État et appels API</strong></a><a class="pager-next" href="temps-reel-notifications.html"><span>Suivant</span><strong>Temps réel et notifications</strong></a></nav>
@@ -298,7 +366,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#mode-onchain-et-mode-demonstration">Mode onchain et mode démonstration</a></li><li class="toc-h2"><a href="#composants">Composants</a></li><li class="toc-h3"><a href="#integratedwalletcard">IntegratedWalletCard</a></li><li class="toc-h3"><a href="#integratedwalletbutton">IntegratedWalletButton</a></li><li class="toc-h3"><a href="#explorerlink">ExplorerLink</a></li><li class="toc-h3"><a href="#winnerclaimcard">WinnerClaimCard</a></li><li class="toc-h2"><a href="#le-hook-usecitizenwallet">Le hook useCitizenWallet</a></li><li class="toc-h3"><a href="#messages-d-erreur">Messages d&#39;erreur</a></li><li class="toc-h2"><a href="#billetterie">Billetterie</a></li><li class="toc-h2"><a href="#tirage-en-direct">Tirage en direct</a></li><li class="toc-h2"><a href="#historique-et-poap">Historique et POAP</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#regles-du-grand-tirage">Règles du grand tirage</a></li><li class="toc-h2"><a href="#mode-onchain-et-mode-demonstration">Mode onchain et mode démonstration</a></li><li class="toc-h2"><a href="#composants-web3">Composants web3</a></li><li class="toc-h3"><a href="#integratedwalletbutton">IntegratedWalletButton</a></li><li class="toc-h2"><a href="#le-hook-usecitizenwallet">Le hook useCitizenWallet</a></li><li class="toc-h3"><a href="#messages-d-erreur">Messages d&#39;erreur</a></li><li class="toc-h3"><a href="#verification-d-age-requise">Vérification d&#39;âge requise</a></li><li class="toc-h2"><a href="#billetterie">Billetterie</a></li><li class="toc-h3"><a href="#cadeau">Cadeau</a></li><li class="toc-h2"><a href="#accueil-et-mes-tickets">Accueil et Mes tickets</a></li><li class="toc-h2"><a href="#salle-d-attente">Salle d&#39;attente</a></li><li class="toc-h2"><a href="#tirage-en-direct">Tirage en direct</a></li><li class="toc-h2"><a href="#historique-et-poap">Historique et POAP</a></li><li class="toc-h2"><a href="#tickets-a-gratter">Tickets à gratter</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

@@ -21,7 +21,7 @@ Les versions sont épinglées sans plage dans [`frontend-web/package.json`](src:
 
 Node.js 22.12 ou plus est requis (`engines`). La CI lit la version dans le fichier `.nvmrc` à la racine du dépôt.
 
-Aucune bibliothèque de composants, d'icônes, de graphiques ou de formulaires n'est installée. Les graphiques du dashboard sont dessinés en SVG et en CSS dans [`frontend-web/src/components/charts/Charts.tsx`](src:frontend-web/src/components/charts/Charts.tsx). Il n'y a pas non plus de bibliothèque Web3 (ni `ethers`, ni `wagmi`, ni connecteur MetaMask) : les citoyens n'utilisent pas d'extension de portefeuille.
+Aucune bibliothèque de composants, d'icônes, de graphiques ou de formulaires n'est installée. Les graphiques du dashboard sont dessinés en SVG et en CSS dans [`frontend-web/src/components/charts/Charts.tsx`](src:frontend-web/src/components/charts/Charts.tsx). Les icônes sont des SVG recopiés depuis l'application mobile dans [`frontend-web/src/components/ui/iconData.ts`](src:frontend-web/src/components/ui/iconData.ts), et la police Inter est fournie en fichiers locaux (voir [Design system](design-system.md#rayons-typographie-et-polices)). Il n'y a pas non plus de bibliothèque Web3 (ni `ethers`, ni `wagmi`, ni connecteur MetaMask) : les citoyens n'utilisent pas d'extension de portefeuille.
 
 ## Arborescence
 
@@ -30,7 +30,8 @@ frontend-web/
 ├── __tests__/               tests Vitest (lib.test.ts, components.test.tsx)
 ├── public/.well-known/      security.txt
 ├── src/
-│   ├── app/                 routes App Router, layouts, globals.css
+│   ├── app/                 routes App Router, layouts, globals.css, icon.svg (favicon)
+│   │   ├── fonts/           Inter en 5 graisses (.ttf) et LICENSE-inter.txt
 │   │   ├── (citoyen)/       espace citoyen (groupe de routes sans segment d'URL)
 │   │   ├── mairie/          dashboard Mairie
 │   │   ├── partenaire/      espace partenaires
@@ -38,12 +39,12 @@ frontend-web/
 │   ├── components/
 │   │   ├── auth/            OnboardingCarousel
 │   │   ├── charts/          BarList, RingMeter, KpiTile
-│   │   ├── layout/          AppShell, PublicShell, RequireRole, AccessDenied, GlobalOverlays
+│   │   ├── layout/          AppShell, PublicShell, Brand, SecurityFooter, RequireRole, AccessDenied...
 │   │   ├── lottery/         WalletCard, WinnerClaimCard, CountdownTimer, ChatBox...
 │   │   ├── marketplace/     PointsBalanceCard, RewardCard, ScratchCanvas
 │   │   ├── partner/         PartnerSelection (choix de l'établissement)
-│   │   └── ui/              Button, Input, Card, Sheet, Loader, Misc...
-│   ├── hooks/               useAuth, useBlockLuckyWallet, useSocket, usePoints...
+│   │   └── ui/              Button, Input, Card, Sheet, Loader, Icon (et iconData), Misc...
+│   ├── hooks/               useAuth, useBlockLuckyWallet, useAgeVerification, useSocket, usePoints...
 │   ├── lib/                 config, storage, analytics, socket, validators...
 │   ├── store/               store Redux, RTK Query (api/) et slices
 │   ├── theme/               ThemeProvider (thème et langue)
@@ -54,7 +55,7 @@ frontend-web/
 └── .env.example
 ```
 
-Le dossier `(citoyen)` est un groupe de routes : son nom n'apparaît pas dans l'URL. La page [`frontend-web/src/app/(citoyen)/accueil/page.tsx`](src:frontend-web/src/app/(citoyen)/accueil/page.tsx) répond donc à `/accueil`. Le détail des 29 pages est dans [Pages et espaces](pages.md).
+Le dossier `(citoyen)` est un groupe de routes : son nom n'apparaît pas dans l'URL. La page [`frontend-web/src/app/(citoyen)/accueil/page.tsx`](src:frontend-web/src/app/(citoyen)/accueil/page.tsx) répond donc à `/accueil`. Le détail des 31 pages est dans [Pages et espaces](pages.md).
 
 ## Point d'entrée et providers
 
@@ -88,7 +89,7 @@ flowchart TD
 | Mairie | [`frontend-web/src/app/mairie/layout.tsx`](src:frontend-web/src/app/mairie/layout.tsx) | `RequireRole roles={['ADMIN']}` | `AppShell` |
 | Partenaires | [`frontend-web/src/app/partenaire/layout.tsx`](src:frontend-web/src/app/partenaire/layout.tsx) | `RequireRole roles={['PARTNER', 'ADMIN']}` | `PartnerSelectionProvider` puis `AppShell` |
 
-Chaque layout déclare sa liste d'entrées de navigation (`NavItem`). `AppShell` affiche une barre latérale fixe à partir de 1024 px (`lg`) et, en dessous, une barre d'onglets basse limitée aux cinq premières entrées sans `desktopOnly`. Le fonctionnement de la garde est détaillé dans [Authentification et routes protégées](authentification.md#garde-des-routes).
+Chaque layout déclare sa liste d'entrées de navigation (`NavItem`). `AppShell` affiche une barre latérale fixe à partir de 1024 px (`lg`) et, en dessous, une barre d'onglets basse avec les entrées sans `desktopOnly`. Au-delà de cinq entrées (`MAX_MOBILE_ITEMS`), la barre montre les quatre premières et un bouton « Plus » qui ouvre un petit menu avec les suivantes ; le menu se ferme au clic sur un lien, avec Échap, au clic en dehors ou au changement de page. L'espace Mairie compte six entrées : sous 1024 px, « Sécurité » et « Audit » sont dans le menu « Plus ». L'espace citoyen, qui en a cinq, n'a pas de bouton « Plus ». Le fonctionnement de la garde est détaillé dans [Authentification et routes protégées](authentification.md#garde-des-routes).
 
 ## Organisation du code applicatif
 

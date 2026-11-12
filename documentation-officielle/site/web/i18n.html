@@ -6,7 +6,7 @@
 <title>Internationalisation | Documentation BlockLucky</title>
 <meta name="description" content="Le frontend web est bilingue français et anglais. Il n&#39;utilise aucune bibliothèque d&#39;internationalisation (ni next-intl, ni i18next) et aucun fichier de traduct">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 
@@ -47,10 +47,10 @@
 <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;text-title font-bold&quot;</span>&gt;</span>{t(&#x27;Billetterie&#x27;, &#x27;Ticket Office&#x27;)}<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span></code></pre></div>
 <p>Le code compte un peu plus de 500 appels à <code>t(</code> dans <code>src/</code>. Les textes dynamiques sont construits avec des gabarits dans chaque branche, par exemple :</p>
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-title function_">t</span>(
-  <span class="hljs-string">`Votre plafond personnel : <span class="hljs-subst">${limit}</span> tickets par tirage.`</span>,
-  <span class="hljs-string">`Your personal cap: <span class="hljs-subst">${limit}</span> tickets per draw.`</span>
+  <span class="hljs-string">`Pièce envoyée le <span class="hljs-subst">${formatDateShort(identity.submittedAt)}</span>. La Mairie la vérifie.`</span>,
+  <span class="hljs-string">`Document sent on <span class="hljs-subst">${formatDateShort(identity.submittedAt)}</span>. City Hall is reviewing it.`</span>
 )</code></pre></div>
-<p>Il n&#39;y a ni gestion des pluriels, ni clés de traduction. Les accords se font à la main (<code>ticket${quantity &gt; 1 ? &#39;s&#39; : &#39;&#39;}</code>).</p>
+<p>Il n&#39;y a ni gestion des pluriels, ni clés de traduction. Les accords se font à la main, ou sont contournés par une forme invariable comme « ticket(s) confirmé(s) » dans le reçu de la billetterie.</p>
 <h2 id="choix-et-memorisation-de-la-langue"><a class="anchor" href="#choix-et-memorisation-de-la-langue" aria-hidden="true" tabindex="-1">#</a>Choix et mémorisation de la langue</h2>
 <div class="table-wrap"><table>
 <thead>

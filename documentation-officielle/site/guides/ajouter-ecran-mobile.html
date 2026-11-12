@@ -6,7 +6,7 @@
 <title>Ajouter un écran mobile | Documentation BlockLucky</title>
 <meta name="description" content="L&#39;application mobile (mobile-app/) est une application Expo SDK 58 en React Native, avec React Navigation 7 et RTK Query. Ce guide ajoute un écran « Historique ">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -74,45 +74,42 @@
 <h2 id="choisir-le-navigateur"><a class="anchor" href="#choisir-le-navigateur" aria-hidden="true" tabindex="-1">#</a>Choisir le navigateur</h2>
 <p>La navigation est imbriquée :</p>
 <div class="diagram"><pre class="mermaid">flowchart TD
-    R[&quot;RootNavigator, pile racine&quot;] --&gt;|&quot;non connecté&quot;| A[&quot;AuthStack : Onboarding, Login, Verify2FA, Setup2FA&quot;]
-    R --&gt;|&quot;connecté&quot;| M[&quot;MainTabs, onglets&quot;]
-    R --&gt; P[&quot;Écrans plein écran : BuyTicket, LiveDraw, TransactionHistory, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, Setup2FA&quot;]
+    R[&quot;RootNavigator, pile racine&quot;] --&gt;|&quot;non connecté&quot;| A[&quot;AuthStack : Onboarding, SignIn, SignUp, Verify2FA, ForgotPassword, ResetPassword, Setup2FA&quot;]
+    R --&gt;|&quot;connecté&quot;| M[&quot;MainTabs, quatre onglets&quot;]
+    R --&gt; P[&quot;Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, Security, Setup2FA, GDPR, HelpSupport&quot;]
     M --&gt; T1[&quot;HomeTab&quot;]
-    M --&gt; T2[&quot;BuyTicketTab&quot;]
-    M --&gt; T3[&quot;LiveDrawTab&quot;]
-    M --&gt; T4[&quot;MarketplaceTab&quot;]
-    M --&gt; T5[&quot;SettingsTab : SettingsStack&quot;]
-    T5 --&gt; S[&quot;ProfileMain, Security, Setup2FA, GDPR, HelpSupport&quot;]</pre></div>
+    M --&gt; T2[&quot;TicketsTab&quot;]
+    M --&gt; T3[&quot;SponsorsTab&quot;]
+    M --&gt; T4[&quot;ProfileTab&quot;]</pre></div>
 <div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Type d&#39;écran</th>
 <th>Où l&#39;enregistrer</th>
 <th>Type de navigation</th>
+<th>Hook</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>Onglet principal</td>
-<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/MainTabs.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>MainTabs.tsx</code></a></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/MainTabs.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>MainTabs.tsx</code></a>, avec son icône dans <code>ICONS</code></td>
 <td><code>MainTabsParamList</code></td>
-</tr>
-<tr>
-<td>Écran de réglages, avec la barre d&#39;onglets visible</td>
-<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/RootNavigator.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>RootNavigator.tsx</code></a></td>
-<td><code>RootStackParamList</code></td>
+<td><code>useRootNavigation</code></td>
 </tr>
 <tr>
 <td>Écran plein écran, accessible de partout une fois connecté</td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/RootNavigator.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>RootNavigator.tsx</code></a></td>
 <td><code>RootStackParamList</code></td>
+<td><code>useRootNavigation</code></td>
 </tr>
 <tr>
 <td>Écran avant connexion</td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/AuthStack.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>AuthStack.tsx</code></a></td>
 <td><code>AuthStackParamList</code></td>
+<td><code>useAuthNavigation</code></td>
 </tr>
 </tbody></table></div>
-<p>L&#39;historique des tirages est consultable depuis plusieurs endroits : il va dans la pile racine, comme <code>TransactionHistory</code>. Les écrans de la pile racine ne sont montés que si l&#39;utilisateur est connecté (<code>isAuthenticated</code> de <code>useAuth</code>).</p>
+<p>Les réglages n&#39;ont plus de pile propre : <code>Settings</code>, <code>Security</code>, <code>GDPR</code> et <code>HelpSupport</code> sont des écrans de la pile racine, sans barre d&#39;onglets. L&#39;historique des tirages va donc aussi dans la pile racine, comme <code>TransactionHistory</code>. Les écrans de la pile racine ne sont montés que si l&#39;utilisateur est connecté (<code>isAuthenticated</code> de <code>useAuth</code>). Les deux hooks viennent de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/hooks.ts" class="external" target="_blank" rel="noopener noreferrer"><code>navigation/hooks.ts</code></a>.</p>
 <h2 id="1-typer-la-reponse-et-declarer-l-appel"><a class="anchor" href="#1-typer-la-reponse-et-declarer-l-appel" aria-hidden="true" tabindex="-1">#</a>1. Typer la réponse et déclarer l&#39;appel</h2>
 <p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/types/api.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>api.types.ts</code></a> :</p>
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">RoundHistoryItem</span> {
@@ -134,8 +131,6 @@
 <h2 id="2-declarer-la-route"><a class="anchor" href="#2-declarer-la-route" aria-hidden="true" tabindex="-1">#</a>2. Déclarer la route</h2>
 <p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/types/navigation.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>navigation.types.ts</code></a>, ajouter la route à <code>RootStackParamList</code>. <code>undefined</code> signifie que l&#39;écran ne prend pas de paramètre :</p>
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">RootStackParamList</span> = {
-  <span class="hljs-title class_">Auth</span>: <span class="hljs-literal">undefined</span>;
-  <span class="hljs-title class_">Main</span>: <span class="hljs-literal">undefined</span>;
   <span class="hljs-title class_">TransactionHistory</span>: <span class="hljs-literal">undefined</span>;
   <span class="hljs-title class_">RoundHistory</span>: <span class="hljs-literal">undefined</span>;
 };</code></pre></div>
@@ -143,55 +138,52 @@
 <h2 id="3-ecrire-l-ecran"><a class="anchor" href="#3-ecrire-l-ecran" aria-hidden="true" tabindex="-1">#</a>3. Écrire l&#39;écran</h2>
 <p>Fichier <code>src/screens/lottery/RoundHistoryScreen.tsx</code>, sur le modèle de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/marketplace/MyCodesScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>MyCodesScreen.tsx</code></a> :</p>
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
-<span class="hljs-keyword">import</span> { <span class="hljs-title class_">ScrollView</span>, <span class="hljs-title class_">StyleSheet</span>, <span class="hljs-title class_">View</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
-<span class="hljs-keyword">import</span> { <span class="hljs-title class_">SafeAreaView</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native-safe-area-context&#x27;</span>;
-<span class="hljs-keyword">import</span> useAppTheme <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../hooks/useAppTheme&#x27;</span>;
-<span class="hljs-keyword">import</span> { useGetRoundHistoryQuery } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../store/api/lotteryApi&#x27;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">StyleSheet</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 <span class="hljs-keyword">import</span> <span class="hljs-title class_">AppText</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../components/ui/AppText&#x27;</span>;
-<span class="hljs-keyword">import</span> <span class="hljs-title class_">BackButton</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../components/ui/BackButton&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">Card</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../components/ui/Card&#x27;</span>;
 <span class="hljs-keyword">import</span> <span class="hljs-title class_">Loader</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../components/ui/Loader&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">Screen</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../components/ui/Screen&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">ScreenHeader</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../components/ui/ScreenHeader&#x27;</span>;
+<span class="hljs-keyword">import</span> useAppTheme <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../hooks/useAppTheme&#x27;</span>;
+<span class="hljs-keyword">import</span> { useRootNavigation } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../navigation/hooks&#x27;</span>;
+<span class="hljs-keyword">import</span> { useGetRoundHistoryQuery } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../store/api/lotteryApi&#x27;</span>;
 <span class="hljs-keyword">import</span> { formatEth } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../utils/formatters.util&#x27;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">RoundHistoryScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span>&lt;{ <span class="hljs-attr">navigation</span>: <span class="hljs-built_in">any</span> }&gt; = <span class="hljs-function">(<span class="hljs-params">{ navigation }</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> { colors, borderRadius, spacing, t } = <span class="hljs-title function_">useAppTheme</span>();
-  <span class="hljs-keyword">const</span> { data, isLoading, isError } = <span class="hljs-title function_">useGetRoundHistoryQuery</span>();
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">RoundHistoryScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span> = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> { colors, t } = <span class="hljs-title function_">useAppTheme</span>();
+  <span class="hljs-keyword">const</span> navigation = <span class="hljs-title function_">useRootNavigation</span>();
+  <span class="hljs-keyword">const</span> { data, isLoading, isError, isFetching, refetch } = <span class="hljs-title function_">useGetRoundHistoryQuery</span>();
   <span class="hljs-keyword">const</span> rounds = data?.<span class="hljs-property">data</span>?.<span class="hljs-property">rounds</span> ?? [];
 
   <span class="hljs-keyword">return</span> (
-    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">edges</span>=<span class="hljs-string">{[</span>&#x27;<span class="hljs-attr">top</span>&#x27;, &#x27;<span class="hljs-attr">left</span>&#x27;, &#x27;<span class="hljs-attr">right</span>&#x27;]} <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.safeArea,</span> { <span class="hljs-attr">backgroundColor:</span> <span class="hljs-attr">colors.background</span> }]}&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">ScrollView</span> <span class="hljs-attr">contentContainerStyle</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">padding:</span> <span class="hljs-attr">spacing.lg</span>, <span class="hljs-attr">paddingBottom:</span> <span class="hljs-attr">spacing.xxl</span> }}&gt;</span>
-        {navigation?.canGoBack?.() ? <span class="hljs-tag">&lt;<span class="hljs-name">BackButton</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> navigation.goBack()} /&gt; : null}
-        <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">&quot;title&quot;</span> <span class="hljs-attr">weight</span>=<span class="hljs-string">&quot;bold&quot;</span>&gt;</span>
-          {t(&#x27;Historique des tirages&#x27;, &#x27;Draw history&#x27;)}
-        <span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
-        {isLoading ? <span class="hljs-tag">&lt;<span class="hljs-name">Loader</span> /&gt;</span> : null}
-        {isError ? (
-          <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">color</span>=<span class="hljs-string">{colors.textSecondary}</span>&gt;</span>{t(&#x27;Historique indisponible.&#x27;, &#x27;History unavailable.&#x27;)}<span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
-        ) : null}
-        {rounds.map((round) =&gt; (
-          <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
-            <span class="hljs-attr">key</span>=<span class="hljs-string">{round.contractRoundId}</span>
-            <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.card,</span> { <span class="hljs-attr">backgroundColor:</span> <span class="hljs-attr">colors.surface</span>, <span class="hljs-attr">borderColor:</span> <span class="hljs-attr">colors.border</span>, <span class="hljs-attr">borderRadius:</span> <span class="hljs-attr">borderRadius.lg</span> }]}
-          &gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">&quot;subtitle&quot;</span> <span class="hljs-attr">weight</span>=<span class="hljs-string">&quot;semibold&quot;</span>&gt;</span>
-              {t(&#x27;Tour&#x27;, &#x27;Round&#x27;)} #{round.contractRoundId}
-            <span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">&quot;caption&quot;</span> <span class="hljs-attr">color</span>=<span class="hljs-string">{colors.textSecondary}</span>&gt;</span>
-              {t(&#x27;Gagnant&#x27;, &#x27;Winner&#x27;)} : {round.winner ?? &#x27;—&#x27;}
-            <span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">&quot;caption&quot;</span> <span class="hljs-attr">color</span>=<span class="hljs-string">{colors.textSecondary}</span>&gt;</span>
-              {t(&#x27;Cagnotte&#x27;, &#x27;Prize&#x27;)} : {formatEth(round.prizeEth ?? 0)}
-            <span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
-          <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
-        ))}
-      <span class="hljs-tag">&lt;/<span class="hljs-name">ScrollView</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Screen</span> <span class="hljs-attr">showSecurityFooter</span> <span class="hljs-attr">refreshing</span>=<span class="hljs-string">{isFetching</span> &amp;&amp; !<span class="hljs-attr">isLoading</span>} <span class="hljs-attr">onRefresh</span>=<span class="hljs-string">{refetch}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">ScreenHeader</span>
+        <span class="hljs-attr">title</span>=<span class="hljs-string">{t(</span>&#x27;<span class="hljs-attr">Historique</span> <span class="hljs-attr">des</span> <span class="hljs-attr">tirages</span>&#x27;, &#x27;<span class="hljs-attr">Draw</span> <span class="hljs-attr">history</span>&#x27;)}
+        <span class="hljs-attr">onBack</span>=<span class="hljs-string">{()</span> =&gt;</span> navigation.goBack()}
+      /&gt;
+      {isLoading ? <span class="hljs-tag">&lt;<span class="hljs-name">Loader</span> /&gt;</span> : null}
+      {isError ? (
+        <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">color</span>=<span class="hljs-string">{colors.inkMuted}</span>&gt;</span>{t(&#x27;Historique indisponible.&#x27;, &#x27;History unavailable.&#x27;)}<span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
+      ) : null}
+      {rounds.map((round) =&gt; (
+        <span class="hljs-tag">&lt;<span class="hljs-name">Card</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{round.contractRoundId}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.card}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">&quot;subtitle&quot;</span>&gt;</span>
+            {t(&#x27;Tour&#x27;, &#x27;Round&#x27;)} #{round.contractRoundId}
+          <span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">&quot;caption&quot;</span> <span class="hljs-attr">color</span>=<span class="hljs-string">{colors.inkMuted}</span>&gt;</span>
+            {t(&#x27;Gagnant&#x27;, &#x27;Winner&#x27;)} : {round.winner ?? &#x27;—&#x27;}
+          <span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">AppText</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">&quot;caption&quot;</span> <span class="hljs-attr">color</span>=<span class="hljs-string">{colors.inkMuted}</span>&gt;</span>
+            {t(&#x27;Cagnotte&#x27;, &#x27;Prize&#x27;)} : {formatEth(round.prizeEth ?? 0)}
+          <span class="hljs-tag">&lt;/<span class="hljs-name">AppText</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Card</span>&gt;</span>
+      ))}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Screen</span>&gt;</span></span>
   );
 };
 
 <span class="hljs-keyword">const</span> styles = <span class="hljs-title class_">StyleSheet</span>.<span class="hljs-title function_">create</span>({
-  <span class="hljs-attr">safeArea</span>: { <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span> },
-  <span class="hljs-attr">card</span>: { <span class="hljs-attr">padding</span>: <span class="hljs-number">14</span>, <span class="hljs-attr">borderWidth</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">gap</span>: <span class="hljs-number">4</span>, <span class="hljs-attr">marginTop</span>: <span class="hljs-number">12</span> },
+  <span class="hljs-attr">card</span>: { <span class="hljs-attr">gap</span>: <span class="hljs-number">4</span>, <span class="hljs-attr">marginTop</span>: <span class="hljs-number">12</span> },
 });
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">RoundHistoryScreen</span>;</code></pre></div>
@@ -204,23 +196,31 @@
 </thead>
 <tbody><tr>
 <td>Couleurs, espacements, rayons</td>
-<td><code>colors</code>, <code>spacing</code>, <code>borderRadius</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useAppTheme.ts" class="external" target="_blank" rel="noopener noreferrer"><code>useAppTheme</code></a>, qui suivent le thème clair ou sombre</td>
+<td><code>colors</code>, <code>spacing</code>, <code>borderRadius</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useAppTheme.ts" class="external" target="_blank" rel="noopener noreferrer"><code>useAppTheme</code></a>, qui suivent le thème clair ou sombre ; préférer les jetons de la maquette (<code>ink</code>, <code>inkMuted</code>, <code>sun</code>, <code>surface</code>)</td>
 </tr>
 <tr>
 <td>Textes</td>
-<td><code>AppText</code> (variantes <code>hero</code>, <code>title</code>, <code>subtitle</code>, <code>body</code>, <code>caption</code>, <code>overline</code>) et <code>t(&#39;français&#39;, &#39;english&#39;)</code></td>
+<td><code>AppText</code> (variantes <code>display</code>, <code>hero</code>, <code>title</code>, <code>section</code>, <code>subtitle</code>, <code>body</code>, <code>small</code>, <code>caption</code>, <code>overline</code>, <code>label</code>) et <code>t(&#39;français&#39;, &#39;english&#39;)</code></td>
 </tr>
 <tr>
-<td>Zones sûres</td>
-<td><code>SafeAreaView</code> de <code>react-native-safe-area-context</code>, bords <code>top</code>, <code>left</code>, <code>right</code> : la barre d&#39;onglets gère le bas</td>
+<td>Mise en page</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/Screen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Screen</code></a> : zones sûres, clavier, défilement, « tirer pour rafraîchir » et mention de sécurité</td>
+</tr>
+<tr>
+<td>En-tête et retour</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/ScreenHeader.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ScreenHeader</code></a> avec <code>onBack</code></td>
+</tr>
+<tr>
+<td>Cartes et listes</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/Card.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Card</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/ListRow.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ListRow</code></a></td>
 </tr>
 <tr>
 <td>Boutons</td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/AppButton.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>AppButton</code></a>, qui gère le chargement et l&#39;accessibilité</td>
 </tr>
 <tr>
-<td>Retour</td>
-<td><code>BackButton</code> affiché seulement si <code>navigation.canGoBack()</code></td>
+<td>Icônes</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/icons/Icon.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Icon</code></a> avec un nom de <code>iconData.ts</code></td>
 </tr>
 </tbody></table></div>
 <h2 id="4-enregistrer-l-ecran"><a class="anchor" href="#4-enregistrer-l-ecran" aria-hidden="true" tabindex="-1">#</a>4. Enregistrer l&#39;écran</h2>
@@ -229,13 +229,15 @@
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript">&lt;<span class="hljs-title class_">Stack</span>.<span class="hljs-property">Screen</span> name=<span class="hljs-string">&quot;RoundHistory&quot;</span> component={<span class="hljs-title class_">RoundHistoryScreen</span>} /&gt;</code></pre></div>
 <p>TypeScript refuse un <code>name</code> absent de <code>RootStackParamList</code> : l&#39;étape 2 est obligatoire.</p>
 <h2 id="5-ouvrir-l-ecran"><a class="anchor" href="#5-ouvrir-l-ecran" aria-hidden="true" tabindex="-1">#</a>5. Ouvrir l&#39;écran</h2>
-<p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/HelpSupportScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>HelpSupportScreen.tsx</code></a>, qui appartient à <code>SettingsStack</code>, ajouter un bouton :</p>
-<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript">&lt;<span class="hljs-title class_">AppButton</span>
-  title={<span class="hljs-title function_">t</span>(<span class="hljs-string">&quot;Voir l&#x27;historique des tirages&quot;</span>, <span class="hljs-string">&#x27;See draw history&#x27;</span>)}
-  variant=<span class="hljs-string">&quot;secondary&quot;</span>
+<p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/HelpSupportScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>HelpSupportScreen.tsx</code></a>, écran de la pile racine, ajouter une ligne au groupe existant :</p>
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript">&lt;<span class="hljs-title class_">ListRow</span>
+  title={<span class="hljs-title function_">t</span>(<span class="hljs-string">&#x27;Historique des tirages&#x27;</span>, <span class="hljs-string">&#x27;Draw history&#x27;</span>)}
+  icon=<span class="hljs-string">&quot;trophy&quot;</span>
+  iconTone=<span class="hljs-string">&quot;sun&quot;</span>
   onPress={<span class="hljs-function">() =&gt;</span> navigation.<span class="hljs-title function_">navigate</span>(<span class="hljs-string">&#x27;RoundHistory&#x27;</span>)}
+  divider
 /&gt;</code></pre></div>
-<p><code>navigate</code> remonte les navigateurs parents jusqu&#39;à trouver la route : depuis la pile des réglages, imbriquée dans un onglet, il atteint <code>RoundHistory</code> dans la pile racine.</p>
+<p><code>navigation</code> vient de <code>useRootNavigation()</code> : la même instance ouvre un écran empilé (<code>navigate(&#39;RoundHistory&#39;)</code>) ou change d&#39;onglet (<code>navigate(&#39;Main&#39;, { screen: &#39;TicketsTab&#39; })</code>).</p>
 <h2 id="6-verifier"><a class="anchor" href="#6-verifier" aria-hidden="true" tabindex="-1">#</a>6. Vérifier</h2>
 <div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> mobile-app
 npm run typecheck
@@ -243,7 +245,7 @@ npm run lint
 npx expo config --<span class="hljs-built_in">type</span> public &gt; /dev/null</code></pre></div>
 <p>Ce sont les trois contrôles du job <code>mobile</code> de la CI. Le projet n&#39;a pas de script de tests exécutable (voir <a href="../contribuer/tests-qualite.html#application-mobile">Tests et qualité</a>) : l&#39;écran se vérifie à la main.</p>
 <div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npm start</code></pre></div>
-<p>Ouvrir l&#39;application dans Expo Go, se connecter, aller dans Profil, puis Aide, puis « Voir l&#39;historique des tirages ». Sur un téléphone physique, l&#39;API doit être joignable : remplacer <code>localhost</code> par l&#39;adresse IP locale du poste dans <code>mobile-app/.env</code> (voir <a href="../mobile/telephone-physique.html">Tester sur un téléphone</a>).</p>
+<p>Ouvrir l&#39;application dans Expo Go, se connecter avec un compte du seed, aller dans Profil, puis « Aide et support », puis « Historique des tirages ». Sur un téléphone physique, l&#39;API doit être joignable : remplacer <code>localhost</code> par l&#39;adresse IP locale du poste dans <code>mobile-app/.env</code> (voir <a href="../mobile/telephone-physique.html">Tester sur un téléphone</a>).</p>
 <p>À vérifier sur l&#39;appareil :</p>
 <div class="table-wrap"><table>
 <thead>
@@ -254,11 +256,11 @@ npx expo config --<span class="hljs-built_in">type</span> public &gt; /dev/null<
 </thead>
 <tbody><tr>
 <td>Thème sombre</td>
-<td>Basculer le thème du système</td>
+<td>Activer « Mode sombre » dans Profil, puis Paramètres : l&#39;application ne suit pas le thème du système</td>
 </tr>
 <tr>
 <td>Anglais</td>
-<td>Changer la langue dans le profil</td>
+<td>Changer la langue dans Profil, puis Paramètres</td>
 </tr>
 <tr>
 <td>Lecteur d&#39;écran</td>
@@ -277,19 +279,21 @@ npx expo config --<span class="hljs-built_in">type</span> public &gt; /dev/null<
 <p>Pour un écran qui reçoit un identifiant, sur le modèle de <code>RewardDetail</code> :</p>
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-title class_">RoundDetail</span>: { <span class="hljs-attr">contractRoundId</span>: <span class="hljs-built_in">number</span> };</code></pre></div>
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript">navigation.<span class="hljs-title function_">navigate</span>(<span class="hljs-string">&#x27;RoundDetail&#x27;</span>, { <span class="hljs-attr">contractRoundId</span>: round.<span class="hljs-property">contractRoundId</span> });</code></pre></div>
-<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">RoundDetailScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span>&lt;{ <span class="hljs-attr">route</span>: { <span class="hljs-attr">params</span>: { <span class="hljs-attr">contractRoundId</span>: <span class="hljs-built_in">number</span> } }; <span class="hljs-attr">navigation</span>: <span class="hljs-built_in">any</span> }&gt; = <span class="hljs-function">(<span class="hljs-params">{
-  route,
-  navigation,
-}</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> { contractRoundId } = route.<span class="hljs-property">params</span>;
+<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">import</span> { <span class="hljs-title class_">RouteProp</span>, useRoute } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@react-navigation/native&#x27;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">RootStackParamList</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../../types/navigation.types&#x27;</span>;
+
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">RoundDetailScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span> = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> { params } = useRoute&lt;<span class="hljs-title class_">RouteProp</span>&lt;<span class="hljs-title class_">RootStackParamList</span>, <span class="hljs-string">&#x27;RoundDetail&#x27;</span>&gt;&gt;();
+  <span class="hljs-keyword">const</span> { contractRoundId } = params;
   <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
 };</code></pre></div>
+<p>TypeScript vérifie le nom de la route et le type des paramètres, à l&#39;appel de <code>navigate</code> comme dans l&#39;écran.</p>
 <h2 id="liste-de-controle"><a class="anchor" href="#liste-de-controle" aria-hidden="true" tabindex="-1">#</a>Liste de contrôle</h2>
 <ul>
 <li><input disabled="" type="checkbox"> Route typée dans <code>navigation.types.ts</code>.</li>
 <li><input disabled="" type="checkbox"> Écran enregistré dans le bon navigateur.</li>
 <li><input disabled="" type="checkbox"> Endpoint RTK Query avec étiquette.</li>
-<li><input disabled="" type="checkbox"> Textes bilingues, couleurs du thème, <code>SafeAreaView</code>.</li>
+<li><input disabled="" type="checkbox"> Textes bilingues, jetons de couleur du thème, <code>Screen</code> et <code>ScreenHeader</code>.</li>
 <li><input disabled="" type="checkbox"> <code>typecheck</code>, <code>lint</code> et configuration Expo verts.</li>
 <li><input disabled="" type="checkbox"> Testé sur un appareil ou un émulateur, captures jointes à la pull request.</li>
 </ul>

@@ -6,7 +6,7 @@
 <title>État et appels API | Documentation BlockLucky</title>
 <meta name="description" content="Le frontend web centralise son état dans un store Redux Toolkit. Les données du serveur passent par RTK Query, qui gère le cache, les états de chargement et l&#39;i">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -84,7 +84,7 @@
 </tbody></table></div>
 <p>Aucune requête n&#39;envoie d&#39;en-tête <code>Idempotency-Key</code>, bien que <code>POST /lottery/buy</code> et <code>POST /lottery/gift</code> acceptent le middleware d&#39;idempotence du backend. La protection contre le double envoi repose sur le bouton désactivé pendant la requête (voir <a href="portefeuille-loterie.html#billetterie">Portefeuille et loterie</a>).</p>
 <h2 id="les-tags-de-cache"><a class="anchor" href="#les-tags-de-cache" aria-hidden="true" tabindex="-1">#</a>Les tags de cache</h2>
-<p><code>baseApi</code> déclare dix types de tags. Une requête qui fournit un tag est rejouée automatiquement quand une mutation l&#39;invalide, si un composant l&#39;observe encore.</p>
+<p><code>baseApi</code> déclare onze types de tags. Une requête qui fournit un tag est rejouée automatiquement quand une mutation l&#39;invalide, si un composant l&#39;observe encore.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -96,7 +96,7 @@
 <tbody><tr>
 <td><code>User</code></td>
 <td><code>getProfile</code>, <code>getReferrals</code></td>
-<td><code>socialLogin</code>, <code>verify2FA</code>, <code>disable2FA</code>, <code>completeQuest</code>, <code>setResponsibleLimit</code>, <code>updatePreferences</code>, <code>buyTicket</code>, <code>giftTicket</code>, <code>claimReward</code></td>
+<td><code>socialLogin</code>, <code>verify2FA</code>, <code>disable2FA</code>, <code>completeQuest</code>, <code>setResponsibleLimit</code>, <code>updatePreferences</code>, <code>buyTicket</code>, <code>giftTicket</code>, <code>claimReward</code>, <code>submitIdentity</code></td>
 </tr>
 <tr>
 <td><code>Lottery</code></td>
@@ -141,7 +141,12 @@
 <tr>
 <td><code>Audit</code></td>
 <td><code>getAuditLogs</code></td>
-<td><code>toggleCircuitBreaker</code>, <code>withdrawTreasury</code>, <code>setPartnerStatus</code>, <code>exportReport</code></td>
+<td><code>toggleCircuitBreaker</code>, <code>withdrawTreasury</code>, <code>setPartnerStatus</code>, <code>exportReport</code>, <code>decideIdentityVerification</code></td>
+</tr>
+<tr>
+<td><code>Identity</code></td>
+<td><code>getIdentityVerifications</code>, <code>getIdentityStatus</code></td>
+<td><code>decideIdentityVerification</code>, <code>submitIdentity</code></td>
 </tr>
 </tbody></table></div>
 <p>Le tag <code>Notifications</code> n&#39;est jamais invalidé : la liste des notifications ne change qu&#39;au rechargement ou par <code>refetchNotifications</code>.</p>
@@ -191,6 +196,16 @@
 <td><code>getProfile</code></td>
 <td><code>GET /user/profile</code></td>
 <td>query</td>
+</tr>
+<tr>
+<td><code>getIdentityStatus</code></td>
+<td><code>GET /user/identity</code> : statut de la vérification d&#39;âge, dates d&#39;envoi et de décision, motif d&#39;un refus ; appelé par le hook <code>useAgeVerification</code>, relancé au montage et au retour du focus</td>
+<td>query</td>
+</tr>
+<tr>
+<td><code>submitIdentity</code></td>
+<td><code>POST /user/identity</code> avec <code>front</code> et <code>back</code> en data URL</td>
+<td>mutation</td>
 </tr>
 <tr>
 <td><code>getReferrals</code></td>
@@ -384,6 +399,21 @@
 <tr>
 <td><code>exportReport</code></td>
 <td><code>GET /admin/reports/export?format=CSV</code> ou <code>PDF</code></td>
+<td>mutation</td>
+</tr>
+<tr>
+<td><code>getIdentityVerifications</code></td>
+<td><code>GET /admin/identity-verifications</code> avec <code>status</code>, <code>page</code>, <code>limit</code></td>
+<td>query</td>
+</tr>
+<tr>
+<td><code>getIdentityVerification</code></td>
+<td><code>GET /admin/identity-verifications/:id</code> ; <code>keepUnusedDataFor: 0</code>, les images ne restent pas en cache après la fermeture du panneau</td>
+<td>query</td>
+</tr>
+<tr>
+<td><code>decideIdentityVerification</code></td>
+<td><code>POST /admin/identity-verifications/:id/decision</code> avec <code>approved</code> et <code>note</code></td>
 <td>mutation</td>
 </tr>
 </tbody></table></div>

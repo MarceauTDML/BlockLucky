@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Stack et structure | Documentation BlockLucky</title>
-<meta name="description" content="L&#39;application mobile est l&#39;interface citoyenne de BlockLucky sur iOS et Android. Elle couvre le parcours du citoyen : connexion, achat et cadeau de tickets, tir">
+<meta name="description" content="L&#39;application mobile est l&#39;interface citoyenne de BlockLucky sur iOS et Android. Elle couvre le parcours du citoyen : création de compte et connexion, vérificat">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -37,8 +37,8 @@
     <div class="breadcrumb"><span>9. Application mobile</span></div>
     <article class="markdown">
 <h1>Stack et structure</h1>
-<p>L&#39;application mobile est l&#39;interface citoyenne de BlockLucky sur iOS et Android. Elle couvre le parcours du citoyen : connexion, achat et cadeau de tickets, tirage en direct, boutique des commerçants, profil, sécurité et RGPD. Elle n&#39;a ni dashboard Mairie ni espace partenaire, qui n&#39;existent que sur le <a href="../web/structure.html">frontend web</a>. Comme le web, elle ne gère aucune clé : le portefeuille de chaque citoyen est créé et utilisé par le backend (voir <a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a>).</p>
-<p>Le code se trouve dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/</code></a>. Il est écrit en TypeScript avec Expo et React Native.</p>
+<p>L&#39;application mobile est l&#39;interface citoyenne de BlockLucky sur iOS et Android. Elle couvre le parcours du citoyen : création de compte et connexion, vérification d&#39;âge, achat et cadeau du ticket du grand tirage, salle d&#39;attente et tirage en direct, tickets à gratter et boutique des commerçants, parrainage, profil, sécurité et RGPD. Elle n&#39;a ni dashboard Mairie ni espace partenaire, qui n&#39;existent que sur le <a href="../web/structure.html">frontend web</a>. Comme le web, elle ne gère aucune clé : le portefeuille de chaque citoyen est créé et utilisé par le backend (voir <a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a>).</p>
+<p>Le code se trouve dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/</code></a>. Il est écrit en TypeScript avec Expo et React Native. L&#39;interface suit la maquette Figma de l&#39;application : police Inter, palette jaune « soleil » et encre bleu nuit, cartes arrondies et icônes SVG (voir <a href="theme-composants.html">Thème et composants</a>).</p>
 <h2 id="stack-technique"><a class="anchor" href="#stack-technique" aria-hidden="true" tabindex="-1">#</a>Stack technique</h2>
 <p>Les versions viennent de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/package.json" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/package.json</code></a>. Contrairement au web, la plupart sont des plages (<code>^</code>, <code>~</code>) ; les versions exactes sont figées par <code>package-lock.json</code>.</p>
 <div class="table-wrap"><table>
@@ -80,6 +80,26 @@
 <td>^4.8.1</td>
 </tr>
 <tr>
+<td>Police Inter</td>
+<td><code>@expo-google-fonts/inter</code></td>
+<td>^0.4.2</td>
+</tr>
+<tr>
+<td>Connexion Google</td>
+<td><code>expo-auth-session</code>, <code>expo-web-browser</code></td>
+<td>~58.0.18, ~58.0.8</td>
+</tr>
+<tr>
+<td>Connexion Apple</td>
+<td><code>expo-apple-authentication</code></td>
+<td>~58.0.3</td>
+</tr>
+<tr>
+<td>Photo de la pièce d&#39;identité</td>
+<td><code>expo-image-picker</code></td>
+<td>~58.0.10</td>
+</tr>
+<tr>
 <td>Stockage sécurisé</td>
 <td><code>expo-secure-store</code></td>
 <td>~58.0.2</td>
@@ -95,9 +115,14 @@
 <td>~5.10.1</td>
 </tr>
 <tr>
-<td>Images SVG distantes</td>
+<td>Icônes SVG</td>
 <td><code>react-native-svg</code></td>
 <td>15.16.0</td>
+</tr>
+<tr>
+<td>Cible web d&#39;Expo</td>
+<td><code>react-dom</code>, <code>react-native-web</code></td>
+<td>19.3.0, ^0.21.4</td>
 </tr>
 <tr>
 <td>Langage</td>
@@ -129,35 +154,39 @@
 <td>Aucun import : pas de notification push native (voir <a href="temps-reel-notifications.html">Temps réel et notifications</a>)</td>
 </tr>
 <tr>
+<td><code>expo-crypto</code></td>
+<td>Aucun import</td>
+</tr>
+<tr>
 <td><code>lottie-react-native</code></td>
-<td>Aucun import ; les trois animations de <code>assets/animations</code> ne sont pas affichées</td>
+<td>Aucun import ; les trois animations de <code>assets/animations</code> ne sont pas affichées, la roue du tirage est animée avec <code>Animated</code> de React Native</td>
 </tr>
 <tr>
 <td><code>react-native-gesture-handler</code></td>
 <td>Aucun import ; la carte à gratter utilise <code>PanResponder</code> de React Native</td>
 </tr>
-<tr>
-<td><code>expo-font</code></td>
-<td>Déclaré en plugin, mais aucun <code>useFonts</code> : les polices Inter de <code>assets/fonts</code> ne sont pas chargées et l&#39;application utilise la police système</td>
-</tr>
 </tbody></table></div>
-<p>Ces dépendances alourdissent le binaire sans rien apporter. Elles sont à retirer ou à brancher.</p>
+<p>Ces dépendances alourdissent le binaire sans rien apporter. Elles sont à retirer ou à brancher. Les fichiers <code>assets/fonts/Inter-*.ttf</code> ne sont plus lus non plus : la police vient du paquet <code>@expo-google-fonts/inter</code>.</p>
 <h2 id="arborescence"><a class="anchor" href="#arborescence" aria-hidden="true" tabindex="-1">#</a>Arborescence</h2>
 <div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">mobile-app/
 ├── __tests__/               tests Jest (sans exécuteur installé)
 ├── assets/
 │   ├── animations/          confetti, loading-spinner, roulette-spin (Lottie, inutilisés)
-│   ├── fonts/               Inter Regular, Medium, Bold (non chargées)
+│   ├── fonts/               Inter Regular, Medium, Bold (non lues)
+│   ├── icons/               42 icônes SVG de la maquette
 │   └── images/              icon, adaptive-icon, splash, favicon
 ├── src/
-│   ├── App.tsx              point d&#x27;entrée
-│   ├── navigation/          RootNavigator, AuthStack, MainTabs, SettingsStack
-│   ├── screens/             16 écrans : auth, lottery, marketplace, settings
+│   ├── App.tsx              point d&#x27;entrée, chargement de la police Inter
+│   ├── navigation/          RootNavigator, AuthStack, MainTabs, hooks typés
+│   ├── screens/             27 écrans : auth, lottery, marketplace, settings, sponsors
 │   ├── components/
-│   │   ├── lottery/         ChatBox, CountdownTimer, LeaderboardList, POAPBadge, RouletteAnimation, TicketCard, WinnerClaimCard
-│   │   ├── marketplace/     PointsBalanceCard, RewardCard, ScratchCanvas
-│   │   ├── ui/              AppButton, AppInput, AppText, BackButton, BottomSheet, Loader, ProgressBar
-│   │   └── web3/            IntegratedWalletCard, IntegratedWalletButton, ExplorerLink
+│   │   ├── auth/            formulaires d&#x27;authentification, boutons Google et Apple
+│   │   ├── draw/            roue, salle d&#x27;attente, discussion, résultats
+│   │   ├── lottery/         carte d&#x27;échéance, paliers, offres à gratter, formats
+│   │   ├── marketplace/     zone à gratter, cartes d&#x27;offres et de codes
+│   │   ├── profile/         identité, parrainage, résumé, listes de réglages
+│   │   ├── ui/              composants de base et icônes SVG
+│   │   └── web3/            IntegratedWalletCard, IntegratedWalletButton, ExplorerLink (inutilisés)
 │   ├── hooks/               useAuth, useCitizenWallet, useSocket, usePoints, usePushNotifications, useAppTheme
 │   ├── services/            api.client, secureStorage, socket.client, sentry.client
 │   ├── store/               store Redux, RTK Query (api/) et slices
@@ -170,7 +199,7 @@
 ├── metro.config.js          configuration Metro par défaut d&#x27;Expo
 └── .env.example</code></pre></div>
 <h2 id="point-d-entree"><a class="anchor" href="#point-d-entree" aria-hidden="true" tabindex="-1">#</a>Point d&#39;entrée</h2>
-<p><code>package.json</code> déclare <code>&quot;main&quot;: &quot;src/App.tsx&quot;</code>. <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/App.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/App.tsx</code></a> appelle <code>registerRootComponent(App)</code> et monte, dans cet ordre :</p>
+<p><code>package.json</code> déclare <code>&quot;main&quot;: &quot;src/App.tsx&quot;</code>. <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/App.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/App.tsx</code></a> appelle <code>registerRootComponent(App)</code>. Avant tout rendu, <code>App</code> charge cinq graisses d&#39;Inter avec <code>useFonts</code> (<code>Inter_400Regular</code>, <code>Inter_500Medium</code>, <code>Inter_600SemiBold</code>, <code>Inter_700Bold</code>, <code>Inter_700Bold_Italic</code>). Tant qu&#39;elles ne sont pas prêtes, il affiche une vue vide de couleur <code>#F6F7FA</code>. Il monte ensuite, dans cet ordre :</p>
 <ol>
 <li>le <code>Provider</code> Redux avec le store unique de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/index.ts" class="external" target="_blank" rel="noopener noreferrer"><code>store/index.ts</code></a> ;</li>
 <li><code>SafeAreaProvider</code> ;</li>
@@ -179,14 +208,14 @@
 </ol>
 <p>Au montage, <code>App</code> appelle <code>sentryClient.init()</code>. Ce « client Sentry » (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/services/sentry.client.ts" class="external" target="_blank" rel="noopener noreferrer"><code>sentry.client.ts</code></a>) n&#39;est pas le SDK Sentry : il garde en mémoire les 20 derniers rapports d&#39;erreur et n&#39;envoie rien à aucun serveur, même si <code>EXPO_PUBLIC_SENTRY_DSN</code> est renseigné.</p>
 <div class="diagram"><pre class="mermaid">flowchart TD
-  A[&quot;App.tsx&quot;] --&gt; R[&quot;Provider Redux&quot;]
+  A[&quot;App.tsx : useFonts Inter&quot;] --&gt; R[&quot;Provider Redux&quot;]
   R --&gt; S[&quot;SafeAreaProvider&quot;]
   S --&gt; T[&quot;ThemeProvider&quot;]
   T --&gt; SH[&quot;AppShell : StatusBar&quot;]
   SH --&gt; RN[&quot;RootNavigator&quot;]
   RN --&gt;|&quot;non connecté&quot;| AU[&quot;AuthStack&quot;]
   RN --&gt;|&quot;connecté&quot;| MT[&quot;MainTabs et écrans empilés&quot;]
-  RN --&gt; BS[&quot;Feuilles globales BottomSheet&quot;]</pre></div>
+  RN --&gt; BS[&quot;Fenêtres globales ResultDialog&quot;]</pre></div>
 <h2 id="organisation-du-code-applicatif"><a class="anchor" href="#organisation-du-code-applicatif" aria-hidden="true" tabindex="-1">#</a>Organisation du code applicatif</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -198,7 +227,7 @@
 </thead>
 <tbody><tr>
 <td><code>src/navigation</code></td>
-<td>Navigateurs et feuilles modales globales</td>
+<td>Navigateurs, hooks de navigation typés et fenêtres globales</td>
 <td><a href="navigation-ecrans.html">Navigation et écrans</a></td>
 </tr>
 <tr>
@@ -218,7 +247,7 @@
 </tr>
 <tr>
 <td><code>src/theme</code>, <code>src/components/ui</code></td>
-<td>Couleurs, espacements, typographie et composants de base</td>
+<td>Jetons de couleur, espacements, typographie, composants de base et icônes</td>
 <td><a href="theme-composants.html">Thème et composants</a></td>
 </tr>
 </tbody></table></div>
@@ -254,6 +283,28 @@
 <td>aucun fichier : vestige d&#39;une intégration Web3Auth abandonnée</td>
 </tr>
 </tbody></table></div>
+<p>Trois autres variables sont lues par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/auth/SocialAuthButtons.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SocialAuthButtons.tsx</code></a> sans figurer dans <code>.env.example</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID</code></td>
+<td>Identifiant client OAuth Google utilisé sur iOS</td>
+</tr>
+<tr>
+<td><code>EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID</code></td>
+<td>Identifiant client OAuth Google utilisé sur Android</td>
+</tr>
+<tr>
+<td><code>EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID</code></td>
+<td>Identifiant client OAuth Google utilisé sur la cible web</td>
+</tr>
+</tbody></table></div>
+<p>Sans la variable de la plateforme courante, le bouton « Continuer avec Google » reste affiché mais désactivé, avec le message « Connexion Google non configurée sur cette application. ». Les identifiants doivent aussi figurer dans <code>GOOGLE_CLIENT_IDS</code> côté backend (voir <a href="authentification.html#google-et-apple">Authentification et stockage sécurisé</a>).</p>
 <div class="hint hint-important"><p class="hint-title">Important</p>
 <code>localhost</code> désigne le téléphone lui-même. Sur un appareil physique ou un émulateur Android, l&#39;URL doit pointer vers l&#39;adresse IP de la machine qui fait tourner le backend. La procédure est dans <a href="telephone-physique.html">Tester sur un téléphone</a>.</p>
 </div>
@@ -280,7 +331,7 @@
 </tr>
 <tr>
 <td><code>npm run web</code></td>
-<td><code>expo start --web</code> ; les paquets <code>react-dom</code> et <code>react-native-web</code> ne sont pas installés, cette cible ne démarre donc pas en l&#39;état</td>
+<td><code>expo start --web</code> ; <code>react-dom</code> et <code>react-native-web</code> sont désormais installés, mais la cible web n&#39;est vérifiée ni par la CI ni par un test, et la connexion Apple n&#39;y est jamais proposée</td>
 </tr>
 <tr>
 <td><code>npm run typecheck</code></td>
@@ -293,8 +344,40 @@
 </tbody></table></div>
 <p>Il n&#39;existe pas de script <code>test</code> et Jest n&#39;est pas installé, bien que le dossier <code>__tests__</code> contienne trois fichiers et que l&#39;ancien README cite <code>npm test</code> (voir <a href="builds-publication.html#tests">Builds et publication</a>).</p>
 <h2 id="code-mort-a-connaitre"><a class="anchor" href="#code-mort-a-connaitre" aria-hidden="true" tabindex="-1">#</a>Code mort à connaître</h2>
-<p>Le hook <code>useGaslessWeb3.ts</code>, qui présentait les achats comme sponsorisés par la plateforme, et le composant <code>WalletConnectButton.tsx</code>, qui invitait à « connecter » un portefeuille externe, ont été supprimés : plus rien ne les importait. Ils sont remplacés par <a href="portefeuille-loterie.html#le-hook-usecitizenwallet"><code>useCitizenWallet</code></a> et <a href="portefeuille-loterie.html#integratedwalletbutton"><code>IntegratedWalletButton</code></a>. Les citoyens ne connectent pas de portefeuille externe.</p>
-<p>La fonction <code>generateDeterministicWallet</code> de <code>useCitizenWallet</code> est, elle, encore utilisée par l&#39;écran de connexion, pour une adresse que le backend ignore à la création du compte (voir <a href="authentification.html#adresse-envoyee-au-login">Authentification</a>).</p>
+<p>Le hook <code>useGaslessWeb3.ts</code>, qui présentait les achats comme sponsorisés par la plateforme, et le composant <code>WalletConnectButton.tsx</code>, qui invitait à « connecter » un portefeuille externe, ont été supprimés. La refonte de l&#39;interface a aussi supprimé <code>LoginScreen.tsx</code>, <code>SettingsStack.tsx</code> et les composants <code>ChatBox</code>, <code>CountdownTimer</code>, <code>LeaderboardList</code>, <code>POAPBadge</code>, <code>RouletteAnimation</code>, <code>TicketCard</code> et <code>WinnerClaimCard</code>. Les citoyens ne connectent pas de portefeuille externe.</p>
+<p>Il reste du code sans appelant :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Situation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>IntegratedWalletCard</code>, <code>IntegratedWalletButton</code></td>
+<td>Plus aucun écran ne les importe ; <code>ExplorerLink</code> n&#39;est plus utilisé que par <code>IntegratedWalletCard</code></td>
+</tr>
+<tr>
+<td><code>generateDeterministicWallet</code> de <code>useCitizenWallet</code></td>
+<td>Plus appelée depuis la suppression de l&#39;écran de connexion par email</td>
+</tr>
+<tr>
+<td><code>getOnboarding</code>, <code>setResponsibleLimit</code> de <code>authApi</code></td>
+<td>Déclarés, aucun écran ne les appelle</td>
+</tr>
+<tr>
+<td><code>triggerSimulatedOsPush</code> de <code>usePushNotifications</code></td>
+<td>Plus aucun écran ne l&#39;appelle : le bandeau de notification simulé ne s&#39;affiche plus</td>
+</tr>
+<tr>
+<td><code>notificationDrawerOpen</code> du slice <code>ui</code></td>
+<td>Le tiroir a été remplacé par l&#39;écran <code>Notifications</code></td>
+</tr>
+<tr>
+<td>Composants <code>ScratchOfferCard</code></td>
+<td>Deux composants du même nom, l&#39;un dans <code>components/lottery</code> (accueil), l&#39;autre dans <code>components/marketplace</code> (choix du ticket à gratter)</td>
+</tr>
+</tbody></table></div>
 
     </article>
     <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="../web/tests-build.html"><span>Précédent</span><strong>Tests et build</strong></a><a class="pager-next" href="navigation-ecrans.html"><span>Suivant</span><strong>Navigation et écrans</strong></a></nav>

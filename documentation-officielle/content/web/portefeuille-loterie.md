@@ -108,32 +108,71 @@ Pour `claimPrize`, l'ordre est : `PrizeAlreadyClaimed` donne `already-paid` (et 
 
 ### Achat pour soi
 
-1. Choix de la quantité parmi 1, 2, 5 et 10 (`ChoicePills`).
-2. Affichage du total : quantité multipliée par `round.ticketPriceEth` (repli 0,01), « + frais réseau, prélevés sur votre portefeuille BlockLucky », et du bonus de 50 points par ticket plus le certificat POAP.
-3. Rappel du plafond personnel `user.responsibleGaming.maxTicketsPerRound` s'il existe, avec un lien vers `/profil/securite`.
-4. Case obligatoire : « Je comprends que j'engage des ethers fictifs, sans valeur monétaire, dans un tirage pédagogique ».
-5. Bouton « Confirmer (n tickets) », désactivé tant que la case n'est pas cochée, si le tour n'est pas `OPEN` ou si le contrat est en pause.
+La page achète toujours un seul ticket (`purchaseTicket(1, 0)`) : il n'y a pas de choix de quantité.
+
+1. Affichage du total : prix d'un ticket `round.ticketPriceEth` (repli 0,01), « + frais réseau, prélevés sur votre portefeuille BlockLucky », du bonus de 50 points plus le certificat POAP, et de la règle « Un ticket par habitant et par tirage. ».
+2. Case obligatoire : « Je comprends que j'engage des ethers fictifs, sans valeur monétaire, dans un tirage pédagogique ».
+3. Bouton « Confirmer mon ticket », désactivé tant que la case n'est pas cochée, si le tour n'est pas `OPEN`, si le contrat est en pause ou si l'âge n'est pas vérifié.
+
+Un second achat sur le même tour reçoit `409 Vous avez déjà votre ticket pour ce grand tirage.`, affiché dans la feuille « Action impossible pour ce tour ».
+
+Si `user.ageVerificationStatus` existe et ne vaut pas `VERIFIED`, une alerte s'affiche au-dessus du formulaire et les boutons d'achat et de cadeau sont désactivés :
+
+| Statut | Message | Lien vers `/profil/identite` |
+|---|---|---|
+| `PENDING` | « Votre pièce d'identité est en cours de vérification par la Mairie. Vous pourrez jouer dès sa validation. » | « Voir le suivi » |
+| `NONE`, `REJECTED` | « Vérifiez votre âge pour participer au tirage. » | « Envoyer ma pièce » |
+
+Le statut vient du hook `useAgeVerification` (voir [Vérification d'identité](#verification-d-identite)) : le statut lu par `GET /user/identity`, ou à défaut celui du profil stocké. Sans aucun des deux, rien n'est bloqué côté client : le backend reste seul juge.
 
 Le reçu, à droite, passe par trois états :
 
 | État | Affichage |
 |---|---|
 | aucun | « Votre reçu apparaîtra ici après confirmation » |
-| `pending` | « Demande envoyée, en attente du réseau » et nombre de tickets en cours |
+| `pending` | « Demande envoyée, en attente du réseau » et « Ticket en cours de validation » |
 | `confirmed` | Pour chaque ticket : hash raccourci, numéro de bloc, date, lien Etherscan ; points gagnés et nouveau solde ; mention « Certificat POAP en cours d'émission » si `poapBadge.status === 'MINT_PENDING'` |
 
-Si l'achat échoue, le reçu revient à l'état vide et la feuille d'erreur s'affiche.
+Si l'achat échoue, le reçu revient à l'état vide et la feuille d'erreur s'affiche. Si le backend répond « Vérifiez votre âge pour jouer. » alors que le statut connu de la page ne l'avait pas prévu, c'est la feuille générique qui s'affiche. Le numéro de ticket sur 5 chiffres (`ticketNumber`) renvoyé par l'API n'est pas affiché par le reçu.
 
 > [!NOTE]
 > Le texte du reçu en attente affirme qu'un nouvel appui ne créera pas de doublon. Dans les faits, la protection vient du bouton en état `loading` (désactivé, `aria-busy`) et du garde `if (isBuying) return`. Le client n'envoie pas d'en-tête `Idempotency-Key` : deux onglets peuvent donc envoyer deux achats.
 
 ### Cadeau
 
-Le formulaire demande l'email du destinataire (`isValidEmail`) et un message personnel de 250 caractères au plus, prérempli. `sendGiftTicket` appelle `POST /lottery/gift`. En cas de succès, la page affiche « Ticket envoyé à ... Vous avez reçu +n pts » ; le bonus annoncé est de 75 points (`GIFT_BONUS_POINTS`). Le bouton est désactivé si le tour est fermé ou en pause.
+Le formulaire demande l'email du destinataire (`isValidEmail`) et un message personnel de 250 caractères au plus, prérempli. `sendGiftTicket` appelle `POST /lottery/gift`. Un destinataire qui a déjà son ticket pour le tour est refusé en 409. En cas de succès, la page affiche « Ticket envoyé à ... Vous avez reçu +n pts » ; le bonus annoncé est de 75 points (`GIFT_BONUS_POINTS`). Le bouton est désactivé si le tour est fermé ou en pause, ou si l'âge n'est pas vérifié.
 
 ### Achat rapide
 
 `/accueil` propose un bouton « Acheter 1 ticket » qui appelle `purchaseTicket(1, 0)` puis relance `getLotteryStatus`. Il n'y a pas de case de compréhension sur ce raccourci : la mention « 1 ticket = 0,01 ETH fictif + frais réseau... aucune somme réelle engagée » figure sous le bouton.
+
+Ce bouton (variante `secondary`, en encre), le lien « Salle de tirage » et la mention sont placés à l'intérieur de la carte jaune du compte à rebours, comme sur l'écran d'accueil du mobile. [`CountdownTimer`](src:frontend-web/src/components/lottery/CountdownTimer.tsx) accepte pour cela une prop facultative `children`, rendue sous l'échéance. La carte affiche une pilule encre « Chainlink VRF » ou « Mode démonstration », le numéro du tirage, la cagnotte en grand et l'échéance dans un encart `sun-soft`. Quand les participations sont fermées ou en pause, un message `role="status"` s'ajoute au-dessus du bouton, qui est désactivé.
+
+## Vérification d'identité
+
+[`frontend-web/src/app/(citoyen)/profil/identite/page.tsx`](src:frontend-web/src/app/(citoyen)/profil/identite/page.tsx) répond à `/profil/identite`. On y arrive par le bouton « Vérification d'identité » de `/profil` (libellé « Vérification d'identité : âge vérifié » une fois le statut `VERIFIED`) ou par le lien de l'alerte de la billetterie.
+
+Le statut vient du hook [`useAgeVerification`](src:frontend-web/src/hooks/useAgeVerification.ts), partagé avec `/billetterie` et `/profil`. Il appelle `useGetIdentityStatusQuery` (`GET /user/identity`, tag `Identity`), sauté sans session, relancé à chaque montage et quand la fenêtre reprend le focus. Si le statut reçu diffère de `user.ageVerificationStatus`, il met à jour le profil dans le slice `auth` (`updateUserProfile`) et dans le stockage (`bl.auth.user`). Il renvoie `identity`, `status` (statut reçu, ou à défaut celui du profil), `isLoading`, `isError` et `refetch`. La page affiche `NONE` si aucun statut n'est connu. Le type `IdentityStatus` de [`user.types.ts`](src:frontend-web/src/types/user.types.ts) porte `status`, `submittedAt`, `reviewedAt` et `note`.
+
+| Statut | Badge | Affichage |
+|---|---|---|
+| `NONE` | « À envoyer » | formulaire d'envoi |
+| `PENDING` | « En cours de vérification » | date d'envoi ; pas de formulaire |
+| `VERIFIED` | « Âge vérifié » | message de confirmation et bouton « Acheter mon ticket » vers `/billetterie` |
+| `REJECTED` | « Refusée » | motif saisi par la Mairie (`note`) s'il existe, puis formulaire pour envoyer une nouvelle pièce |
+
+Le formulaire comporte :
+
+1. deux zones de choix de fichier, recto (« Face avec votre photo ») et verso ; chacune accepte une image JPEG ou PNG de 4 Mo au plus, affiche un aperçu et le nom du fichier, ou une erreur de format ou de taille ;
+2. une case de consentement (`CheckboxCard`) : « J'accepte que la Mairie d'EtherBay consulte ma pièce pour vérifier mon âge. Les images sont chiffrées puis effacées dès sa décision. » ;
+3. le bouton « Envoyer à la Mairie », désactivé tant que les deux faces et le consentement manquent.
+
+Les images sont lues en data URL par `FileReader` et envoyées par `useSubmitIdentityMutation` (`POST /user/identity` avec `{ front, back }`), qui invalide les tags `Identity` et `User`. En cas de succès, la page passe `ageVerificationStatus` à `PENDING` dans le slice `auth` et dans le profil stocké (`bl.auth.user`), vide le formulaire et affiche « Pièce envoyée. La Mairie la vérifie, vous serez notifié de sa décision. ». En cas d'échec, elle affiche le message du backend.
+
+> [!NOTE]
+> Grâce à `useAgeVerification`, une décision de la Mairie est prise en compte au prochain chargement de `/billetterie`, `/profil` ou `/profil/identite`, ou quand l'onglet reprend le focus, sans nouvelle connexion.
+
+Le traitement côté serveur est décrit dans [Utilisateur](../backend/modules/utilisateur.md#verification-d-age).
 
 ## Tirage en direct
 
@@ -147,7 +186,11 @@ Le formulaire demande l'email du destinataire (`isValidEmail`) et un message per
 | Bloc de certification : preuve affichée seulement si le tirage est certifié, lien vers le contrat sur l'explorateur | `guarantees`, `blockchain.lotteryExplorerUrl` |
 | `ChatBox` : discussion et réactions rapides (Bravo, EtherBay, VRF, 10k) | `chat:message`, `chat:send` |
 
+[`RouletteAnimation`](src:frontend-web/src/components/lottery/RouletteAnimation.tsx) dessine la roue de l'écran de tirage du mobile : l'icône `wheel` (dix secteurs alternant jaune pâle, lavande, blanc et pêche, numérotés de 1 à 10) en taille fixe de 260 px, un pointeur encre en haut (jaune en thème sombre) et un moyeu encre marqué « VRF » (ou « Démo » si le tirage n'est pas certifié). Pendant la rotation, la roue tourne avec `animate-bl-spin` et la pastille du haut passe à « Tirage... ». Le gagnant s'affiche ensuite dans une pilule jaune. Les props (`spinning`, `winnerWallet`, `vrfRequestId`, `certified`, `drawRequested`) sont inchangées. Le dessin est en `aria-hidden` : seul le texte sous la roue, dans une zone `aria-live="polite"`, est restitué.
+
 Le bouton « Simuler la roue de tirage » ne fait qu'animer la roue pendant 3,5 secondes (`setRouletteSpinning`). Il n'appelle pas l'API et ne tire aucun gagnant.
+
+À l'arrivée de `draw:winner`, la roue tourne pendant 5 secondes ; le gagnant et `WinnerClaimCard` restent masqués pendant la rotation, puis s'affichent quand elle s'arrête. Un gagnant connu seulement par le rafraîchissement du statut, sans l'événement, s'affiche sans rotation.
 
 Le tirage réel est lancé par le keeper du backend ou par la Mairie depuis `/mairie/securite` (`POST /lottery/draw`, rôle `ADMIN`). Le résultat arrive par l'événement `draw:winner`, détaillé dans [Temps réel](temps-reel.md).
 

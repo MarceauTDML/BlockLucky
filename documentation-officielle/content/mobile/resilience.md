@@ -6,13 +6,17 @@ Un téléphone perd souvent le réseau : passage en 4G, tunnel, Wi-Fi public, mi
 
 | Mécanisme | Où | Effet |
 |---|---|---|
-| Boutons bloqués pendant l'envoi | `AppButton` avec `loading` (achat, cadeau, retrait, vérification) | Empêche un double appui pendant la requête |
-| Feuille « Réseau encombré » | `useCitizenWallet` sur `503` ou `canRetry` à l'achat | Explique l'échec et propose « Réessayer l'achat » avec un compteur `retryAttempt` incrémenté |
-| Feuille « File d'attente active » | `useCitizenWallet` sur `429` | Message d'affluence ; la position affichée (245) est fixe |
-| Feuille d'information | `describeBlockchainError` sur `402`, `409`, ou `503` avec `circuitBreaker` | Message clair : solde insuffisant, tour fermé, contrat en pause |
-| Message de discussion hors ligne | `sendChatMessage` sans connexion active | Le message est ajouté localement avec l'auteur « Vous (Citoyen) », sans renvoi ultérieur |
-| Reconnexion Socket.IO | `socket.io-client`, réglages par défaut | Reconnexion automatique, sans limite de tentatives |
-| Repli des textes | Écrans de charte, d'introduction | Texte codé en dur si l'API ne répond pas |
+| Boutons bloqués pendant l'envoi | `AppButton` avec `loading` (achat, cadeau, retrait, vérification, envoi de la pièce d'identité) | Empêche un double appui pendant la requête ; l'état « occupé » est annoncé aux lecteurs d'écran |
+| Fenêtre « L'achat n'a pas abouti. » | Billetterie, sur `503`, `canRetry`, `FETCH_ERROR` ou absence de réponse | Explique l'échec et propose « Réessayer l'achat » avec un compteur `retryAttempt` incrémenté (5 au plus) |
+| Fenêtre « Forte affluence » | Billetterie, sur `429` (le cadeau garde son titre « Le cadeau n'a pas abouti. ») | Message du backend, nouvel essai possible |
+| Fenêtre d'information | `describeBlockchainError` sur `402`, `409`, ou `503` avec `circuitBreaker` | Message clair : solde insuffisant, tour fermé, contrat en pause |
+| Ticket unique | Backend : un ticket par participant et par grand tirage | Un nouvel essai après une réponse perdue ne peut pas acheter un second ticket : il reçoit 409 et l'écran affiche « Ticket déjà validé » |
+| Rafraîchissement périodique | `pollingInterval` sur l'accueil (30 s), « Mes tickets » (30 s), la salle d'attente (5 s) et le tirage (4 s) | Les changements de phase apparaissent sans action de l'utilisateur |
+| Tirer pour rafraîchir | `Screen` avec `onRefresh` sur les quatre onglets, la salle d'attente, l'historique, la boutique, les codes, les notifications et la vérification d'âge | Rechargement manuel après une coupure |
+| Discussion hors ligne | `sendChatMessage` sans connexion active | Le message n'est pas envoyé, le brouillon est conservé et `RoomChat` demande de réessayer |
+| Reconnexion Socket.IO | `socket.io-client`, réglages par défaut, et `draw:join` réémis à chaque `connect` | Reconnexion automatique, sans limite de tentatives, avec retour dans la salle du tour |
+| Repli des textes | Écrans de charte, d'introduction, de fonctionnement | Texte codé en dur si l'API ne répond pas |
+| Écrans d'erreur avec « Réessayer » | Billetterie, accueil, salle d'attente, tirage, notifications | Message du backend ou texte de repli et bouton de rechargement |
 
 ## Ce qui n'est pas branché
 
@@ -30,7 +34,7 @@ Un téléphone perd souvent le réseau : passage en 4G, tunnel, Wi-Fi public, mi
 Ce client n'est utilisé par aucune requête. Toutes les données passent par RTK Query et `fetchBaseQuery` ([`baseApi.ts`](src:mobile-app/src/store/api/baseApi.ts)), qui n'a ni délai maximal, ni nouvelle tentative. Seule la constante `API_BASE_URL` du fichier est importée. Pour activer cette logique, il faudrait soit écrire un `baseQuery` RTK Query qui appelle `apiClient`, soit utiliser `retry` de RTK Query sur les requêtes de lecture.
 
 > [!WARNING]
-> Sans délai maximal, une requête vers un serveur qui ne répond pas reste en attente jusqu'au délai du système, souvent bien plus d'une minute. Pendant ce temps, le bouton concerné reste en état de chargement.
+> Sans délai maximal, une requête vers un serveur qui ne répond pas reste en attente jusqu'au délai du système, souvent bien plus d'une minute. Pendant ce temps, le bouton concerné reste en état de chargement. C'est sensible pour l'envoi de la pièce d'identité, dont le corps peut approcher 11 Mo encodé en base64.
 
 ### Détection de l'état du réseau
 
@@ -38,7 +42,7 @@ L'application n'utilise pas `@react-native-community/netinfo` ni aucune autre d�
 
 ### Rafraîchissement au retour au premier plan
 
-RTK Query peut relancer les requêtes au retour de l'application au premier plan ou à la reconnexion, à condition d'appeler `setupListeners` et de les relier à `AppState` et à l'état du réseau. Ce n'est pas fait : après une longue mise en veille, l'accueil affiche les données du dernier chargement jusqu'à ce que l'utilisateur change d'écran ou fasse une action. Aucune requête n'utilise `pollingInterval`.
+RTK Query peut relancer les requêtes au retour de l'application au premier plan ou à la reconnexion, à condition d'appeler `setupListeners` et de les relier à `AppState` et à l'état du réseau. Ce n'est pas fait. Les écrans avec `pollingInterval` se mettent à jour au tick suivant ; les autres affichent les données du dernier chargement jusqu'à un geste de rafraîchissement ou une action.
 
 ### Cache hors ligne
 
@@ -46,12 +50,7 @@ Le store Redux n'est pas persisté (pas de `redux-persist`). À chaque démarrag
 
 ### Indicateurs d'état du réseau blockchain
 
-| Indicateur | Champ lu par le mobile | Champ envoyé par le backend | Résultat |
-|---|---|---|---|
-| Relais RPC secondaire | `status.network.fallbackActive` (accueil) | `network.isFallback` | Le badge « Relais secondaire actif » ne s'affiche jamais |
-| Contrat en pause | `status.guarantees.paused` (billetterie) | `guarantees.paused` en mode onchain seulement, `network.isPaused` dans les deux modes | En mode simulé, une pause n'est pas signalée et les boutons restent actifs |
-
-Le web lit `isFallback` et `network.isPaused` et n'a pas ces défauts. Le statut renvoyé par `blockchainService.getNetworkStatus` est décrit dans [Client RPC et compte opérateur](../integration-blockchain/client-rpc.md).
+Aucun écran ne lit plus `network.isFallback`, `network.isPaused` ni `guarantees.paused` de `GET /lottery/status`. Le relais RPC secondaire et la pause du contrat ne sont donc pas signalés à l'avance : le citoyen ne l'apprend qu'à l'échec d'un achat, par la fenêtre « Loterie en pause » (`503` avec `circuitBreaker`). Le web lit ces indicateurs. Le statut renvoyé par `blockchainService.getNetworkStatus` est décrit dans [Client RPC et compte opérateur](../integration-blockchain/client-rpc.md).
 
 ### Maintenance et version minimale
 
@@ -59,7 +58,7 @@ Le backend expose `GET /api/config`, qui renvoie `minimumMobileVersion` (variabl
 
 ## Achat interrompu
 
-Le cas le plus sensible est l'achat de tickets, puisqu'il dépense des ethers fictifs du portefeuille.
+Le cas le plus sensible est l'achat du ticket, puisqu'il dépense des ethers fictifs du portefeuille.
 
 ```mermaid
 sequenceDiagram
@@ -67,36 +66,36 @@ sequenceDiagram
   participant A as Application
   participant B as Backend
   participant C as Contrat
-  U->>A: Acheter 5 tickets
-  A->>B: POST /lottery/buy quantity 5
+  U->>A: Confirmer mon ticket
+  A->>B: POST /lottery/buy quantity 1
   B->>C: transaction signée par le portefeuille intégré
   C--xB: nœud injoignable
   B-->>A: 503 canRetry
-  A->>U: Feuille Réseau encombré
+  A->>U: Fenêtre L'achat n'a pas abouti
   U->>A: Réessayer l'achat
   A->>B: POST /lottery/buy quantity 1, retryAttempt 1
+  B-->>A: 201 ticket, ou 409 si le premier essai avait abouti
 ```
 
-Trois limites ressortent de ce parcours :
+Deux limites ressortent de ce parcours :
 
-1. **Quantité perdue.** Le slice `ui` du mobile ne garde pas la quantité ; le bouton de la feuille relance un seul ticket. Le web conserve la quantité.
-2. **Pas d'idempotence.** Le backend accepte un en-tête `Idempotency-Key` sur `POST /lottery/buy` et `POST /lottery/gift`, qui permettrait de rejouer une requête sans doublon. Le mobile ne l'envoie pas. Si la réponse est perdue alors que la transaction a réussi, un nouvel essai achète un ticket de plus.
-3. **Cache non rafraîchi.** Après une erreur, le solde et le statut ne sont pas rechargés ; l'utilisateur ne voit pas qu'un ticket a peut-être été acheté.
+1. **Pas d'idempotence.** Le backend accepte un en-tête `Idempotency-Key` sur `POST /lottery/buy`, `POST /lottery/gift`, `POST /marketplace/claim` et `POST /marketplace/scratch`, qui permettrait de rejouer une requête sans doublon. Le mobile ne l'envoie pas. Pour le ticket du grand tirage, la règle du ticket unique évite un second achat ; pour un ticket à gratter, un nouvel essai après une réponse perdue débite une seconde fois les EtherPoints.
+2. **Cache partiellement rafraîchi.** Après un échec, la billetterie ne recharge la liste des tickets que sur une réponse 409 ; le solde n'est rechargé qu'après un succès.
 
-En pratique, le citoyen peut vérifier dans l'historique (`TransactionHistory`), qui interroge `GET /lottery/my-tickets` à chaque ouverture.
+En pratique, le citoyen peut vérifier son ticket dans « Mes tickets » ou dans l'historique (`TransactionHistory`), qui interrogent `GET /lottery/my-tickets`.
 
 ## Temps réel
 
-La connexion Socket.IO se reconnecte seule, mais l'application ne rejoint pas la salle du tour après une reconnexion et ne suit pas l'état de la connexion. Après une coupure, le compteur de présence se fige et l'annonce du gagnant reste reçue, puisqu'elle est diffusée à tous les clients. Les détails et le défaut d'écouteurs dupliqués sont dans [Temps réel et notifications](temps-reel-notifications.md).
+La connexion Socket.IO se reconnecte seule, et `useSocket` réémet `draw:join` à chaque reconnexion. L'application ne suit pas l'état de la connexion : la discussion ne le signale qu'à l'envoi d'un message. L'annonce du gagnant reste reçue, puisqu'elle est diffusée à tous les clients, et l'écran du tirage interroge de toute façon le statut toutes les 4 secondes. Les détails sont dans [Temps réel et notifications](temps-reel-notifications.md).
 
 ## Améliorations recommandées
 
 Par ordre de rapport effort et bénéfice :
 
-1. Ajouter `timeout` à `fetchBaseQuery` (15 secondes, comme le web).
+1. Ajouter `timeout` à `fetchBaseQuery` (15 secondes, comme le web), avec un délai plus long pour l'envoi de la pièce d'identité.
 2. Envelopper `fetchBaseQuery` avec `retry` de RTK Query pour les lectures, ou remplacer le `baseQuery` par un appel à `apiClient`, puis supprimer le code inutilisé.
-3. Générer un `Idempotency-Key` par intention d'achat ou de cadeau, et le réutiliser pour les nouvelles tentatives.
-4. Conserver la quantité dans `retryModal`.
-5. Appeler `setupListeners(store.dispatch)` avec `AppState` et ajouter un indicateur hors ligne.
-6. Lire `network.isFallback` et `network.isPaused`, comme le web.
-7. Appeler `GET /api/config` au démarrage pour gérer la maintenance et forcer la mise à jour.
+3. Générer un `Idempotency-Key` par intention d'achat, de cadeau ou de ticket à gratter, et le réutiliser pour les nouvelles tentatives.
+4. Appeler `setupListeners(store.dispatch)` avec `AppState` et ajouter un indicateur hors ligne.
+5. Lire `network.isFallback`, `network.isPaused` et `guarantees.paused`, comme le web.
+6. Appeler `GET /api/config` au démarrage pour gérer la maintenance et forcer la mise à jour.
+7. Retirer les fenêtres globales du slice `ui` qui ne sont plus ouvertes (voir [État et appels API](etat-api.md#slice-ui)).

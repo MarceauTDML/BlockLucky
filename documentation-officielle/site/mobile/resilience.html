@@ -6,7 +6,7 @@
 <title>Résilience réseau | Documentation BlockLucky</title>
 <meta name="description" content="Un téléphone perd souvent le réseau : passage en 4G, tunnel, Wi-Fi public, mise en veille. Cette page décrit ce que l&#39;application mobile fait réellement face à ">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -49,38 +49,58 @@
 </thead>
 <tbody><tr>
 <td>Boutons bloqués pendant l&#39;envoi</td>
-<td><code>AppButton</code> avec <code>loading</code> (achat, cadeau, retrait, vérification)</td>
-<td>Empêche un double appui pendant la requête</td>
+<td><code>AppButton</code> avec <code>loading</code> (achat, cadeau, retrait, vérification, envoi de la pièce d&#39;identité)</td>
+<td>Empêche un double appui pendant la requête ; l&#39;état « occupé » est annoncé aux lecteurs d&#39;écran</td>
 </tr>
 <tr>
-<td>Feuille « Réseau encombré »</td>
-<td><code>useCitizenWallet</code> sur <code>503</code> ou <code>canRetry</code> à l&#39;achat</td>
-<td>Explique l&#39;échec et propose « Réessayer l&#39;achat » avec un compteur <code>retryAttempt</code> incrémenté</td>
+<td>Fenêtre « L&#39;achat n&#39;a pas abouti. »</td>
+<td>Billetterie, sur <code>503</code>, <code>canRetry</code>, <code>FETCH_ERROR</code> ou absence de réponse</td>
+<td>Explique l&#39;échec et propose « Réessayer l&#39;achat » avec un compteur <code>retryAttempt</code> incrémenté (5 au plus)</td>
 </tr>
 <tr>
-<td>Feuille « File d&#39;attente active »</td>
-<td><code>useCitizenWallet</code> sur <code>429</code></td>
-<td>Message d&#39;affluence ; la position affichée (245) est fixe</td>
+<td>Fenêtre « Forte affluence »</td>
+<td>Billetterie, sur <code>429</code> (le cadeau garde son titre « Le cadeau n&#39;a pas abouti. »)</td>
+<td>Message du backend, nouvel essai possible</td>
 </tr>
 <tr>
-<td>Feuille d&#39;information</td>
+<td>Fenêtre d&#39;information</td>
 <td><code>describeBlockchainError</code> sur <code>402</code>, <code>409</code>, ou <code>503</code> avec <code>circuitBreaker</code></td>
 <td>Message clair : solde insuffisant, tour fermé, contrat en pause</td>
 </tr>
 <tr>
-<td>Message de discussion hors ligne</td>
+<td>Ticket unique</td>
+<td>Backend : un ticket par participant et par grand tirage</td>
+<td>Un nouvel essai après une réponse perdue ne peut pas acheter un second ticket : il reçoit 409 et l&#39;écran affiche « Ticket déjà validé »</td>
+</tr>
+<tr>
+<td>Rafraîchissement périodique</td>
+<td><code>pollingInterval</code> sur l&#39;accueil (30 s), « Mes tickets » (30 s), la salle d&#39;attente (5 s) et le tirage (4 s)</td>
+<td>Les changements de phase apparaissent sans action de l&#39;utilisateur</td>
+</tr>
+<tr>
+<td>Tirer pour rafraîchir</td>
+<td><code>Screen</code> avec <code>onRefresh</code> sur les quatre onglets, la salle d&#39;attente, l&#39;historique, la boutique, les codes, les notifications et la vérification d&#39;âge</td>
+<td>Rechargement manuel après une coupure</td>
+</tr>
+<tr>
+<td>Discussion hors ligne</td>
 <td><code>sendChatMessage</code> sans connexion active</td>
-<td>Le message est ajouté localement avec l&#39;auteur « Vous (Citoyen) », sans renvoi ultérieur</td>
+<td>Le message n&#39;est pas envoyé, le brouillon est conservé et <code>RoomChat</code> demande de réessayer</td>
 </tr>
 <tr>
 <td>Reconnexion Socket.IO</td>
-<td><code>socket.io-client</code>, réglages par défaut</td>
-<td>Reconnexion automatique, sans limite de tentatives</td>
+<td><code>socket.io-client</code>, réglages par défaut, et <code>draw:join</code> réémis à chaque <code>connect</code></td>
+<td>Reconnexion automatique, sans limite de tentatives, avec retour dans la salle du tour</td>
 </tr>
 <tr>
 <td>Repli des textes</td>
-<td>Écrans de charte, d&#39;introduction</td>
+<td>Écrans de charte, d&#39;introduction, de fonctionnement</td>
 <td>Texte codé en dur si l&#39;API ne répond pas</td>
+</tr>
+<tr>
+<td>Écrans d&#39;erreur avec « Réessayer »</td>
+<td>Billetterie, accueil, salle d&#39;attente, tirage, notifications</td>
+<td>Message du backend ou texte de repli et bouton de rechargement</td>
 </tr>
 </tbody></table></div>
 <h2 id="ce-qui-n-est-pas-branche"><a class="anchor" href="#ce-qui-n-est-pas-branche" aria-hidden="true" tabindex="-1">#</a>Ce qui n&#39;est pas branché</h2>
@@ -112,74 +132,52 @@
 </tbody></table></div>
 <p>Ce client n&#39;est utilisé par aucune requête. Toutes les données passent par RTK Query et <code>fetchBaseQuery</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/api/baseApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>baseApi.ts</code></a>), qui n&#39;a ni délai maximal, ni nouvelle tentative. Seule la constante <code>API_BASE_URL</code> du fichier est importée. Pour activer cette logique, il faudrait soit écrire un <code>baseQuery</code> RTK Query qui appelle <code>apiClient</code>, soit utiliser <code>retry</code> de RTK Query sur les requêtes de lecture.</p>
 <div class="hint hint-warning"><p class="hint-title">Attention</p>
-<p>Sans délai maximal, une requête vers un serveur qui ne répond pas reste en attente jusqu&#39;au délai du système, souvent bien plus d&#39;une minute. Pendant ce temps, le bouton concerné reste en état de chargement.</p>
+<p>Sans délai maximal, une requête vers un serveur qui ne répond pas reste en attente jusqu&#39;au délai du système, souvent bien plus d&#39;une minute. Pendant ce temps, le bouton concerné reste en état de chargement. C&#39;est sensible pour l&#39;envoi de la pièce d&#39;identité, dont le corps peut approcher 11 Mo encodé en base64.</p>
 </div>
 <h3 id="detection-de-l-etat-du-reseau"><a class="anchor" href="#detection-de-l-etat-du-reseau" aria-hidden="true" tabindex="-1">#</a>Détection de l&#39;état du réseau</h3>
 <p>L&#39;application n&#39;utilise pas <code>@react-native-community/netinfo</code> ni aucune autre détection. Il n&#39;y a pas de bandeau « hors ligne ». Une coupure se manifeste par des erreurs <code>FETCH_ERROR</code> traduites en textes de repli propres à chaque écran.</p>
 <h3 id="rafraichissement-au-retour-au-premier-plan"><a class="anchor" href="#rafraichissement-au-retour-au-premier-plan" aria-hidden="true" tabindex="-1">#</a>Rafraîchissement au retour au premier plan</h3>
-<p>RTK Query peut relancer les requêtes au retour de l&#39;application au premier plan ou à la reconnexion, à condition d&#39;appeler <code>setupListeners</code> et de les relier à <code>AppState</code> et à l&#39;état du réseau. Ce n&#39;est pas fait : après une longue mise en veille, l&#39;accueil affiche les données du dernier chargement jusqu&#39;à ce que l&#39;utilisateur change d&#39;écran ou fasse une action. Aucune requête n&#39;utilise <code>pollingInterval</code>.</p>
+<p>RTK Query peut relancer les requêtes au retour de l&#39;application au premier plan ou à la reconnexion, à condition d&#39;appeler <code>setupListeners</code> et de les relier à <code>AppState</code> et à l&#39;état du réseau. Ce n&#39;est pas fait. Les écrans avec <code>pollingInterval</code> se mettent à jour au tick suivant ; les autres affichent les données du dernier chargement jusqu&#39;à un geste de rafraîchissement ou une action.</p>
 <h3 id="cache-hors-ligne"><a class="anchor" href="#cache-hors-ligne" aria-hidden="true" tabindex="-1">#</a>Cache hors ligne</h3>
 <p>Le store Redux n&#39;est pas persisté (pas de <code>redux-persist</code>). À chaque démarrage, l&#39;application repart d&#39;un cache vide et doit joindre le backend pour afficher quoi que ce soit, en plus de redemander la connexion (voir <a href="authentification.html#session-au-demarrage">Authentification et stockage sécurisé</a>).</p>
 <h3 id="indicateurs-d-etat-du-reseau-blockchain"><a class="anchor" href="#indicateurs-d-etat-du-reseau-blockchain" aria-hidden="true" tabindex="-1">#</a>Indicateurs d&#39;état du réseau blockchain</h3>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Indicateur</th>
-<th>Champ lu par le mobile</th>
-<th>Champ envoyé par le backend</th>
-<th>Résultat</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Relais RPC secondaire</td>
-<td><code>status.network.fallbackActive</code> (accueil)</td>
-<td><code>network.isFallback</code></td>
-<td>Le badge « Relais secondaire actif » ne s&#39;affiche jamais</td>
-</tr>
-<tr>
-<td>Contrat en pause</td>
-<td><code>status.guarantees.paused</code> (billetterie)</td>
-<td><code>guarantees.paused</code> en mode onchain seulement, <code>network.isPaused</code> dans les deux modes</td>
-<td>En mode simulé, une pause n&#39;est pas signalée et les boutons restent actifs</td>
-</tr>
-</tbody></table></div>
-<p>Le web lit <code>isFallback</code> et <code>network.isPaused</code> et n&#39;a pas ces défauts. Le statut renvoyé par <code>blockchainService.getNetworkStatus</code> est décrit dans <a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a>.</p>
+<p>Aucun écran ne lit plus <code>network.isFallback</code>, <code>network.isPaused</code> ni <code>guarantees.paused</code> de <code>GET /lottery/status</code>. Le relais RPC secondaire et la pause du contrat ne sont donc pas signalés à l&#39;avance : le citoyen ne l&#39;apprend qu&#39;à l&#39;échec d&#39;un achat, par la fenêtre « Loterie en pause » (<code>503</code> avec <code>circuitBreaker</code>). Le web lit ces indicateurs. Le statut renvoyé par <code>blockchainService.getNetworkStatus</code> est décrit dans <a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a>.</p>
 <h3 id="maintenance-et-version-minimale"><a class="anchor" href="#maintenance-et-version-minimale" aria-hidden="true" tabindex="-1">#</a>Maintenance et version minimale</h3>
 <p>Le backend expose <code>GET /api/config</code>, qui renvoie <code>minimumMobileVersion</code> (variable <code>MOBILE_MIN_VERSION</code>) et <code>maintenance</code> (variable <code>MAINTENANCE_MODE</code>). L&#39;application ne l&#39;appelle pas. En mode maintenance, chaque requête reçoit une erreur 503 avec <code>Retry-After: 300</code>, que l&#39;application affiche comme une erreur réseau ordinaire ; à l&#39;achat, elle propose même de réessayer.</p>
 <h2 id="achat-interrompu"><a class="anchor" href="#achat-interrompu" aria-hidden="true" tabindex="-1">#</a>Achat interrompu</h2>
-<p>Le cas le plus sensible est l&#39;achat de tickets, puisqu&#39;il dépense des ethers fictifs du portefeuille.</p>
+<p>Le cas le plus sensible est l&#39;achat du ticket, puisqu&#39;il dépense des ethers fictifs du portefeuille.</p>
 <div class="diagram"><pre class="mermaid">sequenceDiagram
   participant U as Citoyen
   participant A as Application
   participant B as Backend
   participant C as Contrat
-  U-&gt;&gt;A: Acheter 5 tickets
-  A-&gt;&gt;B: POST /lottery/buy quantity 5
+  U-&gt;&gt;A: Confirmer mon ticket
+  A-&gt;&gt;B: POST /lottery/buy quantity 1
   B-&gt;&gt;C: transaction signée par le portefeuille intégré
   C--xB: nœud injoignable
   B--&gt;&gt;A: 503 canRetry
-  A-&gt;&gt;U: Feuille Réseau encombré
+  A-&gt;&gt;U: Fenêtre L&#39;achat n&#39;a pas abouti
   U-&gt;&gt;A: Réessayer l&#39;achat
-  A-&gt;&gt;B: POST /lottery/buy quantity 1, retryAttempt 1</pre></div>
-<p>Trois limites ressortent de ce parcours :</p>
+  A-&gt;&gt;B: POST /lottery/buy quantity 1, retryAttempt 1
+  B--&gt;&gt;A: 201 ticket, ou 409 si le premier essai avait abouti</pre></div>
+<p>Deux limites ressortent de ce parcours :</p>
 <ol>
-<li><strong>Quantité perdue.</strong> Le slice <code>ui</code> du mobile ne garde pas la quantité ; le bouton de la feuille relance un seul ticket. Le web conserve la quantité.</li>
-<li><strong>Pas d&#39;idempotence.</strong> Le backend accepte un en-tête <code>Idempotency-Key</code> sur <code>POST /lottery/buy</code> et <code>POST /lottery/gift</code>, qui permettrait de rejouer une requête sans doublon. Le mobile ne l&#39;envoie pas. Si la réponse est perdue alors que la transaction a réussi, un nouvel essai achète un ticket de plus.</li>
-<li><strong>Cache non rafraîchi.</strong> Après une erreur, le solde et le statut ne sont pas rechargés ; l&#39;utilisateur ne voit pas qu&#39;un ticket a peut-être été acheté.</li>
+<li><strong>Pas d&#39;idempotence.</strong> Le backend accepte un en-tête <code>Idempotency-Key</code> sur <code>POST /lottery/buy</code>, <code>POST /lottery/gift</code>, <code>POST /marketplace/claim</code> et <code>POST /marketplace/scratch</code>, qui permettrait de rejouer une requête sans doublon. Le mobile ne l&#39;envoie pas. Pour le ticket du grand tirage, la règle du ticket unique évite un second achat ; pour un ticket à gratter, un nouvel essai après une réponse perdue débite une seconde fois les EtherPoints.</li>
+<li><strong>Cache partiellement rafraîchi.</strong> Après un échec, la billetterie ne recharge la liste des tickets que sur une réponse 409 ; le solde n&#39;est rechargé qu&#39;après un succès.</li>
 </ol>
-<p>En pratique, le citoyen peut vérifier dans l&#39;historique (<code>TransactionHistory</code>), qui interroge <code>GET /lottery/my-tickets</code> à chaque ouverture.</p>
+<p>En pratique, le citoyen peut vérifier son ticket dans « Mes tickets » ou dans l&#39;historique (<code>TransactionHistory</code>), qui interrogent <code>GET /lottery/my-tickets</code>.</p>
 <h2 id="temps-reel"><a class="anchor" href="#temps-reel" aria-hidden="true" tabindex="-1">#</a>Temps réel</h2>
-<p>La connexion Socket.IO se reconnecte seule, mais l&#39;application ne rejoint pas la salle du tour après une reconnexion et ne suit pas l&#39;état de la connexion. Après une coupure, le compteur de présence se fige et l&#39;annonce du gagnant reste reçue, puisqu&#39;elle est diffusée à tous les clients. Les détails et le défaut d&#39;écouteurs dupliqués sont dans <a href="temps-reel-notifications.html">Temps réel et notifications</a>.</p>
+<p>La connexion Socket.IO se reconnecte seule, et <code>useSocket</code> réémet <code>draw:join</code> à chaque reconnexion. L&#39;application ne suit pas l&#39;état de la connexion : la discussion ne le signale qu&#39;à l&#39;envoi d&#39;un message. L&#39;annonce du gagnant reste reçue, puisqu&#39;elle est diffusée à tous les clients, et l&#39;écran du tirage interroge de toute façon le statut toutes les 4 secondes. Les détails sont dans <a href="temps-reel-notifications.html">Temps réel et notifications</a>.</p>
 <h2 id="ameliorations-recommandees"><a class="anchor" href="#ameliorations-recommandees" aria-hidden="true" tabindex="-1">#</a>Améliorations recommandées</h2>
 <p>Par ordre de rapport effort et bénéfice :</p>
 <ol>
-<li>Ajouter <code>timeout</code> à <code>fetchBaseQuery</code> (15 secondes, comme le web).</li>
+<li>Ajouter <code>timeout</code> à <code>fetchBaseQuery</code> (15 secondes, comme le web), avec un délai plus long pour l&#39;envoi de la pièce d&#39;identité.</li>
 <li>Envelopper <code>fetchBaseQuery</code> avec <code>retry</code> de RTK Query pour les lectures, ou remplacer le <code>baseQuery</code> par un appel à <code>apiClient</code>, puis supprimer le code inutilisé.</li>
-<li>Générer un <code>Idempotency-Key</code> par intention d&#39;achat ou de cadeau, et le réutiliser pour les nouvelles tentatives.</li>
-<li>Conserver la quantité dans <code>retryModal</code>.</li>
+<li>Générer un <code>Idempotency-Key</code> par intention d&#39;achat, de cadeau ou de ticket à gratter, et le réutiliser pour les nouvelles tentatives.</li>
 <li>Appeler <code>setupListeners(store.dispatch)</code> avec <code>AppState</code> et ajouter un indicateur hors ligne.</li>
-<li>Lire <code>network.isFallback</code> et <code>network.isPaused</code>, comme le web.</li>
+<li>Lire <code>network.isFallback</code>, <code>network.isPaused</code> et <code>guarantees.paused</code>, comme le web.</li>
 <li>Appeler <code>GET /api/config</code> au démarrage pour gérer la maintenance et forcer la mise à jour.</li>
+<li>Retirer les fenêtres globales du slice <code>ui</code> qui ne sont plus ouvertes (voir <a href="etat-api.html#slice-ui">État et appels API</a>).</li>
 </ol>
 
     </article>

@@ -14,15 +14,24 @@ Le projet utilise un fichier statique `app.json`. Il n'existe ni `app.config.js`
 | `orientation` | `portrait` | Rotation bloquée |
 | `icon` | `./assets/images/icon.png` | Icône |
 | `userInterfaceStyle` | `automatic` | Autorise le mode sombre du système ; l'application ne le lit pas (voir [Thème et composants](theme-composants.md#themeprovider)) |
-| `splash` | `splash.png`, `contain`, fond `#1A0B2E` | Écran de lancement |
-| `ios.bundleIdentifier` | `fr.etherbay.blocklucky` | Identifiant iOS |
+| `splash` | `splash.png`, `contain`, fond `#F6F7FA` | Écran de lancement, sur le fond clair de la maquette |
+| `scheme` | `blocklucky` | Schéma d'URL de l'application, utilisé par le retour de la connexion Google ; aucun lien profond n'est routé vers un écran (voir [Navigation et écrans](navigation-ecrans.md#ce-que-la-navigation-ne-fait-pas)) |
+| `ios.bundleIdentifier` | `fr.etherbay.blocklucky` | Identifiant iOS, à déclarer dans `APPLE_CLIENT_IDS` du backend pour Sign in with Apple |
 | `ios.supportsTablet` | `true` | Installable sur iPad |
+| `ios.usesAppleSignIn` | `true` | Ajoute la capacité Sign in with Apple au binaire iOS |
 | `ios.config.usesNonExemptEncryption` | `false` | Déclaration d'export : l'application n'utilise que le chiffrement standard du système |
 | `android.package` | `fr.etherbay.blocklucky` | Identifiant Android |
-| `android.adaptiveIcon` | `adaptive-icon.png`, fond `#1A0B2E` | Icône adaptative |
+| `android.adaptiveIcon` | `adaptive-icon.png`, fond `#FFDA38` | Icône adaptative sur le jaune de la charte |
 | `android.allowBackup` | `false` | Pas de sauvegarde des données de l'application par Android |
-| `web` | `favicon.png`, bundler `metro` | Cible web d'Expo, non fonctionnelle faute de `react-native-web` |
-| `plugins` | `expo-secure-store`, `expo-font`, `expo-status-bar` | Modules configurés au prebuild |
+| `web` | `favicon.png`, bundler `metro` | Cible web d'Expo ; `react-native-web` et `react-dom` sont installés, la cible n'est pas vérifiée par la CI |
+| `plugins` | `expo-secure-store`, `expo-font`, `expo-status-bar`, `expo-web-browser`, `expo-apple-authentication`, `expo-image-picker` | Modules configurés au prebuild |
+
+Le plugin `expo-image-picker` fixe les deux textes affichés par le système quand l'application demande l'accès :
+
+| Autorisation | Texte |
+|---|---|
+| Photos (`photosPermission`) | « BlockLucky accède à vos photos pour envoyer le recto et le verso de votre pièce d'identité à la Mairie. » |
+| Appareil photo (`cameraPermission`) | « BlockLucky utilise l'appareil photo pour photographier votre pièce d'identité afin de vérifier votre âge. » |
 
 Plusieurs clés habituelles d'un projet publié manquent :
 
@@ -31,7 +40,6 @@ Plusieurs clés habituelles d'un projet publié manquent :
 | `extra.eas.projectId`, `owner` | Le projet n'est rattaché à aucun compte Expo ; la première commande EAS demandera de le créer |
 | `runtimeVersion`, `updates.url` | Les mises à jour à distance (EAS Update) ne sont pas configurées |
 | `ios.buildNumber`, `android.versionCode` | Normal ici : `appVersionSource: "remote"` confie ces numéros à EAS |
-| `scheme` | Pas de liens profonds (voir [Navigation et écrans](navigation-ecrans.md#ce-que-la-navigation-ne-fait-pas)) |
 | Plugin `expo-notifications` | Pas de notifications push |
 
 ## Profils EAS
@@ -54,7 +62,7 @@ La section `submit.production` est vide : aucune information de compte App Store
 
 ## Variables d'environnement au build
 
-`EXPO_PUBLIC_API_URL` et `EXPO_PUBLIC_WS_URL` sont lues au moment de la construction du bundle. Sans elles, l'application compilée pointe vers `http://localhost:2053`, c'est-à-dire vers le téléphone lui-même.
+`EXPO_PUBLIC_API_URL` et `EXPO_PUBLIC_WS_URL` sont lues au moment de la construction du bundle. Sans elles, l'application compilée pointe vers `http://localhost:2053`, c'est-à-dire vers le téléphone lui-même. La connexion Google demande en plus `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` et `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` : sans elles, le bouton Google du binaire reste désactivé.
 
 `eas.json` ne déclare aucune section `env`, et le fichier `.env` est exclu de Git par [`.gitignore`](src:mobile-app/.gitignore). Avant un build EAS, il faut donc fournir les URL de l'environnement visé, soit dans une section `env` de chaque profil, soit dans les variables d'environnement du projet EAS. Pour une version publique, ces URL doivent être en HTTPS : les applications iOS et Android récentes refusent par défaut le HTTP non chiffré hors développement, et `app.json` ne déclare aucune exception.
 
@@ -64,10 +72,10 @@ Ces étapes n'ont pas été exécutées dans le projet. Elles utilisent EAS CLI,
 
 1. Créer ou choisir un compte Expo pour la Ville, puis lier le projet (`eas init`), ce qui ajoute `extra.eas.projectId` dans `app.json`.
 2. Installer `expo-dev-client` si le profil `development` doit être utilisé, ou retirer `developmentClient` du profil.
-3. Renseigner les URL de l'API dans `eas.json` ou dans les variables du projet EAS.
-4. Remplacer les images de `assets/images` (icône, icône adaptative, splash) et la couleur `#1A0B2E` par celles de la charte.
+3. Renseigner les URL de l'API et les identifiants client Google dans `eas.json` ou dans les variables du projet EAS, et déclarer ces identifiants et le bundle iOS dans `GOOGLE_CLIENT_IDS` et `APPLE_CLIENT_IDS` du backend.
+4. Remplacer les images de `assets/images` (icône, icône adaptative, splash) par des visuels conformes à la maquette ; les couleurs de fond de `app.json` le sont déjà.
 5. Lancer un build de recette, par exemple `eas build --profile preview --platform android`, et l'installer sur un téléphone.
-6. Pour iOS, fournir un compte Apple Developer : EAS génère alors les certificats et profils de provisionnement.
+6. Pour iOS, fournir un compte Apple Developer et activer Sign in with Apple pour l'identifiant `fr.etherbay.blocklucky` : EAS génère alors les certificats et profils de provisionnement.
 7. Pour les stores, compléter `submit.production`, puis `eas submit --profile production`.
 
 Avant toute publication, les défauts de l'application doivent être corrigés, en particulier la restauration de session (voir [Authentification et stockage sécurisé](authentification.md)). La liste de contrôle générale est dans [Avant une mise en production](../contribuer/mise-en-production.md).
@@ -79,8 +87,10 @@ Quelques points à préparer, propres à une application de loterie :
 | Sujet | Situation |
 |---|---|
 | Jeux d'argent | Les tickets s'achètent en ethers fictifs sans valeur, mais les règles des stores sur les loteries et les crypto-actifs s'appliquent à la présentation ; voir [Crypto-actifs et MiCA](../juridique/crypto-actifs.md) |
-| Majorité | Vérification déclarative à la connexion ; la classification d'âge des stores devra être cohérente |
-| Données personnelles | Fiche de confidentialité à remplir (email, adresse de portefeuille, tranche d'âge, identifiant de compte) ; voir [RGPD](../juridique/rgpd.md) |
+| Majorité | Vérification sur pièce d'identité par la Mairie avant tout achat ; la classification d'âge des stores devra être cohérente |
+| Données personnelles | Fiche de confidentialité à remplir (email, adresse de portefeuille, identifiant de compte, photos de la pièce d'identité supprimées après décision, identifiant Google ou Apple) ; voir [RGPD](../juridique/rgpd.md) |
+| Connexion tierce | Google et Apple sont proposés tous les deux sur iOS ; les règles de l'App Store sur les connexions tierces sont à vérifier avant la soumission |
+| Autorisations | Appareil photo et photos, avec les textes du plugin `expo-image-picker` |
 | Chiffrement | `usesNonExemptEncryption: false` déjà déclaré pour iOS |
 | Suppression de compte | Exigée par les stores, disponible dans l'écran RGPD (anonymisation) |
 
@@ -90,7 +100,7 @@ Le dossier [`mobile-app/__tests__`](src:mobile-app/__tests__) contient trois fic
 
 | Fichier | Contenu |
 |---|---|
-| `components/CountdownTimer.test.tsx` | `formatRemainingTime` : découpage et bornage à zéro |
+| `components/CountdownTimer.test.tsx` | `formatRemainingTime` de `date.util` : découpage et bornage à zéro ; le composant `CountdownTimer` lui-même a été supprimé |
 | `screens/BuyTicketScreen.test.tsx` | `isValidEmail` et `isValidOtpCode` |
 | `utils/formatters.test.ts` | `shortenWallet`, `formatPoints`, `formatEth`, `formatPercentage` |
 

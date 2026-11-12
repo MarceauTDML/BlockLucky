@@ -1,8 +1,8 @@
 # Stack et structure
 
-L'application mobile est l'interface citoyenne de BlockLucky sur iOS et Android. Elle couvre le parcours du citoyen : connexion, achat et cadeau de tickets, tirage en direct, boutique des commerçants, profil, sécurité et RGPD. Elle n'a ni dashboard Mairie ni espace partenaire, qui n'existent que sur le [frontend web](../web/structure.md). Comme le web, elle ne gère aucune clé : le portefeuille de chaque citoyen est créé et utilisé par le backend (voir [Portefeuilles intégrés](../integration-blockchain/portefeuilles.md)).
+L'application mobile est l'interface citoyenne de BlockLucky sur iOS et Android. Elle couvre le parcours du citoyen : création de compte et connexion, vérification d'âge, achat et cadeau du ticket du grand tirage, salle d'attente et tirage en direct, tickets à gratter et boutique des commerçants, parrainage, profil, sécurité et RGPD. Elle n'a ni dashboard Mairie ni espace partenaire, qui n'existent que sur le [frontend web](../web/structure.md). Comme le web, elle ne gère aucune clé : le portefeuille de chaque citoyen est créé et utilisé par le backend (voir [Portefeuilles intégrés](../integration-blockchain/portefeuilles.md)).
 
-Le code se trouve dans [`mobile-app/`](src:mobile-app). Il est écrit en TypeScript avec Expo et React Native.
+Le code se trouve dans [`mobile-app/`](src:mobile-app). Il est écrit en TypeScript avec Expo et React Native. L'interface suit la maquette Figma de l'application : police Inter, palette jaune « soleil » et encre bleu nuit, cartes arrondies et icônes SVG (voir [Thème et composants](theme-composants.md)).
 
 ## Stack technique
 
@@ -16,10 +16,15 @@ Les versions viennent de [`mobile-app/package.json`](src:mobile-app/package.json
 | Navigation | `@react-navigation/native`, `native-stack`, `bottom-tabs` | ^7.5.1, ^7.21.0, ^7.21.0 |
 | État et appels API | `@reduxjs/toolkit`, `react-redux` | ^2.11.2, ^9.2.0 |
 | Temps réel | `socket.io-client` | ^4.8.1 |
+| Police Inter | `@expo-google-fonts/inter` | ^0.4.2 |
+| Connexion Google | `expo-auth-session`, `expo-web-browser` | ~58.0.18, ~58.0.8 |
+| Connexion Apple | `expo-apple-authentication` | ~58.0.3 |
+| Photo de la pièce d'identité | `expo-image-picker` | ~58.0.10 |
 | Stockage sécurisé | `expo-secure-store` | ~58.0.2 |
 | Presse-papiers | `expo-clipboard` | ~58.0.4 |
 | Zones sûres | `react-native-safe-area-context` | ~5.10.1 |
-| Images SVG distantes | `react-native-svg` | 15.16.0 |
+| Icônes SVG | `react-native-svg` | 15.16.0 |
+| Cible web d'Expo | `react-dom`, `react-native-web` | 19.3.0, ^0.21.4 |
 | Langage | `typescript` | ~6.0.3 |
 | Lint | `eslint` 8, `eslint-config-universe` | ^8.57.1, ^12.1.0 |
 
@@ -33,11 +38,11 @@ Plusieurs paquets figurent dans `package.json` sans être importés dans `src/` 
 |---|---|
 | `axios` | [`api.client.ts`](src:mobile-app/src/services/api.client.ts) crée un client axios avec des nouvelles tentatives, mais seul `API_BASE_URL` est importé ailleurs ; toutes les requêtes passent par `fetch` via RTK Query (voir [Résilience réseau](resilience.md)) |
 | `expo-notifications` | Aucun import : pas de notification push native (voir [Temps réel et notifications](temps-reel-notifications.md)) |
-| `lottie-react-native` | Aucun import ; les trois animations de `assets/animations` ne sont pas affichées |
+| `expo-crypto` | Aucun import |
+| `lottie-react-native` | Aucun import ; les trois animations de `assets/animations` ne sont pas affichées, la roue du tirage est animée avec `Animated` de React Native |
 | `react-native-gesture-handler` | Aucun import ; la carte à gratter utilise `PanResponder` de React Native |
-| `expo-font` | Déclaré en plugin, mais aucun `useFonts` : les polices Inter de `assets/fonts` ne sont pas chargées et l'application utilise la police système |
 
-Ces dépendances alourdissent le binaire sans rien apporter. Elles sont à retirer ou à brancher.
+Ces dépendances alourdissent le binaire sans rien apporter. Elles sont à retirer ou à brancher. Les fichiers `assets/fonts/Inter-*.ttf` ne sont plus lus non plus : la police vient du paquet `@expo-google-fonts/inter`.
 
 ## Arborescence
 
@@ -46,17 +51,21 @@ mobile-app/
 ├── __tests__/               tests Jest (sans exécuteur installé)
 ├── assets/
 │   ├── animations/          confetti, loading-spinner, roulette-spin (Lottie, inutilisés)
-│   ├── fonts/               Inter Regular, Medium, Bold (non chargées)
+│   ├── fonts/               Inter Regular, Medium, Bold (non lues)
+│   ├── icons/               42 icônes SVG de la maquette
 │   └── images/              icon, adaptive-icon, splash, favicon
 ├── src/
-│   ├── App.tsx              point d'entrée
-│   ├── navigation/          RootNavigator, AuthStack, MainTabs, SettingsStack
-│   ├── screens/             16 écrans : auth, lottery, marketplace, settings
+│   ├── App.tsx              point d'entrée, chargement de la police Inter
+│   ├── navigation/          RootNavigator, AuthStack, MainTabs, hooks typés
+│   ├── screens/             27 écrans : auth, lottery, marketplace, settings, sponsors
 │   ├── components/
-│   │   ├── lottery/         ChatBox, CountdownTimer, LeaderboardList, POAPBadge, RouletteAnimation, TicketCard, WinnerClaimCard
-│   │   ├── marketplace/     PointsBalanceCard, RewardCard, ScratchCanvas
-│   │   ├── ui/              AppButton, AppInput, AppText, BackButton, BottomSheet, Loader, ProgressBar
-│   │   └── web3/            IntegratedWalletCard, IntegratedWalletButton, ExplorerLink
+│   │   ├── auth/            formulaires d'authentification, boutons Google et Apple
+│   │   ├── draw/            roue, salle d'attente, discussion, résultats
+│   │   ├── lottery/         carte d'échéance, paliers, offres à gratter, formats
+│   │   ├── marketplace/     zone à gratter, cartes d'offres et de codes
+│   │   ├── profile/         identité, parrainage, résumé, listes de réglages
+│   │   ├── ui/              composants de base et icônes SVG
+│   │   └── web3/            IntegratedWalletCard, IntegratedWalletButton, ExplorerLink (inutilisés)
 │   ├── hooks/               useAuth, useCitizenWallet, useSocket, usePoints, usePushNotifications, useAppTheme
 │   ├── services/            api.client, secureStorage, socket.client, sentry.client
 │   ├── store/               store Redux, RTK Query (api/) et slices
@@ -72,7 +81,7 @@ mobile-app/
 
 ## Point d'entrée
 
-`package.json` déclare `"main": "src/App.tsx"`. [`mobile-app/src/App.tsx`](src:mobile-app/src/App.tsx) appelle `registerRootComponent(App)` et monte, dans cet ordre :
+`package.json` déclare `"main": "src/App.tsx"`. [`mobile-app/src/App.tsx`](src:mobile-app/src/App.tsx) appelle `registerRootComponent(App)`. Avant tout rendu, `App` charge cinq graisses d'Inter avec `useFonts` (`Inter_400Regular`, `Inter_500Medium`, `Inter_600SemiBold`, `Inter_700Bold`, `Inter_700Bold_Italic`). Tant qu'elles ne sont pas prêtes, il affiche une vue vide de couleur `#F6F7FA`. Il monte ensuite, dans cet ordre :
 
 1. le `Provider` Redux avec le store unique de [`store/index.ts`](src:mobile-app/src/store/index.ts) ;
 2. `SafeAreaProvider` ;
@@ -83,25 +92,25 @@ Au montage, `App` appelle `sentryClient.init()`. Ce « client Sentry » ([`sentr
 
 ```mermaid
 flowchart TD
-  A["App.tsx"] --> R["Provider Redux"]
+  A["App.tsx : useFonts Inter"] --> R["Provider Redux"]
   R --> S["SafeAreaProvider"]
   S --> T["ThemeProvider"]
   T --> SH["AppShell : StatusBar"]
   SH --> RN["RootNavigator"]
   RN -->|"non connecté"| AU["AuthStack"]
   RN -->|"connecté"| MT["MainTabs et écrans empilés"]
-  RN --> BS["Feuilles globales BottomSheet"]
+  RN --> BS["Fenêtres globales ResultDialog"]
 ```
 
 ## Organisation du code applicatif
 
 | Dossier | Contenu | Page détaillée |
 |---|---|---|
-| `src/navigation` | Navigateurs et feuilles modales globales | [Navigation et écrans](navigation-ecrans.md) |
+| `src/navigation` | Navigateurs, hooks de navigation typés et fenêtres globales | [Navigation et écrans](navigation-ecrans.md) |
 | `src/store` | `baseApi` et trois fichiers d'endpoints, slices `auth`, `lottery`, `ui` | [État et appels API](etat-api.md) |
 | `src/services` | Stockage sécurisé, client Socket.IO, client axios inutilisé, faux client Sentry | [Authentification](authentification.md), [Temps réel](temps-reel-notifications.md) |
 | `src/hooks` | Hooks métier | [Portefeuille et loterie](portefeuille-loterie.md) |
-| `src/theme`, `src/components/ui` | Couleurs, espacements, typographie et composants de base | [Thème et composants](theme-composants.md) |
+| `src/theme`, `src/components/ui` | Jetons de couleur, espacements, typographie, composants de base et icônes | [Thème et composants](theme-composants.md) |
 
 Les imports sont relatifs (`../../hooks/useAuth`) : il n'y a pas d'alias `@/` comme sur le web.
 
@@ -116,6 +125,16 @@ Les imports sont relatifs (`../../hooks/useAuth`) : il n'y a pas d'alias `@/` co
 | `EXPO_PUBLIC_SENTRY_DSN` | vide | `sentry.client.ts`, qui ne l'utilise que pour écrire une trace locale |
 | `EXPO_PUBLIC_WEB3AUTH_CLIENT_ID` | `blocklucky-etherbay-client` | aucun fichier : vestige d'une intégration Web3Auth abandonnée |
 
+Trois autres variables sont lues par [`SocialAuthButtons.tsx`](src:mobile-app/src/components/auth/SocialAuthButtons.tsx) sans figurer dans `.env.example` :
+
+| Variable | Rôle |
+|---|---|
+| `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` | Identifiant client OAuth Google utilisé sur iOS |
+| `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` | Identifiant client OAuth Google utilisé sur Android |
+| `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | Identifiant client OAuth Google utilisé sur la cible web |
+
+Sans la variable de la plateforme courante, le bouton « Continuer avec Google » reste affiché mais désactivé, avec le message « Connexion Google non configurée sur cette application. ». Les identifiants doivent aussi figurer dans `GOOGLE_CLIENT_IDS` côté backend (voir [Authentification et stockage sécurisé](authentification.md#google-et-apple)).
+
 > [!IMPORTANT]
 > `localhost` désigne le téléphone lui-même. Sur un appareil physique ou un émulateur Android, l'URL doit pointer vers l'adresse IP de la machine qui fait tourner le backend. La procédure est dans [Tester sur un téléphone](telephone-physique.md).
 
@@ -128,7 +147,7 @@ L'ancien README mentionne `EXPO_PUBLIC_CHAIN_ID=11155111` : aucune ligne du code
 | `npm start` | `expo start` : serveur Metro et QR code |
 | `npm run android` | `expo start --android` |
 | `npm run ios` | `expo start --ios` |
-| `npm run web` | `expo start --web` ; les paquets `react-dom` et `react-native-web` ne sont pas installés, cette cible ne démarre donc pas en l'état |
+| `npm run web` | `expo start --web` ; `react-dom` et `react-native-web` sont désormais installés, mais la cible web n'est vérifiée ni par la CI ni par un test, et la connexion Apple n'y est jamais proposée |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint avec `universe/native` et `universe/shared/typescript-analysis` |
 
@@ -136,6 +155,15 @@ Il n'existe pas de script `test` et Jest n'est pas installé, bien que le dossie
 
 ## Code mort à connaître
 
-Le hook `useGaslessWeb3.ts`, qui présentait les achats comme sponsorisés par la plateforme, et le composant `WalletConnectButton.tsx`, qui invitait à « connecter » un portefeuille externe, ont été supprimés : plus rien ne les importait. Ils sont remplacés par [`useCitizenWallet`](portefeuille-loterie.md#le-hook-usecitizenwallet) et [`IntegratedWalletButton`](portefeuille-loterie.md#integratedwalletbutton). Les citoyens ne connectent pas de portefeuille externe.
+Le hook `useGaslessWeb3.ts`, qui présentait les achats comme sponsorisés par la plateforme, et le composant `WalletConnectButton.tsx`, qui invitait à « connecter » un portefeuille externe, ont été supprimés. La refonte de l'interface a aussi supprimé `LoginScreen.tsx`, `SettingsStack.tsx` et les composants `ChatBox`, `CountdownTimer`, `LeaderboardList`, `POAPBadge`, `RouletteAnimation`, `TicketCard` et `WinnerClaimCard`. Les citoyens ne connectent pas de portefeuille externe.
 
-La fonction `generateDeterministicWallet` de `useCitizenWallet` est, elle, encore utilisée par l'écran de connexion, pour une adresse que le backend ignore à la création du compte (voir [Authentification](authentification.md#adresse-envoyee-au-login)).
+Il reste du code sans appelant :
+
+| Élément | Situation |
+|---|---|
+| `IntegratedWalletCard`, `IntegratedWalletButton` | Plus aucun écran ne les importe ; `ExplorerLink` n'est plus utilisé que par `IntegratedWalletCard` |
+| `generateDeterministicWallet` de `useCitizenWallet` | Plus appelée depuis la suppression de l'écran de connexion par email |
+| `getOnboarding`, `setResponsibleLimit` de `authApi` | Déclarés, aucun écran ne les appelle |
+| `triggerSimulatedOsPush` de `usePushNotifications` | Plus aucun écran ne l'appelle : le bandeau de notification simulé ne s'affiche plus |
+| `notificationDrawerOpen` du slice `ui` | Le tiroir a été remplacé par l'écran `Notifications` |
+| Composants `ScratchOfferCard` | Deux composants du même nom, l'un dans `components/lottery` (accueil), l'autre dans `components/marketplace` (choix du ticket à gratter) |

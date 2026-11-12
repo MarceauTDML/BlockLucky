@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Authentification et stockage sécurisé | Documentation BlockLucky</title>
-<meta name="description" content="L&#39;application mobile utilise les mêmes routes d&#39;authentification que le web : POST /auth/login, puis POST /auth/2fa/verify quand un code est demandé, et POST /a">
+<meta name="description" content="L&#39;application mobile utilise des comptes avec mot de passe : POST /auth/signup pour créer un compte, POST /auth/signin pour se connecter, POST /auth/password/fo">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -37,7 +37,8 @@
     <div class="breadcrumb"><span>9. Application mobile</span></div>
     <article class="markdown">
 <h1>Authentification et stockage sécurisé</h1>
-<p>L&#39;application mobile utilise les mêmes routes d&#39;authentification que le web : <code>POST /auth/login</code>, puis <code>POST /auth/2fa/verify</code> quand un code est demandé, et <code>POST /auth/logout</code>. Elle s&#39;en distingue par le stockage : le jeton de session est rangé dans le trousseau d&#39;iOS ou le Keystore d&#39;Android grâce à <code>expo-secure-store</code>. Cette page décrit le parcours, le stockage et plusieurs défauts importants du code actuel. Les règles côté serveur sont dans <a href="../securite/authentification.html">Authentification et 2FA</a> et <a href="../securite/sessions.html">Sessions</a>.</p>
+<p>L&#39;application mobile utilise des comptes avec mot de passe : <code>POST /auth/signup</code> pour créer un compte, <code>POST /auth/signin</code> pour se connecter, <code>POST /auth/password/forgot</code> et <code>POST /auth/password/reset</code> pour un mot de passe oublié. Elle propose aussi la connexion Google (<code>POST /auth/oauth/google</code>) et Apple (<code>POST /auth/oauth/apple</code>). <code>POST /auth/2fa/verify</code> confirme l&#39;adresse email à l&#39;inscription et sert d&#39;étape de double authentification quand elle est activée. La connexion sans mot de passe par code email (<code>POST /auth/login</code>) n&#39;est plus utilisée par le mobile ; le backend la conserve pour le web.</p>
+<p>Le jeton de session est rangé dans le trousseau d&#39;iOS ou le Keystore d&#39;Android grâce à <code>expo-secure-store</code>. Cette page décrit les parcours, la vérification d&#39;âge, le stockage et les défauts connus. Les règles côté serveur sont dans <a href="../securite/authentification.html">Authentification et 2FA</a> et <a href="../securite/sessions.html">Sessions</a>.</p>
 <p>Fichiers principaux :</p>
 <div class="table-wrap"><table>
 <thead>
@@ -48,19 +49,35 @@
 </thead>
 <tbody><tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/auth/SignInScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/auth/SignInScreen.tsx</code></a></td>
-<td>Formulaire de connexion</td>
+<td>Connexion par email et mot de passe</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/auth/SignUpScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/auth/SignUpScreen.tsx</code></a></td>
+<td>Création de compte</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/auth/Verify2FAScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/auth/Verify2FAScreen.tsx</code></a></td>
 <td>Saisie du code</td>
 </tr>
 <tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/auth/ForgotPasswordScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/auth/ForgotPasswordScreen.tsx</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/auth/ResetPasswordScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ResetPasswordScreen.tsx</code></a></td>
+<td>Mot de passe oublié</td>
+</tr>
+<tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/auth/Setup2FAScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/auth/Setup2FAScreen.tsx</code></a></td>
 <td>Activation de la 2FA</td>
 </tr>
 <tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/auth/SocialAuthButtons.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/components/auth/SocialAuthButtons.tsx</code></a></td>
+<td>Boutons Google et Apple</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/VerifyAgeScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/settings/VerifyAgeScreen.tsx</code></a></td>
+<td>Envoi de la pièce d&#39;identité</td>
+</tr>
+<tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useAuth.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/hooks/useAuth.ts</code></a></td>
-<td>Connexion, vérification, déconnexion</td>
+<td>Connexion, inscription, vérification, déconnexion</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/services/secureStorage.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/services/secureStorage.ts</code></a></td>
@@ -74,22 +91,28 @@
 <h2 id="parcours-de-connexion"><a class="anchor" href="#parcours-de-connexion" aria-hidden="true" tabindex="-1">#</a>Parcours de connexion</h2>
 <div class="diagram"><pre class="mermaid">sequenceDiagram
   participant U as Citoyen
-  participant L as LoginScreen
+  participant S as SignInScreen
   participant H as useAuth
   participant A as Backend api auth
-  U-&gt;&gt;L: Majorité, tranche d&#39;âge, email, parrainage
-  L-&gt;&gt;H: loginWithSocial
-  H-&gt;&gt;A: POST /auth/login
-  A--&gt;&gt;H: requiresTwoFactor, twoFactorMethod, userId
-  H--&gt;&gt;L: userId, method
-  L-&gt;&gt;L: navigate Verify2FA
-  U-&gt;&gt;L: Code à 6 chiffres
-  L-&gt;&gt;H: verifyOtpCode
-  H-&gt;&gt;A: POST /auth/2fa/verify
-  A--&gt;&gt;H: token, user
-  H-&gt;&gt;H: SecureStore puis setCredentials
+  U-&gt;&gt;S: Email et mot de passe
+  S-&gt;&gt;H: signInWithPassword
+  H-&gt;&gt;A: POST /auth/signin
+  alt 2FA inactive
+    A--&gt;&gt;H: token, user
+    H-&gt;&gt;H: SecureStore puis setCredentials
+  else 2FA active
+    A--&gt;&gt;H: requiresTwoFactor, twoFactorMethod, userId
+    S-&gt;&gt;S: navigate Verify2FA
+    U-&gt;&gt;S: Code à 6 chiffres ou code de secours
+    H-&gt;&gt;A: POST /auth/2fa/verify
+    A--&gt;&gt;H: token, user
+    H-&gt;&gt;H: SecureStore puis setCredentials
+  end
   H--&gt;&gt;U: RootNavigator affiche les onglets</pre></div>
-<h3 id="formulaire"><a class="anchor" href="#formulaire" aria-hidden="true" tabindex="-1">#</a>Formulaire</h3>
+<p>Toutes les fonctions de connexion de <code>useAuth</code> passent par <code>applySession</code>. Quand la réponse contient <code>requiresTwoFactor</code> et <code>userId</code>, elle enregistre la vérification en attente (<code>setPendingTwoFactor</code>) et renvoie <code>userId</code>, <code>method</code>, l&#39;email et <code>devOtpPreview</code>. Quand elle contient <code>token</code> et <code>user</code>, elle écrit le jeton et le profil dans SecureStore puis dispatche <code>setCredentials</code>, ce qui fait basculer <code>RootNavigator</code> vers les onglets.</p>
+<p><code>SignInScreen</code> vérifie le format de l&#39;email (<code>isValidEmail</code>) et la présence du mot de passe avant l&#39;envoi. Une erreur du backend, par exemple « Email ou mot de passe incorrect. », s&#39;affiche dans un <code>FormMessage</code> annoncé par les lecteurs d&#39;écran (<code>accessibilityLiveRegion=&quot;polite&quot;</code>).</p>
+<h2 id="creation-de-compte"><a class="anchor" href="#creation-de-compte" aria-hidden="true" tabindex="-1">#</a>Création de compte</h2>
+<p><code>SignUpScreen</code> demande :</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -98,48 +121,144 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>Majorité</td>
-<td>Modale « 18+ » ouverte au premier affichage ; case obligatoire avant tout envoi</td>
-</tr>
-<tr>
-<td>Tranche d&#39;âge</td>
-<td><code>18-25</code> par défaut, choix parmi <code>18-25</code>, <code>26-35</code>, <code>36-50</code>, <code>50+</code></td>
-</tr>
-<tr>
 <td>Email</td>
-<td>Prérempli avec <code>citoyen@etherbay.fr</code> ; validé par <code>isValidEmail</code> pour le bouton email</td>
+<td>Format vérifié par <code>isValidEmail</code></td>
 </tr>
 <tr>
-<td>Parrainage</td>
-<td>Champ libre, envoyé s&#39;il n&#39;est pas vide</td>
+<td>Mot de passe</td>
+<td>Règles affichées par <code>PasswordRules</code> : 10 à 128 caractères, au moins une lettre et un chiffre, les mêmes que <code>passwordPolicy</code> du backend</td>
+</tr>
+<tr>
+<td>Confirmation</td>
+<td>Doit être identique au mot de passe</td>
+</tr>
+<tr>
+<td>Code de parrainage</td>
+<td>Champ repliable, ouvert d&#39;office si la route reçoit <code>referralCode</code></td>
+</tr>
+<tr>
+<td>Conditions</td>
+<td>Case obligatoire, envoyée comme <code>acceptTerms: true</code></td>
 </tr>
 <tr>
 <td>Source</td>
 <td>Toujours <code>utmSource: &#39;MOBILE_APP&#39;</code></td>
 </tr>
+</tbody></table></div>
+<p>Le backend envoie un code à 6 chiffres par email et renvoie <code>requiresTwoFactor: true</code> avec un identifiant de demande. L&#39;écran ouvre <code>Verify2FA</code> avec <code>purpose: &#39;signup&#39;</code>. Le compte n&#39;est créé qu&#39;à la vérification du code. La case des conditions est aussi exigée avant d&#39;utiliser Google ou Apple depuis cet écran (<code>canStart</code>).</p>
+<p>Le formulaire ne demande plus de déclaration de majorité ni de tranche d&#39;âge : la majorité est vérifiée ensuite sur pièce d&#39;identité (voir <a href="#verification-d-age">Vérification d&#39;âge</a>).</p>
+<h2 id="verification-du-code"><a class="anchor" href="#verification-du-code" aria-hidden="true" tabindex="-1">#</a>Vérification du code</h2>
+<p><code>Verify2FAScreen</code> reçoit <code>userId</code>, <code>method</code>, <code>email</code>, <code>purpose</code> et <code>devOtpPreview</code> en paramètres de route.</p>
+<div class="table-wrap"><table>
+<thead>
 <tr>
-<td>Fournisseur</td>
-<td><code>GOOGLE</code> ou <code>EMAIL</code> selon le bouton</td>
+<th>Méthode</th>
+<th>Saisie acceptée</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>EMAIL</code></td>
+<td>6 chiffres exactement (<code>isValidOtpCode</code>), clavier numérique ; lien pour revenir corriger l&#39;adresse ou recommencer</td>
+</tr>
+<tr>
+<td><code>APP</code></td>
+<td>6 chiffres, ou code de secours après appui sur le lien dédié : majuscules, au moins 6 caractères alphanumériques, format <code>XXXXX-XXXXX</code></td>
 </tr>
 </tbody></table></div>
-<p>Le bouton « Continuer avec Google » n&#39;ouvre aucune authentification Google : il envoie l&#39;email saisi avec <code>provider: &#39;GOOGLE&#39;</code>. Si le champ est vide, l&#39;écran utilise l&#39;adresse de repli <code>google-user@etherbay.fr</code>. Ce comportement vient d&#39;une ancienne intégration Web3Auth abandonnée, dont il reste la variable inutilisée <code>EXPO_PUBLIC_WEB3AUTH_CLIENT_ID</code>.</p>
-<h3 id="adresse-envoyee-au-login"><a class="anchor" href="#adresse-envoyee-au-login" aria-hidden="true" tabindex="-1">#</a>Adresse envoyée au login</h3>
-<p>L&#39;écran calcule <code>walletAddress</code> avec <code>generateDeterministicWallet(seed)</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useCitizenWallet.ts" class="external" target="_blank" rel="noopener noreferrer"><code>useCitizenWallet</code></a>, un calcul non cryptographique identique à celui du web. Le backend exige ce champ (format <code>0x</code> et 40 caractères hexadécimaux), s&#39;en sert comme première clé de recherche d&#39;un compte existant, puis l&#39;ignore à la création : le portefeuille réel est créé par <code>walletService.createCustodialWallet()</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.services.ts</code></a>. L&#39;adresse affichée par l&#39;application est toujours celle de l&#39;API. Le détail est dans <a href="../integration-blockchain/portefeuilles.html">Portefeuilles intégrés</a>.</p>
-<h3 id="reponse-sans-profil-quand-un-code-est-demande"><a class="anchor" href="#reponse-sans-profil-quand-un-code-est-demande" aria-hidden="true" tabindex="-1">#</a>Réponse sans profil quand un code est demandé</h3>
-<p>Quand le backend demande un code (cas par défaut, <code>LOGIN_EMAIL_CODE_REQUIRED=true</code>, ou 2FA active), sa réponse contient <code>requiresTwoFactor</code>, <code>twoFactorMethod</code> et <code>userId</code>, mais pas d&#39;objet <code>user</code>. Le type <code>SocialLoginResponse</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/types/api.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/types/api.types.ts</code></a> déclare donc <code>user</code> comme facultatif, et <code>loginWithSocial</code> reprend l&#39;email saisi quand le profil est absent :</p>
-<div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">return</span> {
-  <span class="hljs-attr">requiresTwoFactor</span>: <span class="hljs-literal">true</span>,
-  <span class="hljs-attr">userId</span>: result.<span class="hljs-property">userId</span>,
-  <span class="hljs-attr">method</span>: result.<span class="hljs-property">twoFactorMethod</span>,
-  <span class="hljs-attr">email</span>: result.<span class="hljs-property">user</span>?.<span class="hljs-property">email</span> ?? payload.<span class="hljs-property">email</span>,
-};</code></pre></div>
+<p>En développement (<code>__DEV__</code>), <code>DevOtpHint</code> affiche le code renvoyé par le backend dans <code>devOtpPreview</code> et permet de le recopier dans le champ. En cas de succès, <code>verifyOtpCode</code> enregistre le jeton et le profil et dispatche <code>setCredentials</code>. En cas d&#39;erreur, le message du backend s&#39;affiche sous le champ.</p>
+<p>Contrairement au web, le mobile ne recharge pas le profil après la connexion : l&#39;objet <code>user</code> stocké est le profil réduit renvoyé par la connexion. Il contient toutefois <code>hasPassword</code> et <code>ageVerificationStatus</code>, ajoutés par le backend. Les écrans Profil, Paramètres et Sécurité appellent eux-mêmes <code>GET /user/profile</code>.</p>
+<h2 id="mot-de-passe-oublie"><a class="anchor" href="#mot-de-passe-oublie" aria-hidden="true" tabindex="-1">#</a>Mot de passe oublié</h2>
+<ol>
+<li><code>ForgotPasswordScreen</code> envoie l&#39;email à <code>POST /auth/password/forgot</code>. La réponse est identique que le compte existe ou non.</li>
+<li><code>ResetPasswordScreen</code> demande le code reçu, le nouveau mot de passe (mêmes règles qu&#39;à l&#39;inscription) et sa confirmation, et permet de redemander un code.</li>
+<li><code>POST /auth/password/reset</code> définit le mot de passe et révoque toutes les sessions du compte ; l&#39;écran revient à <code>SignIn</code> par <code>popTo(&#39;SignIn&#39;)</code>.</li>
+</ol>
+<p>Un compte créé sans mot de passe (connexion par code sur le web, Google ou Apple) peut ainsi en définir un.</p>
+<h2 id="google-et-apple"><a class="anchor" href="#google-et-apple" aria-hidden="true" tabindex="-1">#</a>Google et Apple</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/auth/SocialAuthButtons.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SocialAuthButtons.tsx</code></a> est affiché sur <code>SignInScreen</code> et <code>SignUpScreen</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fournisseur</th>
+<th>Bibliothèque</th>
+<th>Disponibilité</th>
+<th>Jeton envoyé</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Google</td>
+<td><code>Google.useIdTokenAuthRequest</code> de <code>expo-auth-session</code>, avec <code>expo-web-browser</code></td>
+<td>Si <code>EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID</code>, <code>EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID</code> ou <code>EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID</code> est défini pour la plateforme courante</td>
+<td><code>idToken</code> à <code>POST /auth/oauth/google</code></td>
+</tr>
+<tr>
+<td>Apple</td>
+<td><code>expo-apple-authentication</code>, portées nom et email</td>
+<td>iOS seulement, si <code>AppleAuthentication.isAvailableAsync()</code> répond vrai</td>
+<td><code>identityToken</code> et <code>fullName</code> à <code>POST /auth/oauth/apple</code></td>
+</tr>
+</tbody></table></div>
+<p>Le backend vérifie la signature et l&#39;audience du jeton (voir <a href="../securite/authentification.html">Authentification et 2FA</a>). Il répond 503 quand <code>GOOGLE_CLIENT_IDS</code> ou <code>APPLE_CLIENT_IDS</code> est vide : le bouton concerné est alors désactivé et le message du backend s&#39;affiche dessous. Sans identifiant Google côté application, le bouton Google reste visible mais désactivé. L&#39;annulation de la fenêtre Apple (<code>ERR_REQUEST_CANCELED</code>) est ignorée silencieusement.</p>
+<p>Les identifiants client de l&#39;application doivent figurer dans les listes du backend, sinon le jeton est refusé avec une erreur 401. Le nom complet transmis par Apple est validé par le backend mais n&#39;est pas enregistré.</p>
 <div class="hint hint-note"><p class="hint-title">À savoir</p>
-<p>Une version précédente lisait <code>result.user.email</code> sans garde. La connexion par code levait alors une <code>TypeError</code>, affichée comme « Impossible de vous connecter au serveur ». Si ce message réapparaît, vérifier d&#39;abord que cette branche n&#39;a pas régressé.</p>
+<p>Les variables <code>EXPO_PUBLIC_GOOGLE_*_CLIENT_ID</code> figurent vides dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/.env.example" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/.env.example</code></a>. Il faut les renseigner dans <code>mobile-app/.env</code> pour tester la connexion Google.</p>
 </div>
-<h3 id="verification-du-code"><a class="anchor" href="#verification-du-code" aria-hidden="true" tabindex="-1">#</a>Vérification du code</h3>
-<p><code>Verify2FAScreen</code> reçoit <code>userId</code>, <code>method</code> et <code>email</code> en paramètres de route. Il refuse tout code qui n&#39;a pas exactement 6 chiffres (<code>isValidOtpCode</code>), puis appelle <code>verifyOtpCode</code>. En cas de succès, <code>useAuth</code> enregistre le jeton et le profil, dispatche <code>setCredentials</code>, et <code>RootNavigator</code> remplace l&#39;<code>AuthStack</code> par les onglets. En cas d&#39;erreur, le message du backend s&#39;affiche sous le champ.</p>
-<p>Comme sur le web, les codes de secours (alphanumériques, jusqu&#39;à 16 caractères) ne peuvent pas être saisis : le validateur n&#39;accepte que 6 chiffres. Le champ utilise <code>keyboardType=&quot;number-pad&quot;</code>.</p>
-<p>Contrairement au web, le mobile ne recharge pas le profil après la connexion (<code>GET /user/profile</code>) : l&#39;objet <code>user</code> stocké est le profil réduit renvoyé par le login, sans statistiques ni plafond de jeu responsable. L&#39;écran de sécurité affiche donc le plafond par défaut de 25 tant que l&#39;utilisateur ne l&#39;a pas modifié dans la session.</p>
+<h2 id="verification-d-age"><a class="anchor" href="#verification-d-age" aria-hidden="true" tabindex="-1">#</a>Vérification d&#39;âge</h2>
+<p>L&#39;achat et le cadeau de tickets, l&#39;échange de récompenses et l&#39;achat de tickets à gratter exigent un âge vérifié par la Mairie (<code>AGE_VERIFICATION_REQUIRED=true</code> côté backend). <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/VerifyAgeScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>VerifyAgeScreen.tsx</code></a> envoie la pièce d&#39;identité :</p>
+<div class="diagram"><pre class="mermaid">sequenceDiagram
+  participant U as Citoyen
+  participant V as VerifyAgeScreen
+  participant P as expo-image-picker
+  participant A as Backend
+  V-&gt;&gt;A: GET /user/identity
+  A--&gt;&gt;V: status NONE ou REJECTED
+  U-&gt;&gt;V: Recto puis verso
+  V-&gt;&gt;P: Appareil photo ou galerie, base64
+  P--&gt;&gt;V: Image JPEG ou PNG
+  V-&gt;&gt;A: POST /user/identity front, back
+  A--&gt;&gt;V: status PENDING
+  V-&gt;&gt;V: setAgeVerificationStatus PENDING</pre></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Comportement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Statut</td>
+<td><code>GET /user/identity</code> à l&#39;ouverture ; le statut reçu est recopié dans le profil stocké par <code>setAgeVerificationStatus</code></td>
+</tr>
+<tr>
+<td>Envoi possible</td>
+<td>Seulement si le statut vaut <code>NONE</code> ou <code>REJECTED</code> ; un refus affiche le motif saisi par la Mairie</td>
+</tr>
+<tr>
+<td>Choix de l&#39;image</td>
+<td>Feuille par côté : appareil photo ou galerie, après demande d&#39;autorisation ; refus de l&#39;autorisation expliqué à l&#39;écran</td>
+</tr>
+<tr>
+<td>Réglages de la prise</td>
+<td><code>quality: 0.6</code>, <code>base64: true</code>, sans recadrage ni données EXIF</td>
+</tr>
+<tr>
+<td>Taille</td>
+<td>4 Mo au plus par image, vérifiés avant l&#39;envoi, comme côté serveur</td>
+</tr>
+<tr>
+<td>Format envoyé</td>
+<td>URL <code>data:image/jpeg;base64,…</code> ou <code>data:image/png;base64,…</code> pour <code>front</code> et <code>back</code></td>
+</tr>
+<tr>
+<td>Après l&#39;envoi</td>
+<td>Images effacées de l&#39;écran, statut <code>PENDING</code>, fenêtre « Document envoyé » qui annonce une réponse par email</td>
+</tr>
+</tbody></table></div>
+<p>Un encart dépliable « Protection de vos données » explique le chiffrement et l&#39;usage du document avant l&#39;envoi. Les textes d&#39;autorisation affichés par le système sont déclarés dans <code>app.json</code> (plugin <code>expo-image-picker</code>). Le traitement côté Mairie, le chiffrement des images et leur effacement après décision sont décrits dans <a href="../securite/authentification.html">Authentification et 2FA</a> et <a href="../juridique/rgpd.html">RGPD</a>.</p>
+<p>Après la connexion, <code>RootNavigator</code> ouvre <code>VerifyAge</code> automatiquement si le statut vaut <code>NONE</code> ou <code>REJECTED</code> (voir <a href="navigation-ecrans.html#ouverture-automatique-de-la-verification-d-age">Navigation et écrans</a>). La carte d&#39;identité du profil (<code>IdentityCard</code>) affiche le statut et mène au même écran.</p>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le statut stocké sur le téléphone n&#39;est mis à jour que par <code>VerifyAgeScreen</code>. Après une décision de la Mairie, il reste <code>PENDING</code> dans le profil local tant que le citoyen ne rouvre pas cet écran. Cela n&#39;ouvre aucun droit : le backend relit le statut en base à chaque opération protégée.</p>
+</div>
 <h2 id="2fa"><a class="anchor" href="#2fa" aria-hidden="true" tabindex="-1">#</a>2FA</h2>
 <p><code>Setup2FAScreen</code> propose les deux méthodes :</p>
 <div class="table-wrap"><table>
@@ -152,17 +271,17 @@
 </thead>
 <tbody><tr>
 <td><code>APP</code></td>
-<td>Clé TOTP en texte et codes de secours</td>
-<td>Le QR code renvoyé par l&#39;API (<code>qrCodeDataUrl</code>) n&#39;est pas affiché : la clé doit être saisie à la main dans l&#39;application d&#39;authentification</td>
+<td>QR code renvoyé par l&#39;API (<code>qrCodeDataUrl</code>), clé TOTP et codes de secours, chacun copiable avec <code>expo-clipboard</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>EMAIL</code></td>
 <td>Message du backend</td>
-<td>En développement, le code <code>devOtpPreview</code> est prérempli</td>
+<td>En développement, le code <code>devOtpPreview</code> est proposé par <code>DevOtpHint</code></td>
 </tr>
 </tbody></table></div>
 <p>La confirmation appelle <code>verifyOtpCode(user.id, code)</code>. Le backend active la 2FA, révoque les autres sessions et renvoie un nouveau jeton, que l&#39;application enregistre.</p>
-<p>La désactivation, depuis <code>SecurityScreen</code>, appelle <code>disable2FA({})</code> sans code : le backend ne l&#39;accepte que pour une session de moins de 15 minutes.</p>
+<p><code>SecurityScreen</code> affiche l&#39;état de la 2FA, mène à <code>Setup2FA</code> et permet de la désactiver avec un code. Le champ peut rester vide si la session a moins de 15 minutes, seule situation où le backend accepte une désactivation sans code.</p>
 <h2 id="stockage-securise"><a class="anchor" href="#stockage-securise" aria-hidden="true" tabindex="-1">#</a>Stockage sécurisé</h2>
 <p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/services/secureStorage.ts" class="external" target="_blank" rel="noopener noreferrer"><code>secureStorage.ts</code></a> gère deux entrées :</p>
 <div class="table-wrap"><table>
@@ -206,7 +325,7 @@
 <td>Supprime le jeton, ou le jeton et le profil, du cache et de SecureStore</td>
 </tr>
 </tbody></table></div>
-<p>Toutes les erreurs de SecureStore sont avalées par des <code>catch {}</code> vides. Si l&#39;écriture échoue, la session tient grâce au cache mémoire jusqu&#39;à la fermeture de l&#39;application, sans message. Sur la cible web d&#39;Expo (<code>Platform.OS === &#39;web&#39;</code>), le module se rabat sur <code>localStorage</code> ; cette cible n&#39;est pas utilisable en l&#39;état (voir <a href="structure.html#scripts-npm">Stack et structure</a>).</p>
+<p>Toutes les erreurs de SecureStore sont avalées par des <code>catch {}</code> vides. Si l&#39;écriture échoue, la session tient grâce au cache mémoire jusqu&#39;à la fermeture de l&#39;application, sans message. Sur la cible web d&#39;Expo (<code>Platform.OS === &#39;web&#39;</code>), le module se rabat sur <code>localStorage</code> (voir <a href="structure.html#scripts-npm">Stack et structure</a>).</p>
 <p>Le jeton est ajouté à chaque requête par <code>prepareHeaders</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/api/baseApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>baseApi.ts</code></a>, qui appelle <code>secureStorage.getToken()</code>, et au handshake Socket.IO par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/services/socket.client.ts" class="external" target="_blank" rel="noopener noreferrer"><code>socket.client.ts</code></a>.</p>
 <h2 id="session-au-demarrage"><a class="anchor" href="#session-au-demarrage" aria-hidden="true" tabindex="-1">#</a>Session au démarrage</h2>
 <div class="hint hint-warning"><p class="hint-title">Attention</p>
@@ -214,12 +333,12 @@
 </div>
 <p>Effets de bord à connaître :</p>
 <ul>
-<li>l&#39;ancien jeton reste stocké et continue d&#39;être envoyé dans l&#39;en-tête des requêtes faites depuis l&#39;écran de connexion, jusqu&#39;à ce qu&#39;un nouveau login l&#39;écrase ;</li>
+<li>l&#39;ancien jeton reste stocké et continue d&#39;être envoyé dans l&#39;en-tête des requêtes faites depuis l&#39;écran de connexion, jusqu&#39;à ce qu&#39;une nouvelle connexion l&#39;écrase ;</li>
 <li><code>hasSeenOnboarding</code> n&#39;est pas persisté non plus : l&#39;introduction réapparaît à chaque démarrage à froid.</li>
 </ul>
 <p>Pour restaurer la session, il faudrait, au montage de <code>App</code>, lire le jeton et le profil, dispatcher <code>setCredentials</code>, puis valider le jeton par <code>GET /user/profile</code>.</p>
 <h2 id="expiration-et-erreurs-401"><a class="anchor" href="#expiration-et-erreurs-401" aria-hidden="true" tabindex="-1">#</a>Expiration et erreurs 401</h2>
-<p>Le <code>baseApi</code> mobile n&#39;a pas de garde 401 : un jeton expiré ou révoqué n&#39;entraîne pas de déconnexion. Les écrans connectés affichent alors des erreurs ou des données vides jusqu&#39;à ce que l&#39;utilisateur se déconnecte lui-même. Le web, lui, efface la session à la première réponse 401 (voir <a href="../web/etat-api.html#le-client-de-base">État et appels API du web</a>).</p>
+<p>Le <code>baseApi</code> mobile n&#39;a pas de garde 401 : un jeton expiré ou révoqué n&#39;entraîne pas de déconnexion. Les écrans connectés affichent alors des erreurs ou des données vides jusqu&#39;à ce que l&#39;utilisateur se déconnecte lui-même. C&#39;est aussi le cas après une réinitialisation du mot de passe depuis un autre appareil, qui révoque toutes les sessions. Le web, lui, efface la session à la première réponse 401 (voir <a href="../web/etat-api.html#le-client-de-base">État et appels API du web</a>).</p>
 <h2 id="deconnexion"><a class="anchor" href="#deconnexion" aria-hidden="true" tabindex="-1">#</a>Déconnexion</h2>
 <p><code>useAuth</code> expose <code>signOut</code> et <code>signOutEverywhere</code>, qui appellent <code>endSession(allDevices)</code> :</p>
 <ol>
@@ -236,7 +355,7 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>Bouton « Se déconnecter » du profil</td>
+<td>Bouton « Se déconnecter » du profil, après confirmation</td>
 <td><code>signOut</code></td>
 </tr>
 <tr>
@@ -244,8 +363,8 @@
 <td><code>signOut</code></td>
 </tr>
 <tr>
-<td>Déconnexion de tous les appareils</td>
-<td><code>signOutEverywhere</code> existe dans le hook, mais aucun écran ne la propose</td>
+<td>« Déconnecter tous les appareils » dans la sécurité, après confirmation</td>
+<td><code>signOutEverywhere</code></td>
 </tr>
 </tbody></table></div>
 <p>La connexion Socket.IO n&#39;est pas fermée à la déconnexion, contrairement au web : elle reste ouverte avec l&#39;ancien jeton jusqu&#39;à la fermeture de l&#39;application. Côté serveur, la session est révoquée, donc une reconnexion de ce socket serait refusée.</p>
@@ -259,6 +378,11 @@
 </tr>
 </thead>
 <tbody><tr>
+<td>Mode de connexion</td>
+<td>Code envoyé par email (<code>POST /auth/login</code>)</td>
+<td>Email et mot de passe, Google, Apple</td>
+</tr>
+<tr>
 <td>Stockage du jeton</td>
 <td><code>localStorage</code></td>
 <td>Trousseau iOS ou Keystore Android</td>
@@ -279,19 +403,24 @@
 <td>Non</td>
 </tr>
 <tr>
-<td>Connexion avec code</td>
-<td>Fonctionne</td>
-<td>Fonctionne</td>
-</tr>
-<tr>
 <td>QR code TOTP</td>
 <td>Affiché</td>
-<td>Non affiché</td>
+<td>Affiché</td>
+</tr>
+<tr>
+<td>Code de secours à la vérification</td>
+<td>Non</td>
+<td>Oui, pour la méthode <code>APP</code></td>
+</tr>
+<tr>
+<td>Envoi de la pièce d&#39;identité</td>
+<td>Non</td>
+<td>Oui</td>
 </tr>
 <tr>
 <td>Déconnecter tous les appareils</td>
 <td>Bouton dans la sécurité</td>
-<td>Non proposé</td>
+<td>Bouton dans la sécurité</td>
 </tr>
 <tr>
 <td>Fermeture du socket à la déconnexion</td>
@@ -308,7 +437,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#parcours-de-connexion">Parcours de connexion</a></li><li class="toc-h3"><a href="#formulaire">Formulaire</a></li><li class="toc-h3"><a href="#adresse-envoyee-au-login">Adresse envoyée au login</a></li><li class="toc-h3"><a href="#reponse-sans-profil-quand-un-code-est-demande">Réponse sans profil quand un code est demandé</a></li><li class="toc-h3"><a href="#verification-du-code">Vérification du code</a></li><li class="toc-h2"><a href="#2fa">2FA</a></li><li class="toc-h2"><a href="#stockage-securise">Stockage sécurisé</a></li><li class="toc-h2"><a href="#session-au-demarrage">Session au démarrage</a></li><li class="toc-h2"><a href="#expiration-et-erreurs-401">Expiration et erreurs 401</a></li><li class="toc-h2"><a href="#deconnexion">Déconnexion</a></li><li class="toc-h2"><a href="#comparaison-avec-le-web">Comparaison avec le web</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#parcours-de-connexion">Parcours de connexion</a></li><li class="toc-h2"><a href="#creation-de-compte">Création de compte</a></li><li class="toc-h2"><a href="#verification-du-code">Vérification du code</a></li><li class="toc-h2"><a href="#mot-de-passe-oublie">Mot de passe oublié</a></li><li class="toc-h2"><a href="#google-et-apple">Google et Apple</a></li><li class="toc-h2"><a href="#verification-d-age">Vérification d&#39;âge</a></li><li class="toc-h2"><a href="#2fa">2FA</a></li><li class="toc-h2"><a href="#stockage-securise">Stockage sécurisé</a></li><li class="toc-h2"><a href="#session-au-demarrage">Session au démarrage</a></li><li class="toc-h2"><a href="#expiration-et-erreurs-401">Expiration et erreurs 401</a></li><li class="toc-h2"><a href="#deconnexion">Déconnexion</a></li><li class="toc-h2"><a href="#comparaison-avec-le-web">Comparaison avec le web</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>
