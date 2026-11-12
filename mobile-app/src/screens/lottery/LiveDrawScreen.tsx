@@ -1,231 +1,588 @@
-import React from 'react';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+
+import CrossFade from '../../components/draw/CrossFade';
+import DrawWheel, { WHEEL_SECTORS } from '../../components/draw/DrawWheel';
 import {
-  View,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  findTicketForRound,
+  formatMockEth,
+  formatRoundLabel,
+  getErrorMessage,
+  groupThousands,
+  isFinishedStatus,
+  resolvePhase,
+} from '../../components/draw/drawFormat';
+import AppButton from '../../components/ui/AppButton';
+import AppText from '../../components/ui/AppText';
+import Card from '../../components/ui/Card';
+import Loader from '../../components/ui/Loader';
+import Pill from '../../components/ui/Pill';
+import Screen from '../../components/ui/Screen';
+import ScreenHeader from '../../components/ui/ScreenHeader';
 import useAppTheme from '../../hooks/useAppTheme';
-import useSocket from '../../hooks/useSocket';
 import useAuth from '../../hooks/useAuth';
-import { useAppDispatch, useAppSelector } from '../../store';
-import { setRouletteSpinning } from '../../store/slices/lotterySlice';
+import useCitizenWallet from '../../hooks/useCitizenWallet';
+import useSocket from '../../hooks/useSocket';
+import { useRootNavigation } from '../../navigation/hooks';
+import { useAppSelector } from '../../store';
 import {
   useGetLotteryStatusQuery,
+  useGetMyTransactionsQuery,
   useGetWalletQuery,
 } from '../../store/api/lotteryApi';
-import AppText from '../../components/ui/AppText';
-import AppButton from '../../components/ui/AppButton';
-import RouletteAnimation from '../../components/lottery/RouletteAnimation';
-import ChatBox from '../../components/lottery/ChatBox';
-import WinnerClaimCard from '../../components/lottery/WinnerClaimCard';
+import { LotteryPhase, TicketItem } from '../../types/api.types';
+import { RootStackParamList } from '../../types/navigation.types';
+import { shortenWallet } from '../../utils/formatters.util';
+
+const pad = (value: number) => String(value).padStart(5, '0');
+
+const sectorFor = (ticketNumber: string | null): number => {
+  if (!ticketNumber) return 0;
+  const parsed = parseInt(ticketNumber, 10);
+  return Number.isNaN(parsed) ? 0 : parsed % WHEEL_SECTORS;
+};
+
+const buildLabels = (
+  participants: number | null,
+  winning: string | null,
+  mine: string | null,
+  target: number,
+): string[] => {
+  const labels = Array.from({ length: WHEEL_SECTORS }, (_, index) => {
+    if (!participants || participants <= 0 || index >= participants) return '';
+    const spread = Math.floor((index * participants) / WHEEL_SECTORS) + 1;
+    return pad(Math.min(participants, spread));
+  });
+  const used = new Set<string>();
+  if (winning) {
+    labels[target] = winning;
+    used.add(winning);
+  }
+  if (mine && mine !== winning) {
+    labels[(target + 3) % WHEEL_SECTORS] = mine;
+    used.add(mine);
+  }
+  return labels.map((label, index) => {
+    if (index === target || (mine && index === (target + 3) % WHEEL_SECTORS)) return label;
+    return used.has(label) ? '' : label;
+  });
+};
 
 export const LiveDrawScreen: React.FC = () => {
-  const { colors, borderRadius, spacing, t } = useAppTheme();
-  const dispatch = useAppDispatch();
-  const { data: statusRes } = useGetLotteryStatusQuery();
-  const round = statusRes?.data?.round;
-  const isDemo = Boolean(statusRes?.data?.guarantees?.simulated);
+  const { colors, t } = useAppTheme();
+  const navigation = useRootNavigation();
+  const route = useRoute<RouteProp<RootStackParamList, 'LiveDraw'>>();
+  const watchedRound = route.params?.contractRoundId;
+  const { width } = useWindowDimensions();
   const { user } = useAuth();
+  const { claimPrize, isClaiming } = useCitizenWallet();
+
+  const status = useGetLotteryStatusQuery(undefined, { pollingInterval: 4000 });
+  const ticketsQuery = useGetMyTransactionsQuery({ page: 1, limit: 25 });
   const { data: walletRes } = useGetWalletQuery();
-  const myWallet = (walletRes?.data?.walletAddress || user?.walletAddress || '').toLowerCase();
+  const announcement = useAppSelector((state) => state.lottery.lastWinnerAnnouncement);
 
-  const { sendChatMessage } = useSocket(round?.id);
-  const {
-    onlineWaitingUsers,
-    liveChatMessages,
-    lastWinnerAnnouncement,
-    isRouletteSpinning,
-  } = useAppSelector((state) => state.lottery);
+  const statusRound = status.data?.data?.round;
+  const progression = status.data?.data?.progression;
+  const isDemo = Boolean(status.data?.data?.guarantees?.simulated);
+  const statusPhase = resolvePhase(statusRound);
+  const tickets = useMemo(() => ticketsQuery.data?.data?.tickets ?? [], [ticketsQuery.data]);
+  const tracking = watchedRound !== undefined;
+  const statusIsWatched = tracking && statusRound?.contractRoundId === watchedRound;
+  const liveRound =
+    tracking ||
+    statusPhase === 'DRAWING' ||
+    statusPhase === 'COMPLETED' ||
+    statusPhase === 'CANCELLED';
 
-  const winner = lastWinnerAnnouncement
-    ? {
-        wallet: lastWinnerAnnouncement.winnerWallet,
-        contractRoundId: lastWinnerAnnouncement.contractRoundId,
-        prizePool: lastWinnerAnnouncement.prizePool,
-      }
-    : round?.status === 'COMPLETED' && round.winnerWallet
-      ? {
-          wallet: round.winnerWallet,
-          contractRoundId: round.contractRoundId,
-          prizePool: round.prizePool,
-        }
-      : null;
-  const isMyWin = Boolean(
-    winner && myWallet && winner.wallet?.toLowerCase() === myWallet
+  const pastTicket: TicketItem | undefined = useMemo(
+    () => (liveRound ? undefined : tickets.find((ticket) => ticket.roundStatus === 'COMPLETED')),
+    [liveRound, tickets],
   );
 
-  const handleSimulateSpin = () => {
-    dispatch(setRouletteSpinning(true));
-    setTimeout(() => {
-      dispatch(setRouletteSpinning(false));
-    }, 3500);
+  const contractRoundId = tracking
+    ? watchedRound
+    : liveRound
+      ? statusRound?.contractRoundId
+      : pastTicket?.contractRoundId;
+  const myTicket = liveRound ? findTicketForRound(tickets, contractRoundId) : pastTicket;
+  const announcementForRound =
+    announcement && announcement.contractRoundId === contractRoundId ? announcement : null;
+  const trackedPhase = (): LotteryPhase | null => {
+    if (statusIsWatched && (statusPhase === 'COMPLETED' || statusPhase === 'CANCELLED')) {
+      return statusPhase;
+    }
+    if (announcementForRound) return 'COMPLETED';
+    if (myTicket?.roundStatus === 'COMPLETED') return 'COMPLETED';
+    if (myTicket?.roundStatus === 'CANCELLED') return 'CANCELLED';
+    return 'DRAWING';
+  };
+  const phase = tracking
+    ? trackedPhase()
+    : liveRound
+      ? statusPhase
+      : pastTicket
+        ? 'COMPLETED'
+        : statusPhase;
+  const roundLabel = formatRoundLabel(contractRoundId);
+
+  useSocket(liveRound ? statusRound?.id : undefined);
+
+  const refetchTickets = ticketsQuery.refetch;
+  useEffect(() => {
+    if (phase === 'COMPLETED' || phase === 'CANCELLED') refetchTickets();
+  }, [phase, refetchTickets]);
+
+  useEffect(() => {
+    if (!tracking || phase !== 'DRAWING') return undefined;
+    const timer = setInterval(refetchTickets, 4000);
+    return () => clearInterval(timer);
+  }, [tracking, phase, refetchTickets]);
+
+  const myWallet = (walletRes?.data?.walletAddress || user?.walletAddress || '').toLowerCase();
+  const winnerWallet =
+    announcementForRound?.winnerWallet ||
+    (liveRound && (!tracking || statusIsWatched) ? statusRound?.winnerWallet : null) ||
+    null;
+  const winningNumber = myTicket?.winningTicketNumber ?? null;
+  const myNumber = myTicket?.ticketNumber ?? null;
+  const isWinner =
+    Boolean(myTicket?.isWinner) ||
+    Boolean(winnerWallet && myWallet && winnerWallet.toLowerCase() === myWallet);
+  const hasResult =
+    phase === 'COMPLETED' &&
+    Boolean(winningNumber || winnerWallet || (myTicket && isFinishedStatus(myTicket.roundStatus)));
+  const isCancelled = phase === 'CANCELLED';
+  const resultLanded =
+    hasResult && (winningNumber !== null || !myTicket || isFinishedStatus(myTicket.roundStatus));
+
+  const snapshot = tracking && !statusIsWatched ? route.params : undefined;
+  const participants = snapshot
+    ? (snapshot.participants ?? null)
+    : liveRound
+      ? (statusRound?.participants ?? progression?.distinctParticipants ?? null)
+      : null;
+  const maxParticipants = snapshot
+    ? (snapshot.maxParticipants ?? null)
+    : liveRound
+      ? (statusRound?.maxParticipants ?? progression?.targetParticipants ?? null)
+      : null;
+  const prizePool = snapshot
+    ? (snapshot.prizePool ?? null)
+    : liveRound
+      ? (statusRound?.prizePool ?? null)
+      : null;
+  const myPrize = myTicket?.prizeEth ?? (isWinner ? prizePool : null);
+
+  const target = sectorFor(winningNumber);
+  const labels = useMemo(
+    () => buildLabels(participants, winningNumber, myNumber, target),
+    [participants, winningNumber, myNumber, target],
+  );
+
+  const [revealed, setRevealed] = useState(false);
+  const revealedRound = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    if (revealedRound.current !== contractRoundId) {
+      revealedRound.current = contractRoundId;
+      setRevealed(false);
+    }
+  }, [contractRoundId]);
+
+  const [claimMessage, setClaimMessage] = useState<{ text: string; error: boolean } | null>(null);
+  const handleClaim = async () => {
+    if (contractRoundId === undefined) return;
+    setClaimMessage(null);
+    const outcome = await claimPrize(contractRoundId);
+    if (outcome.status === 'CLAIMED') {
+      setClaimMessage({
+        text: t('Gains versés sur votre portefeuille.', 'Winnings paid to your wallet.'),
+        error: false,
+      });
+    } else if (outcome.status === 'ALREADY_CLAIMED') {
+      setClaimMessage({
+        text: t(
+          'Gains déjà versés sur votre portefeuille.',
+          'Winnings already paid to your wallet.',
+        ),
+        error: false,
+      });
+    } else {
+      setClaimMessage({
+        text:
+          outcome.message ||
+          t('Le retrait est momentanément indisponible.', 'Withdrawal is temporarily unavailable.'),
+        error: true,
+      });
+    }
   };
 
-  return (
-    <SafeAreaView
-      edges={['top', 'left', 'right']}
-      style={[styles.safeArea, { backgroundColor: colors.background }]}
-    >
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 12 : 24}
-      >
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={[
-            styles.content,
-            { padding: spacing.md, paddingBottom: spacing.xxl },
-          ]}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.headerBlock}>
-            <AppText variant="title" weight="bold">
-              {t('Tirage en direct', 'Live Draw')}
-            </AppText>
-            <AppText variant="caption" color={colors.textSecondary}>
-              {isDemo
-                ? t(
-                    'Mode démonstration : tirage simulé',
-                    'Demo mode: simulated draw'
-                  )
-                : t(
-                    'Vérification aléatoire décentralisée via Chainlink VRF',
-                    'Decentralized randomness verified by Chainlink VRF'
-                  )}
-            </AppText>
-          </View>
+  const wheelSize = Math.min(300, width - 40 - 36);
+  const goBack = () =>
+    navigation.canGoBack()
+      ? navigation.goBack()
+      : navigation.navigate('Main', { screen: 'HomeTab' });
+  const goHome = () => navigation.navigate('Main', { screen: 'HomeTab' });
+  const goTickets = () => navigation.navigate('Main', { screen: 'TicketsTab' });
+  const subtitle = roundLabel
+    ? t(`EtherBay · Grand tirage #${roundLabel}`, `EtherBay · Draw #${roundLabel}`)
+    : t('EtherBay', 'EtherBay');
+  const refresh = () => {
+    status.refetch();
+    ticketsQuery.refetch();
+  };
 
-          <View
-            style={[
-              styles.waitingRoomBanner,
-              {
-                backgroundColor: colors.surface,
-                borderRadius: borderRadius.lg,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <View style={styles.waitingHeader}>
-              <AppText variant="caption" weight="semibold" color={colors.primary}>
-                {t('Salle d attente', 'Waiting Room')}
-              </AppText>
-              <AppText variant="caption" weight="medium" color={colors.secondary}>
-                {t(`${onlineWaitingUsers} en ligne`, `${onlineWaitingUsers} online`)}
-              </AppText>
-            </View>
-            <AppText variant="caption" color={colors.textSecondary}>
-              {round?.inWaitingRoom
-                ? t(
-                    'Les 10 dernières minutes sont actives. Le tirage est imminent.',
-                    'The final 10-minute countdown is active. The draw is imminent.'
-                  )
-                : t(
-                    'Ouverture du compte à rebours final 10 minutes avant l échéance du contrat.',
-                    'Final countdown opens 10 minutes before smart contract expiration.'
-                  )}
-            </AppText>
-          </View>
+  if ((status.isLoading || ticketsQuery.isLoading) && !statusRound) {
+    return (
+      <Screen showSecurityFooter>
+        <ScreenHeader title={t('Le grand tirage', 'The grand draw')} onBack={goBack} />
+        <Loader message={t('Préparation du tirage…', 'Preparing the draw…')} />
+      </Screen>
+    );
+  }
 
-          {isMyWin && winner && !isDemo ? (
-            <WinnerClaimCard
-              contractRoundId={winner.contractRoundId}
-              prizePool={winner.prizePool}
-            />
-          ) : null}
-
-          <RouletteAnimation
-            spinning={isRouletteSpinning}
-            simulated={isDemo}
-            winnerWallet={
-              lastWinnerAnnouncement?.winnerWallet || round?.winnerWallet
-            }
-            vrfRequestId={
-              lastWinnerAnnouncement?.vrfProofHash || round?.chainlinkRequestId
-            }
-          />
-
+  if (!statusRound && !pastTicket) {
+    return (
+      <Screen showSecurityFooter>
+        <ScreenHeader title={t('Le grand tirage', 'The grand draw')} onBack={goBack} />
+        <Card style={styles.stack}>
+          <AppText variant="subtitle" align="center">
+            {t('Tirage indisponible', 'Draw unavailable')}
+          </AppText>
+          <AppText size={12} color={colors.inkMuted} align="center">
+            {getErrorMessage(
+              status.error,
+              t(
+                'Impossible de charger le grand tirage. Vérifiez votre connexion.',
+                'Unable to load the draw. Check your connection.',
+              ),
+            )}
+          </AppText>
           <AppButton
-            title={
-              isRouletteSpinning
-                ? t('Tirage en cours...', 'Drawing...')
-                : t('Simuler la roue de tirage', 'Simulate Draw Wheel')
-            }
-            variant="outline"
-            onPress={handleSimulateSpin}
-            disabled={isRouletteSpinning}
+            title={t('Réessayer', 'Try again')}
+            variant="dark"
+            size="md"
+            onPress={refresh}
           />
+        </Card>
+      </Screen>
+    );
+  }
 
-          <View
-            style={[
-              styles.vrfProofCard,
-              {
-                backgroundColor: colors.surface,
-                borderRadius: borderRadius.lg,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <AppText variant="caption" weight="semibold" color={colors.text}>
-              {isDemo
-                ? t('Mode démonstration', 'Demo mode')
-                : t('Certification Chainlink VRF v2.5', 'Chainlink VRF v2.5 Certification')}
-            </AppText>
-            <AppText variant="caption" color={colors.textSecondary}>
-              {isDemo
+  if (!liveRound && !pastTicket) {
+    return (
+      <Screen showSecurityFooter>
+        <ScreenHeader
+          title={t('Le grand tirage', 'The grand draw')}
+          subtitle={subtitle}
+          onBack={goBack}
+        />
+        <Card tone="sunSoft" radius={28} style={styles.stack}>
+          <AppText size={22} weight="bold" align="center" color={colors.onSun}>
+            {t('Le tirage n’a pas encore commencé.', 'The draw has not started yet.')}
+          </AppText>
+          <AppText size={12} align="center" color={colors.onSunMuted}>
+            {t(
+              'La roue tourne à la fin de la salle d’attente, 10 minutes après son ouverture.',
+              'The wheel spins at the end of the waiting room, 10 minutes after it opens.',
+            )}
+          </AppText>
+        </Card>
+        <View style={styles.actions}>
+          <AppButton
+            title={t('Voir la salle d’attente', 'See the waiting room')}
+            variant="dark"
+            onPress={() => navigation.replace('WaitingRoom')}
+          />
+          <AppButton
+            title={t('Retour à l’accueil', 'Back to home')}
+            variant="ghost"
+            size="md"
+            onPress={goHome}
+          />
+        </View>
+      </Screen>
+    );
+  }
+
+  const settled = revealed && resultLanded;
+  const footerLine =
+    participants !== null
+      ? t(
+          `${groupThousands(participants)} participants · ${maxParticipants && participants >= maxParticipants ? 'Plafond atteint' : 'Temps écoulé'}`,
+          `${groupThousands(participants)} participants · ${maxParticipants && participants >= maxParticipants ? 'Limit reached' : 'Time is up'}`,
+        )
+      : null;
+
+  const winnerDisplay = winningNumber ?? (winnerWallet ? shortenWallet(winnerWallet) : null);
+
+  return (
+    <Screen showSecurityFooter>
+      <ScreenHeader
+        title={t('Le grand tirage', 'The grand draw')}
+        subtitle={subtitle}
+        onBack={goBack}
+      />
+
+      <Card tone="sun" radius={28} padding={18}>
+        <CrossFade
+          height={24}
+          activeKey={isCancelled ? 'cancelled' : settled ? 'done' : 'live'}
+          items={[
+            {
+              key: 'live',
+              content: <Pill tone="ink" dot label={t('Tirage en cours', 'Draw in progress')} />,
+            },
+            {
+              key: 'done',
+              content: <Pill tone="ink" dot label={t('Tirage terminé', 'Draw complete')} />,
+            },
+            {
+              key: 'cancelled',
+              content: <Pill tone="ink" dot label={t('Tirage annulé', 'Draw cancelled')} />,
+            },
+          ]}
+        />
+        <AppText
+          size={26}
+          weight="bold"
+          align="center"
+          color={colors.onSun}
+          style={styles.heading}
+          accessibilityRole="header"
+        >
+          {isCancelled
+            ? t('Tirage annulé.', 'Draw cancelled.')
+            : t('Place au résultat.', 'Time for the result.')}
+        </AppText>
+        <View style={styles.wheelWrap}>
+          <DrawWheel
+            size={wheelSize}
+            labels={labels}
+            centerLabel={roundLabel}
+            spinning={phase === 'DRAWING' || (phase === 'COMPLETED' && !resultLanded)}
+            targetIndex={resultLanded ? target : null}
+            highlightIndex={settled ? target : null}
+            onSettled={() => setRevealed(true)}
+            accessibilityLabel={
+              settled && winnerDisplay
                 ? t(
-                    'Ce tirage est simulé par la plateforme et ne bénéficie pas de la certification Chainlink VRF.',
-                    'This draw is simulated by the platform and is not certified by Chainlink VRF.'
+                    `Roue arrêtée sur le ticket gagnant ${winnerDisplay}`,
+                    `Wheel stopped on winning ticket ${winnerDisplay}`,
                   )
-                : t(
-                    'Le gagnant est désigné par l oracle Chainlink VRF quelques blocs après la demande de tirage. La preuve cryptographique garantit l impartialité de la sélection, puis la cagnotte est versée automatiquement au portefeuille gagnant.',
-                    'The winner is designated by the Chainlink VRF oracle a few blocks after the draw request. The cryptographic proof guarantees a fair selection, then the prize is paid automatically to the winning wallet.'
-                  )}
-            </AppText>
-          </View>
+                : t('Roue du grand tirage en rotation', 'Draw wheel spinning')
+            }
+          />
+        </View>
+        {footerLine ? (
+          <AppText
+            size={11}
+            weight="medium"
+            align="center"
+            color={colors.onSun}
+            style={styles.footerLine}
+          >
+            {footerLine}
+          </AppText>
+        ) : null}
+      </Card>
 
-          <ChatBox messages={liveChatMessages} onSendMessage={sendChatMessage} />
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      <Card radius={24} padding={18} style={styles.block}>
+        <CrossFade
+          height={104}
+          activeKey={isCancelled ? 'cancelled' : settled ? 'winner' : 'spinning'}
+          items={[
+            {
+              key: 'spinning',
+              content: (
+                <View style={styles.center}>
+                  <AppText size={20} weight="bold" align="center">
+                    {t('Un ticket sera retenu.', 'One ticket will be drawn.')}
+                  </AppText>
+                  <AppText size={12} align="center" color={colors.inkMuted}>
+                    {t(
+                      'La roue s’arrête sur le numéro gagnant.',
+                      'The wheel stops on the winning number.',
+                    )}
+                  </AppText>
+                </View>
+              ),
+            },
+            {
+              key: 'winner',
+              content: (
+                <View style={styles.center} accessibilityLiveRegion="polite">
+                  <AppText size={10} weight="bold" align="center" color={colors.green}>
+                    {winningNumber
+                      ? t('LE TICKET GAGNANT', 'THE WINNING TICKET')
+                      : t('LE PORTEFEUILLE GAGNANT', 'THE WINNING WALLET')}
+                  </AppText>
+                  {winnerDisplay ? (
+                    <AppText
+                      size={winningNumber ? 42 : 24}
+                      weight="bold"
+                      align="center"
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
+                      {winnerDisplay}
+                    </AppText>
+                  ) : null}
+                  <AppText size={12} weight="medium" align="center" color={colors.green}>
+                    {isWinner
+                      ? t(
+                          'C’est votre ticket, félicitations !',
+                          'It is your ticket, congratulations!',
+                        )
+                      : t('Félicitations à son propriétaire !', 'Congratulations to its owner!')}
+                  </AppText>
+                </View>
+              ),
+            },
+            {
+              key: 'cancelled',
+              content: (
+                <View style={styles.center}>
+                  <AppText size={20} weight="bold" align="center">
+                    {t('Aucun ticket retenu.', 'No ticket drawn.')}
+                  </AppText>
+                  <AppText size={12} align="center" color={colors.inkMuted}>
+                    {t(
+                      'Les participations sont remboursées automatiquement.',
+                      'Entries are refunded automatically.',
+                    )}
+                  </AppText>
+                </View>
+              ),
+            },
+          ]}
+        />
+      </Card>
+
+      {settled && myTicket && isWinner ? (
+        <Card tone="lavender" radius={22} style={styles.block}>
+          <AppText variant="overline" color={colors.violet}>
+            {t('Votre gain', 'Your prize')}
+          </AppText>
+          {myPrize !== null && myPrize !== undefined ? (
+            <AppText size={24} weight="bold" style={styles.amount}>
+              {formatMockEth(myPrize, t)}
+            </AppText>
+          ) : null}
+          <AppText size={11} color={colors.inkMuted}>
+            {t(
+              'Versés sur votre portefeuille BlockLucky, avec les lots offerts par les commerces d’EtherBay.',
+              'Paid to your BlockLucky wallet, along with gifts from EtherBay shops.',
+            )}
+          </AppText>
+          {!isDemo ? (
+            <View style={styles.claim}>
+              <AppButton
+                title={t('Vérifier le versement', 'Check the payout')}
+                variant="dark"
+                size="md"
+                loading={isClaiming}
+                onPress={handleClaim}
+              />
+              {claimMessage ? (
+                <AppText size={11} color={claimMessage.error ? colors.terracotta : colors.green}>
+                  {claimMessage.text}
+                </AppText>
+              ) : null}
+            </View>
+          ) : null}
+        </Card>
+      ) : settled && myTicket ? (
+        <Card radius={22} style={styles.block}>
+          <AppText variant="overline" color={colors.inkMuted}>
+            {t('Votre ticket', 'Your ticket')}
+          </AppText>
+          {myNumber ? (
+            <AppText size={24} weight="bold" style={styles.amount}>
+              {myNumber}
+            </AppText>
+          ) : null}
+          <AppText size={13} weight="semibold">
+            {t(
+              'Pas cette fois, mais merci d’avoir participé.',
+              'Not this time, but thank you for taking part.',
+            )}
+          </AppText>
+          <AppText size={11} color={colors.inkMuted} style={styles.note}>
+            {t(
+              'Chaque grand tirage repart de zéro. Rendez-vous au prochain !',
+              'Every draw starts afresh. See you at the next one!',
+            )}
+          </AppText>
+        </Card>
+      ) : !isCancelled && prizePool !== null ? (
+        <Card tone="lavender" radius={22} style={styles.block}>
+          <AppText variant="overline" color={colors.violet}>
+            {t('Pour le gagnant', 'For the winner')}
+          </AppText>
+          <AppText size={24} weight="bold" style={styles.amount}>
+            {formatMockEth(prizePool, t)}
+          </AppText>
+          <AppText size={11} color={colors.inkMuted}>
+            {t(
+              'et les lots offerts par les commerces d’EtherBay.',
+              'plus gifts from EtherBay shops.',
+            )}
+          </AppText>
+        </Card>
+      ) : null}
+
+      {settled || isCancelled ? (
+        <View style={styles.actions}>
+          <AppButton title={t('Retour à l’accueil', 'Back to home')} onPress={goHome} />
+          <AppButton
+            title={t('Voir mes tickets', 'See my tickets')}
+            variant="ghost"
+            size="md"
+            onPress={goTickets}
+          />
+        </View>
+      ) : null}
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
+  stack: {
+    gap: 12,
   },
-  flex: {
-    flex: 1,
+  heading: {
+    marginTop: 10,
+    marginBottom: 8,
   },
-  container: {
-    flex: 1,
-  },
-  content: {},
-  headerBlock: {
-    marginBottom: 14,
-    gap: 2,
-  },
-  waitingRoomBanner: {
-    padding: 14,
-    borderWidth: 1,
-    marginBottom: 14,
-    gap: 6,
-  },
-  waitingHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  wheelWrap: {
     alignItems: 'center',
   },
-  vrfProofCard: {
-    padding: 14,
-    borderWidth: 1,
+  footerLine: {
+    marginTop: 12,
+  },
+  block: {
+    marginTop: 20,
+  },
+  center: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  amount: {
+    marginTop: 6,
+    marginBottom: 6,
+  },
+  note: {
+    marginTop: 4,
+  },
+  claim: {
     marginTop: 14,
-    gap: 4,
+    gap: 8,
+  },
+  actions: {
+    marginTop: 24,
+    gap: 6,
   },
 });
 
