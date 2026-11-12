@@ -1,277 +1,209 @@
 import React, { useState } from 'react';
-import {
-  View,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet } from 'react-native';
+
+import { getApiErrorMessage } from '../../components/marketplace/apiErrors';
+import ListGroup from '../../components/profile/ListGroup';
+import AppInput from '../../components/ui/AppInput';
+import AppText from '../../components/ui/AppText';
+import ListRow from '../../components/ui/ListRow';
+import ResultDialog from '../../components/ui/ResultDialog';
+import Screen from '../../components/ui/Screen';
+import ScreenHeader from '../../components/ui/ScreenHeader';
+import SectionHeader from '../../components/ui/SectionHeader';
 import useAppTheme from '../../hooks/useAppTheme';
 import useAuth from '../../hooks/useAuth';
-import { useSetResponsibleLimitMutation } from '../../store/api/authApi';
-import AppText from '../../components/ui/AppText';
-import AppButton from '../../components/ui/AppButton';
-import BackButton from '../../components/ui/BackButton';
+import { useRootNavigation } from '../../navigation/hooks';
+import { useGetProfileQuery } from '../../store/api/authApi';
+import { shortenWallet } from '../../utils/formatters.util';
 
-const LIMIT_PRESETS = [5, 10, 25, 50, 100];
+type DialogState = 'none' | 'disable2fa' | 'disabled' | 'signOutAll';
 
-export const SecurityScreen: React.FC<{ navigation: any }> = ({
-  navigation,
-}) => {
-  const { colors, borderRadius, spacing, t } = useAppTheme();
-  const { user, disable2FA, isDisabling2FA } = useAuth();
-  const [setResponsibleLimit, { isLoading: isSavingLimit }] =
-    useSetResponsibleLimitMutation();
+export const SecurityScreen: React.FC = () => {
+  const { colors, t } = useAppTheme();
+  const navigation = useRootNavigation();
+  const { user, disable2FA, isDisabling2FA, signOutEverywhere } = useAuth();
+  const [dialog, setDialog] = useState<DialogState>('none');
+  const [code, setCode] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const { data: profileRes } = useGetProfileQuery();
+  const account = profileRes?.data?.profile ?? user;
 
-  const [selectedLimit, setSelectedLimit] = useState(
-    user?.responsibleGaming?.maxTicketsPerRound ?? 25
-  );
-  const [feedback, setFeedback] = useState('');
-  const [rbacDeniedModal, setRbacDeniedModal] = useState(false);
+  const twoFactorOn = Boolean(account?.isTwoFactorEnabled);
+  const methodLabel =
+    account?.twoFactorMethod === 'EMAIL'
+      ? t('par e-mail', 'by e-mail')
+      : t('par application', 'by app');
 
-  const handleSaveLimit = async () => {
-    setFeedback('');
+  const closeDialog = () => {
+    setDialog('none');
+    setCode('');
+    setErrorMessage('');
+  };
+
+  const handleDisable = async () => {
+    if (isDisabling2FA) return;
+    setErrorMessage('');
     try {
-      await setResponsibleLimit({ maxTicketsPerRound: selectedLimit }).unwrap();
-      setFeedback(
-        t(
-          `Limite enregistrée : maximum ${selectedLimit} tickets par tirage.`,
-          `Limit saved: maximum ${selectedLimit} tickets per draw.`
-        )
-      );
-    } catch {
-      setFeedback(
-        t(
-          'Impossible de mettre à jour votre limite pour le moment.',
-          'Unable to update your limit at the moment.'
-        )
+      await disable2FA(code.trim() ? { code: code.trim() } : {}).unwrap();
+      setCode('');
+      setDialog('disabled');
+    } catch (error) {
+      setErrorMessage(
+        getApiErrorMessage(
+          error,
+          t(
+            'Impossible de désactiver la double authentification.',
+            'Unable to disable two-factor authentication.',
+          ),
+        ),
       );
     }
   };
 
-  const handleDisable2FA = async () => {
-    setFeedback('');
-    try {
-      await disable2FA({}).unwrap();
-      setFeedback(
-        t(
-          'La double authentification 2FA a été désactivée.',
-          'Two-factor authentication has been disabled.'
-        )
-      );
-    } catch {}
-  };
-
   return (
-    <SafeAreaView
-      edges={['top', 'left', 'right']}
-      style={[styles.safeArea, { backgroundColor: colors.background }]}
-    >
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={[
-          styles.content,
-          { padding: spacing.lg, paddingBottom: spacing.xxl },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        <BackButton onPress={() => navigation.goBack()} />
+    <Screen showSecurityFooter>
+      <ScreenHeader
+        title={t('Sécurité', 'Security')}
+        subtitle={t('Protégez l’accès à votre compte', 'Protect access to your account')}
+        onBack={() => navigation.goBack()}
+      />
 
-        <AppText variant="title" weight="bold" style={styles.title}>
-          {t('Sécurité & Jeu responsable', 'Security & Responsible Play')}
-        </AppText>
-
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: colors.surface,
-              borderRadius: borderRadius.lg,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          <AppText variant="subtitle" weight="semibold">
-            {t('Plafond de participation', 'Participation Cap')}
-          </AppText>
-          <AppText variant="caption" color={colors.textSecondary}>
-            {t(
-              'Définissez votre limite personnelle de tickets par tirage.',
-              'Set your personal maximum number of tickets per draw.'
-            )}
-          </AppText>
-
-          <View style={styles.presetsRow}>
-            {LIMIT_PRESETS.map((val) => {
-              const selected = selectedLimit === val;
-              return (
-                <TouchableOpacity
-                  key={val}
-                  onPress={() => setSelectedLimit(val)}
-                  style={[
-                    styles.presetBtn,
-                    {
-                      backgroundColor: selected
-                        ? colors.primary
-                        : colors.surfaceElevated,
-                      borderRadius: borderRadius.md,
-                      borderColor: selected ? colors.primary : colors.border,
-                    },
-                  ]}
-                >
-                  <AppText
-                    weight="semibold"
-                    color={selected ? '#FFFFFF' : colors.text}
-                  >
-                    {val}
-                  </AppText>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          <AppButton
-            title={t(
-              `Enregistrer (${selectedLimit} tickets max)`,
-              `Save Limit (${selectedLimit} tickets max)`
-            )}
-            onPress={handleSaveLimit}
-            loading={isSavingLimit}
-          />
-        </View>
-
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: colors.surface,
-              borderRadius: borderRadius.lg,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          <AppText variant="subtitle" weight="semibold">
-            {t('Double authentification (2FA)', 'Two-Factor Authentication (2FA)')}
-          </AppText>
-          <AppText variant="caption" color={colors.textSecondary}>
-            {t('Statut : ', 'Status: ')}
-            {user?.isTwoFactorEnabled
+      <SectionHeader
+        title={t('Double authentification', 'Two-factor authentication')}
+        style={styles.firstSection}
+      />
+      <ListGroup>
+        <ListRow
+          title={twoFactorOn ? t('Activée', 'Enabled') : t('Désactivée', 'Disabled')}
+          subtitle={
+            twoFactorOn
               ? t(
-                  `Activée (${user.twoFactorMethod || 'APP'})`,
-                  `Enabled (${user.twoFactorMethod || 'APP'})`
+                  `Un code ${methodLabel} est demandé à la connexion.`,
+                  `A code ${methodLabel} is required at sign-in.`,
                 )
-              : t('Désactivée', 'Disabled')}
-          </AppText>
-
-          <AppButton
-            title={t('Configurer la 2FA', 'Configure 2FA')}
-            variant="secondary"
-            onPress={() => navigation.navigate('Setup2FA')}
+              : t(
+                  'Ajoutez un code à usage unique à votre mot de passe.',
+                  'Add a one-time code to your password.',
+                )
+          }
+          icon="shield"
+          iconTone={twoFactorOn ? 'mint' : 'sun'}
+          divider
+        />
+        <ListRow
+          title={
+            twoFactorOn
+              ? t('Reconfigurer la 2FA', 'Reconfigure 2FA')
+              : t('Activer la 2FA', 'Enable 2FA')
+          }
+          icon="lock"
+          onPress={() => navigation.navigate('Setup2FA')}
+          divider={twoFactorOn}
+        />
+        {twoFactorOn ? (
+          <ListRow
+            title={t('Désactiver la 2FA', 'Disable 2FA')}
+            icon="close"
+            destructive
+            onPress={() => setDialog('disable2fa')}
           />
-
-          {user?.isTwoFactorEnabled ? (
-            <AppButton
-              title={t('Désactiver la 2FA', 'Disable 2FA')}
-              variant="danger"
-              onPress={handleDisable2FA}
-              loading={isDisabling2FA}
-            />
-          ) : null}
-        </View>
-
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: colors.surface,
-              borderRadius: borderRadius.lg,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          <AppText variant="subtitle" weight="semibold">
-            {t('Droits d administration (RBAC)', 'Admin Permissions (RBAC)')}
-          </AppText>
-          <AppText variant="caption" color={colors.textSecondary}>
-            {t(
-              `Rôle actuel : ${user?.role || 'USER'}. L administration du Smart Contract est réservée aux services municipaux d EtherBay.`,
-              `Current role: ${user?.role || 'USER'}. Smart Contract administration is restricted to EtherBay municipal staff.`
-            )}
-          </AppText>
-          <AppButton
-            title={t(
-              'Vérifier les permissions d administration',
-              'Verify Admin Permissions'
-            )}
-            variant="outline"
-            onPress={() => setRbacDeniedModal(true)}
-          />
-          {rbacDeniedModal && user?.role !== 'ADMIN' ? (
-            <View
-              style={[
-                styles.rbacBox,
-                {
-                  backgroundColor: colors.surfaceElevated,
-                  borderColor: colors.error,
-                  borderRadius: borderRadius.md,
-                },
-              ]}
-            >
-              <AppText variant="caption" weight="semibold" color={colors.error}>
-                {t('Accès restreint (403)', 'Restricted Access (403)')}
-              </AppText>
-              <AppText variant="caption" color={colors.textSecondary}>
-                {t(
-                  `Votre compte (${user?.role || 'USER'}) ne dispose pas des droits d administration.`,
-                  `Your account (${user?.role || 'USER'}) does not have administrator privileges.`
-                )}
-              </AppText>
-            </View>
-          ) : null}
-        </View>
-
-        {feedback ? (
-          <AppText variant="caption" weight="medium" color={colors.primary}>
-            {feedback}
-          </AppText>
         ) : null}
-      </ScrollView>
-    </SafeAreaView>
+      </ListGroup>
+
+      <SectionHeader title={t('Compte et appareils', 'Account and devices')} />
+      <ListGroup>
+        {account?.walletAddress ? (
+          <ListRow
+            title={t('Portefeuille intégré', 'Built-in wallet')}
+            subtitle={t('Créé et géré par l’application', 'Created and managed by the app')}
+            icon="giftTicket"
+            iconTone="lavender"
+            value={shortenWallet(account.walletAddress, 4)}
+            divider
+          />
+        ) : null}
+        <ListRow
+          title={t('Déconnecter tous les appareils', 'Sign out of all devices')}
+          subtitle={t('Toutes vos sessions seront fermées.', 'All your sessions will be closed.')}
+          icon="logout"
+          destructive
+          onPress={() => setDialog('signOutAll')}
+        />
+      </ListGroup>
+
+      <ResultDialog
+        visible={dialog === 'disable2fa'}
+        status="info"
+        title={t('Désactiver la 2FA ?', 'Disable 2FA?')}
+        message={t(
+          'Saisissez un code 2FA valide. Si vous vous êtes connecté il y a moins de 15 minutes, vous pouvez laisser le champ vide.',
+          'Enter a valid 2FA code. If you signed in less than 15 minutes ago, you may leave it empty.',
+        )}
+        primaryLabel={
+          isDisabling2FA ? t('Désactivation...', 'Disabling...') : t('Désactiver', 'Disable')
+        }
+        onPrimary={handleDisable}
+        secondaryLabel={t('Annuler', 'Cancel')}
+        onSecondary={closeDialog}
+      >
+        <AppInput
+          label={t('Code 2FA', '2FA code')}
+          value={code}
+          onChangeText={setCode}
+          keyboardType="number-pad"
+          maxLength={10}
+          tone="muted"
+          errorText={errorMessage || undefined}
+        />
+      </ResultDialog>
+
+      <ResultDialog
+        visible={dialog === 'disabled'}
+        status="success"
+        title={t('2FA désactivée', '2FA disabled')}
+        message={t(
+          'Vous pouvez la réactiver à tout moment.',
+          'You can enable it again at any time.',
+        )}
+        primaryLabel={t('Compris', 'Got it')}
+        onPrimary={closeDialog}
+      />
+
+      <ResultDialog
+        visible={dialog === 'signOutAll'}
+        status="info"
+        title={t('Tout déconnecter ?', 'Sign out everywhere?')}
+        message={t(
+          'Vous serez déconnecté de cet appareil et de tous les autres.',
+          'You will be signed out of this device and all others.',
+        )}
+        primaryLabel={t('Tout déconnecter', 'Sign out everywhere')}
+        onPrimary={() => {
+          closeDialog();
+          signOutEverywhere();
+        }}
+        secondaryLabel={t('Annuler', 'Cancel')}
+        onSecondary={closeDialog}
+      />
+
+      {twoFactorOn ? null : (
+        <AppText size={11} color={colors.inkMuted} style={styles.hint}>
+          {t(
+            'Conseil : activez la double authentification pour protéger vos EtherPoints et vos codes.',
+            'Tip: enable two-factor authentication to protect your EtherPoints and codes.',
+          )}
+        </AppText>
+      )}
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
+  firstSection: {
+    marginTop: 6,
   },
-  container: {
-    flex: 1,
-  },
-  content: {
-    gap: 14,
-  },
-  title: {
-    marginBottom: 4,
-  },
-  card: {
-    padding: 18,
-    borderWidth: 1,
-    gap: 12,
-  },
-  presetsRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  presetBtn: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  rbacBox: {
-    padding: 12,
-    borderWidth: 1,
-    gap: 4,
+  hint: {
+    marginTop: 14,
   },
 });
 

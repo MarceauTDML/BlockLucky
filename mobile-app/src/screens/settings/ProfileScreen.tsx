@@ -1,398 +1,252 @@
 import React, { useState } from 'react';
-import {
-  View,
-  ScrollView,
-  TouchableOpacity,
-  Linking,
-  StyleSheet,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import * as Clipboard from 'expo-clipboard';
+import { StyleSheet, View } from 'react-native';
+
+import IdentityCard from '../../components/profile/IdentityCard';
+import ListGroup from '../../components/profile/ListGroup';
+import SummaryTiles, { SummaryTile } from '../../components/profile/SummaryTiles';
+import TabTitle from '../../components/profile/TabTitle';
+import { readAgeStatus } from '../../components/profile/ageStatus';
+import AppButton from '../../components/ui/AppButton';
+import AppText from '../../components/ui/AppText';
+import Card, { CardTone } from '../../components/ui/Card';
+import ListRow from '../../components/ui/ListRow';
+import ResultDialog from '../../components/ui/ResultDialog';
+import Screen from '../../components/ui/Screen';
+import SectionHeader from '../../components/ui/SectionHeader';
+import Icon, { IconName } from '../../components/ui/icons/Icon';
 import useAppTheme from '../../hooks/useAppTheme';
 import useAuth from '../../hooks/useAuth';
 import usePoints from '../../hooks/usePoints';
-import { useAppDispatch } from '../../store';
-import { showPointsPopup } from '../../store/slices/uiSlice';
-import { updateUserPoints } from '../../store/slices/authSlice';
-import {
-  useGetReferralsQuery,
-  useGetQuestsQuery,
-  useCompleteQuestMutation,
-  useUpdatePreferencesMutation,
-} from '../../store/api/authApi';
-import AppText from '../../components/ui/AppText';
-import AppButton from '../../components/ui/AppButton';
-import IntegratedWalletCard from '../../components/web3/IntegratedWalletCard';
-import { shortenWallet } from '../../utils/formatters.util';
+import { useRootNavigation } from '../../navigation/hooks';
+import { useGetProfileQuery } from '../../store/api/authApi';
+import { useGetWalletQuery } from '../../store/api/lotteryApi';
+import { RootStackParamList } from '../../types/navigation.types';
 
-export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const {
-    colors,
-    borderRadius,
-    spacing,
-    mode,
-    language,
-    toggleTheme,
-    setLanguage,
-    t,
-  } = useAppTheme();
+type ShortcutRoute = 'MyCodes' | 'RewardsCatalog' | 'TransactionHistory';
+
+const formatEthAmount = (value: number, language: string): string => {
+  const fixed = Number(value || 0).toFixed(2);
+  return language === 'FR' ? fixed.replace('.', ',') : fixed;
+};
+
+export const ProfileScreen: React.FC = () => {
+  const { colors, language, t } = useAppTheme();
+  const navigation = useRootNavigation();
   const { user, signOut } = useAuth();
   const { pointsBalance } = usePoints();
-  const dispatch = useAppDispatch();
+  const {
+    data: profileRes,
+    isFetching: isFetchingProfile,
+    refetch: refetchProfile,
+  } = useGetProfileQuery();
+  const { data: walletRes, refetch: refetchWallet } = useGetWalletQuery();
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
-  const { data: referralRes } = useGetReferralsQuery();
-  const { data: questsRes } = useGetQuestsQuery();
-  const [completeQuest] = useCompleteQuestMutation();
-  const [updatePreferences] = useUpdatePreferencesMutation();
+  const profile = profileRes?.data?.profile ?? user;
+  const ageStatus = readAgeStatus(profileRes?.data?.profile ?? user);
+  const balanceEth = walletRes?.data?.balanceEth;
+  const ticketsCount = profile?.stats?.ticketsCount;
 
-  const [copiedFeedback, setCopiedFeedback] = useState(false);
+  const tiles: SummaryTile[] = [];
+  if (typeof balanceEth === 'number') {
+    tiles.push({
+      key: 'eth',
+      value: formatEthAmount(balanceEth, language),
+      label: t('ETH fictifs', 'Play ETH'),
+      tone: 'sunSoft',
+      onPress: () => navigation.navigate('TransactionHistory'),
+    });
+  }
+  tiles.push({
+    key: 'points',
+    value: String(pointsBalance ?? 0),
+    label: 'EtherPoints',
+    tone: 'lavender',
+    onPress: () => navigation.navigate('RewardsCatalog'),
+  });
+  if (typeof ticketsCount === 'number') {
+    tiles.push({
+      key: 'tickets',
+      value: String(ticketsCount),
+      label:
+        ticketsCount > 1 ? t('tickets joués', 'tickets played') : t('ticket joué', 'ticket played'),
+      tone: 'mint',
+      onPress: () => navigation.navigate('TicketsTab'),
+    });
+  }
 
-  const referralInfo = referralRes?.data;
-  const rawQuests = questsRes?.data?.quests;
-  const quests = Array.isArray(rawQuests) ? rawQuests : [];
+  const shortcuts: {
+    route: ShortcutRoute;
+    label: string;
+    icon: IconName;
+    tone: CardTone;
+    color: string;
+  }[] = [
+    {
+      route: 'MyCodes',
+      label: t('Mes codes', 'My codes'),
+      icon: 'ticket',
+      tone: 'sunPale',
+      color: colors.onSun,
+    },
+    {
+      route: 'RewardsCatalog',
+      label: t('Boutique', 'Shop'),
+      icon: 'bag',
+      tone: 'lavender',
+      color: colors.violet,
+    },
+    {
+      route: 'TransactionHistory',
+      label: t('Historique', 'History'),
+      icon: 'document',
+      tone: 'peach',
+      color: colors.terracotta,
+    },
+  ];
 
-  const handleCopyReferral = async () => {
-    const link =
-      referralInfo?.referralLink ||
-      `https://etherbay.fr/invite/${user?.referralCode || 'etherbay'}`;
-    await Clipboard.setStringAsync(link);
-    setCopiedFeedback(true);
-    setTimeout(() => setCopiedFeedback(false), 2500);
-  };
-
-  const handleCompleteQuest = async (questId: string) => {
-    try {
-      const res = await completeQuest({ questId }).unwrap();
-      dispatch(updateUserPoints(res.data.newPointsBalance));
-      dispatch(
-        showPointsPopup({
-          amount: res.data.pointsAwarded,
-          reason: t(
-            `Mission accomplie : ${res.data.quest.title}`,
-            `Quest completed: ${res.data.quest.title}`
-          ),
-        })
-      );
-    } catch {}
-  };
-
-  const handleThemeSwitch = async () => {
-    const nextTheme = mode === 'DARK' ? 'LIGHT' : 'DARK';
-    toggleTheme();
-    try {
-      await updatePreferences({ theme: nextTheme });
-    } catch {}
-  };
-
-  const handleLanguageSwitch = async () => {
-    const nextLang = language === 'FR' ? 'EN' : 'FR';
-    setLanguage(nextLang);
-    try {
-      await updatePreferences({ language: nextLang });
-    } catch {}
-  };
+  const navigationRows: {
+    route: keyof Pick<RootStackParamList, 'Settings' | 'Security' | 'GDPR' | 'HelpSupport'>;
+    title: string;
+    subtitle: string;
+    icon: IconName;
+  }[] = [
+    {
+      route: 'Settings',
+      title: t('Paramètres', 'Settings'),
+      subtitle: t('Thème, langue, notifications', 'Theme, language, notifications'),
+      icon: 'settings',
+    },
+    {
+      route: 'Security',
+      title: t('Sécurité', 'Security'),
+      subtitle: t('Double authentification, appareils', 'Two-factor, devices'),
+      icon: 'shield',
+    },
+    {
+      route: 'GDPR',
+      title: t('Données personnelles', 'Personal data'),
+      subtitle: t('Export et suppression du compte', 'Export and account deletion'),
+      icon: 'lock',
+    },
+    {
+      route: 'HelpSupport',
+      title: t('Aide et support', 'Help and support'),
+      subtitle: t('Charte de transparence, contact', 'Transparency charter, contact'),
+      icon: 'help',
+    },
+  ];
 
   return (
-    <SafeAreaView
-      edges={['top', 'left', 'right']}
-      style={[styles.safeArea, { backgroundColor: colors.background }]}
+    <Screen
+      refreshing={isFetchingProfile}
+      onRefresh={() => {
+        refetchProfile();
+        refetchWallet();
+      }}
     >
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={[
-          styles.content,
-          { padding: spacing.md, paddingBottom: spacing.xxl },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        <View
-          style={[
-            styles.profileCard,
-            {
-              backgroundColor: colors.surface,
-              borderRadius: borderRadius.lg,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          <AppText variant="overline" weight="semibold" color={colors.secondary}>
-            {t(
-              `Compte citoyen (${user?.role || 'USER'})`,
-              `Citizen Account (${user?.role || 'USER'})`
-            )}
-          </AppText>
-          <AppText variant="title" weight="bold" style={styles.walletTitle}>
-            {shortenWallet(user?.walletAddress, 6)}
-          </AppText>
-          <AppText variant="caption" color={colors.textSecondary}>
-            {user?.email || t('Portefeuille BlockLucky', 'BlockLucky wallet')} • {pointsBalance} pts
-          </AppText>
+      <TabTitle
+        title={t('Profil', 'Profile')}
+        subtitle={t('Votre compte citoyen', 'Your citizen account')}
+      />
 
-          <View style={styles.prefsRow}>
-            <TouchableOpacity
-              onPress={handleThemeSwitch}
-              style={[
-                styles.prefPill,
-                {
-                  backgroundColor: colors.surfaceElevated,
-                  borderRadius: borderRadius.md,
-                  borderColor: colors.border,
-                },
-              ]}
+      <IdentityCard
+        email={profile?.email}
+        ageStatus={ageStatus}
+        onVerifyAge={() => navigation.navigate('VerifyAge')}
+      />
+
+      <View style={styles.block}>
+        <SummaryTiles
+          title={t('Mon résumé', 'My summary')}
+          tiles={tiles}
+          note={t('Monnaie fictive, aucune valeur réelle.', 'Play money, no real value.')}
+        />
+      </View>
+
+      <SectionHeader title={t('Raccourcis', 'Shortcuts')} />
+      <View style={styles.shortcuts}>
+        {shortcuts.map((shortcut) => (
+          <Card
+            key={shortcut.route}
+            tone={shortcut.tone}
+            radius={20}
+            padding={14}
+            onPress={() => navigation.navigate(shortcut.route)}
+            accessibilityLabel={shortcut.label}
+            style={styles.shortcut}
+          >
+            <Icon name={shortcut.icon} size={24} color={shortcut.color} />
+            <AppText
+              size={12}
+              weight="semibold"
+              color={shortcut.tone === 'sunPale' ? colors.onSun : colors.ink}
             >
-              <AppText variant="caption" weight="semibold">
-                {t(
-                  `Apparence : ${mode === 'DARK' ? 'Sombre' : 'Claire'}`,
-                  `Theme: ${mode === 'DARK' ? 'Dark' : 'Light'}`
-                )}
-              </AppText>
-            </TouchableOpacity>
+              {shortcut.label}
+            </AppText>
+          </Card>
+        ))}
+      </View>
 
-            <TouchableOpacity
-              onPress={handleLanguageSwitch}
-              style={[
-                styles.prefPill,
-                {
-                  backgroundColor: colors.surfaceElevated,
-                  borderRadius: borderRadius.md,
-                  borderColor: colors.border,
-                },
-              ]}
-            >
-              <AppText variant="caption" weight="semibold">
-                {t(`Langue : ${language}`, `Language: ${language}`)}
-              </AppText>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <IntegratedWalletCard fallbackAddress={user?.walletAddress} />
-
-        <View
-          style={[
-            styles.sectionCard,
-            {
-              backgroundColor: colors.surface,
-              borderRadius: borderRadius.lg,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          <AppText variant="subtitle" weight="semibold">
-            {t('Parrainage (+100 pts par invitation)', 'Referrals (+100 pts per friend)')}
-          </AppText>
-          <AppText variant="caption" color={colors.textSecondary}>
-            {t(
-              `Code : ${referralInfo?.referralCode || user?.referralCode} (${referralInfo?.referralsCount ?? 0} filleul(s))`,
-              `Code: ${referralInfo?.referralCode || user?.referralCode} (${referralInfo?.referralsCount ?? 0} referral(s))`
-            )}
-          </AppText>
-
-          <AppButton
-            title={
-              copiedFeedback
-                ? t('Lien copié dans le presse-papiers', 'Link copied to clipboard')
-                : t('Copier mon lien de parrainage', 'Copy my referral link')
-            }
-            onPress={handleCopyReferral}
+      <SectionHeader title={t('Mon compte', 'My account')} />
+      <ListGroup>
+        {navigationRows.map((row, index) => (
+          <ListRow
+            key={row.route}
+            title={row.title}
+            subtitle={row.subtitle}
+            icon={row.icon}
+            divider={index < navigationRows.length - 1}
+            onPress={() => navigation.navigate(row.route)}
           />
+        ))}
+      </ListGroup>
 
-          <View style={styles.shareButtonsRow}>
-            <TouchableOpacity
-              onPress={() =>
-                referralInfo?.quickShareLinks.whatsapp &&
-                Linking.openURL(referralInfo.quickShareLinks.whatsapp).catch(() => {})
-              }
-              style={[
-                styles.shareBtn,
-                {
-                  backgroundColor: colors.surfaceElevated,
-                  borderRadius: borderRadius.md,
-                  borderColor: colors.border,
-                },
-              ]}
-            >
-              <AppText variant="caption" weight="medium" color={colors.text}>
-                WhatsApp
-              </AppText>
-            </TouchableOpacity>
+      <AppButton
+        title={t('Se déconnecter', 'Sign out')}
+        variant="ghost"
+        size="md"
+        leftIcon="logout"
+        onPress={() => setConfirmLogout(true)}
+        style={styles.logout}
+      />
 
-            <TouchableOpacity
-              onPress={() =>
-                referralInfo?.quickShareLinks.twitter &&
-                Linking.openURL(referralInfo.quickShareLinks.twitter).catch(() => {})
-              }
-              style={[
-                styles.shareBtn,
-                {
-                  backgroundColor: colors.surfaceElevated,
-                  borderRadius: borderRadius.md,
-                  borderColor: colors.border,
-                },
-              ]}
-            >
-              <AppText variant="caption" weight="medium" color={colors.text}>
-                X / Twitter
-              </AppText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() =>
-                referralInfo?.quickShareLinks.sms &&
-                Linking.openURL(referralInfo.quickShareLinks.sms).catch(() => {})
-              }
-              style={[
-                styles.shareBtn,
-                {
-                  backgroundColor: colors.surfaceElevated,
-                  borderRadius: borderRadius.md,
-                  borderColor: colors.border,
-                },
-              ]}
-            >
-              <AppText variant="caption" weight="medium" color={colors.text}>
-                SMS
-              </AppText>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View
-          style={[
-            styles.sectionCard,
-            {
-              backgroundColor: colors.surface,
-              borderRadius: borderRadius.lg,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          <AppText variant="subtitle" weight="semibold">
-            {t('Missions citoyennes', 'Community Quests')}
-          </AppText>
-          {quests.map((q) => (
-            <TouchableOpacity
-              key={q.id}
-              disabled={q.completed}
-              onPress={() => handleCompleteQuest(q.id)}
-              style={[
-                styles.questItem,
-                {
-                  backgroundColor: colors.surfaceElevated,
-                  borderRadius: borderRadius.md,
-                  borderColor: q.completed ? colors.primary : colors.border,
-                },
-              ]}
-            >
-              <View style={styles.questLeft}>
-                <AppText
-                  variant="caption"
-                  weight="semibold"
-                  color={q.completed ? colors.primary : colors.textMuted}
-                >
-                  {q.completed ? t('Fait', 'Done') : t('À faire', 'Todo')}
-                </AppText>
-                <AppText variant="caption" weight="medium" style={styles.questTitle}>
-                  {q.title}
-                </AppText>
-              </View>
-              <AppText variant="caption" weight="semibold" color={colors.secondary}>
-                +{q.rewardPoints} pts
-              </AppText>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <View style={styles.navButtonsGroup}>
-          <AppButton
-            title={t('Sécurité 2FA & Jeu responsable', '2FA Security & Responsible Play')}
-            variant="secondary"
-            onPress={() => navigation.navigate('Security')}
-          />
-          <AppButton
-            title={t('Données personnelles (RGPD)', 'Personal Data (GDPR)')}
-            variant="outline"
-            onPress={() => navigation.navigate('GDPR')}
-          />
-          <AppButton
-            title={t('Charte de transparence & Aide', 'Transparency Charter & Help')}
-            variant="outline"
-            onPress={() => navigation.navigate('HelpSupport')}
-          />
-          <AppButton
-            title={t('Se déconnecter', 'Sign Out')}
-            variant="danger"
-            onPress={signOut}
-          />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <ResultDialog
+        visible={confirmLogout}
+        status="info"
+        title={t('Se déconnecter ?', 'Sign out?')}
+        message={t(
+          'Vos tickets et vos EtherPoints restent attachés à votre compte.',
+          'Your tickets and EtherPoints stay attached to your account.',
+        )}
+        primaryLabel={t('Se déconnecter', 'Sign out')}
+        onPrimary={() => {
+          setConfirmLogout(false);
+          signOut();
+        }}
+        secondaryLabel={t('Annuler', 'Cancel')}
+        onSecondary={() => setConfirmLogout(false)}
+      />
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
+  block: {
+    marginTop: 14,
   },
-  container: {
-    flex: 1,
-  },
-  content: {},
-  profileCard: {
-    padding: 18,
-    borderWidth: 1,
-    marginBottom: 14,
-    gap: 6,
-  },
-  walletTitle: {
-    marginVertical: 2,
-  },
-  prefsRow: {
+  shortcuts: {
     flexDirection: 'row',
     gap: 10,
-    marginTop: 10,
   },
-  prefPill: {
+  shortcut: {
     flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-  },
-  sectionCard: {
-    padding: 16,
-    borderWidth: 1,
-    marginBottom: 14,
-    gap: 10,
-  },
-  shareButtonsRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  shareBtn: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  questItem: {
-    flexDirection: 'row',
+    minHeight: 88,
     justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 12,
-    borderWidth: 1,
-  },
-  questLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: 10,
-    flex: 1,
   },
-  questTitle: {
-    flex: 1,
-  },
-  navButtonsGroup: {
-    gap: 10,
+  logout: {
+    marginTop: 24,
   },
 });
 
