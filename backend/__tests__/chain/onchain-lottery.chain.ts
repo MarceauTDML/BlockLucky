@@ -64,16 +64,26 @@ describe('Loterie sur une vraie blockchain (nœud Hardhat local, Chainlink VRF s
     const statusBefore = await request(app).get('/api/v1/lottery/status');
     const roundId = statusBefore.body.data.round.contractRoundId as number;
     expect(statusBefore.body.data.guarantees.vrfCertified).toBe(true);
+    expect(statusBefore.body.data.round.phase).toBe('OPEN');
+    expect(statusBefore.body.data.round.revealAt).toBeNull();
 
     const buyAlice = await request(app)
       .post('/api/v1/lottery/buy')
       .set('Authorization', `Bearer ${alice.token}`)
-      .send({ quantity: 2 });
+      .send({ quantity: 1 });
     expect(buyAlice.status).toBe(201);
     expect(buyAlice.body.data.transactionHash).toMatch(/^0x[0-9a-f]{64}$/);
+    expect(buyAlice.body.data.tickets[0].ticketNumber).toMatch(/^\d{5}$/);
     const receipt = await chainClient.provider.getTransactionReceipt(buyAlice.body.data.transactionHash);
     expect(receipt?.status).toBe(1);
     expect(receipt?.from.toLowerCase()).toBe(alice.user.walletAddress);
+
+    const secondTicket = await request(app)
+      .post('/api/v1/lottery/buy')
+      .set('Authorization', `Bearer ${alice.token}`)
+      .send({});
+    expect(secondTicket.status).toBe(409);
+    expect(secondTicket.body.errors.contractError).toBe('PlayerLimitReached');
 
     const buyBob = await request(app)
       .post('/api/v1/lottery/buy')
@@ -81,15 +91,22 @@ describe('Loterie sur une vraie blockchain (nœud Hardhat local, Chainlink VRF s
       .send({ quantity: 1 });
     expect(buyBob.status).toBe(201);
 
-    const gift = await request(app)
+    const giftDave = await request(app)
+      .post('/api/v1/lottery/gift')
+      .set('Authorization', `Bearer ${bob.token}`)
+      .send({ recipientEmail: `dave.${RUN}@etherbay.fr` });
+    expect(giftDave.status).toBe(201);
+
+    const giftAlice = await request(app)
       .post('/api/v1/lottery/gift')
       .set('Authorization', `Bearer ${bob.token}`)
       .send({ recipientEmail: `alice.${RUN}@etherbay.fr` });
-    expect(gift.status).toBe(201);
-    expect(gift.body.data.ticket.recipientWallet).toBe(alice.user.walletAddress);
+    expect(giftAlice.status).toBe(409);
+    expect(giftAlice.body.message).toBe('Cette personne a déjà son ticket pour ce grand tirage.');
 
     const lottery = chainClient.lottery();
-    expect(Number(await lottery.getFunction('ticketsOf')(roundId, alice.user.walletAddress))).toBe(3);
+    expect(Number(await lottery.getFunction('ticketsOf')(roundId, alice.user.walletAddress))).toBe(1);
+    expect(Number(await lottery.getFunction('ticketsOf')(roundId, giftDave.body.data.ticket.recipientWallet))).toBe(1);
 
     const round = await lottery.getFunction('getRound')(roundId);
     await chainClient.provider.send('evm_increaseTime', [Number(round.endTime) - Math.floor(Date.now() / 1000) + 60]);
@@ -102,8 +119,10 @@ describe('Loterie sur une vraie blockchain (nœud Hardhat local, Chainlink VRF s
       const stored = await prisma.lotteryRound.findUnique({ where: { contractRoundId: roundId } });
       return stored?.status === 'COMPLETED' ? stored : null;
     });
-    expect([alice.user.walletAddress, bob.user.walletAddress]).toContain(completed.winnerWallet);
-    expect(BigInt(completed.prizeWei!)).toBe((BigInt(round.ticketPrice) * 4n * 9n) / 10n);
+    expect([alice.user.walletAddress, bob.user.walletAddress, giftDave.body.data.ticket.recipientWallet]).toContain(
+      completed.winnerWallet
+    );
+    expect(BigInt(completed.prizeWei!)).toBe((BigInt(round.ticketPrice) * 3n * 9n) / 10n);
 
     const claimed = await waitFor(async () => {
       await lotteryIndexer.syncOnce();
@@ -118,6 +137,9 @@ describe('Loterie sur une vraie blockchain (nœud Hardhat local, Chainlink VRF s
       return res.body.data.poapBadges.length > 0 ? res.body.data : null;
     });
     expect(history.poapBadges[0].tokenId).toBeGreaterThan(0);
+    expect(history.tickets[0].roundStatus).toBe('COMPLETED');
+    expect(history.tickets[0].winningTicketNumber).toMatch(/^\d{5}$/);
+    expect(history.tickets[0].isWinner).toBe(completed.winnerWallet === alice.user.walletAddress);
   });
 
   it('met réellement le contrat en pause via le disjoncteur de la Mairie', async () => {

@@ -109,6 +109,7 @@ services:
     environment:
       OPERATOR_PRIVATE_KEY: ${RELAYER_PRIVATE_KEY:-}
       POAP_BASE_URI: http://localhost:2053/api/v1/lottery/poap/
+      ROUND_DURATION_SECONDS: ${ROUND_DURATION_SECONDS:-1800}
     ports:
       - "127.0.0.1:8545:8545"
     restart: unless-stopped
