@@ -24,7 +24,17 @@
         "backgroundColor": "#FFDA38"
       },
       "package": "fr.etherbay.blocklucky",
-      "allowBackup": false
+      "allowBackup": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "web": {
       "favicon": "./assets/images/favicon.png",
@@ -44,6 +54,18 @@
       ],
       "expo-audio"
     ],
-    "scheme": "blocklucky"
+    "scheme": "blocklucky",
+    "extra": {
+      "eas": {
+        "projectId": "ded4728f-4e10-4d22-bd34-838d51898f82"
+      }
+    },
+    "owner": "marceautdml",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ded4728f-4e10-4d22-bd34-838d51898f82"
+    }
   }
 }

@@ -188,8 +188,8 @@
 </tr>
 <tr>
 <td><code>preview</code></td>
-<td><code>distribution: internal</code>, <code>channel: preview</code></td>
-<td>Binaire de recette partagé par lien (APK Android, distribution ad hoc iOS)</td>
+<td><code>distribution: internal</code>, <code>channel: preview</code>, <code>android.buildType: apk</code>, URL de <code>api.etherbay.tech</code> dans <code>env</code></td>
+<td>Fichier <code>.apk</code> installable directement sur un téléphone Android, pointé vers la démonstration en ligne ; distribution ad hoc sur iOS</td>
 </tr>
 <tr>
 <td><code>production</code></td>
@@ -207,7 +207,7 @@
 </div>
 <h2 id="variables-d-environnement-au-build"><a class="anchor" href="#variables-d-environnement-au-build" aria-hidden="true" tabindex="-1">#</a>Variables d&#39;environnement au build</h2>
 <p><code>EXPO_PUBLIC_API_URL</code> et <code>EXPO_PUBLIC_WS_URL</code> sont lues au moment de la construction du bundle. Sans elles, l&#39;application compilée pointe vers <code>http://localhost:2053</code>, c&#39;est-à-dire vers le téléphone lui-même. La connexion Google demande en plus <code>EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID</code> et <code>EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID</code> : sans elles, le bouton Google du binaire reste désactivé.</p>
-<p><code>eas.json</code> ne déclare aucune section <code>env</code>, et le fichier <code>.env</code> est exclu de Git par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/.gitignore" class="external" target="_blank" rel="noopener noreferrer"><code>.gitignore</code></a>. Avant un build EAS, il faut donc fournir les URL de l&#39;environnement visé, soit dans une section <code>env</code> de chaque profil, soit dans les variables d&#39;environnement du projet EAS. Pour une version publique, ces URL doivent être en HTTPS : les applications iOS et Android récentes refusent par défaut le HTTP non chiffré hors développement, et <code>app.json</code> ne déclare aucune exception.</p>
+<p>Seul le profil <code>preview</code> déclare une section <code>env</code>, avec <code>EXPO_PUBLIC_API_URL=https://api.etherbay.tech/api</code> et <code>EXPO_PUBLIC_WS_URL=https://api.etherbay.tech</code>. Le fichier <code>.env</code> est exclu de Git par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/.gitignore" class="external" target="_blank" rel="noopener noreferrer"><code>.gitignore</code></a>. Avant un build EAS, il faut donc fournir les URL de l&#39;environnement visé, soit dans une section <code>env</code> de chaque profil, soit dans les variables d&#39;environnement du projet EAS. Pour une version publique, ces URL doivent être en HTTPS : les applications iOS et Android récentes refusent par défaut le HTTP non chiffré hors développement, et <code>app.json</code> ne déclare aucune exception.</p>
 <h2 id="procedure-pour-un-premier-build"><a class="anchor" href="#procedure-pour-un-premier-build" aria-hidden="true" tabindex="-1">#</a>Procédure pour un premier build</h2>
 <p>Ces étapes n&#39;ont pas été exécutées dans le projet. Elles utilisent EAS CLI, qui n&#39;est pas une dépendance du dépôt.</p>
 <ol>
