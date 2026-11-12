@@ -60,7 +60,7 @@ export const roundConfigFromEnv = (defaults: { durationSeconds: number }): Round
   ticketPrice: BigInt(process.env.TICKET_PRICE_WEI ?? "10000000000000000"),
   maxTickets: envNumber("MAX_TICKETS", 10000),
   minTicketsToDraw: envNumber("MIN_TICKETS_TO_DRAW", 2),
-  maxTicketsPerPlayer: envNumber("MAX_TICKETS_PER_PLAYER", 100),
+  maxTicketsPerPlayer: envNumber("MAX_TICKETS_PER_PLAYER", 1),
   duration: BigInt(envNumber("ROUND_DURATION_SECONDS", defaults.durationSeconds)),
   feeBps: envNumber("MUNICIPALITY_FEE_BPS", 1000),
 });

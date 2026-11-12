@@ -57,12 +57,14 @@ describe('Idempotency-Key on sensitive POST endpoints', () => {
 
     expect(await countTickets()).toBe(afterFirst);
 
-    await request(app)
+    const another = await request(app)
       .post('/api/lottery/buy')
       .set('Authorization', `Bearer ${token}`)
       .set('Idempotency-Key', 'achat-unique-0002')
       .send({ quantity: 1 });
-    expect(await countTickets()).toBeGreaterThan(afterFirst);
+    expect(another.status).toBe(409);
+    expect(another.body.errors.contractError).toBe('PlayerLimitReached');
+    expect(await countTickets()).toBe(afterFirst);
   });
 
   it('should reject an invalid key format', async () => {

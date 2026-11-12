@@ -9,12 +9,16 @@ import logger from '../utils/logger.util';
 
 const roundStatuses = ['OPEN', 'LOCKED', 'COMPLETED', 'CANCELLED'] as const;
 
+export const PLAYER_LIMIT_MESSAGE = 'Vous avez déjà votre ticket pour ce grand tirage.';
+export const GIFT_PLAYER_LIMIT_MESSAGE = 'Cette personne a déjà son ticket pour ce grand tirage.';
+
 export interface OnchainRound {
   contractRoundId: number;
   status: (typeof roundStatuses)[number];
   ticketPriceWei: bigint;
   ticketCount: number;
   maxTickets: number;
+  minTicketsToDraw: number;
   maxTicketsPerPlayer: number;
   totalCollectedWei: bigint;
   prizeWei: bigint;
@@ -42,7 +46,7 @@ const CONTRACT_ERRORS: Record<string, { status: number; message: string; details
   RoundNotOpen: { status: 409, message: 'Le tirage de ce tour est en cours, les achats reprendront au tour suivant.' },
   RoundExpired: { status: 409, message: 'Ce tour est terminé, le tirage va être lancé.' },
   RoundSoldOut: { status: 409, message: 'Tous les tickets de ce tour ont été vendus.' },
-  PlayerLimitReached: { status: 400, message: 'Limite de tickets par participant atteinte pour ce tour.' },
+  PlayerLimitReached: { status: 409, message: PLAYER_LIMIT_MESSAGE },
   InvalidQuantity: { status: 400, message: 'Quantité de tickets invalide.' },
   IncorrectPayment: { status: 400, message: 'Montant incorrect pour cet achat.' },
   DrawNotReady: { status: 409, message: 'Le tirage ne peut pas encore être lancé (participants ou durée insuffisants).' },
@@ -94,6 +98,7 @@ export class LotteryGateway {
       ticketPriceWei: round.ticketPrice,
       ticketCount: Number(round.ticketCount),
       maxTickets: Number(round.maxTickets),
+      minTicketsToDraw: Number(round.minTicketsToDraw),
       maxTicketsPerPlayer: Number(round.maxTicketsPerPlayer),
       totalCollectedWei: round.totalCollected,
       prizeWei: round.prize,

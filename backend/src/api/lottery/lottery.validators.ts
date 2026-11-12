@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const buyTicketSchema = z.object({
   body: z.object({
     roundId: z.string().uuid().optional(),
-    quantity: z.coerce.number().int().min(1).max(10).default(1),
+    quantity: z.coerce.number().int().min(1).max(1, 'Un seul ticket par participant et par grand tirage.').default(1),
     retryAttempt: z.coerce.number().int().min(0).max(5).default(0),
   }),
 });

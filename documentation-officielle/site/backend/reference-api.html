@@ -415,15 +415,15 @@
 <td><code>POST</code></td>
 <td><code>/api/v1/lottery/buy</code></td>
 <td>connecté</td>
-<td>idempotence, validation <code>buyTicketSchema</code></td>
-<td>Acheter un ou plusieurs tickets en 1 clic, transaction signée par le portefeuille intégré du citoyen, et gagner 50 EtherPoints par ticket</td>
+<td><code>requireAgeVerification</code>, idempotence, validation <code>buyTicketSchema</code></td>
+<td>Acheter son ticket unique du grand tirage en 1 clic (âge vérifié requis), transaction signée par le portefeuille intégré du citoyen, et gagner 50 EtherPoints</td>
 </tr>
 <tr>
 <td><code>POST</code></td>
 <td><code>/api/v1/lottery/gift</code></td>
 <td>connecté</td>
-<td>idempotence, validation <code>giftTicketSchema</code></td>
-<td>Offrir un ticket à un proche désigné par son email, acheté pour son portefeuille intégré (Cadeau viral)</td>
+<td><code>requireAgeVerification</code>, idempotence, validation <code>giftTicketSchema</code></td>
+<td>Offrir un ticket à un proche désigné par son email, acheté pour son portefeuille intégré (âge vérifié requis, un ticket par participant)</td>
 </tr>
 <tr>
 <td><code>GET</code></td>
