@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import BackButton from '@/components/ui/BackButton';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import { Loader } from '@/components/ui/Loader';
 import { Alert, EmptyState } from '@/components/ui/Misc';
 import usePoints from '@/hooks/usePoints';
@@ -59,13 +60,18 @@ export default function RewardDetailPage() {
           description={t("Cette offre n'est plus disponible.", 'This offer is no longer available.')}
         />
       ) : (
-        <section className="card flex flex-col gap-3.5 p-5 md:p-7">
-          <p className="eyebrow-caps text-caption font-semibold text-secondary">{reward.partner.name}</p>
-          <h1 className="text-title font-bold md:text-hero">{reward.title}</h1>
+        <section className="card flex flex-col gap-4 p-5 md:p-7">
+          <div className="flex items-center gap-3">
+            <span aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-sun-soft text-on-sun">
+              <Icon name="bag" size={22} />
+            </span>
+            <p className="eyebrow-caps text-caption font-bold text-fg-muted">{reward.partner.name}</p>
+          </div>
+          <h1 className="text-title font-bold tracking-[-0.4px] md:text-hero">{reward.title}</h1>
 
-          <div className="flex flex-col gap-1 rounded-md bg-surface-elevated p-3.5">
-            <p className="text-caption text-fg-secondary">{t("Coût de l'offre", 'Offer cost')}</p>
-            <p className="text-subtitle font-bold text-primary tabular">
+          <div className="flex flex-col gap-1 rounded-[20px] bg-sun p-4 text-on-sun">
+            <p className="eyebrow-caps text-caption font-bold text-on-sun">{t("Coût de l'offre", 'Offer cost')}</p>
+            <p className="text-heading font-bold text-on-sun tabular">
               {t(
                 `${reward.costInPoints} pts (Solde : ${pointsBalance} pts)`,
                 `${reward.costInPoints} pts (Balance: ${pointsBalance} pts)`
@@ -73,8 +79,8 @@ export default function RewardDetailPage() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between">
+          <div className="flex flex-col gap-2 rounded-[18px] bg-surface-elevated p-4">
+            <div className="flex justify-between gap-2">
               <span className="text-caption text-fg-secondary">{t('Disponibilité', 'Availability')}</span>
               <span className="text-caption font-semibold tabular">
                 {t(
@@ -84,20 +90,20 @@ export default function RewardDetailPage() {
               </span>
             </div>
             <div
-              className="h-2 overflow-hidden rounded-full bg-surface-elevated"
+              className="h-2.5 overflow-hidden rounded-full bg-surface"
               role="progressbar"
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={reward.stockPercentage}
               aria-label={t('Stock restant', 'Remaining stock')}
             >
-              <div className="h-full bg-primary" style={{ width: `${Math.max(4, reward.stockPercentage)}%` }} />
+              <div className="h-full rounded-full bg-sun" style={{ width: `${Math.max(4, reward.stockPercentage)}%` }} />
             </div>
           </div>
 
           {errorMessage ? <Alert tone="error">{errorMessage}</Alert> : null}
           {notEnoughPoints && !outOfStock ? (
-            <p className="text-caption text-fg-muted">
+            <p className="rounded-[16px] bg-peach px-4 py-3 text-caption font-medium text-fg">
               {t(
                 `Il vous manque ${reward.costInPoints - pointsBalance} pts. Participez au tirage ou complétez une mission.`,
                 `You need ${reward.costInPoints - pointsBalance} more pts. Enter the draw or complete a quest.`

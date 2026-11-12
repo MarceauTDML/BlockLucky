@@ -20,29 +20,31 @@ export const WalletCard: React.FC<{ className?: string }> = ({ className }) => {
       : null;
 
   return (
-    <section className={cn('card flex flex-col gap-1.5 p-4', className)} aria-labelledby={titleId}>
+    <section className={cn('card flex flex-col gap-3 p-5', className)} aria-labelledby={titleId}>
       <div className="flex items-center justify-between gap-2">
-        <h2 id={titleId} className="text-caption font-semibold text-secondary">
+        <h2 id={titleId} className="eyebrow-caps text-caption font-bold text-fg-muted">
           {t('Portefeuille BlockLucky intégré', 'Integrated BlockLucky wallet')}
         </h2>
         {wallet?.mode === 'simulated' ? <Badge tone="warning">{t('Mode démonstration', 'Demo mode')}</Badge> : null}
       </div>
       {isLoading ? (
-        <Skeleton className="h-14 w-full rounded-md" />
+        <Skeleton className="h-20 w-full rounded-[18px]" />
       ) : isError || !wallet ? (
-        <p className="text-caption text-fg-muted">
+        <p className="rounded-[16px] bg-surface-elevated px-4 py-3 text-caption text-fg-muted">
           {t('Portefeuille momentanément indisponible.', 'Wallet temporarily unavailable.')}
         </p>
       ) : (
         <>
-          <p className="font-mono text-body font-bold" title={wallet.walletAddress}>
-            {shortenWallet(wallet.walletAddress, 6)}
-          </p>
-          <p className="text-subtitle font-bold tabular">
-            {formattedBalance !== null
-              ? t(`${formattedBalance} ethers fictifs`, `${formattedBalance} test ethers`)
-              : t('Solde indisponible', 'Balance unavailable')}
-          </p>
+          <div className="flex flex-col gap-1 rounded-[18px] bg-sun-soft px-4 py-3.5 text-on-sun">
+            <p className="text-title font-bold tabular">
+              {formattedBalance !== null
+                ? t(`${formattedBalance} ethers fictifs`, `${formattedBalance} test ethers`)
+                : t('Solde indisponible', 'Balance unavailable')}
+            </p>
+            <p className="font-mono text-caption font-semibold text-on-sun-muted" title={wallet.walletAddress}>
+              {shortenWallet(wallet.walletAddress, 6)}
+            </p>
+          </div>
           <p className="text-caption text-fg-secondary">
             {t(
               'Vos transactions sont signées par ce portefeuille. Le prix des tickets et les frais réseau sont prélevés sur la dotation de bienvenue en ethers fictifs versée par la Mairie.',
@@ -54,7 +56,7 @@ export const WalletCard: React.FC<{ className?: string }> = ({ className }) => {
               href={wallet.explorerUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-caption font-medium text-primary underline-offset-2 hover:underline"
+              className="inline-flex items-center gap-1.5 self-start text-caption font-semibold text-green underline-offset-2 hover:underline"
             >
               {t("Voir le portefeuille sur l'explorateur de blocs →", 'View the wallet on the block explorer →')}
             </a>

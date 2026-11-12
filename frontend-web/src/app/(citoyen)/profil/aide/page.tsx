@@ -4,6 +4,7 @@ import React from 'react';
 import TransparencyCharter from '@/components/lottery/TransparencyCharter';
 import BackButton from '@/components/ui/BackButton';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import usePushNotifications from '@/hooks/usePushNotifications';
 import { useAppTheme } from '@/theme/ThemeProvider';
 
@@ -16,8 +17,13 @@ export default function HelpPage() {
       <BackButton href="/profil" />
       <TransparencyCharter />
 
-      <section className="mt-3.5 flex flex-col gap-2 rounded-lg border border-line bg-surface-elevated p-4">
-        <h2 className="text-subtitle font-semibold">{t('Test de notification', 'Notification Test')}</h2>
+      <section className="mt-4 flex flex-col gap-3 rounded-[24px] bg-lavender p-5">
+        <div className="flex items-center gap-3">
+          <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-violet">
+            <Icon name="bell" size={20} />
+          </span>
+          <h2 className="text-subtitle font-bold">{t('Test de notification', 'Notification Test')}</h2>
+        </div>
         <p className="text-caption text-fg-secondary">
           {t(
             "Simulez l'affichage d'une bannière de notification en haut de l'écran.",

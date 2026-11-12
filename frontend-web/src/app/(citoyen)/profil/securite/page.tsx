@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import BackButton from '@/components/ui/BackButton';
 import Button, { LinkButton } from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import { Alert, PageHeader } from '@/components/ui/Misc';
 import { ChoicePills } from '@/components/ui/SegmentedTabs';
 import Sheet from '@/components/ui/Sheet';
@@ -81,8 +82,13 @@ export default function SecurityPage() {
       <div className="flex flex-col gap-3.5">
         {feedback ? <Alert tone={feedback.tone}>{feedback.text}</Alert> : null}
 
-        <section className="card flex flex-col gap-3 p-[18px]">
-          <h2 className="text-subtitle font-semibold">{t('Plafond de participation', 'Participation Cap')}</h2>
+        <section className="card flex flex-col gap-3 p-5">
+          <div className="flex items-center gap-3">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sun-soft text-on-sun">
+              <Icon name="clock" size={20} />
+            </span>
+            <h2 className="text-subtitle font-bold">{t('Plafond de participation', 'Participation Cap')}</h2>
+          </div>
           <p className="text-caption text-fg-secondary">
             {t(
               'Définissez votre limite personnelle de tickets par tirage. Elle s’applique immédiatement sur le web et le mobile.',
@@ -98,7 +104,7 @@ export default function SecurityPage() {
           <Button onClick={handleSaveLimit} loading={isSavingLimit}>
             {t(`Enregistrer (${selectedLimit} tickets max)`, `Save Limit (${selectedLimit} tickets max)`)}
           </Button>
-          <p className="text-caption text-fg-muted">
+          <p className="rounded-[16px] bg-surface-elevated px-4 py-3 text-caption text-fg-secondary">
             {t(
               'Besoin d’aide ? Joueurs Info Service : 09 74 75 13 13 (appel non surtaxé).',
               'Need help? Joueurs Info Service (France): 09 74 75 13 13.'
@@ -106,9 +112,20 @@ export default function SecurityPage() {
           </p>
         </section>
 
-        <section className="card flex flex-col gap-3 p-[18px]">
-          <h2 className="text-subtitle font-semibold">{t('Double authentification (2FA)', 'Two-Factor Authentication (2FA)')}</h2>
-          <p className="text-caption text-fg-secondary">
+        <section className="card flex flex-col gap-3 p-5">
+          <div className="flex items-center gap-3">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-mint text-green">
+              <Icon name="shield" size={20} />
+            </span>
+            <h2 className="text-subtitle font-bold">{t('Double authentification (2FA)', 'Two-Factor Authentication (2FA)')}</h2>
+          </div>
+          <p
+            className={
+              user?.isTwoFactorEnabled
+                ? 'self-start rounded-full bg-mint px-3 py-1 text-caption font-semibold text-green'
+                : 'self-start rounded-full bg-peach px-3 py-1 text-caption font-semibold text-terracotta'
+            }
+          >
             {t('Statut : ', 'Status: ')}
             {user?.isTwoFactorEnabled
               ? t(`Activée (${user.twoFactorMethod || 'APP'})`, `Enabled (${user.twoFactorMethod || 'APP'})`)
@@ -124,8 +141,13 @@ export default function SecurityPage() {
           ) : null}
         </section>
 
-        <section className="card flex flex-col gap-3 p-[18px]">
-          <h2 className="text-subtitle font-semibold">{t('Sessions actives', 'Active sessions')}</h2>
+        <section className="card flex flex-col gap-3 p-5">
+          <div className="flex items-center gap-3">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lavender text-violet">
+              <Icon name="logout" size={20} />
+            </span>
+            <h2 className="text-subtitle font-bold">{t('Sessions actives', 'Active sessions')}</h2>
+          </div>
           <p className="text-caption text-fg-secondary">
             {t(
               'Un appareil perdu ou partagé ? Déconnectez immédiatement toutes les sessions ouvertes sur votre compte, y compris celle-ci.',
@@ -137,8 +159,13 @@ export default function SecurityPage() {
           </Button>
         </section>
 
-        <section className="card flex flex-col gap-3 p-[18px]">
-          <h2 className="text-subtitle font-semibold">{t("Droits d'administration (RBAC)", 'Admin Permissions (RBAC)')}</h2>
+        <section className="card flex flex-col gap-3 p-5">
+          <div className="flex items-center gap-3">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-peach text-terracotta">
+              <Icon name="lock" size={20} />
+            </span>
+            <h2 className="text-subtitle font-bold">{t("Droits d'administration (RBAC)", 'Admin Permissions (RBAC)')}</h2>
+          </div>
           <p className="text-caption text-fg-secondary">
             {t(
               `Rôle actuel : ${user?.role || 'USER'}. L'administration du Smart Contract est réservée aux services municipaux d'EtherBay.`,
@@ -155,7 +182,7 @@ export default function SecurityPage() {
             </Button>
           )}
           {rbacChecked && user?.role !== 'ADMIN' ? (
-            <div className="flex flex-col gap-1 rounded-md border border-error bg-surface-elevated p-3" role="alert">
+            <div className="flex flex-col gap-1 rounded-[16px] bg-peach p-3.5" role="alert">
               <p className="text-caption font-semibold text-error">{t('Accès restreint (403)', 'Restricted Access (403)')}</p>
               <p className="text-caption text-fg-secondary">
                 {t(

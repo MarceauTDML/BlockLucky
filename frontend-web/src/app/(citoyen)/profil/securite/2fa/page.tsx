@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import BackButton from '@/components/ui/BackButton';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import Input from '@/components/ui/Input';
 import { Alert, PageHeader } from '@/components/ui/Misc';
 import useAuth from '@/hooks/useAuth';
@@ -24,6 +25,7 @@ export default function Setup2FAPage() {
     setError('');
     setStatus('');
     setDone(false);
+    setOtpCode('');
     try {
       const res = await setup2FA({ method }).unwrap();
       setSetupData(res.data);
@@ -68,33 +70,39 @@ export default function Setup2FAPage() {
         )}
       />
 
-      <div className="mb-[18px] grid gap-2.5 sm:grid-cols-2">
+      <div className="mb-5 grid gap-3 sm:grid-cols-2">
         <Button onClick={() => init('APP')} loading={isSettingUp2FA}>
+          <Icon name="shield" size={20} />
           {t("Application d'authentification (TOTP)", 'Authenticator App (TOTP)')}
         </Button>
         <Button variant="outline" onClick={() => init('EMAIL')} loading={isSettingUp2FA}>
+          <Icon name="envelope" size={20} />
           {t('Code par email', 'Email Code')}
         </Button>
       </div>
 
       {setupData ? (
-        <form className="card flex flex-col gap-3 p-4 md:p-5" onSubmit={confirm} noValidate>
-          <h2 className="text-body font-bold">{t(`Méthode : ${setupData.method}`, `Method: ${setupData.method}`)}</h2>
+        <form className="card flex flex-col gap-4 p-5 md:p-6" onSubmit={confirm} noValidate>
+          <div className="flex items-center gap-3">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-mint text-green">
+              <Icon name="lock" size={20} />
+            </span>
+            <h2 className="text-subtitle font-bold">{t(`Méthode : ${setupData.method}`, `Method: ${setupData.method}`)}</h2>
+          </div>
 
           {setupData.qrCodeDataUrl ? (
-            <div className="flex flex-col items-center gap-2 rounded-md bg-surface-elevated p-4 sm:flex-row sm:items-start sm:gap-5">
-              {}
+            <div className="flex flex-col items-center gap-3 rounded-[20px] bg-sun-soft p-4 text-on-sun sm:flex-row sm:items-start sm:gap-5">
               <img
                 src={setupData.qrCodeDataUrl}
                 alt={t('QR code de configuration TOTP', 'TOTP setup QR code')}
                 width={160}
                 height={160}
-                className="rounded-sm bg-white p-2"
+                className="rounded-[14px] bg-white p-2"
               />
               {setupData.secret ? (
                 <div className="flex flex-col gap-0.5">
-                  <p className="text-caption text-fg-secondary">{t('Clé TOTP (saisie manuelle) :', 'TOTP secret (manual entry):')}</p>
-                  <p className="break-all font-mono text-body font-bold text-secondary">{setupData.secret}</p>
+                  <p className="text-caption font-semibold text-on-sun-muted">{t('Clé TOTP (saisie manuelle) :', 'TOTP secret (manual entry):')}</p>
+                  <p className="break-all font-mono text-body font-bold text-on-sun">{setupData.secret}</p>
                 </div>
               ) : null}
             </div>
@@ -107,7 +115,7 @@ export default function Setup2FAPage() {
               </p>
               <ul className="grid grid-cols-2 gap-1.5 sm:grid-cols-5">
                 {setupData.backupCodes.map((code) => (
-                  <li key={code} className="rounded-sm bg-surface-elevated px-2 py-1 text-center font-mono text-caption">
+                  <li key={code} className="rounded-full bg-surface-elevated px-2 py-1.5 text-center font-mono text-caption font-semibold">
                     {code}
                   </li>
                 ))}

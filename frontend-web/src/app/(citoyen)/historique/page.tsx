@@ -59,7 +59,7 @@ export default function HistoryPage() {
             action={<LinkButton href="/billetterie">{t('Acheter un ticket', 'Buy a ticket')}</LinkButton>}
           />
         ) : (
-          <div className="grid gap-2.5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {tickets.map((ticket) => (
               <TicketCard key={ticket.id} ticket={ticket} />
             ))}
@@ -74,7 +74,7 @@ export default function HistoryPage() {
           )}
         />
       ) : (
-        <div className="grid gap-2.5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {poapBadges.map((badge) => (
             <POAPBadgeCard key={badge.id} badge={badge} />
           ))}
