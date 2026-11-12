@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import AdminQueryError from '@/components/admin/AdminQueryError';
 import { BarList, KpiTile } from '@/components/charts/Charts';
 import Button from '@/components/ui/Button';
 import { Loader } from '@/components/ui/Loader';
@@ -17,7 +18,7 @@ const AGE_ORDER = ['18-25', '26-35', '36-50', '50+'] as const;
 
 export default function AnalyticsPage() {
   const { t, language } = useAppTheme();
-  const { data, isLoading, isError } = useGetAnalyticsDashboardQuery();
+  const { data, isLoading, isError, error } = useGetAnalyticsDashboardQuery();
   const [exportReport, { isLoading: exporting }] = useExportReportMutation();
   const [feedback, setFeedback] = useState<{ tone: 'success' | 'error'; text: string } | null>(null);
   const dash = data?.data;
@@ -103,7 +104,7 @@ export default function AnalyticsPage() {
       {isLoading ? (
         <Loader skeletonRows={4} />
       ) : isError || !dash ? (
-        <Alert tone="error">{t('Données analytiques indisponibles.', 'Analytics data unavailable.')}</Alert>
+        <AdminQueryError error={error} fallback={t('Données analytiques indisponibles.', 'Analytics data unavailable.')} />
       ) : (
         <div className="flex flex-col gap-5">
           <section className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label={t('Indicateurs', 'Indicators')}>
@@ -112,17 +113,26 @@ export default function AnalyticsPage() {
               value={`${dash.kpis.completionRatePercent.toFixed(1)} %`}
               hint={t(`${formatNumber(dash.kpis.totalUsers, language)} / 10 000 inscrits`, `${formatNumber(dash.kpis.totalUsers, language)} / 10,000 sign-ups`)}
               tone="primary"
+              icon="star"
             />
-            <KpiTile label={t('Tickets vendus', 'Tickets sold')} value={formatNumber(dash.kpis.totalTicketsSold, language)} />
+            <KpiTile
+              label={t('Tickets vendus', 'Tickets sold')}
+              value={formatNumber(dash.kpis.totalTicketsSold, language)}
+              icon="ticket"
+              accent="sun"
+            />
             <KpiTile
               label={t('Part 18-35 ans', '18-35 share')}
               value={`${share18to35} %`}
               hint={t('Cible principale du brief', 'Main brief target')}
               tone="secondary"
+              icon="users"
             />
             <KpiTile
               label={t('Récompenses réclamées', 'Rewards claimed')}
               value={formatNumber(dash.kpis.totalClaimedRewards, language)}
+              icon="gift"
+              accent="mint"
             />
           </section>
 
@@ -130,7 +140,7 @@ export default function AnalyticsPage() {
             <section className="card p-4 md:p-5" aria-labelledby="age-title">
               <div className="mb-4 flex items-start justify-between gap-3">
                 <div>
-                  <h2 id="age-title" className="text-body font-bold">
+                  <h2 id="age-title" className="text-subtitle font-bold">
                     {t('Répartition par âge', 'Age breakdown')}
                   </h2>
                   <p className="text-caption text-fg-muted">
@@ -144,6 +154,7 @@ export default function AnalyticsPage() {
                 )}
               </div>
               <BarList
+                tone="violet"
                 sort={false}
                 unit=""
                 caption={t('Répartition des inscrits par tranche d’âge', 'Sign-ups by age group')}
@@ -153,7 +164,7 @@ export default function AnalyticsPage() {
 
             <section className="card p-4 md:p-5" aria-labelledby="utm-title">
               <div className="mb-4">
-                <h2 id="utm-title" className="text-body font-bold">
+                <h2 id="utm-title" className="text-subtitle font-bold">
                   {t('Acquisition par canal (UTM)', 'Acquisition by channel (UTM)')}
                 </h2>
                 <p className="text-caption text-fg-muted">
@@ -164,6 +175,7 @@ export default function AnalyticsPage() {
                 </p>
               </div>
               <BarList
+                tone="sun"
                 caption={t('Événements par source d’acquisition', 'Events by acquisition source')}
                 data={utm.map((r) => ({ label: r.source, value: r.conversions }))}
                 emptyLabel={t('Aucune source enregistrée pour le moment.', 'No source recorded yet.')}
@@ -171,7 +183,7 @@ export default function AnalyticsPage() {
             </section>
           </div>
 
-          <p className="text-caption text-fg-muted">
+          <p className="rounded-[16px] bg-surface-elevated px-4 py-3 text-caption text-fg-muted">
             {t(
               'Limites de mesure : un compte correspond à un portefeuille ; une même personne peut en posséder plusieurs. Les visiteurs ayant refusé la mesure d’audience ne sont pas comptés.',
               'Measurement limits: one account equals one wallet; a person may own several. Visitors who opted out of audience measurement are not counted.'

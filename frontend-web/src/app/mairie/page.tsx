@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
+import AdminQueryError from '@/components/admin/AdminQueryError';
 import { KpiTile } from '@/components/charts/Charts';
 import NetworkPill from '@/components/lottery/NetworkPill';
 import Button, { LinkButton } from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import { Loader } from '@/components/ui/Loader';
-import { Alert, Badge, PageHeader } from '@/components/ui/Misc';
+import { Badge, PageHeader } from '@/components/ui/Misc';
 import ProgressBar from '@/components/ui/ProgressBar';
 import { TARGET_PARTICIPANTS } from '@/lib/config';
 import { formatDateShort } from '@/lib/date';
@@ -18,7 +20,7 @@ const STATUS_TONE = { OPEN: 'primary', LOCKED: 'warning', COMPLETED: 'neutral', 
 
 export default function MairieDashboardPage() {
   const { t, language } = useAppTheme();
-  const { data, isLoading, isError, refetch, isFetching } = useGetAdminDashboardQuery(undefined, {
+  const { data, isLoading, isError, error, refetch, isFetching } = useGetAdminDashboardQuery(undefined, {
     pollingInterval: 60000,
   });
   const { data: statusRes } = useGetLotteryStatusQuery(undefined, { pollingInterval: 60000 });
@@ -55,12 +57,13 @@ export default function MairieDashboardPage() {
       {isLoading ? (
         <Loader message={t('Chargement des indicateurs…', 'Loading indicators…')} skeletonRows={4} />
       ) : isError || !dash ? (
-        <Alert tone="error">
-          {t(
+        <AdminQueryError
+          error={error}
+          fallback={t(
             'Impossible de charger le tableau de bord. Vérifiez que le backend est démarré.',
             'Unable to load the dashboard. Make sure the backend is running.'
           )}
-        </Alert>
+        />
       ) : (
         <div className="flex flex-col gap-5">
           <div className="flex flex-wrap items-center gap-2">
@@ -78,22 +81,39 @@ export default function MairieDashboardPage() {
               value={`${dash.kpis.totalPrizePoolEth.toFixed(2)} ETH`}
               hint={t('Tous tirages confondus', 'All draws combined')}
               tone="primary"
+              icon="trophy"
+              className="col-span-2 md:col-span-1"
             />
-            <KpiTile label={t('Tickets vendus', 'Tickets sold')} value={formatNumber(dash.kpis.ticketsSold, language)} />
+            <KpiTile
+              label={t('Tickets vendus', 'Tickets sold')}
+              value={formatNumber(dash.kpis.ticketsSold, language)}
+              icon="ticket"
+              accent="sun"
+            />
             <KpiTile
               label={t('Part Mairie (10 %)', 'City share (10%)')}
               value={`${dash.kpis.municipalityRevenueEth.toFixed(3)} ETH`}
               hint={t('Revenus annexes fictifs', 'Test revenue')}
               tone="secondary"
+              icon="shield"
             />
             <KpiTile
               label={t('Comptes inscrits', 'Registered accounts')}
               value={formatNumber(dash.kpis.registeredCitizens, language)}
+              icon="users"
+              accent="mint"
             />
-            <KpiTile label={t('Partenaires', 'Partners')} value={formatNumber(dash.kpis.activePartners, language)} />
+            <KpiTile
+              label={t('Partenaires', 'Partners')}
+              value={formatNumber(dash.kpis.activePartners, language)}
+              icon="bag"
+              accent="peach"
+            />
             <KpiTile
               label={t('Récompenses réclamées', 'Rewards claimed')}
               value={formatNumber(dash.kpis.claimedRewards, language)}
+              icon="gift"
+              accent="lavender"
             />
           </section>
 
@@ -105,47 +125,53 @@ export default function MairieDashboardPage() {
             milestones={progression?.milestones ?? []}
           />
 
-          <section className="card overflow-hidden" aria-labelledby="rounds-title">
-            <div className="flex items-center justify-between p-4 pb-2">
-              <h2 id="rounds-title" className="text-body font-bold">
-                {t('Historique des tirages', 'Draw history')}
-              </h2>
+          <section className="card overflow-hidden p-2 md:p-3" aria-labelledby="rounds-title">
+            <div className="flex flex-wrap items-center justify-between gap-2 px-2.5 pb-2 pt-2.5">
+              <div className="flex items-center gap-3">
+                <span aria-hidden className="flex h-10 w-10 items-center justify-center rounded-full bg-sun-chip text-on-sun dark:text-sun">
+                  <Icon name="wheel" size={20} />
+                </span>
+                <h2 id="rounds-title" className="text-subtitle font-bold">
+                  {t('Historique des tirages', 'Draw history')}
+                </h2>
+              </div>
               <LinkButton href="/mairie/securite" variant="ghost" size="sm" fullWidth={false}>
                 {t('Lancer / annuler un tirage', 'Run / cancel a draw')}
+                <Icon name="chevronRight" size={16} />
               </LinkButton>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-left text-small">
-                <thead className="border-y border-line bg-surface-elevated text-caption text-fg-secondary">
+              <table className="w-full min-w-[640px] border-separate border-spacing-0 text-left text-small">
+                <thead className="text-caption text-fg-muted">
                   <tr>
-                    <th scope="col" className="px-4 py-2 font-medium">#</th>
-                    <th scope="col" className="px-4 py-2 font-medium">{t('Statut', 'Status')}</th>
-                    <th scope="col" className="px-4 py-2 text-right font-medium">{t('Cagnotte', 'Prize pool')}</th>
-                    <th scope="col" className="px-4 py-2 font-medium">{t('Gagnant', 'Winner')}</th>
-                    <th scope="col" className="px-4 py-2 font-medium">{t('Ouverture', 'Opened')}</th>
-                    <th scope="col" className="px-4 py-2 font-medium">{t('Tirage', 'Drawn')}</th>
+                    <th scope="col" className="border-b border-line px-3 py-2.5 font-semibold">#</th>
+                    <th scope="col" className="border-b border-line px-3 py-2.5 font-semibold">{t('Statut', 'Status')}</th>
+                    <th scope="col" className="border-b border-line px-3 py-2.5 text-right font-semibold">{t('Cagnotte', 'Prize pool')}</th>
+                    <th scope="col" className="border-b border-line px-3 py-2.5 font-semibold">{t('Gagnant', 'Winner')}</th>
+                    <th scope="col" className="border-b border-line px-3 py-2.5 font-semibold">{t('Ouverture', 'Opened')}</th>
+                    <th scope="col" className="border-b border-line px-3 py-2.5 font-semibold">{t('Tirage', 'Drawn')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {dash.rounds.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-6 text-center text-caption text-fg-muted">
+                      <td colSpan={6} className="px-4 py-8 text-center text-caption text-fg-muted">
                         {t('Aucun tirage enregistré.', 'No draw recorded.')}
                       </td>
                     </tr>
                   ) : (
                     dash.rounds.map((r) => (
-                      <tr key={r.id} className="border-b border-line last:border-0">
-                        <td className="px-4 py-2.5 font-semibold tabular">{r.contractRoundId}</td>
-                        <td className="px-4 py-2.5">
+                      <tr key={r.id} className="transition-colors hover:bg-surface-elevated [&>td:first-child]:rounded-l-[16px] [&>td:last-child]:rounded-r-[16px]">
+                        <td className="px-3 py-3 font-bold tabular">{r.contractRoundId}</td>
+                        <td className="px-3 py-3">
                           <Badge tone={STATUS_TONE[r.status]}>{statusLabel[r.status] || r.status}</Badge>
                         </td>
-                        <td className="px-4 py-2.5 text-right tabular">{r.prizePool.toFixed(2)} ETH</td>
-                        <td className="px-4 py-2.5 font-mono text-caption">
+                        <td className="px-3 py-3 text-right font-semibold tabular">{r.prizePool.toFixed(2)} ETH</td>
+                        <td className="px-3 py-3 font-mono text-caption">
                           {r.winnerWallet ? shortenWallet(r.winnerWallet, 4) : '—'}
                         </td>
-                        <td className="px-4 py-2.5 text-caption text-fg-secondary">{formatDateShort(r.startedAt)}</td>
-                        <td className="px-4 py-2.5 text-caption text-fg-secondary">
+                        <td className="px-3 py-3 text-caption text-fg-secondary">{formatDateShort(r.startedAt)}</td>
+                        <td className="px-3 py-3 text-caption text-fg-secondary">
                           {r.drawnAt ? formatDateShort(r.drawnAt) : '—'}
                         </td>
                       </tr>
