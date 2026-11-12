@@ -1,3 +1,4 @@
+import { AgeVerificationStatus } from '@prisma/client';
 import prisma from '../../config/prisma.config';
 
 export class AdminRepository {
@@ -57,6 +58,79 @@ export class AdminRepository {
       },
       orderBy: { timestamp: 'desc' },
       take: limit,
+    });
+  }
+
+  public async listIdentityVerifications(status: AgeVerificationStatus, skip: number, take: number) {
+    const where = { status };
+    const [items, total] = await Promise.all([
+      prisma.identityDocument.findMany({
+        where,
+        select: {
+          id: true,
+          userId: true,
+          status: true,
+          submittedAt: true,
+          user: { select: { email: true } },
+        },
+        orderBy: { submittedAt: 'asc' },
+        skip,
+        take,
+      }),
+      prisma.identityDocument.count({ where }),
+    ]);
+    return { items, total };
+  }
+
+  public async findIdentityVerification(id: string) {
+    return prisma.identityDocument.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            walletAddress: true,
+            ageVerificationStatus: true,
+            ageVerificationNote: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+  }
+
+  public async decideIdentityVerification(data: {
+    id: string;
+    userId: string;
+    reviewerId: string;
+    approved: boolean;
+    note: string | null;
+  }) {
+    const reviewedAt = new Date();
+    const status = data.approved ? AgeVerificationStatus.VERIFIED : AgeVerificationStatus.REJECTED;
+    return prisma.$transaction(async (tx) => {
+      const claimed = await tx.identityDocument.updateMany({
+        where: { id: data.id, status: AgeVerificationStatus.PENDING },
+        data: {
+          status,
+          reviewedAt,
+          reviewerId: data.reviewerId,
+          frontEncrypted: null,
+          backEncrypted: null,
+        },
+      });
+      if (claimed.count === 0) return null;
+      await tx.user.update({
+        where: { id: data.userId },
+        data: {
+          ageVerificationStatus: status,
+          ageVerifiedAt: data.approved ? reviewedAt : null,
+          ageVerificationNote: data.approved ? null : data.note,
+        },
+        select: { id: true },
+      });
+      return { id: data.id, userId: data.userId, status, reviewedAt };
     });
   }
 

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import adminService from './admin.services';
 import { sendSuccess, AppError } from '../../utils/response.util';
+import { buildPaginationMeta, getPaginationParams } from '../../utils/pagination.util';
 
 export class AdminController {
   public async getDashboard(_req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -59,6 +60,50 @@ export class AdminController {
         req.body.isActive
       );
       sendSuccess(res, { partner }, 'Statut du partenaire mis à jour');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async listIdentityVerifications(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const status = String(req.query.status ?? 'PENDING') as 'PENDING' | 'VERIFIED' | 'REJECTED';
+      const { page, limit } = getPaginationParams(req.query as { page?: string; limit?: string });
+      const { verifications, total } = await adminService.listIdentityVerifications(status, page, limit);
+      sendSuccess(
+        res,
+        { verifications },
+        "Demandes de vérification d'identité récupérées",
+        200,
+        buildPaginationMeta(total, page, limit)
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getIdentityVerification(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const adminId = req.user?.userId;
+      if (!adminId) throw new AppError('Authentification Admin requise', 401);
+      const verification = await adminService.getIdentityVerification(adminId, String(req.params.id));
+      res.setHeader('Cache-Control', 'no-store');
+      sendSuccess(res, { verification }, "Demande de vérification d'identité récupérée");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async decideIdentityVerification(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const adminId = req.user?.userId;
+      if (!adminId) throw new AppError('Authentification Admin requise', 401);
+      const decision = await adminService.decideIdentityVerification(adminId, String(req.params.id), req.body);
+      sendSuccess(
+        res,
+        { decision },
+        decision.status === 'VERIFIED' ? 'Âge du citoyen vérifié' : "Pièce d'identité refusée"
+      );
     } catch (error) {
       next(error);
     }

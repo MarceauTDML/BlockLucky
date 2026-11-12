@@ -1,5 +1,5 @@
 import prisma from '../../config/prisma.config';
-import { TokenType } from '@prisma/client';
+import { AgeVerificationStatus, TokenType } from '@prisma/client';
 import { sha256 } from '../../utils/crypto.util';
 
 export class UserRepository {
@@ -60,6 +60,55 @@ export class UserRepository {
     });
   }
 
+  public async findIdentityState(userId: string) {
+    return prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        deletedAt: true,
+        ageVerificationStatus: true,
+        ageVerificationNote: true,
+        identityDocument: { select: { id: true, submittedAt: true, reviewedAt: true } },
+      },
+    });
+  }
+
+  public async submitIdentityDocument(data: {
+    userId: string;
+    frontEncrypted: Buffer;
+    backEncrypted: Buffer;
+    mimeType: string;
+  }) {
+    const submittedAt = new Date();
+    const fields = {
+      status: AgeVerificationStatus.PENDING,
+      frontEncrypted: new Uint8Array(data.frontEncrypted),
+      backEncrypted: new Uint8Array(data.backEncrypted),
+      mimeType: data.mimeType,
+      submittedAt,
+      reviewedAt: null,
+      reviewerId: null,
+    };
+    const [document] = await prisma.$transaction([
+      prisma.identityDocument.upsert({
+        where: { userId: data.userId },
+        create: { userId: data.userId, ...fields },
+        update: fields,
+        select: { id: true, submittedAt: true },
+      }),
+      prisma.user.update({
+        where: { id: data.userId },
+        data: {
+          ageVerificationStatus: AgeVerificationStatus.PENDING,
+          ageVerificationNote: null,
+          ageVerifiedAt: null,
+        },
+        select: { id: true },
+      }),
+    ]);
+    return document;
+  }
+
   public async anonymizeUserAccount(userId: string, tokenId?: string) {
     const anonymizedSuffix = userId.slice(0, 8);
     const operations: any[] = [
@@ -70,6 +119,8 @@ export class UserRepository {
           walletEncryptedKey: null,
           welcomeGrantTxHash: null,
           email: null,
+          passwordHash: null,
+          ageVerificationNote: null,
           twoFactorSecret: null,
           twoFactorMethod: null,
           twoFactorBackupCodes: [],
@@ -77,6 +128,7 @@ export class UserRepository {
           deletedAt: new Date(),
         },
       }),
+      prisma.identityDocument.deleteMany({ where: { userId } }),
     ];
 
     if (tokenId) {

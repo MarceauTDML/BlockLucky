@@ -14,6 +14,28 @@ export class UserController {
     }
   }
 
+  public async submitIdentity(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new AppError('Authentification requise', 401);
+      const result = await userService.submitIdentity(userId, req.body);
+      sendSuccess(res, result, "Pièce d'identité transmise à la Mairie pour vérification", 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getIdentity(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new AppError('Authentification requise', 401);
+      const result = await userService.getIdentityStatus(userId);
+      sendSuccess(res, result, "Statut de la vérification d'âge récupéré");
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async getReferrals(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?.userId;

@@ -10,7 +10,8 @@ export type EmailTemplateName =
   | 'gdpr-deletion'
   | 'reward-claim'
   | 'welcome'
-  | 'security-alert';
+  | 'security-alert'
+  | 'identity-decision';
 
 const escapeHtml = (value: string): string =>
   value.replace(/[&<>"']/g, (char) =>

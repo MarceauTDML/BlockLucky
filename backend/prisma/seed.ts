@@ -1,13 +1,23 @@
-import { Role, Status } from '@prisma/client';
+import { AgeVerificationStatus, Role, Status } from '@prisma/client';
 import prisma from '../src/config/prisma.config';
+import { hashValue } from '../src/utils/crypto.util';
+
+const DEMO_PASSWORD = 'EtherBay2026demo';
 
 async function main() {
   console.log("Début du seeding BlockLucky — Ville d'EtherBay...");
 
+  const demoAccount = {
+    passwordHash: await hashValue(DEMO_PASSWORD),
+    ageVerificationStatus: AgeVerificationStatus.VERIFIED,
+    ageVerifiedAt: new Date(),
+  };
+
   const adminUser = await prisma.user.upsert({
     where: { walletAddress: '0xadmin0000000000000000000000000000etherbay' },
-    update: {},
+    update: demoAccount,
     create: {
+      ...demoAccount,
       walletAddress: '0xadmin0000000000000000000000000000etherbay',
       email: 'maire@etherbay.fr',
       role: Role.ADMIN,
@@ -18,8 +28,9 @@ async function main() {
 
   const partnerUser = await prisma.user.upsert({
     where: { walletAddress: '0xpartner00000000000000000000000000etherbay' },
-    update: {},
+    update: demoAccount,
     create: {
+      ...demoAccount,
       walletAddress: '0xpartner00000000000000000000000000etherbay',
       email: 'boulangerie@etherbay.fr',
       role: Role.PARTNER,
@@ -30,8 +41,9 @@ async function main() {
 
   const citizenUser = await prisma.user.upsert({
     where: { walletAddress: '0xcitizen00000000000000000000000000etherbay' },
-    update: {},
+    update: demoAccount,
     create: {
+      ...demoAccount,
       walletAddress: '0xcitizen00000000000000000000000000etherbay',
       email: 'citoyen@etherbay.fr',
       role: Role.USER,
@@ -102,6 +114,7 @@ async function main() {
     admin: adminUser.email,
     partnerUser: partnerUser.email,
     citizen: citizenUser.email,
+    demoPassword: DEMO_PASSWORD,
     activeRoundId: round.contractRoundId,
     partners: [boulangerie.name, cinema.name],
   });

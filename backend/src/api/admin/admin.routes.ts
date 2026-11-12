@@ -7,6 +7,9 @@ import {
   circuitBreakerSchema,
   treasuryWithdrawalSchema,
   approvePartnerSchema,
+  listIdentityVerificationsSchema,
+  identityVerificationIdSchema,
+  identityDecisionSchema,
 } from './admin.validators';
 
 const router = Router();
@@ -70,6 +73,45 @@ router.patch(
  */
 router.get('/reports/export', (req, res, next) =>
   adminController.exportReport(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/admin/identity-verifications:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Lister les demandes de vérification d'âge par statut (PENDING par défaut), paginées
+ */
+router.get(
+  '/identity-verifications',
+  validate(listIdentityVerificationsSchema),
+  (req, res, next) => adminController.listIdentityVerifications(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/admin/identity-verifications/{id}:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Consulter une demande de vérification d'âge avec le recto et le verso déchiffrés tant qu'elle est en attente (consultation journalisée dans l'audit)
+ */
+router.get(
+  '/identity-verifications/:id',
+  validate(identityVerificationIdSchema),
+  (req, res, next) => adminController.getIdentityVerification(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/admin/identity-verifications/{id}/decision:
+ *   post:
+ *     tags: [Admin]
+ *     summary: Approuver ou refuser (motif obligatoire) une vérification d'âge, effacer les images, prévenir le citoyen par email et tracer la décision
+ */
+router.post(
+  '/identity-verifications/:id/decision',
+  validate(identityDecisionSchema),
+  (req, res, next) => adminController.decideIdentityVerification(req, res, next)
 );
 
 /**
