@@ -3,7 +3,8 @@ import ledgerService from '../../services/ledger.service';
 import redis from '../../config/redis.config';
 import { enqueueEmail } from '../../queues/emails.queue';
 import { env } from '../../config/env.config';
-import { generateRandomToken, anonymizeWallet } from '../../utils/crypto.util';
+import { generateRandomToken, anonymizeWallet, encryptBuffer } from '../../utils/crypto.util';
+import { decodeIdentityImage } from '../../utils/identity-image.util';
 import sessionService from '../../services/session.service';
 import { AppError } from '../../utils/response.util';
 
@@ -55,6 +56,8 @@ export class UserService {
       referralLink: `${env.FRONTEND_URL}/invite/${user.referralCode}`,
       isTwoFactorEnabled: user.isTwoFactorEnabled,
       twoFactorMethod: user.twoFactorMethod,
+      hasPassword: Boolean(user.passwordHash),
+      ageVerificationStatus: user.ageVerificationStatus,
       stats: {
         ticketsCount: user._count.tickets,
         claimedRewardsCount: user._count.claimedRewards,
@@ -65,6 +68,36 @@ export class UserService {
       },
       preferences,
       createdAt: user.createdAt,
+    };
+  }
+
+  public async submitIdentity(userId: string, input: { front: string; back: string }) {
+    const state = await userRepository.findIdentityState(userId);
+    if (!state || state.deletedAt) throw new AppError('Utilisateur introuvable', 404);
+    if (state.ageVerificationStatus === 'VERIFIED') {
+      throw new AppError('Votre âge est déjà vérifié.', 409);
+    }
+
+    const front = decodeIdentityImage(input.front, 'recto');
+    const back = decodeIdentityImage(input.back, 'verso');
+    const document = await userRepository.submitIdentityDocument({
+      userId,
+      frontEncrypted: encryptBuffer(front.data),
+      backEncrypted: encryptBuffer(back.data),
+      mimeType: front.mimeType,
+    });
+
+    return { status: 'PENDING' as const, submittedAt: document.submittedAt };
+  }
+
+  public async getIdentityStatus(userId: string) {
+    const state = await userRepository.findIdentityState(userId);
+    if (!state || state.deletedAt) throw new AppError('Utilisateur introuvable', 404);
+    return {
+      status: state.ageVerificationStatus,
+      submittedAt: state.identityDocument?.submittedAt ?? null,
+      reviewedAt: state.identityDocument?.reviewedAt ?? null,
+      note: state.ageVerificationNote ?? null,
     };
   }
 
@@ -201,6 +234,8 @@ export class UserService {
         pointsBalance: data.pointsBalance,
         referralCode: data.referralCode,
         isTwoFactorEnabled: data.isTwoFactorEnabled,
+        ageVerificationStatus: data.ageVerificationStatus,
+        ageVerifiedAt: data.ageVerifiedAt,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       },

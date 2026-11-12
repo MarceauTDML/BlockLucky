@@ -34,3 +34,18 @@ export const confirmGdprDeletionSchema = z.object({
     token: z.string().min(10, 'Jeton de confirmation RGPD requis').max(128),
   }),
 });
+
+const MAX_ENCODED_IMAGE_LENGTH = Math.ceil((4 * 1024 * 1024) / 3) * 4 + 64;
+
+const identityImage = (side: string) =>
+  z
+    .string({ error: `Image ${side} requise` })
+    .min(16, `Image ${side} requise`)
+    .max(MAX_ENCODED_IMAGE_LENGTH, `Image ${side} trop volumineuse : 4 Mo au plus.`);
+
+export const submitIdentitySchema = z.object({
+  body: z.object({
+    front: identityImage('recto'),
+    back: identityImage('verso'),
+  }),
+});

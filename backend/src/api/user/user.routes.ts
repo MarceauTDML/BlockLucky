@@ -2,7 +2,10 @@ import { Router } from 'express';
 import userController from './user.controllers';
 import { authenticate } from '../../middlewares/auth.middleware';
 import { validate } from '../../middlewares/validate.middleware';
+import { identityUploadRateLimiter } from '../../middlewares/rateLimiter.middleware';
+import { identityUploadJsonParser } from '../../middlewares/body-parser.middleware';
 import {
+  submitIdentitySchema,
   updatePreferencesSchema,
   setResponsibleGamingLimitSchema,
   completeSocialQuestSchema,
@@ -21,6 +24,31 @@ const router = Router();
 router.get('/profile', authenticate, (req, res, next) =>
   userController.getProfile(req, res, next)
 );
+
+/**
+ * @openapi
+ * /api/user/identity:
+ *   post:
+ *     tags: [User]
+ *     summary: Envoyer le recto et le verso de sa pièce d'identité (JPEG ou PNG en base64, 4 Mo au plus chacun) pour la vérification d'âge par la Mairie
+ */
+router.post(
+  '/identity',
+  identityUploadRateLimiter,
+  authenticate,
+  identityUploadJsonParser,
+  validate(submitIdentitySchema),
+  (req, res, next) => userController.submitIdentity(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/user/identity:
+ *   get:
+ *     tags: [User]
+ *     summary: Consulter le statut de sa vérification d'âge (date d'envoi, date de décision et motif d'un refus)
+ */
+router.get('/identity', authenticate, (req, res, next) => userController.getIdentity(req, res, next));
 
 /**
  * @openapi

@@ -225,7 +225,7 @@
 </tbody></table></div>
 <h2 id="routes"><a class="anchor" href="#routes" aria-hidden="true" tabindex="-1">#</a>Routes</h2>
 <p>Chaque route est servie sous <code>/api/v1</code> et, pour compatibilité, sous <code>/api</code>. Les sondes et métriques du module système sont à la racine du serveur.</p>
-<p>L&#39;API expose <strong>58 routes</strong> réparties en 9 modules.</p>
+<p>L&#39;API expose <strong>63 routes</strong> réparties en 9 modules.</p>
 <h3 id="systeme"><a class="anchor" href="#systeme" aria-hidden="true" tabindex="-1">#</a>Système</h3>
 <p>Fichier source : <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/system/system.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/system/system.routes.ts</code></a></p>
 <div class="table-wrap"><table>
@@ -584,6 +584,20 @@
 <td>Obtenir le profil complet du citoyen connecté</td>
 </tr>
 <tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/user/identity</code></td>
+<td>connecté</td>
+<td><code>identityUploadRateLimiter</code>, <code>identityUploadJsonParser</code>, validation <code>submitIdentitySchema</code></td>
+<td>Envoyer le recto et le verso de sa pièce d&#39;identité (JPEG ou PNG en base64, 4 Mo au plus chacun) pour la vérification d&#39;âge par la Mairie</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/user/identity</code></td>
+<td>connecté</td>
+<td>-</td>
+<td>Consulter le statut de sa vérification d&#39;âge (date d&#39;envoi, date de décision et motif d&#39;un refus)</td>
+</tr>
+<tr>
 <td><code>GET</code></td>
 <td><code>/api/v1/user/referrals</code></td>
 <td>connecté</td>
@@ -720,6 +734,27 @@
 <td>rôle ADMIN</td>
 <td>-</td>
 <td>Générer un rapport analytique et comptable (CSV, ou export JSON pour le format pdf)</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/admin/identity-verifications</code></td>
+<td>rôle ADMIN</td>
+<td>validation <code>listIdentityVerificationsSchema</code></td>
+<td>Lister les demandes de vérification d&#39;âge par statut (PENDING par défaut), paginées</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/admin/identity-verifications/:id</code></td>
+<td>rôle ADMIN</td>
+<td>validation <code>identityVerificationIdSchema</code></td>
+<td>Consulter une demande de vérification d&#39;âge avec le recto et le verso déchiffrés tant qu&#39;elle est en attente (consultation journalisée dans l&#39;audit)</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/admin/identity-verifications/:id/decision</code></td>
+<td>rôle ADMIN</td>
+<td>validation <code>identityDecisionSchema</code></td>
+<td>Approuver ou refuser (motif obligatoire) une vérification d&#39;âge, effacer les images, prévenir le citoyen par email et tracer la décision</td>
 </tr>
 <tr>
 <td><code>GET</code></td>

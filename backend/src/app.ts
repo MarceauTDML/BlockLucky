@@ -7,6 +7,7 @@ import { corsOrigins, env, trustProxy } from './config/env.config';
 import { globalRateLimiter } from './middlewares/rateLimiter.middleware';
 import { notFoundHandler, errorHandler } from './middlewares/error.middleware';
 import { requestContextMiddleware } from './middlewares/request-context.middleware';
+import { globalJsonParser, globalUrlencodedParser } from './middlewares/body-parser.middleware';
 import { httpMetricsMiddleware, metricsHandler } from './observability/metrics';
 import { sendError } from './utils/response.util';
 
@@ -36,16 +37,8 @@ app.use(
     exposedHeaders: ['X-Request-Id', 'RateLimit', 'RateLimit-Policy', 'Retry-After'],
   })
 );
-app.use(
-  express.json({
-    limit: '1mb',
-    verify: (req, _res, buf) => {
-      const url = (req as express.Request).originalUrl ?? '';
-      if (/^\/api\/(v1\/)?webhooks\//.test(url)) (req as express.Request).rawBody = Buffer.from(buf);
-    },
-  })
-);
-app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+app.use(globalJsonParser);
+app.use(globalUrlencodedParser);
 
 app.use(systemRoutes);
 app.get('/metrics', metricsHandler);

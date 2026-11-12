@@ -4,7 +4,11 @@ import blockchainService from '../../services/blockchain.service';
 import s3Service from '../../services/s3.service';
 import chainClient from '../../blockchain/chain.client';
 import lotteryGateway from '../../blockchain/lottery.gateway';
-import { neutralizeSpreadsheetCell } from '../../utils/crypto.util';
+import { AgeVerificationStatus } from '@prisma/client';
+import { enqueueEmail } from '../../queues/emails.queue';
+import { decryptBuffer, neutralizeSpreadsheetCell } from '../../utils/crypto.util';
+import { toDataUrl } from '../../utils/identity-image.util';
+import { AppError } from '../../utils/response.util';
 
 export class AdminService {
   public async getCentralDashboard() {
@@ -93,6 +97,111 @@ export class AdminService {
     });
 
     return partner;
+  }
+
+  public async listIdentityVerifications(status: AgeVerificationStatus, page: number, limit: number) {
+    const { items, total } = await adminRepository.listIdentityVerifications(status, (page - 1) * limit, limit);
+    return {
+      verifications: items.map((item) => ({
+        id: item.id,
+        userId: item.userId,
+        email: item.user.email,
+        submittedAt: item.submittedAt,
+        status: item.status,
+      })),
+      total,
+    };
+  }
+
+  public async getIdentityVerification(adminId: string, id: string) {
+    const document = await adminRepository.findIdentityVerification(id);
+    if (!document) throw new AppError("Demande de vérification d'identité introuvable", 404);
+
+    const pending = document.status === 'PENDING';
+    const front = pending && document.frontEncrypted ? toDataUrl(decryptBuffer(document.frontEncrypted)) : null;
+    const back = pending && document.backEncrypted ? toDataUrl(decryptBuffer(document.backEncrypted)) : null;
+
+    await adminRepository.recordAdminAuditLog({
+      adminId,
+      action: 'IDENTITY_DOCUMENT_VIEWED',
+      metadata: { verificationId: document.id, userId: document.userId, imagesShown: Boolean(front && back) },
+    });
+
+    return {
+      id: document.id,
+      userId: document.userId,
+      email: document.user.email,
+      walletAddress: document.user.walletAddress,
+      accountCreatedAt: document.user.createdAt,
+      status: document.status,
+      submittedAt: document.submittedAt,
+      reviewedAt: document.reviewedAt,
+      reviewerId: document.reviewerId,
+      note: document.user.ageVerificationNote ?? null,
+      front,
+      back,
+    };
+  }
+
+  public async decideIdentityVerification(
+    adminId: string,
+    id: string,
+    input: { approved: boolean; note?: string | undefined }
+  ) {
+    const document = await adminRepository.findIdentityVerification(id);
+    if (!document) throw new AppError("Demande de vérification d'identité introuvable", 404);
+    if (document.userId === adminId) {
+      throw new AppError("Vous ne pouvez pas statuer sur votre propre pièce d'identité.", 403);
+    }
+    if (document.status !== 'PENDING') throw new AppError('Cette demande a déjà été traitée.', 409);
+
+    const note = input.note?.trim() || null;
+    const decision = await adminRepository.decideIdentityVerification({
+      id: document.id,
+      userId: document.userId,
+      reviewerId: adminId,
+      approved: input.approved,
+      note,
+    });
+    if (!decision) throw new AppError('Cette demande a déjà été traitée.', 409);
+
+    await adminRepository.recordAdminAuditLog({
+      adminId,
+      action: 'IDENTITY_VERIFICATION_DECISION',
+      metadata: {
+        verificationId: document.id,
+        userId: document.userId,
+        approved: input.approved,
+        status: decision.status,
+        ...(note ? { note } : {}),
+      },
+    });
+
+    if (document.user.email) {
+      await enqueueEmail({
+        to: document.user.email,
+        subject: input.approved
+          ? 'Votre âge est vérifié - BlockLucky'
+          : "Votre vérification d'âge a été refusée - BlockLucky",
+        templateName: 'identity-decision',
+        variables: {
+          DECISION: input.approved
+            ? 'Votre âge est vérifié : vous pouvez participer au grand tirage.'
+            : "Votre pièce d'identité n'a pas pu être validée.",
+          DETAILS: input.approved
+            ? "Bonne chance pour la Grande Loterie citoyenne d'EtherBay !"
+            : `Motif : ${note ?? 'non précisé'}. Vous pouvez envoyer une nouvelle photo depuis l'application.`,
+        },
+      });
+    }
+
+    return {
+      id: decision.id,
+      userId: decision.userId,
+      status: decision.status,
+      reviewedAt: decision.reviewedAt,
+      note: input.approved ? null : note,
+    };
   }
 
   public async getAuditLogs(limit = 100) {
