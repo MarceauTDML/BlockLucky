@@ -12,17 +12,17 @@ Le projet utilise un fichier statique `app.json`. Il n'existe ni `app.config.js`
 | `slug` | `blocklucky-etherbay` | Identifiant du projet chez Expo |
 | `version` | `1.0.0` | Version visible par l'utilisateur |
 | `orientation` | `portrait` | Rotation bloquée |
-| `icon` | `./assets/images/icon.png` | Icône |
+| `icon` | `./assets/images/icon.png` | Icône 1024 × 1024 : le « B » encre sur fond jaune plein, sans transparence |
 | `userInterfaceStyle` | `automatic` | Autorise le mode sombre du système ; l'application ne le lit pas (voir [Thème et composants](theme-composants.md#themeprovider)) |
-| `splash` | `splash.png`, `contain`, fond `#F6F7FA` | Écran de lancement, sur le fond clair de la maquette |
+| `splash` | `splash.png`, `contain`, fond `#F6F7FA` | Écran de lancement : le logo « B » centré sur le fond clair de la maquette |
 | `scheme` | `blocklucky` | Schéma d'URL de l'application, utilisé par le retour de la connexion Google ; aucun lien profond n'est routé vers un écran (voir [Navigation et écrans](navigation-ecrans.md#ce-que-la-navigation-ne-fait-pas)) |
 | `ios.bundleIdentifier` | `fr.etherbay.blocklucky` | Identifiant iOS |
 | `ios.supportsTablet` | `true` | Installable sur iPad |
 | `ios.config.usesNonExemptEncryption` | `false` | Déclaration d'export : l'application n'utilise que le chiffrement standard du système |
 | `android.package` | `fr.etherbay.blocklucky` | Identifiant Android |
-| `android.adaptiveIcon` | `adaptive-icon.png`, fond `#FFDA38` | Icône adaptative sur le jaune de la charte |
+| `android.adaptiveIcon` | `adaptive-icon.png`, fond `#FFDA38` | Icône adaptative : le « B » seul sur fond transparent, réduit pour rester dans la zone sûre des masques ronds, posé sur le jaune de la charte |
 | `android.allowBackup` | `false` | Pas de sauvegarde des données de l'application par Android |
-| `web` | `favicon.png`, bundler `metro` | Cible web d'Expo ; `react-native-web` et `react-dom` sont installés, la cible n'est pas vérifiée par la CI |
+| `web` | `favicon.png` (logo « B », 48 × 48), bundler `metro` | Cible web d'Expo ; `react-native-web` et `react-dom` sont installés, la cible n'est pas vérifiée par la CI |
 | `plugins` | `expo-secure-store`, `expo-font`, `expo-status-bar`, `expo-web-browser`, `expo-image-picker`, `expo-audio` | Modules configurés au prebuild ; `expo-audio` lit les sons de la roue et du compte à rebours (voir [Thème et composants](theme-composants.md#sons)) |
 
 Le plugin `expo-image-picker` fixe les deux textes affichés par le système quand l'application demande l'accès :

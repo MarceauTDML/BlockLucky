@@ -8,7 +8,7 @@ Les couleurs sont déclarées une seule fois, en variables CSS, dans [`assets/cs
 
 | Variable de base | Valeur | Variable sémantique | Usage |
 | --- | --- | --- | --- |
-| `--eb-green` | `#253D2C` | `--color-cta` | Boutons, marque, `theme-color` du navigateur, fond du favicon |
+| `--eb-green` | `#253D2C` | `--color-cta` | Boutons, marque, `theme-color` du navigateur |
 | `--eb-green-light` | `#3B5E46` | `--color-cta-hover` | Survol des boutons |
 | `--eb-green-soft` | `#6B9B79` | - | Déclarée mais inutilisée à ce jour |
 | `--eb-terracotta` | `#C86D51` | `--color-accent` | Titres d'accent, badges, grands textes |
@@ -77,7 +77,7 @@ Les deux polices sont sous licence SIL Open Font License 1.1, dont le texte acco
 | Élément | Fichier | Description |
 | --- | --- | --- |
 | Logo | `brand()` dans [`modules/layout.js`](src:frontend-office-tourisme/assets/js/modules/layout.js) et `BRAND_WAVE` dans [`modules/icons.js`](src:frontend-office-tourisme/assets/js/modules/icons.js) | Mot « ETHER » + deux vagues SVG + « BAY », sous-titre « DESTINATION ». Entièrement en texte et SVG, sans image |
-| Favicon | [`assets/img/favicon.svg`](src:frontend-office-tourisme/assets/img/favicon.svg) | Carré arrondi vert `#253D2C`, deux vagues sable et terracotta |
+| Favicon | [`assets/img/favicon.svg`](src:frontend-office-tourisme/assets/img/favicon.svg) | Logo « B » jaune de BlockLucky (copie de [`mobile-app/assets/icons/logo-symbol.svg`](src:mobile-app/assets/icons/logo-symbol.svg)) |
 | Motif de plan | [`assets/img/map-pattern.svg`](src:frontend-office-tourisme/assets/img/map-pattern.svg) | Fond des sections « carte » (`.section--map`), du bloc newsletter (`.newsletter__box`) et de l'encart de localisation des fiches (`.fiche-map`) |
 | Icônes | `ICONS` de `modules/icons.js` | SVG en trait, `stroke="currentColor"`, toutes `aria-hidden="true"` et `focusable="false"` |
 | Labels | `LABELS` de [`data/site.js`](src:frontend-office-tourisme/assets/js/data/site.js) | Pastilles textuelles T&H, DID, ISO, VÉLO avec le nom complet en `title`. Ce sont des labels fictifs, sans logo officiel |

@@ -105,8 +105,8 @@
 </tr>
 <tr>
 <td><code>Cache-Control</code> sur <code>/_next/static/:path*</code></td>
-<td><code>public, max-age=31536000, immutable</code></td>
-<td>Les fichiers à empreinte sont mis en cache un an</td>
+<td><code>public, max-age=31536000, immutable</code>, en production seulement</td>
+<td>Les fichiers à empreinte sont mis en cache un an. En développement, l&#39;en-tête n&#39;est pas envoyé : il empêchait le navigateur de recharger le code modifié et provoquait des erreurs d&#39;hydratation</td>
 </tr>
 </tbody></table></div>
 <p><code>Strict-Transport-Security</code> est envoyé même en développement sur <code>http://localhost</code> ; les navigateurs l&#39;ignorent sur une connexion non chiffrée, il ne gêne donc pas le travail local. En production, il ne protège que si le site est réellement servi en HTTPS par le proxy (voir <a href="../infrastructure/deploiement-etherbay.html">Déploiement sur etherbay.tech</a>).</p>

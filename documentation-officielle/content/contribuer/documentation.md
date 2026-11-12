@@ -12,7 +12,7 @@ Toute modification du code qui change un comportement documenté doit mettre à 
 | `content/**/*.md` | Pages de la documentation, une par fichier. `README.md` devient la page d'accueil `index.html`. |
 | [`content/_data/`](src:documentation-officielle/content/_data/) | Descriptions humaines des tableaux générés : variables d'environnement, modèle de données, contrats, événements temps réel, services Docker, migrations. |
 | `content/images/` | Images référencées par les pages (facultatif). |
-| [`theme/`](src:documentation-officielle/theme/) | Gabarit HTML, feuille de style, scripts du site (thème, navigation, recherche, diagrammes), polices, logo de l'en-tête (`assets/img/logo.svg`) et favicon. Le favicon [`favicon.svg`](src:documentation-officielle/theme/assets/img/favicon.svg) est le logo « B » jaune de l'application ; `layout.html` et `404.html` le déclarent en `rel="icon"`. |
+| [`theme/`](src:documentation-officielle/theme/) | Gabarit HTML, feuille de style, scripts du site (thème, navigation, recherche, diagrammes), polices, logo de l'en-tête (`assets/img/logo.svg`) et favicon. Le logo de l'en-tête et le favicon [`favicon.svg`](src:documentation-officielle/theme/assets/img/favicon.svg) reprennent le logo « B » jaune de l'application ; `layout.html` et `404.html` le déclarent en `rel="icon"`. |
 | [`scripts/build.mjs`](src:documentation-officielle/scripts/build.mjs) | Génère le site dans `site/`. |
 | [`scripts/lib/`](src:documentation-officielle/scripts/lib/) | Lecture du sommaire, rendu Markdown, générateurs de pages depuis le code. |
 | [`scripts/check.mjs`](src:documentation-officielle/scripts/check.mjs) | Vérification utilisée par la CI. |
