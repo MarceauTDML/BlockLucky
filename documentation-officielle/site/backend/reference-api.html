@@ -225,7 +225,7 @@
 </tbody></table></div>
 <h2 id="routes"><a class="anchor" href="#routes" aria-hidden="true" tabindex="-1">#</a>Routes</h2>
 <p>Chaque route est servie sous <code>/api/v1</code> et, pour compatibilité, sous <code>/api</code>. Les sondes et métriques du module système sont à la racine du serveur.</p>
-<p>L&#39;API expose <strong>63 routes</strong> réparties en 9 modules.</p>
+<p>L&#39;API expose <strong>64 routes</strong> réparties en 9 modules.</p>
 <h3 id="systeme"><a class="anchor" href="#systeme" aria-hidden="true" tabindex="-1">#</a>Système</h3>
 <p>Fichier source : <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/system/system.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/system/system.routes.ts</code></a></p>
 <div class="table-wrap"><table>
@@ -498,8 +498,15 @@
 <td><code>POST</code></td>
 <td><code>/api/v1/marketplace/claim</code></td>
 <td>connecté</td>
-<td>idempotence, validation <code>claimRewardSchema</code></td>
+<td><code>requireAgeVerification</code>, idempotence, validation <code>claimRewardSchema</code></td>
 <td>Échanger ses EtherPoints contre une carte à gratter virtuelle (Scratch Card)</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/marketplace/scratch</code></td>
+<td>connecté</td>
+<td><code>requireAgeVerification</code>, idempotence, validation <code>scratchTicketSchema</code></td>
+<td>Acheter un ticket à gratter en EtherPoints (violet ou lucky, âge vérifié requis) qui attribue au hasard une récompense partenaire en stock</td>
 </tr>
 <tr>
 <td><code>GET</code></td>
