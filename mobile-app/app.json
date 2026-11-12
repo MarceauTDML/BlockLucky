@@ -54,7 +54,7 @@
       ],
       "expo-audio"
     ],
-    "scheme": "blocklucky",
+    "scheme": ["blocklucky", "fr.etherbay.blocklucky"],
     "extra": {
       "eas": {
         "projectId": "ded4728f-4e10-4d22-bd34-838d51898f82"
