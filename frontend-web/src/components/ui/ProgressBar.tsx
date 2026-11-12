@@ -31,7 +31,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     <section className={cn('card p-4', className)} aria-label={label}>
       <div className="mb-2.5 flex items-center justify-between gap-3">
         <h2 className="text-body font-bold">{label}</h2>
-        <span className="text-caption font-bold text-secondary tabular">
+        <span className="rounded-full bg-sun-chip px-2.5 py-1 text-caption font-bold text-on-sun tabular dark:text-sun">
           {formatNumber(currentValue, language)} / {formatNumber(targetValue || 10000, language)}
         </span>
       </div>
@@ -42,24 +42,24 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         aria-valuemax={100}
         aria-valuenow={Math.round(Number(percentage || 0))}
         aria-label={label}
-        className="mb-3 h-2 w-full overflow-hidden rounded-full bg-surface-elevated"
+        className="mb-3 h-3 w-full overflow-hidden rounded-full bg-surface-elevated"
       >
         <div
-          className="h-full rounded-full bg-primary transition-[width] duration-700 ease-out"
+          className="h-full rounded-full bg-sun transition-[width] duration-700 ease-out"
           style={{ width: `${clamped}%` }}
         />
       </div>
 
       {milestones.length > 0 ? (
-        <ul className="grid gap-1.5 md:grid-cols-3">
+        <ul className="grid gap-2 sm:grid-cols-2">
           {milestones.map((m) => (
             <li
               key={m.target}
-              className="flex items-center rounded-sm bg-surface-elevated px-2.5 py-2"
+              className={cn('flex items-center rounded-[16px] px-3 py-2.5', m.unlocked ? 'bg-sun-chip' : 'bg-surface-elevated')}
             >
               <span
                 aria-hidden
-                className={cn('mr-2.5 h-2 w-2 shrink-0 rounded-full', m.unlocked ? 'bg-primary' : 'bg-line')}
+                className={cn('mr-2.5 h-2.5 w-2.5 shrink-0 rounded-full', m.unlocked ? 'bg-sun' : 'bg-line')}
               />
               <span className="flex-1">
                 <span className="block text-caption font-bold">

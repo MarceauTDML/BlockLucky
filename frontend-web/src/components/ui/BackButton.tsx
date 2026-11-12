@@ -4,9 +4,16 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useAppTheme } from '@/theme/ThemeProvider';
+import Icon from './Icon';
 
 const classes =
-  'mb-2.5 inline-flex items-center gap-1 self-start rounded-sm bg-surface-elevated px-3 py-1.5 text-caption font-medium text-fg hover:bg-line transition-colors';
+  'mb-3 inline-flex items-center gap-2 self-start rounded-full bg-surface py-1.5 pr-3.5 pl-1.5 text-caption font-semibold text-fg shadow-[var(--card-shadow)] border border-[var(--card-border)] hover:bg-surface-elevated transition-colors';
+
+const arrow = (
+  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-elevated">
+    <Icon name="arrowLeft" size={16} />
+  </span>
+);
 
 export const BackButton: React.FC<{ href?: string; label?: string }> = ({ href, label }) => {
   const { t } = useAppTheme();
@@ -15,13 +22,13 @@ export const BackButton: React.FC<{ href?: string; label?: string }> = ({ href, 
   if (href) {
     return (
       <Link href={href} className={classes}>
-        <span aria-hidden>←</span> {text}
+        {arrow} {text}
       </Link>
     );
   }
   return (
     <button type="button" onClick={() => router.back()} className={classes}>
-      <span aria-hidden>←</span> {text}
+      {arrow} {text}
     </button>
   );
 };

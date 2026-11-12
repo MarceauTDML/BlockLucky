@@ -25,7 +25,10 @@ export function SegmentedTabs<T extends string>({
     <div
       role="tablist"
       aria-label={ariaLabel}
-      className={cn('mb-4 flex rounded-md bg-surface-elevated p-1', className)}
+      className={cn(
+        'mb-4 flex gap-1 rounded-full border border-[var(--card-border)] bg-surface p-1 shadow-[var(--card-shadow)]',
+        className
+      )}
     >
       {options.map((opt) => {
         const selected = opt.value === value;
@@ -37,8 +40,8 @@ export function SegmentedTabs<T extends string>({
             aria-selected={selected}
             onClick={() => onChange(opt.value)}
             className={cn(
-              'flex-1 rounded-sm px-2 py-2.5 text-caption font-semibold transition-colors',
-              selected ? 'bg-surface text-fg shadow-[0_1px_0_var(--border)]' : 'text-fg-secondary hover:text-fg'
+              'flex-1 rounded-full px-3 py-2.5 text-caption font-semibold transition-colors',
+              selected ? 'bg-sun text-on-sun' : 'text-fg-secondary hover:text-fg'
             )}
           >
             {opt.label}
@@ -78,11 +81,11 @@ export function ChoicePills<T extends string | number>({
             className={cn(
               'flex-1 border text-center transition-colors',
               size === 'md'
-                ? 'rounded-md py-2.5 text-body font-semibold'
-                : 'rounded-sm border-transparent py-2 text-caption font-medium',
+                ? 'rounded-full py-2.5 text-body font-semibold'
+                : 'rounded-full py-2 text-caption font-semibold',
               selected
-                ? 'border-primary bg-primary text-on-primary'
-                : cn('bg-surface-elevated hover:border-fg-muted', size === 'md' ? 'border-line text-fg' : 'text-fg-secondary')
+                ? 'border-[#1d2637] bg-[#1d2637] text-white'
+                : cn('border-line bg-surface hover:border-fg-muted', size === 'md' ? 'text-fg' : 'text-fg-secondary')
             )}
           >
             {render ? render(opt) : String(opt)}
