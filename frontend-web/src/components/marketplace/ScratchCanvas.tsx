@@ -41,7 +41,7 @@ export const ScratchCanvas: React.FC<{
     if (!ctx) return;
     ctx.scale(ratio, ratio);
     const styles = getComputedStyle(document.documentElement);
-    ctx.fillStyle = styles.getPropertyValue('--primary').trim() || '#253D2C';
+    ctx.fillStyle = styles.getPropertyValue('--sun').trim() || '#FFDA38';
     ctx.fillRect(0, 0, width, height);
     ctx.strokeStyle = 'rgba(247,246,242,0.08)';
     for (let x = -height; x < width; x += 14) {
@@ -50,7 +50,7 @@ export const ScratchCanvas: React.FC<{
       ctx.lineTo(x + height, 0);
       ctx.stroke();
     }
-    ctx.fillStyle = '#F7F6F2';
+    ctx.fillStyle = '#1D2637';
     ctx.font = '500 15px system-ui, -apple-system, Segoe UI, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -101,19 +101,23 @@ export const ScratchCanvas: React.FC<{
   };
 
   return (
-    <section className="card my-3 p-[18px] md:p-6">
-      <p className="text-center text-caption text-fg-muted">{partnerName}</p>
-      <h2 className="my-1.5 text-center text-subtitle font-bold">{rewardTitle}</h2>
+    <section className="my-3 rounded-[28px] bg-lavender p-5 md:p-7">
+      <p className="mx-auto w-fit rounded-full bg-surface px-3 py-1 text-center text-caption font-semibold text-violet">
+        {partnerName}
+      </p>
+      <h2 className="my-2.5 text-center text-heading font-bold">{rewardTitle}</h2>
 
       <div
         ref={containerRef}
-        className="relative mt-2 flex min-h-[136px] items-center justify-center overflow-hidden rounded-md bg-surface-elevated p-4 md:min-h-[180px]"
+        className="relative mt-2 flex min-h-[160px] items-center justify-center overflow-hidden rounded-[22px] bg-surface p-5 shadow-[var(--card-shadow)] md:min-h-[200px]"
       >
         <div className="flex flex-col items-center gap-1 text-center" aria-live="polite">
           {revealed ? (
             <>
-              <p className="text-caption text-fg-secondary">{t('Code promotionnel débloqué', 'Promo Code Unlocked')}</p>
-              <p className="font-mono text-title font-bold tracking-[1.5px] text-secondary">{secretCode}</p>
+              <p className="rounded-full bg-mint px-3 py-1 text-caption font-semibold text-green">
+                {t('Code promotionnel débloqué', 'Promo Code Unlocked')}
+              </p>
+              <p className="font-mono text-hero font-bold tracking-[1.5px] text-fg">{secretCode}</p>
               <p className="text-caption text-fg-muted">
                 {t(`Présentez ce code en caisse chez ${partnerName}`, `Present this code in store at ${partnerName}`)}
               </p>
@@ -151,14 +155,14 @@ export const ScratchCanvas: React.FC<{
       </div>
 
       {!revealed ? (
-        <div className="mt-3 flex items-center justify-between gap-3">
-          <span className="text-caption text-fg-muted tabular">
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <span className="rounded-full bg-surface px-3 py-1 text-caption font-semibold text-fg-secondary tabular">
             {t(`Gratté : ${progress}%`, `Scratched: ${progress}%`)}
           </span>
           <button
             type="button"
             onClick={reveal}
-            className="rounded-sm px-2 py-1 text-caption font-medium text-primary underline-offset-2 hover:underline"
+            className="rounded-full px-3 py-1 text-caption font-semibold text-violet underline-offset-2 hover:underline"
           >
             {t('Révéler sans gratter', 'Reveal without scratching')}
           </button>

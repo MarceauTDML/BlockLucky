@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import BackButton from '@/components/ui/BackButton';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import Input from '@/components/ui/Input';
 import { Alert, PageHeader } from '@/components/ui/Misc';
 import Sheet from '@/components/ui/Sheet';
@@ -84,8 +85,13 @@ export default function GdprPage() {
       <div className="flex flex-col gap-3.5">
         {status ? <Alert tone={status.tone}>{status.text}</Alert> : null}
 
-        <section className="card flex flex-col gap-3 p-[18px]">
-          <h2 className="text-subtitle font-semibold">{t('1. Export de vos données (JSON)', '1. Data Portability (JSON Export)')}</h2>
+        <section className="card flex flex-col gap-3 p-5">
+          <div className="flex items-center gap-3">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-mint text-green">
+              <Icon name="document" size={20} />
+            </span>
+            <h2 className="text-subtitle font-bold">{t('1. Export de vos données (JSON)', '1. Data Portability (JSON Export)')}</h2>
+          </div>
           <p className="text-caption text-fg-secondary">
             {t(
               "Récupérez l'intégralité des données associées à votre compte (profil, tickets, points et codes).",
@@ -96,17 +102,22 @@ export default function GdprPage() {
             {t('Exporter mes données', 'Export My Data')}
           </Button>
           {preview ? (
-            <pre className="max-h-56 overflow-auto rounded-md bg-surface-elevated p-3 font-mono text-caption text-fg-secondary">
+            <pre className="max-h-56 overflow-auto rounded-[16px] bg-surface-elevated p-3.5 font-mono text-caption text-fg-secondary">
               {preview.slice(0, 1500)}
               {preview.length > 1500 ? '\n…' : ''}
             </pre>
           ) : null}
         </section>
 
-        <section className="card flex flex-col gap-3 p-[18px]">
-          <h2 className="text-subtitle font-semibold text-error">
-            {t('2. Suppression et anonymisation', '2. Account Deletion & Anonymization')}
-          </h2>
+        <section className="flex flex-col gap-3 rounded-[24px] bg-peach p-5">
+          <div className="flex items-center gap-3">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-error">
+              <Icon name="trash" size={20} />
+            </span>
+            <h2 className="text-subtitle font-bold text-error">
+              {t('2. Suppression et anonymisation', '2. Account Deletion & Anonymization')}
+            </h2>
+          </div>
           <p className="text-caption text-fg-secondary">
             {t(
               'La suppression anonymise définitivement votre adresse de portefeuille et votre email en base de données. Un email de confirmation vous est envoyé.',

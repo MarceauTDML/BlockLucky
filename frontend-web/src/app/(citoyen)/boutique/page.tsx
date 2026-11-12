@@ -33,7 +33,7 @@ export default function CatalogPage() {
         )}
       />
 
-      <div className="grid gap-3.5 lg:grid-cols-[1fr_2fr] lg:items-start lg:gap-5">
+      <div className="grid gap-4 lg:grid-cols-[1fr_2fr] lg:items-start lg:gap-5">
         <div className="lg:sticky lg:top-24">
           <PointsBalanceCard
             pointsBalance={pointsBalance}
@@ -72,7 +72,7 @@ export default function CatalogPage() {
               }
             />
           ) : (
-            <ul className="grid gap-2.5 sm:grid-cols-2">
+            <ul className="grid gap-4 sm:grid-cols-2">
               {rewards.map((reward) => (
                 <li key={reward.id}>
                   <RewardCard reward={reward} href={`/boutique/${reward.id}`} />

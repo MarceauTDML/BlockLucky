@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Icon from '@/components/ui/Icon';
 import { formatDateShort } from '@/lib/date';
 import { shortenWallet } from '@/lib/formatters';
 import { useAppTheme } from '@/theme/ThemeProvider';
@@ -9,35 +10,49 @@ import { PoapBadge, TicketItem } from '@/types/api.types';
 export const TicketCard: React.FC<{ ticket: TicketItem }> = ({ ticket }) => {
   const { t } = useAppTheme();
   return (
-    <article className="card flex flex-col gap-[3px] p-3.5">
-      <div className="mb-0.5 flex justify-between gap-2">
-        <h3 className="text-body font-bold">
-          {t('Tirage', 'Draw')} #{ticket.contractRoundId ?? 1}
-        </h3>
-        <span className="text-caption text-fg-secondary tabular">
+    <article className="card relative flex flex-col overflow-hidden p-0">
+      <div className="flex items-center justify-between gap-2 bg-sun px-4 py-3.5 text-on-sun">
+        <div className="flex items-center gap-2.5">
+          <span aria-hidden className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1d2637] text-sun">
+            <Icon name="ticket" size={18} />
+          </span>
+          <h3 className="text-subtitle font-bold">
+            {t('Tirage', 'Draw')} #{ticket.contractRoundId ?? 1}
+          </h3>
+        </div>
+        <span className="rounded-full bg-sun-soft px-2.5 py-1 text-caption font-semibold text-on-sun tabular">
           {t(`Bloc ${ticket.blockNumber}`, `Block ${ticket.blockNumber}`)}
         </span>
       </div>
-      <p className="text-caption text-fg-secondary">
-        Transaction : <span className="font-mono">{shortenWallet(ticket.transactionHash, 8)}</span>
-      </p>
-      <p className="text-caption text-fg-muted">{formatDateShort(ticket.purchasedAt)}</p>
-      {ticket.roundStatus ? (
-        <p className="text-caption text-fg-muted">
-          {t('Statut du tirage : ', 'Draw status: ')}
-          {ticket.roundStatus}
+      <div aria-hidden className="relative h-0 border-t-2 border-dashed border-line">
+        <span className="absolute -left-2.5 -top-2.5 h-5 w-5 rounded-full bg-background" />
+        <span className="absolute -right-2.5 -top-2.5 h-5 w-5 rounded-full bg-background" />
+      </div>
+      <div className="flex flex-1 flex-col gap-1 px-4 pb-4 pt-3.5">
+        <p className="text-caption text-fg-secondary">
+          Transaction : <span className="font-mono font-semibold text-fg">{shortenWallet(ticket.transactionHash, 8)}</span>
         </p>
-      ) : null}
-      {ticket.etherscanUrl ? (
-        <a
-          href={ticket.etherscanUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 rounded-sm bg-surface-elevated px-3 py-2 text-center text-caption font-medium text-primary hover:bg-line"
-        >
-          {t('Consulter sur Etherscan →', 'View on Etherscan →')}
-        </a>
-      ) : null}
+        <p className="inline-flex items-center gap-1.5 text-caption text-fg-muted">
+          <Icon name="clock" size={14} />
+          {formatDateShort(ticket.purchasedAt)}
+        </p>
+        {ticket.roundStatus ? (
+          <p className="mt-1 self-start rounded-full bg-lavender px-2.5 py-1 text-caption font-semibold text-violet">
+            {t('Statut du tirage : ', 'Draw status: ')}
+            {ticket.roundStatus}
+          </p>
+        ) : null}
+        {ticket.etherscanUrl ? (
+          <a
+            href={ticket.etherscanUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2.5 inline-flex items-center justify-center gap-1.5 rounded-[12px] bg-surface-elevated px-3 py-2.5 text-center text-caption font-semibold text-fg hover:bg-line"
+          >
+            {t('Consulter sur Etherscan →', 'View on Etherscan →')}
+          </a>
+        ) : null}
+      </div>
     </article>
   );
 };
@@ -45,7 +60,7 @@ export const TicketCard: React.FC<{ ticket: TicketItem }> = ({ ticket }) => {
 export const POAPBadgeCard: React.FC<{ badge: PoapBadge }> = ({ badge }) => {
   const { t } = useAppTheme();
   return (
-    <article className="card flex items-start p-3.5">
+    <article className="card flex items-start gap-3.5 p-4">
       {badge.imageUrl ? (
         <img
           src={badge.imageUrl}
@@ -53,16 +68,17 @@ export const POAPBadgeCard: React.FC<{ badge: PoapBadge }> = ({ badge }) => {
           width={48}
           height={48}
           loading="lazy"
-          className="mr-3 h-12 w-12 shrink-0 rounded-md bg-surface-elevated object-cover"
+          className="h-14 w-14 shrink-0 rounded-full bg-surface-elevated object-cover"
         />
       ) : (
-        <div className="mr-3 flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-surface-elevated text-caption font-bold text-secondary">
-          POAP
+        <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-full bg-lavender text-violet">
+          <Icon name="star" size={18} />
+          <span className="text-[10px] font-bold leading-3">POAP</span>
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <h3 className="text-body font-bold">{badge.title}</h3>
-        <p className="text-caption text-fg-secondary">
+        <p className="self-start rounded-full bg-sun-chip px-2.5 py-0.5 text-caption font-semibold text-on-sun dark:text-sun">
           {badge.edition} • Token #{badge.tokenId}
         </p>
         {badge.contractAddress ? (
@@ -77,7 +93,7 @@ export const POAPBadgeCard: React.FC<{ badge: PoapBadge }> = ({ badge }) => {
             href={badge.explorerUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-caption font-medium text-primary underline-offset-2 hover:underline"
+            className="mt-1 text-caption font-semibold text-green underline-offset-2 hover:underline"
           >
             {t("Voir le contrat POAP sur l'explorateur de blocs →", 'View the POAP contract on the block explorer →')}
           </a>
