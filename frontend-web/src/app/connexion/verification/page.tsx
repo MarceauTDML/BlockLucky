@@ -3,8 +3,10 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { Suspense, useEffect, useState } from 'react';
 import Brand from '@/components/layout/Brand';
+import SecurityFooter from '@/components/layout/SecurityFooter';
 import BackButton from '@/components/ui/BackButton';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import Input from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
 import useAuth, { homeForRole } from '@/hooks/useAuth';
@@ -48,16 +50,24 @@ function VerifyContent() {
   return (
     <main id="contenu" className="flex min-h-dvh items-center justify-center bg-background px-5 py-10">
       <div className="w-full max-w-md">
-        <div className="mb-6">
-          <Brand />
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <Brand compact />
         </div>
         <BackButton href="/connexion" />
-        <form className="card p-5" onSubmit={handleVerify} noValidate>
-          <p className="text-caption text-secondary">
+        <form className="flex flex-col" onSubmit={handleVerify} noValidate>
+          <span
+            aria-hidden
+            className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-sun-chip text-on-sun dark:text-sun"
+          >
+            <Icon name={method === 'EMAIL' ? 'envelope' : 'lock'} size={28} />
+          </span>
+          <p className="mb-3 self-start inline-flex rounded-full bg-sun-chip px-3 py-1 text-caption font-semibold text-on-sun dark:text-sun">
             {t(`Double authentification (${method})`, `Two-Factor Authentication (${method})`)}
           </p>
-          <h1 className="my-1.5 text-title font-bold">{t('Vérification 2FA', '2FA Verification')}</h1>
-          <p className="mb-[18px] text-body text-fg-secondary">
+          <h1 className="mb-2.5 text-[29px] leading-[36px] font-bold tracking-[-0.6px]">
+            {t('Vérification 2FA', '2FA Verification')}
+          </h1>
+          <p className="mb-7 text-body text-fg-secondary">
             {method === 'EMAIL'
               ? t(
                   `Saisissez le code à 6 chiffres envoyé à ${pendingTwoFactorEmail || 'votre adresse email'}.`,
@@ -77,12 +87,14 @@ function VerifyContent() {
             maxLength={6}
             placeholder="000000"
             errorText={errorText}
-            className="text-center font-mono text-heading tracking-[0.4em]"
+            className="min-h-[60px] rounded-[16px] text-center font-mono text-heading font-bold tracking-[0.4em]"
           />
-          <Button type="submit" loading={isVerifying2FA}>
+          <Button type="submit" loading={isVerifying2FA} className="mt-2">
+            <Icon name="check" size={18} />
             {t('Valider', 'Verify')}
           </Button>
         </form>
+        <SecurityFooter className="mt-8" />
       </div>
     </main>
   );

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Button from '@/components/ui/Button';
+import Icon, { IconName } from '@/components/ui/Icon';
 import { cn } from '@/lib/cn';
 import { useGetOnboardingQuery } from '@/store/api/authApi';
 import { useAppTheme } from '@/theme/ThemeProvider';
@@ -47,17 +48,30 @@ export const OnboardingCarousel: React.FC<{ onDone?: () => void; className?: str
     },
   ];
 
+  const visuals: { icon: IconName; tone: string; halo: string }[] = [
+    { icon: 'ticket', tone: 'bg-sun text-on-sun', halo: 'bg-sun-soft' },
+    { icon: 'gift', tone: 'bg-mint text-green', halo: 'bg-surface' },
+    { icon: 'star', tone: 'bg-lavender text-violet', halo: 'bg-surface' },
+    { icon: 'wheel', tone: 'bg-peach text-terracotta', halo: 'bg-surface' },
+  ];
+
   const slides = language === 'FR' && Array.isArray(rawSlides) && rawSlides.length > 0 ? rawSlides : fallback;
   const current = slides[Math.min(index, slides.length - 1)];
   const isLast = index >= slides.length - 1;
+  const visual = visuals[Math.min(index, slides.length - 1) % visuals.length];
 
   return (
     <section className={cn('flex flex-col gap-[18px]', className)} aria-roledescription="carousel" aria-label="Onboarding">
-      <div className="card p-7" aria-live="polite">
-        <span className="mb-3.5 inline-block rounded-sm bg-surface-elevated px-2.5 py-1 text-caption font-bold text-secondary">
+      <div aria-live="polite">
+        <div className={cn('mb-7 flex h-[220px] items-center justify-center rounded-[32px]', visual.tone)}>
+          <span aria-hidden className={cn('flex h-[132px] w-[132px] items-center justify-center rounded-full', visual.halo)}>
+            <Icon name={visual.icon} size={72} />
+          </span>
+        </div>
+        <span className="mb-3.5 inline-flex rounded-full bg-surface px-3 py-1 text-caption font-semibold text-fg-secondary shadow-[var(--card-shadow)]">
           {t(`Étape ${current.step} / ${slides.length}`, `Step ${current.step} / ${slides.length}`)}
         </span>
-        <h2 className="mb-2.5 text-title font-bold">{current.title}</h2>
+        <h2 className="mb-2.5 text-[28px] leading-[34px] font-bold tracking-[-0.6px]">{current.title}</h2>
         <p className="text-body text-fg-secondary">{current.description}</p>
       </div>
 
@@ -70,7 +84,7 @@ export const OnboardingCarousel: React.FC<{ onDone?: () => void; className?: str
             aria-selected={idx === index}
             aria-label={t(`Aller à l'étape ${idx + 1}`, `Go to step ${idx + 1}`)}
             onClick={() => setIndex(idx)}
-            className={cn('h-1.5 rounded-full transition-all', idx === index ? 'w-[22px] bg-primary' : 'w-2 bg-line')}
+            className={cn('h-2 rounded-full transition-all', idx === index ? 'w-6 bg-primary' : 'w-2 bg-line')}
           />
         ))}
       </div>
@@ -87,6 +101,7 @@ export const OnboardingCarousel: React.FC<{ onDone?: () => void; className?: str
           disabled={isLast && !onDone}
         >
           {isLast ? t('Accéder à la connexion', 'Proceed to Sign In') : t('Suivant', 'Next')}
+          {isLast ? null : <Icon name="arrowRight" size={18} />}
         </Button>
       </div>
     </section>

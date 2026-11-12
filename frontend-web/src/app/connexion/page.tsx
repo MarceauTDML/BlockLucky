@@ -6,7 +6,9 @@ import React, { Suspense, useEffect, useRef, useState } from 'react';
 import OnboardingCarousel from '@/components/auth/OnboardingCarousel';
 import Brand from '@/components/layout/Brand';
 import PreferenceToggles from '@/components/layout/PreferenceToggles';
+import SecurityFooter from '@/components/layout/SecurityFooter';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import Input from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
 import { Alert, CheckboxCard } from '@/components/ui/Misc';
@@ -109,7 +111,7 @@ function LoginContent() {
         {}
         <aside className="hidden flex-col justify-center px-6 py-12 lg:flex">
           <Brand />
-          <p className="mt-10 mb-4 text-caption font-medium text-secondary">
+          <p className="mt-10 mb-4 self-start inline-flex rounded-full bg-sun-chip px-3 py-1 text-caption font-semibold text-on-sun dark:text-sun">
             {t('Avant de commencer', 'Before you start')}
           </p>
           <OnboardingCarousel />
@@ -127,8 +129,10 @@ function LoginContent() {
         {}
         <main id="contenu" className="flex flex-col justify-center px-5 py-8 md:px-10 lg:px-6">
           <div className="mx-auto w-full max-w-md">
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-caption font-medium text-secondary lg:invisible">BlockLucky • EtherBay</p>
+            <div className="mb-6 flex items-center justify-between gap-3">
+              <span className="lg:invisible">
+                <Brand compact />
+              </span>
               <PreferenceToggles compact />
             </div>
 
@@ -138,7 +142,7 @@ function LoginContent() {
                   <button
                     type="button"
                     onClick={finishOnboarding}
-                    className="text-caption font-medium text-fg-muted hover:text-fg"
+                    className="rounded-full bg-surface px-3.5 py-1.5 text-caption font-semibold text-fg-secondary transition-colors hover:text-fg"
                   >
                     {t('Passer', 'Skip')}
                   </button>
@@ -148,8 +152,8 @@ function LoginContent() {
             ) : null}
 
             <div className={onboardingDone ? '' : 'hidden lg:block'}>
-              <header className="mb-[18px]">
-                <h1 className="my-1 text-title font-bold">
+              <header className="mb-7">
+                <h1 className="mb-2.5 text-[29px] leading-[36px] font-bold tracking-[-0.6px] md:text-display">
                   {isProSpace
                     ? t('Accès Mairie & partenaires', 'City Hall & partner access')
                     : t('Connexion citoyenne', 'Citizen Sign In')}
@@ -168,7 +172,7 @@ function LoginContent() {
               </header>
 
               <form
-                className="card p-5"
+                className="flex flex-col"
                 onSubmit={(e) => {
                   e.preventDefault();
                   void handleAuth('EMAIL');
@@ -176,26 +180,29 @@ function LoginContent() {
                 onFocus={markAccessStarted}
                 noValidate
               >
-                <div className="mb-3.5">
-                  <CheckboxCard id="adult" checked={isAdultConfirmed} onChange={setIsAdultConfirmed}>
-                    {t('Je certifie être majeur (18 ans et plus)', 'I confirm that I am 18 years of age or older')}
-                  </CheckboxCard>
-                </div>
+                <div className="mb-5 flex gap-3.5 rounded-[23px] bg-lavender p-4">
+                  <Icon name="idCard" size={29} className="text-violet" />
+                  <div className="flex min-w-0 flex-1 flex-col gap-3">
+                    <CheckboxCard id="adult" checked={isAdultConfirmed} onChange={setIsAdultConfirmed}>
+                      {t('Je certifie être majeur (18 ans et plus)', 'I confirm that I am 18 years of age or older')}
+                    </CheckboxCard>
 
-                {!isProSpace ? (
-                  <div className="mb-3.5">
-                    <p className="mb-1.5 text-caption font-medium text-fg-secondary" id="age-label">
-                      {t("Tranche d'âge", 'Age group')}
-                    </p>
-                    <ChoicePills
-                      options={AGE_GROUPS}
-                      value={ageGroup}
-                      onChange={setAgeGroup}
-                      ariaLabel={t("Tranche d'âge", 'Age group')}
-                      size="sm"
-                    />
+                    {!isProSpace ? (
+                      <div>
+                        <p className="mb-1.5 text-caption font-semibold text-fg" id="age-label">
+                          {t("Tranche d'âge", 'Age group')}
+                        </p>
+                        <ChoicePills
+                          options={AGE_GROUPS}
+                          value={ageGroup}
+                          onChange={setAgeGroup}
+                          ariaLabel={t("Tranche d'âge", 'Age group')}
+                          size="sm"
+                        />
+                      </div>
+                    ) : null}
                   </div>
-                ) : null}
+                </div>
 
                 <Input
                   label={t('Adresse email', 'Email address')}
@@ -224,13 +231,14 @@ function LoginContent() {
                   </Alert>
                 ) : null}
 
-                <div className="mt-1 flex flex-col gap-2.5">
+                <div className="mt-2 flex flex-col gap-3">
                   {!isProSpace ? (
                     <Button
                       onClick={() => void handleAuth('GOOGLE')}
                       loading={isLoggingIn && pendingProvider === 'GOOGLE'}
                       disabled={isLoggingIn && pendingProvider !== 'GOOGLE'}
                     >
+                      <Icon name="google" size={18} />
                       {t('Continuer avec Google', 'Continue with Google')}
                     </Button>
                   ) : null}
@@ -240,6 +248,7 @@ function LoginContent() {
                     loading={isLoggingIn && pendingProvider === 'EMAIL'}
                     disabled={isLoggingIn && pendingProvider !== 'EMAIL'}
                   >
+                    <Icon name={isProSpace ? 'arrowRight' : 'envelope'} size={18} />
                     {isProSpace
                       ? t('Accéder à mon espace', 'Open my area')
                       : t('Connexion par email sans mot de passe', 'Passwordless Email Sign In')}
@@ -247,7 +256,7 @@ function LoginContent() {
                 </div>
               </form>
 
-              <p className="mt-4 text-center text-caption text-fg-muted">
+              <p className="mt-6 px-3 text-center text-caption text-fg-muted">
                 {isProSpace ? (
                   <Link href="/connexion" className="underline underline-offset-2 hover:text-fg">
                     {t('Je suis un habitant', 'I am a resident')}
@@ -266,6 +275,7 @@ function LoginContent() {
                   </>
                 )}
               </p>
+              <SecurityFooter className="mt-6" />
             </div>
           </div>
         </main>
@@ -277,6 +287,12 @@ function LoginContent() {
         eyebrow={t('Cadre réglementaire', 'Regulatory Notice')}
         onClose={() => setAgeModalVisible(false)}
       >
+        <span
+          aria-hidden
+          className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-lavender text-violet"
+        >
+          <Icon name="idCard" size={26} />
+        </span>
         <p className="mb-[18px] text-body text-fg-secondary">
           {t(
             "La participation à la loterie de la Ville d'EtherBay est réservée aux personnes majeures (18 ans révolus).",

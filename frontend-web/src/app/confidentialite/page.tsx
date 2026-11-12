@@ -68,7 +68,11 @@ export default function ConfidentialitePage() {
                 type="button"
                 onClick={toggle}
                 aria-pressed={optedOut}
-                className="self-start rounded-md border border-line bg-surface-elevated px-3.5 py-2 text-caption font-semibold text-fg hover:border-fg-muted"
+                className={
+                  optedOut
+                    ? 'inline-flex min-h-10 self-start items-center rounded-full bg-mint px-4 py-2 text-caption font-semibold text-green transition-opacity hover:opacity-90'
+                    : 'inline-flex min-h-10 self-start items-center rounded-full bg-primary px-4 py-2 text-caption font-semibold text-on-primary transition-colors hover:bg-primary-light'
+                }
               >
                 {optedOut
                   ? t('Mesure désactivée — la réactiver', 'Measurement disabled — enable it')
