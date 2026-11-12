@@ -99,7 +99,7 @@ Le script [`scripts/publish.mjs`](src:documentation-officielle/scripts/publish.m
 1. Il lance `npm run check` et s'arrête si le site n'est pas à jour, si un lien est cassé ou si une description manque. Une documentation fausse n'est donc jamais publiée.
 2. Il compresse `site/` avec `tar` et l'envoie par SSH, sans fichier intermédiaire.
 3. Sur la VM, il décompresse dans `/opt/edge/docs.new`, puis remplace `/opt/edge/docs` en une seule opération. L'ancienne version est gardée dans `/opt/edge/docs.old`, ce qui permet un retour arrière immédiat.
-4. Il rend les fichiers lisibles par le conteneur Caddy.
+4. Il rend les fichiers lisibles par le conteneur Caddy, puis redémarre ce conteneur s'il s'appelle `caddy`. Docker monte un dossier de l'hôte par son inode au démarrage du conteneur : après le remplacement de `/opt/edge/docs`, Caddy continuerait sinon de servir l'ancien dossier, vide après la première publication, et toutes les pages répondraient 404. Le redémarrage coupe tous les sites de la VM pendant environ une seconde.
 
 | Option | Variable d'environnement équivalente | Valeur par défaut |
 | --- | --- | --- |

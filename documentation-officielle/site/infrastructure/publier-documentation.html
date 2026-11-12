@@ -119,7 +119,7 @@
 <li>Il lance <code>npm run check</code> et s&#39;arrête si le site n&#39;est pas à jour, si un lien est cassé ou si une description manque. Une documentation fausse n&#39;est donc jamais publiée.</li>
 <li>Il compresse <code>site/</code> avec <code>tar</code> et l&#39;envoie par SSH, sans fichier intermédiaire.</li>
 <li>Sur la VM, il décompresse dans <code>/opt/edge/docs.new</code>, puis remplace <code>/opt/edge/docs</code> en une seule opération. L&#39;ancienne version est gardée dans <code>/opt/edge/docs.old</code>, ce qui permet un retour arrière immédiat.</li>
-<li>Il rend les fichiers lisibles par le conteneur Caddy.</li>
+<li>Il rend les fichiers lisibles par le conteneur Caddy, puis redémarre ce conteneur s&#39;il s&#39;appelle <code>caddy</code>. Docker monte un dossier de l&#39;hôte par son inode au démarrage du conteneur : après le remplacement de <code>/opt/edge/docs</code>, Caddy continuerait sinon de servir l&#39;ancien dossier, vide après la première publication, et toutes les pages répondraient 404. Le redémarrage coupe tous les sites de la VM pendant environ une seconde.</li>
 </ol>
 <div class="table-wrap"><table>
 <thead>

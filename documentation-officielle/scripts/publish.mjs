@@ -43,6 +43,7 @@ const remote = [
   `if [ -d ${remoteDir} ]; then sudo mv ${remoteDir} ${remoteDir}.old; fi`,
   `sudo mv ${remoteDir}.new ${remoteDir}`,
   `sudo chmod -R a+rX ${remoteDir}`,
+  `if sudo docker ps --format '{{.Names}}' | grep -qx caddy; then sudo docker restart caddy > /dev/null; fi`,
   `echo "Documentation publiée dans ${remoteDir}"`,
 ].join(' && ');
 sshArgs.push(host, remote);
