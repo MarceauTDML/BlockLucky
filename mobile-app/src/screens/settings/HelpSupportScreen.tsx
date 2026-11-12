@@ -1,160 +1,142 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import useAppTheme from '../../hooks/useAppTheme';
-import usePushNotifications from '../../hooks/usePushNotifications';
-import { useGetTransparencyCharterQuery } from '../../store/api/lotteryApi';
+import { Linking, StyleSheet, View } from 'react-native';
+
+import ListGroup from '../../components/profile/ListGroup';
 import AppText from '../../components/ui/AppText';
-import AppButton from '../../components/ui/AppButton';
-import BackButton from '../../components/ui/BackButton';
+import Card from '../../components/ui/Card';
+import ListRow from '../../components/ui/ListRow';
+import Loader from '../../components/ui/Loader';
+import Pill from '../../components/ui/Pill';
+import Screen from '../../components/ui/Screen';
+import ScreenHeader from '../../components/ui/ScreenHeader';
+import SectionHeader from '../../components/ui/SectionHeader';
+import useAppTheme from '../../hooks/useAppTheme';
+import { useRootNavigation } from '../../navigation/hooks';
+import { useGetTransparencyCharterQuery } from '../../store/api/lotteryApi';
 
-export const HelpSupportScreen: React.FC<{ navigation: any }> = ({
-  navigation,
-}) => {
-  const { colors, borderRadius, spacing, language, t } = useAppTheme();
-  const { data } = useGetTransparencyCharterQuery();
-  const { triggerSimulatedOsPush } = usePushNotifications();
+const SUPPORT_EMAIL = 'dsi@etherbay.fr';
 
+export const HelpSupportScreen: React.FC = () => {
+  const { colors, language, t } = useAppTheme();
+  const navigation = useRootNavigation();
+  const { data, isLoading } = useGetTransparencyCharterQuery();
   const charter = data?.data;
 
   const fallbackSections = [
     {
-      heading: t('1. Registre public Ethereum', '1. Public Ethereum Ledger'),
+      heading: t('Registre public', 'Public ledger'),
       body: t(
-        'Chaque participation et chaque tirage sont inscrits de façon immuable sur la blockchain. Aucune intervention humaine ne peut modifier le résultat.',
-        'Every entry and draw is immutably recorded on the blockchain. No human intervention can alter the outcome.'
+        'Chaque participation et chaque tirage sont inscrits sur la blockchain. Personne ne peut modifier le résultat.',
+        'Every entry and draw is recorded on the blockchain. Nobody can alter the outcome.',
       ),
     },
     {
-      heading: t(
-        '2. Tirage aléatoire certifié (Chainlink VRF)',
-        '2. Certified Randomness (Chainlink VRF)'
-      ),
+      heading: t('Tirage vérifiable', 'Verifiable draw'),
       body: t(
-        'Le gagnant est désigné par un oracle cryptographique vérifiable qui génère une preuve mathématique d impartialité.',
-        'The winner is selected by a verifiable cryptographic oracle that generates a mathematical proof of fairness.'
+        'Le gagnant est désigné par un tirage aléatoire dont la preuve peut être vérifiée par tous.',
+        'The winner is picked by a random draw whose proof anyone can verify.',
       ),
     },
     {
-      heading: t('3. Remboursement automatique', '3. Automatic Refund Guarantee'),
+      heading: t('Remboursement automatique', 'Automatic refund'),
       body: t(
-        'Le Smart Contract intègre une clause de remboursement automatique : si le tirage est annulé, l intégralité des fonds engagés est restituée.',
-        'The Smart Contract includes an automatic refund clause: if the draw is cancelled, 100% of committed funds are returned.'
+        'Si le tirage est annulé, les ETH fictifs engagés sont rendus automatiquement.',
+        'If the draw is cancelled, the play ETH spent is refunded automatically.',
       ),
     },
   ];
 
   const sections =
-    language === 'FR' && charter?.sections?.length
-      ? charter.sections
-      : fallbackSections;
+    language === 'FR' && charter?.sections?.length ? charter.sections : fallbackSections;
+  const tones = ['lavender', 'mint', 'peach'] as const;
+
+  const openMail = () => {
+    Linking.openURL(`mailto:${SUPPORT_EMAIL}`).catch(() => {});
+  };
 
   return (
-    <SafeAreaView
-      edges={['top', 'left', 'right']}
-      style={[styles.safeArea, { backgroundColor: colors.background }]}
-    >
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={[
-          styles.content,
-          { padding: spacing.lg, paddingBottom: spacing.xxl },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        <BackButton onPress={() => navigation.goBack()} />
+    <Screen showSecurityFooter>
+      <ScreenHeader
+        title={t('Aide et support', 'Help and support')}
+        subtitle={t('Règles, transparence et contact', 'Rules, transparency and contact')}
+        onBack={() => navigation.goBack()}
+      />
 
-        <AppText variant="title" weight="bold" style={styles.title}>
-          {language === 'FR'
-            ? charter?.title || 'Charte de transparence'
-            : 'Transparency Charter'}
-        </AppText>
-        <AppText variant="caption" color={colors.secondary} weight="medium">
-          {t(
-            `Version ${charter?.version || '2026.1'} • Ville d EtherBay`,
-            `Version ${charter?.version || '2026.1'} • City of EtherBay`
-          )}
-        </AppText>
+      <ListGroup>
+        <ListRow
+          title={t('Comment se passe le tirage ?', 'How does the draw work?')}
+          subtitle={t('Règles, salle d’attente, révélation', 'Rules, waiting room, reveal')}
+          icon="wheel"
+          iconTone="sun"
+          onPress={() => navigation.navigate('HowItWorks')}
+          divider
+        />
+        <ListRow
+          title={t('Contacter la Mairie', 'Contact the city hall')}
+          subtitle={SUPPORT_EMAIL}
+          icon="envelope"
+          iconTone="lavender"
+          onPress={openMail}
+          divider
+        />
+        <ListRow
+          title={t('Mes notifications', 'My notifications')}
+          icon="bell"
+          iconTone="mint"
+          onPress={() => navigation.navigate('Notifications')}
+        />
+      </ListGroup>
 
-        {sections.map((sec) => (
-          <View
-            key={sec.heading}
-            style={[
-              styles.card,
-              {
-                backgroundColor: colors.surface,
-                borderRadius: borderRadius.lg,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <AppText variant="subtitle" weight="semibold" color={colors.text}>
-              {sec.heading}
-            </AppText>
-            <AppText variant="body" color={colors.textSecondary} style={styles.body}>
-              {sec.body}
-            </AppText>
-          </View>
-        ))}
+      <SectionHeader
+        title={
+          language === 'FR' && charter?.title
+            ? charter.title
+            : t('Charte de transparence', 'Transparency charter')
+        }
+        right={
+          charter?.version ? (
+            <Pill label={`v${charter.version}`} tone="surface" uppercase={false} />
+          ) : undefined
+        }
+      />
 
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: colors.surfaceElevated,
-              borderRadius: borderRadius.lg,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          <AppText variant="subtitle" weight="semibold">
-            {t('Test de notification', 'Notification Test')}
-          </AppText>
-          <AppText variant="caption" color={colors.textSecondary}>
-            {t(
-              'Simulez l affichage d une bannière de notification en haut de l écran.',
-              'Simulate a push notification banner at the top of the screen.'
-            )}
-          </AppText>
-          <AppButton
-            title={t('Simuler une notification', 'Simulate Notification')}
-            variant="secondary"
-            onPress={() =>
-              triggerSimulatedOsPush(
-                t('Nouveau partenaire à EtherBay', 'New Partner in EtherBay'),
-                t(
-                  'La Boulangerie du Port propose -15% contre 100 points.',
-                  'Harbor Bakery offers 15% off for 100 points.'
-                )
-              )
-            }
-          />
+      {isLoading ? (
+        <Loader message={t('Chargement de la charte...', 'Loading the charter...')} />
+      ) : (
+        <View style={styles.sections}>
+          {sections.map((section, index) => (
+            <Card key={section.heading} tone={tones[index % tones.length]}>
+              <AppText size={14} weight="bold">
+                {section.heading}
+              </AppText>
+              <AppText size={12} color={colors.ink} style={styles.body}>
+                {section.body}
+              </AppText>
+            </Card>
+          ))}
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      )}
+
+      <AppText size={11} color={colors.inkMuted} align="center" style={styles.footnote}>
+        {t(
+          'BlockLucky est un jeu citoyen gratuit de la Ville d’EtherBay. Aucun argent réel n’est engagé.',
+          'BlockLucky is a free civic game by the City of EtherBay. No real money is involved.',
+        )}
+      </AppText>
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  content: {
-    gap: 14,
-  },
-  title: {
-    marginBottom: 2,
-  },
-  card: {
-    padding: 16,
-    borderWidth: 1,
-    gap: 8,
+  sections: {
+    gap: 12,
   },
   body: {
-    lineHeight: 22,
+    marginTop: 6,
+    lineHeight: 18,
+  },
+  footnote: {
+    marginTop: 20,
   },
 });
 
