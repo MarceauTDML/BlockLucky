@@ -10,6 +10,7 @@ interface InMemoryStore {
   rewardCatalogs: Map<string, any>;
   claimedRewards: Map<string, any>;
   analytics: Map<string, any>;
+  identityDocuments: Map<string, any>;
 }
 
 const store: InMemoryStore = {
@@ -22,6 +23,7 @@ const store: InMemoryStore = {
   rewardCatalogs: new Map(),
   claimedRewards: new Map(),
   analytics: new Map(),
+  identityDocuments: new Map(),
 };
 
 export const resetPrismaMockStore = () => {
@@ -34,10 +36,26 @@ export const resetPrismaMockStore = () => {
   store.rewardCatalogs.clear();
   store.claimedRewards.clear();
   store.analytics.clear();
+  store.identityDocuments.clear();
+};
+
+export const prismaMockStore = store;
+
+const identityOf = (userId: string) => {
+  for (const doc of store.identityDocuments.values()) {
+    if (doc.userId === userId) return { ...doc };
+  }
+  return null;
+};
+
+const withIdentityUser = (doc: any) => {
+  const user = store.users.get(doc.userId);
+  return { ...doc, user: user ? { ...user } : null };
 };
 
 export const prismaMock: any = {
-  $transaction: jest.fn(async (ops: any[]) => {
+  $transaction: jest.fn(async (ops: any) => {
+    if (typeof ops === 'function') return ops(prismaMock);
     return Promise.all(ops);
   }),
   user: {
@@ -96,6 +114,7 @@ export const prismaMock: any = {
         copy.claimedRewards = claimedRewards;
         copy.pointLedger = pointLedger;
         copy.analytics = analytics;
+        copy.identityDocument = identityOf(copy.id);
         copy._count = {
           tickets: tickets.length,
           claimedRewards: claimedRewards.length,
@@ -113,11 +132,16 @@ export const prismaMock: any = {
         walletEncryptedKey: data.walletEncryptedKey ?? null,
         welcomeGrantTxHash: data.welcomeGrantTxHash ?? null,
         email: data.email ?? null,
+        passwordHash: data.passwordHash ?? null,
         role: data.role ?? 'USER',
         isTwoFactorEnabled: data.isTwoFactorEnabled ?? false,
         twoFactorMethod: data.twoFactorMethod ?? null,
         twoFactorSecret: data.twoFactorSecret ?? null,
         isEmailVerified: data.isEmailVerified ?? false,
+        ageVerificationStatus: data.ageVerificationStatus ?? 'NONE',
+        ageVerifiedAt: data.ageVerifiedAt ?? null,
+        ageVerificationNote: data.ageVerificationNote ?? null,
+        twoFactorBackupCodes: data.twoFactorBackupCodes ?? [],
         pointsBalance: data.pointsBalance ?? 0,
         referralCode: data.referralCode ?? crypto.randomUUID(),
         referredById: data.referredById ?? null,
@@ -159,6 +183,14 @@ export const prismaMock: any = {
     }),
     count: jest.fn(async () => {
       return Array.from(store.users.values()).filter((u) => !u.deletedAt).length;
+    }),
+    updateMany: jest.fn(async ({ where, data }: any) => {
+      const existing = store.users.get(where.id);
+      if (!existing) return { count: 0 };
+      if (where.deletedAt === null && existing.deletedAt) return { count: 0 };
+      if (where.pointsBalance?.gte !== undefined && existing.pointsBalance < where.pointsBalance.gte) return { count: 0 };
+      await prismaMock.user.update({ where: { id: where.id }, data });
+      return { count: 1 };
     }),
   },
   token: {
@@ -222,7 +254,9 @@ export const prismaMock: any = {
         prizePool: data.prizePool ?? 0.0,
         winnerWallet: data.winnerWallet ?? null,
         chainlinkRequestId: data.chainlinkRequestId ?? null,
-        startedAt: new Date(),
+        winningTicket: data.winningTicket ?? null,
+        prizeWei: data.prizeWei ?? null,
+        startedAt: data.startedAt ?? new Date(),
         drawnAt: null,
       };
       store.lotteryRounds.set(id, record);
@@ -263,6 +297,8 @@ export const prismaMock: any = {
         id,
         transactionHash: data.transactionHash,
         blockNumber: data.blockNumber,
+        ticketIndex: data.ticketIndex ?? null,
+        payerWallet: data.payerWallet ?? null,
         userId: data.userId,
         lotteryId: data.lotteryId,
         purchasedAt: new Date(),
@@ -379,11 +415,23 @@ export const prismaMock: any = {
       store.rewardCatalogs.set(id, record);
       return record;
     }),
-    findMany: jest.fn(async () => {
-      return Array.from(store.rewardCatalogs.values()).map((r) => ({
-        ...r,
-        partner: store.partners.get(r.partnerId),
-      }));
+    findMany: jest.fn(async ({ where }: any = {}) => {
+      return Array.from(store.rewardCatalogs.values())
+        .filter((r) => where?.isActive === undefined || r.isActive === where.isActive)
+        .filter((r) => where?.remainingStock?.gt === undefined || r.remainingStock > where.remainingStock.gt)
+        .filter((r) => where?.partner?.isActive === undefined || store.partners.get(r.partnerId)?.isActive === where.partner.isActive)
+        .map((r) => ({
+          ...r,
+          partner: store.partners.get(r.partnerId),
+        }));
+    }),
+    updateMany: jest.fn(async ({ where, data }: any) => {
+      const existing = store.rewardCatalogs.get(where.id);
+      if (!existing) return { count: 0 };
+      if (where.isActive !== undefined && existing.isActive !== where.isActive) return { count: 0 };
+      if (where.remainingStock?.gt !== undefined && !(existing.remainingStock > where.remainingStock.gt)) return { count: 0 };
+      await prismaMock.rewardCatalog.update({ where: { id: where.id }, data });
+      return { count: 1 };
     }),
     findUnique: jest.fn(async ({ where }: any) => {
       const r = store.rewardCatalogs.get(where.id);
@@ -463,6 +511,51 @@ export const prismaMock: any = {
       return updated;
     }),
     count: jest.fn(async () => store.claimedRewards.size),
+  },
+  identityDocument: {
+    upsert: jest.fn(async ({ where, create, update }: any) => {
+      const existing = identityOf(where.userId);
+      const record = existing
+        ? { ...existing, ...update }
+        : { id: crypto.randomUUID(), submittedAt: new Date(), reviewedAt: null, reviewerId: null, ...create };
+      store.identityDocuments.set(record.id, record);
+      return { ...record };
+    }),
+    findUnique: jest.fn(async ({ where }: any) => {
+      const doc = where.id ? store.identityDocuments.get(where.id) : identityOf(where.userId);
+      return doc ? withIdentityUser(doc) : null;
+    }),
+    findMany: jest.fn(async ({ where, skip = 0, take }: any = {}) => {
+      const list = Array.from(store.identityDocuments.values())
+        .filter((d) => !where?.status || d.status === where.status)
+        .sort((a, b) => a.submittedAt.getTime() - b.submittedAt.getTime())
+        .map(withIdentityUser);
+      return list.slice(skip, take === undefined ? undefined : skip + take);
+    }),
+    count: jest.fn(async ({ where }: any = {}) => {
+      return Array.from(store.identityDocuments.values()).filter((d) => !where?.status || d.status === where.status)
+        .length;
+    }),
+    updateMany: jest.fn(async ({ where, data }: any) => {
+      let count = 0;
+      for (const doc of store.identityDocuments.values()) {
+        if (doc.id === where.id && (!where.status || doc.status === where.status)) {
+          store.identityDocuments.set(doc.id, { ...doc, ...data });
+          count++;
+        }
+      }
+      return { count };
+    }),
+    deleteMany: jest.fn(async ({ where }: any) => {
+      let count = 0;
+      for (const doc of Array.from(store.identityDocuments.values())) {
+        if (doc.userId === where.userId) {
+          store.identityDocuments.delete(doc.id);
+          count++;
+        }
+      }
+      return { count };
+    }),
   },
   analytics: {
     create: jest.fn(async ({ data }: any) => {

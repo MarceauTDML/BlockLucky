@@ -69,6 +69,11 @@
 <td>11/11/2026 15:00</td>
 <td>Passage au mode onchain : portefeuille intégré (<code>walletEncryptedKey</code>, <code>welcomeGrantTxHash</code>) sur <code>User</code> ; colonnes de projection du contrat sur <code>LotteryRound</code> (<code>ticketPriceWei</code>, <code>endsAt</code>, <code>drawRequestedAt</code>, <code>winningTicket</code>, <code>prizeWei</code>, <code>prizeClaimedAt</code>) ; <code>ticketIndex</code> et <code>payerWallet</code> sur <code>Ticket</code> ; table <code>ChainCursor</code> ; l&#39;index unique sur <code>Ticket.transactionHash</code> devient un index simple et l&#39;unicité passe sur <code>(lotteryId, ticketIndex)</code>.</td>
 </tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/migrations/20261112090000_password_accounts_identity_verification/migration.sql" class="external" target="_blank" rel="noopener noreferrer"><code>20261112090000_password_accounts_identity_verification</code></a></td>
+<td>12/11/2026 09:00</td>
+<td>Comptes avec mot de passe et vérification d&#39;âge : <code>lock_timeout</code> de 5 s ; énumération <code>AgeVerificationStatus</code> ; colonnes <code>passwordHash</code>, <code>ageVerificationStatus</code> (<code>NONE</code> par défaut), <code>ageVerifiedAt</code> et <code>ageVerificationNote</code> sur <code>User</code> ; table <code>IdentityDocument</code> (images chiffrées en <code>BYTEA</code>, index unique sur <code>userId</code>, index sur <code>(status, submittedAt)</code> et <code>reviewerId</code>, clés étrangères en cascade vers le compte et <code>SET NULL</code> vers l&#39;agent qui a statué). Ajout pur, sans réécriture des lignes existantes.</td>
+</tr>
 </tbody></table></div>
 <p>Le détail de ce que chaque migration crée (index, contraintes) est sur la page <a href="index-contraintes.html">Index et contraintes</a>.</p>
 <h2 id="procedure"><a class="anchor" href="#procedure" aria-hidden="true" tabindex="-1">#</a>Procédure</h2>
