@@ -11,8 +11,10 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 FROM deps AS build
 ARG NEXT_PUBLIC_API_URL=http://localhost:2053/api
 ARG NEXT_PUBLIC_WS_URL=http://localhost:2053
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID=
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \
     NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL} \
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID=${NEXT_PUBLIC_GOOGLE_CLIENT_ID} \
     NEXT_OUTPUT=standalone
 COPY . .
 RUN npm run build

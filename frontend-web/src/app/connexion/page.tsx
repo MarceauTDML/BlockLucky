@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { Suspense, useEffect, useRef, useState } from 'react';
+import GoogleSignInButton, { isGoogleSignInConfigured } from '@/components/auth/GoogleSignInButton';
 import OnboardingCarousel from '@/components/auth/OnboardingCarousel';
 import Brand from '@/components/layout/Brand';
 import PreferenceToggles from '@/components/layout/PreferenceToggles';
@@ -23,6 +24,7 @@ import { isValidEmail } from '@/lib/validators';
 import { generateDeterministicWallet } from '@/lib/wallet';
 import { getErrorMessage } from '@/store/api/baseApi';
 import { useAppTheme } from '@/theme/ThemeProvider';
+import { Role } from '@/types/user.types';
 
 type AgeGroup = '18-25' | '26-35' | '36-50' | '50+';
 const AGE_GROUPS: readonly AgeGroup[] = ['18-25', '26-35', '36-50', '50+'];
@@ -31,7 +33,7 @@ function LoginContent() {
   const { t } = useAppTheme();
   const router = useRouter();
   const params = useSearchParams();
-  const { loginWithSocial, isLoggingIn, hydrated, isAuthenticated, user } = useAuth();
+  const { loginWithSocial, loginWithGoogle, isLoggingIn, hydrated, isAuthenticated, user } = useAuth();
 
   const isProSpace = params.get('espace') === 'pro';
   const next = safeInternalPath(params.get('next'));
@@ -65,6 +67,34 @@ function LoginContent() {
     storage.set(KEYS.onboarding, '1');
     setOnboardingFinished(true);
   };
+
+  const finishLogin = (
+    result: { requiresTwoFactor: boolean; user?: { role?: Role | null } | null },
+    provider: 'GOOGLE' | 'EMAIL'
+  ) => {
+    trackEvent(result.requiresTwoFactor ? 'LOGIN_2FA_REQUIRED' : 'LOGIN_SUCCESS', { ageGroup, provider });
+    if (result.requiresTwoFactor) {
+      router.push(`/connexion/verification${next ? `?next=${encodeURIComponent(next)}` : ''}`);
+      return;
+    }
+    router.replace(next || homeForRole(result.user?.role));
+  };
+
+  const handleGoogleCredential = async (idToken: string) => {
+    setErrorMessage('');
+    setPendingProvider('GOOGLE');
+    try {
+      finishLogin(await loginWithGoogle(idToken), 'GOOGLE');
+    } catch (err) {
+      setErrorMessage(
+        getErrorMessage(err, t('Connexion Google impossible. Réessayez.', 'Google sign-in failed. Try again.'))
+      );
+    } finally {
+      setPendingProvider(null);
+    }
+  };
+
+  const showGoogleWidget = isGoogleSignInConfigured && isAdultConfirmed && termsAccepted;
 
   const handleAuth = async (provider: 'GOOGLE' | 'EMAIL') => {
     setErrorMessage('');
@@ -100,13 +130,8 @@ function LoginContent() {
         ...(referralCode.trim() ? { referralCode: referralCode.trim() } : {}),
         utmSource: getUtmSource(),
       });
-      trackEvent(result.requiresTwoFactor ? 'LOGIN_2FA_REQUIRED' : 'LOGIN_SUCCESS', { ageGroup, provider });
       storage.remove(KEYS.referral);
-      if (result.requiresTwoFactor) {
-        router.push(`/connexion/verification${next ? `?next=${encodeURIComponent(next)}` : ''}`);
-        return;
-      }
-      router.replace(next || homeForRole(result.user?.role));
+      finishLogin(result, provider);
     } catch (err) {
       setErrorMessage(
         getErrorMessage(err, t('Impossible de vous connecter au serveur.', 'Unable to connect to the server.'))
@@ -255,7 +280,19 @@ function LoginContent() {
                 ) : null}
 
                 <div className="mt-2 flex flex-col gap-3">
-                  {!isProSpace ? (
+                  {!isProSpace && showGoogleWidget ? (
+                    pendingProvider === 'GOOGLE' ? (
+                      <div className="flex min-h-[44px] items-center justify-center">
+                        <Loader />
+                      </div>
+                    ) : (
+                      <GoogleSignInButton
+                        onCredential={(idToken) => void handleGoogleCredential(idToken)}
+                        onError={setErrorMessage}
+                      />
+                    )
+                  ) : null}
+                  {!isProSpace && !showGoogleWidget ? (
                     <Button
                       onClick={() => void handleAuth('GOOGLE')}
                       loading={isLoggingIn && pendingProvider === 'GOOGLE'}
