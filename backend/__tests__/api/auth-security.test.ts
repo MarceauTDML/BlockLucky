@@ -122,6 +122,30 @@ describe('Sécurité de l’authentification', () => {
     expect(res.status).toBe(403);
   });
 
+  it('accepte le code de l’application après une demande de code par email abandonnée', async () => {
+    env.LOGIN_EMAIL_CODE_REQUIRED = false;
+    const login = await request(app).post('/api/auth/login').send(loginBody('bascule@etherbay.fr'));
+    const token = login.body.data.token;
+
+    const emailSetup = await request(app)
+      .post('/api/auth/2fa/setup')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ method: 'EMAIL' });
+    expect(emailSetup.status).toBe(200);
+
+    const appSetup = await request(app)
+      .post('/api/auth/2fa/setup')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ method: 'APP' });
+    expect(appSetup.status).toBe(200);
+
+    const enable = await request(app)
+      .post('/api/auth/2fa/verify')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ code: totpService.generateToken(appSetup.body.data.secret) });
+    expect(enable.status).toBe(200);
+  });
+
   it('refuse le rejeu d’un code TOTP déjà utilisé', async () => {
     env.LOGIN_EMAIL_CODE_REQUIRED = false;
     const login = await request(app).post('/api/auth/login').send(loginBody('totp@etherbay.fr'));

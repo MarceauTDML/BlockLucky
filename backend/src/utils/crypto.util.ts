@@ -65,7 +65,27 @@ export const encryptText = (text: string): string => {
   return [ENCRYPTION_PREFIX, iv.toString('base64url'), tag.toString('base64url'), encrypted.toString('base64url')].join(':');
 };
 
-export const isEncrypted = (payload: string): boolean => payload.startsWith(`${ENCRYPTION_PREFIX}:`);
+const BUFFER_IV_BYTES = 12;
+const BUFFER_TAG_BYTES = 16;
+
+export const encryptBuffer = (data: Buffer): Buffer => {
+  const iv = crypto.randomBytes(BUFFER_IV_BYTES);
+  const cipher = crypto.createCipheriv(GCM_ALGORITHM, KEY, iv);
+  const encrypted = Buffer.concat([cipher.update(data), cipher.final()]);
+  return Buffer.concat([iv, cipher.getAuthTag(), encrypted]);
+};
+
+export const decryptBuffer = (payload: Buffer | Uint8Array): Buffer => {
+  const buffer = Buffer.from(payload);
+  if (buffer.length <= BUFFER_IV_BYTES + BUFFER_TAG_BYTES) throw new Error('Invalid encrypted payload format');
+  const iv = buffer.subarray(0, BUFFER_IV_BYTES);
+  const tag = buffer.subarray(BUFFER_IV_BYTES, BUFFER_IV_BYTES + BUFFER_TAG_BYTES);
+  const decipher = crypto.createDecipheriv(GCM_ALGORITHM, KEY, iv);
+  decipher.setAuthTag(tag);
+  return Buffer.concat([decipher.update(buffer.subarray(BUFFER_IV_BYTES + BUFFER_TAG_BYTES)), decipher.final()]);
+};
+
+export const isEncrypted =(payload: string): boolean => payload.startsWith(`${ENCRYPTION_PREFIX}:`);
 
 export const decryptText = (encryptedPayload: string): string => {
   const parts = encryptedPayload.split(':');

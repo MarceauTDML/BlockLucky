@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import authService from './auth.services';
+import oauthVerifierService from '../../services/oauth-verifier.service';
 import { sendSuccess, AppError } from '../../utils/response.util';
 
 export class AuthController {
@@ -7,6 +8,62 @@ export class AuthController {
     try {
       const result = await authService.socialLogin(req.body);
       sendSuccess(res, result, 'Authentification réussie', 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await authService.signup(req.body);
+      sendSuccess(res, result, 'Code de vérification envoyé par email', 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async signin(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await authService.signin(req.body);
+      sendSuccess(res, result, 'Authentification réussie', 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await authService.forgotPassword(req.body.email);
+      sendSuccess(res, result, 'Si un compte existe pour cette adresse, un code de réinitialisation a été envoyé', 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await authService.resetPassword(req.body);
+      sendSuccess(res, result, 'Mot de passe mis à jour, reconnectez-vous', 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async googleSignIn(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const identity = await oauthVerifierService.verifyGoogle(req.body.idToken);
+      const result = await authService.oauthLogin(identity);
+      sendSuccess(res, result, 'Authentification Google réussie', 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async appleSignIn(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const identity = await oauthVerifierService.verifyApple(req.body.identityToken);
+      const result = await authService.oauthLogin(identity);
+      sendSuccess(res, result, 'Authentification Apple réussie', 200);
     } catch (error) {
       next(error);
     }

@@ -225,7 +225,7 @@
 </tbody></table></div>
 <h2 id="routes"><a class="anchor" href="#routes" aria-hidden="true" tabindex="-1">#</a>Routes</h2>
 <p>Chaque route est servie sous <code>/api/v1</code> et, pour compatibilité, sous <code>/api</code>. Les sondes et métriques du module système sont à la racine du serveur.</p>
-<p>L&#39;API expose <strong>52 routes</strong> réparties en 9 modules.</p>
+<p>L&#39;API expose <strong>58 routes</strong> réparties en 9 modules.</p>
 <h3 id="systeme"><a class="anchor" href="#systeme" aria-hidden="true" tabindex="-1">#</a>Système</h3>
 <p>Fichier source : <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/system/system.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/system/system.routes.ts</code></a></p>
 <div class="table-wrap"><table>
@@ -287,6 +287,48 @@
 </tr>
 </thead>
 <tbody><tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/auth/signup</code></td>
+<td>public</td>
+<td><code>authRateLimiter</code>, validation <code>signupSchema</code></td>
+<td>Créer un compte avec email et mot de passe, puis recevoir un code à 6 chiffres par email (le compte est créé à la vérification du code via /auth/2fa/verify)</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/auth/signin</code></td>
+<td>public</td>
+<td><code>authRateLimiter</code>, validation <code>signinSchema</code></td>
+<td>Connexion par email et mot de passe, avec étape 2FA si elle est activée sur le compte</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/auth/password/forgot</code></td>
+<td>public</td>
+<td><code>authRateLimiter</code>, validation <code>forgotPasswordSchema</code></td>
+<td>Demander un code de réinitialisation du mot de passe par email (réponse identique que le compte existe ou non)</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/auth/password/reset</code></td>
+<td>public</td>
+<td><code>authRateLimiter</code>, validation <code>resetPasswordSchema</code></td>
+<td>Définir un nouveau mot de passe avec le code reçu par email et révoquer toutes les sessions du compte</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/auth/oauth/google</code></td>
+<td>public</td>
+<td><code>authRateLimiter</code>, validation <code>googleOAuthSchema</code></td>
+<td>Connexion ou inscription avec un jeton d&#39;identité Google vérifié côté serveur</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/auth/oauth/apple</code></td>
+<td>public</td>
+<td><code>authRateLimiter</code>, validation <code>appleOAuthSchema</code></td>
+<td>Connexion ou inscription avec un jeton Sign in with Apple vérifié contre les clés publiques d&#39;Apple</td>
+</tr>
+<tr>
 <td><code>GET</code></td>
 <td><code>/api/v1/auth/onboarding</code></td>
 <td>public</td>
@@ -298,7 +340,7 @@
 <td><code>/api/v1/auth/login</code></td>
 <td>public</td>
 <td><code>authRateLimiter</code>, validation <code>socialLoginSchema</code></td>
-<td>Connexion sans mot de passe avec déclaration de majorité (18+) : envoi d&#39;un code à 6 chiffres par email</td>
+<td>Connexion sans mot de passe avec déclaration de majorité (18+), avec envoi d&#39;un code à 6 chiffres par email</td>
 </tr>
 <tr>
 <td><code>POST</code></td>

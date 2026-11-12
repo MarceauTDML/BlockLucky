@@ -6,10 +6,14 @@ import sessionService, { VerifiedToken } from '../../services/session.service';
 import otpChallengeService, { PendingSignup } from '../../services/otp-challenge.service';
 import { enqueueEmail } from '../../queues/emails.queue';
 import walletService from '../../blockchain/wallet.service';
+import { VerifiedOAuthIdentity } from '../../services/oauth-verifier.service';
 import logger from '../../utils/logger.util';
 import {
+  compareHash,
   decryptText,
   encryptText,
+  hashValue,
+  hmacSha256,
   isEncrypted,
   normalizeBackupCode,
   safeEqual,
@@ -20,6 +24,24 @@ import { AppError } from '../../utils/response.util';
 type AuthUser = NonNullable<Awaited<ReturnType<typeof authRepository.findById>>>;
 
 const INVALID_CODE_MESSAGE = 'Code de vérification invalide ou expiré';
+const INVALID_CREDENTIALS_MESSAGE = 'Email ou mot de passe incorrect.';
+const INVALID_RESET_CODE_MESSAGE = 'Code invalide ou expiré.';
+const ACCOUNT_EXISTS_MESSAGE = 'Un compte existe déjà avec cette adresse email.';
+const WELCOME_POINTS = 25;
+
+const passwordResetSubject = (userId: string) => `password-reset:${userId}`;
+const anonymousSubject = (scope: string, email: string) => `${scope}:${hmacSha256(`${scope}:${email}`)}`;
+
+let timingDummyHash: Promise<string> | null = null;
+const dummyHash = (): Promise<string> => {
+  if (!timingDummyHash) timingDummyHash = hashValue('blocklucky-compte-inexistant-0');
+  return timingDummyHash;
+};
+
+const verifyPassword = async (password: string, storedHash: string | null | undefined): Promise<boolean> => {
+  const matches = await compareHash(password, storedHash ?? (await dummyHash()));
+  return Boolean(storedHash) && matches;
+};
 
 const publicUser = (user: AuthUser) => ({
   id: user.id,
@@ -30,6 +52,8 @@ const publicUser = (user: AuthUser) => ({
   referralCode: user.referralCode,
   isTwoFactorEnabled: user.isTwoFactorEnabled,
   twoFactorMethod: user.twoFactorMethod,
+  hasPassword: Boolean(user.passwordHash),
+  ageVerificationStatus: user.ageVerificationStatus,
 });
 
 const hashBackupCode = (code: string) => sha256(`backup:${normalizeBackupCode(code)}`);
@@ -75,7 +99,7 @@ export class AuthService {
 
   private async createVerifiedUser(signup: PendingSignup) {
     const existing =
-      (await authRepository.findByWallet(signup.walletAddress)) ??
+      (signup.walletAddress ? await authRepository.findByWallet(signup.walletAddress) : null) ??
       (await authRepository.findByEmail(signup.email));
     if (existing) return { user: existing, isNewUser: false };
 
@@ -85,23 +109,29 @@ export class AuthService {
       walletEncryptedKey: wallet.encryptedKey,
       email: signup.email,
       isEmailVerified: true,
+      ...(signup.passwordHash ? { passwordHash: signup.passwordHash } : {}),
       ...(signup.referrerId ? { referredById: signup.referrerId } : {}),
     });
     walletService
       .grantWelcomeEthers(user)
       .catch((error: Error) => logger.warn(`Dotation de bienvenue différée : ${error.message}`));
 
-    await ledgerService.creditPoints(user.id, 25, 'SOCIAL_QUEST', 'Bonus de bienvenue Onboarding EtherBay');
-
     if (signup.referrerId) {
       await ledgerService.creditPoints(
         signup.referrerId,
         100,
         'REFERRAL',
-        `Parrainage d'un nouveau citoyen (${signup.walletAddress.slice(0, 8)}...)`
+        `Parrainage d'un nouveau citoyen (${user.walletAddress.slice(0, 8)}...)`
       );
       await ledgerService.creditPoints(user.id, 50, 'REFERRAL', 'Bonus filleul inscription parrainée');
     }
+
+    await this.welcomeNewAccount(user, signup);
+    return { user, isNewUser: true };
+  }
+
+  private async welcomeNewAccount(user: AuthUser, signup: PendingSignup) {
+    await ledgerService.creditPoints(user.id, WELCOME_POINTS, 'SOCIAL_QUEST', 'Bonus de bienvenue Onboarding EtherBay');
 
     await enqueueEmail({
       to: signup.email,
@@ -115,8 +145,148 @@ export class AuthService {
       ageGroup: signup.ageGroup ?? '18-35',
       isAdultConfirmed: true,
     });
+  }
 
-    return { user, isNewUser: true };
+  private async activateExistingAccount(existing: AuthUser, signup: PendingSignup) {
+    const activated = signup.passwordHash
+      ? await authRepository.setPassword(existing.id, signup.passwordHash)
+      : await authRepository.markEmailVerified(existing.id);
+    walletService
+      .ensureWallet(activated)
+      .then((owner) => walletService.grantWelcomeEthers(owner))
+      .catch((error: Error) => logger.warn(`Dotation de bienvenue différée : ${error.message}`));
+    await this.welcomeNewAccount(activated, signup);
+    return { user: activated, isNewUser: true };
+  }
+
+  private async registerVerifiedEmail(signup: PendingSignup) {
+    const existing = await authRepository.findByEmail(signup.email);
+    if (!existing) return this.createVerifiedUser(signup);
+    if (existing.isEmailVerified || existing.deletedAt) throw new AppError(ACCOUNT_EXISTS_MESSAGE, 409);
+    return this.activateExistingAccount(existing, signup);
+  }
+
+  private async completePrimaryLogin(user: AuthUser, provider: string) {
+    if (user.isTwoFactorEnabled && user.twoFactorMethod === 'APP') {
+      return { requiresTwoFactor: true, twoFactorMethod: 'APP' as const, userId: user.id };
+    }
+    if (user.isTwoFactorEnabled && user.twoFactorMethod === 'EMAIL' && user.email) {
+      const code = await otpChallengeService.issue(user.id, 'LOGIN');
+      await this.sendCodeEmail(user.email, code, 'Votre code de connexion - BlockLucky');
+      return { requiresTwoFactor: true, twoFactorMethod: 'EMAIL' as const, userId: user.id, ...devPreview(code) };
+    }
+    await otpChallengeService.clearFailures(user.id);
+    await authRepository.recordAuthAnalytics(user.id, 'USER_LOGIN', undefined, { provider });
+    const session = await this.issueSession(user);
+    return { requiresTwoFactor: false, isNewUser: false, ...session };
+  }
+
+  public async signup(input: {
+    email: string;
+    password: string;
+    referralCode?: string;
+    utmSource?: string;
+    ageGroup?: string;
+  }) {
+    const email = input.email.trim().toLowerCase();
+    const existing = await authRepository.findByEmail(email);
+    if (existing && (existing.isEmailVerified || existing.deletedAt)) {
+      throw new AppError(ACCOUNT_EXISTS_MESSAGE, 409);
+    }
+
+    const passwordHash = await hashValue(input.password);
+    const referrer = input.referralCode ? await authRepository.findByReferralCode(input.referralCode) : null;
+    const subjectId = otpChallengeService.newSubjectId();
+    const code = await otpChallengeService.issue(subjectId, 'SIGNUP', {
+      email,
+      passwordHash,
+      provider: 'PASSWORD',
+      referrerId: referrer?.id,
+      ageGroup: input.ageGroup,
+      utmSource: input.utmSource,
+    });
+    await this.sendCodeEmail(email, code, 'Vérifiez votre adresse email - BlockLucky');
+
+    return {
+      requiresTwoFactor: true,
+      twoFactorMethod: 'EMAIL' as const,
+      userId: subjectId,
+      ...devPreview(code),
+    };
+  }
+
+  public async signin(input: { email: string; password: string }) {
+    const email = input.email.trim().toLowerCase();
+    const found = await authRepository.findByEmail(email);
+    const account = found && !found.deletedAt ? found : null;
+    const lockSubject = account?.id ?? anonymousSubject('signin', email);
+
+    await otpChallengeService.assertNotLocked(lockSubject);
+    const valid = await verifyPassword(input.password, account?.passwordHash);
+    if (!account || !valid) {
+      await otpChallengeService.recordFailure(lockSubject);
+      throw new AppError(INVALID_CREDENTIALS_MESSAGE, 401);
+    }
+
+    return this.completePrimaryLogin(account, 'PASSWORD');
+  }
+
+  public async forgotPassword(rawEmail: string) {
+    const email = rawEmail.trim().toLowerCase();
+    const found = await authRepository.findByEmail(email);
+    if (!found || found.deletedAt || !found.email) return { sent: true };
+
+    const code = await otpChallengeService.issue(passwordResetSubject(found.id), 'PASSWORD_RESET');
+    this.sendCodeEmail(found.email, code, 'Réinitialisation de votre mot de passe - BlockLucky').catch(
+      (error: Error) => logger.warn(`Email de réinitialisation non envoyé : ${error.message}`)
+    );
+    return { sent: true, ...devPreview(code) };
+  }
+
+  public async resetPassword(input: { email: string; code: string; newPassword: string }) {
+    const email = input.email.trim().toLowerCase();
+    const found = await authRepository.findByEmail(email);
+    const account = found && !found.deletedAt ? found : null;
+    const subject = account ? passwordResetSubject(account.id) : anonymousSubject('password-reset', email);
+
+    await otpChallengeService.assertNotLocked(subject);
+    const challenge = account ? await otpChallengeService.consume(subject, input.code) : null;
+    if (!account || !challenge || challenge.purpose !== 'PASSWORD_RESET') {
+      await otpChallengeService.recordFailure(subject);
+      throw new AppError(INVALID_RESET_CODE_MESSAGE, 400);
+    }
+    await otpChallengeService.clearFailures(subject);
+
+    const passwordHash = await hashValue(input.newPassword);
+    await authRepository.setPassword(account.id, passwordHash);
+    await sessionService.revokeAllForUser(account.id);
+    await this.notify(
+      account.email,
+      account.passwordHash ? 'Mot de passe réinitialisé' : 'Mot de passe défini sur votre compte'
+    );
+    return { reset: true };
+  }
+
+  public async oauthLogin(identity: VerifiedOAuthIdentity) {
+    const found = await authRepository.findByEmail(identity.email);
+    if (found && !found.deletedAt) {
+      if (!found.isEmailVerified) {
+        const { user } = await this.activateExistingAccount(found, {
+          email: identity.email,
+          provider: identity.provider,
+        });
+        const session = await this.issueSession(user);
+        return { requiresTwoFactor: false, isNewUser: true, ...session };
+      }
+      return this.completePrimaryLogin(found, identity.provider);
+    }
+
+    const { user, isNewUser } = await this.createVerifiedUser({
+      email: identity.email,
+      provider: identity.provider,
+    });
+    const session = await this.issueSession(user);
+    return { requiresTwoFactor: false, isNewUser, ...session };
   }
 
   public async socialLogin(input: {
@@ -234,6 +404,7 @@ export class AuthService {
         twoFactorSecret: encryptText(secret),
         twoFactorBackupCodes: backupCodes.map(hashBackupCode),
       });
+      await otpChallengeService.discard(user.id);
 
       return { method: 'APP', secret, otpAuthUrl, qrCodeDataUrl, backupCodes };
     }
@@ -291,7 +462,9 @@ export class AuthService {
       await otpChallengeService.clearFailures(subjectId);
 
       if (challenge.purpose === 'SIGNUP' && challenge.signup) {
-        const { user, isNewUser } = await this.createVerifiedUser(challenge.signup);
+        const { user, isNewUser } = challenge.signup.passwordHash
+          ? await this.registerVerifiedEmail(challenge.signup)
+          : await this.createVerifiedUser(challenge.signup);
         const session = await this.issueSession(user);
         return { verified: true, isNewUser, ...session };
       }

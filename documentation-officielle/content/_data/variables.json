@@ -26,9 +26,10 @@
   "CHAIN_START_BLOCK": { "categorie": "Blockchain", "description": "Premier bloc lu par l'indexeur quand aucun curseur n'existe en base. Mettre le bloc de déploiement du contrat." },
   "CHAIN_CONFIRMATIONS": { "categorie": "Blockchain", "description": "Nombre de blocs de confirmation que l'indexeur laisse derrière la tête de chaîne." },
   "EXPLORER_URL": { "categorie": "Blockchain", "description": "Racine HTTPS de l'explorateur de blocs pour les liens `etherscanUrl` et `explorerUrl`. Vide : aucun lien n'est produit." },
-  "WELCOME_GRANT_WEI": { "categorie": "Blockchain", "description": "Dotation de bienvenue en wei versée une seule fois par le compte opérateur à chaque portefeuille intégré (0,1 ETH fictif par défaut, 0 la désactive)." },
+  "WELCOME_GRANT_WEI": { "categorie": "Blockchain", "description": "Dotation de bienvenue en wei versée une seule fois par le compte opérateur à chaque portefeuille intégré (0,5 ETH fictif par défaut, 0 la désactive)." },
   "INDEXER_INTERVAL_MS": { "categorie": "Workers", "description": "Période de la boucle de l'indexeur d'événements du contrat." },
   "KEEPER_INTERVAL_MS": { "categorie": "Workers", "description": "Période du keeper qui demande le tirage ou clôt un tour expiré. Elle fixe aussi la durée du verrou Redis du keeper." },
+  "DRAW_REVEAL_DELAY_SECONDS": { "categorie": "Workers", "description": "Durée de la salle d'attente en secondes : délai que le keeper respecte entre le passage du tour à l'état prêt au tirage (fin du temps ou plafond atteint) et l'appel à `requestDraw` (600 par défaut, 0 la supprime)." },
   "LOTTERY_CONTRACT_ADDRESS": { "categorie": "Blockchain", "description": "Adresse du contrat `BlockLucky`. La valeur par défaut correspond au déploiement local." },
   "POAP_CONTRACT_ADDRESS": { "categorie": "Blockchain", "description": "Adresse du contrat `BlockLuckyPOAP`. La valeur par défaut correspond au déploiement local." },
   "RELAYER_PRIVATE_KEY": { "categorie": "Blockchain", "description": "Clé privée du compte opérateur du backend : tirage, annulation, pause, frappe des POAP, retrait des commissions et dotations de bienvenue. La valeur par défaut est le compte 0 public de Hardhat." },
@@ -51,5 +52,10 @@
   "MOBILE_MIN_VERSION": { "categorie": "Fonctionnalités", "description": "Version minimale de l'application mobile publiée par `GET /api/config`." },
   "MAINTENANCE_MODE": { "categorie": "Fonctionnalités", "description": "Répond 503 avec `Retry-After: 300` sur les routes `/api/*` sauf celles qui commencent par `/api/admin`." },
   "LOGIN_EMAIL_CODE_REQUIRED": { "categorie": "Sécurité et sessions", "description": "Exige un code à 6 chiffres reçu par email avant toute ouverture de session. Désactivé seulement par la suite de tests." },
-  "ADMIN_MFA_REQUIRED": { "categorie": "Sécurité et sessions", "description": "Refuse les routes réservées à l'ADMIN tant que la double authentification n'est pas activée sur le compte." }
+  "ADMIN_MFA_REQUIRED": { "categorie": "Sécurité et sessions", "description": "Refuse les routes réservées à l'ADMIN tant que la double authentification n'est pas activée sur le compte." },
+  "AGE_VERIFICATION_REQUIRED": { "categorie": "Sécurité et sessions", "description": "Exige une pièce d'identité validée par la Mairie (`ageVerificationStatus = VERIFIED`) pour acheter ou offrir un ticket et échanger une récompense. Refusée à false en production ; désactivée seulement par la suite de tests." },
+  "SCRATCH_COST_VIOLET": { "categorie": "Fonctionnalités", "description": "Prix en EtherPoints du ticket à gratter « violet » (`POST /marketplace/scratch`), qui attribue au hasard une récompense partenaire en stock (50 par défaut)." },
+  "SCRATCH_COST_LUCKY": { "categorie": "Fonctionnalités", "description": "Prix en EtherPoints du ticket à gratter « lucky » (`POST /marketplace/scratch`), qui attribue au hasard une récompense partenaire en stock (100 par défaut)." },
+  "GOOGLE_CLIENT_IDS": { "categorie": "Sécurité et sessions", "description": "Identifiants client OAuth Google acceptés comme audience des jetons d'identité, séparés par des virgules. Vide par défaut : la connexion Google répond alors 503." },
+  "APPLE_CLIENT_IDS": { "categorie": "Sécurité et sessions", "description": "Identifiants de service ou bundle ID Apple acceptés comme audience des jetons Sign in with Apple, séparés par des virgules. Vide par défaut : la connexion Apple répond alors 503." }
 }

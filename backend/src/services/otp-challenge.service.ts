@@ -3,11 +3,12 @@ import redis from '../config/redis.config';
 import { generateOtpCode, hmacSha256, safeEqual } from '../utils/crypto.util';
 import { AppError } from '../utils/response.util';
 
-export type ChallengePurpose = 'LOGIN' | 'SIGNUP' | 'SETUP';
+export type ChallengePurpose = 'LOGIN' | 'SIGNUP' | 'SETUP' | 'PASSWORD_RESET';
 
 export interface PendingSignup {
-  walletAddress: string;
+  walletAddress?: string | undefined;
   email: string;
+  passwordHash?: string | undefined;
   referrerId?: string | undefined;
   provider: string;
   ageGroup?: string | undefined;
@@ -66,6 +67,10 @@ export class OtpChallengeService {
     if (!raw) return false;
     const challenge = JSON.parse(raw) as StoredChallenge;
     return challenge.expiresAt > Date.now();
+  }
+
+  public async discard(subjectId: string): Promise<void> {
+    await redis.del(challengeKey(subjectId));
   }
 
   public async assertNotLocked(subjectId: string): Promise<void> {
