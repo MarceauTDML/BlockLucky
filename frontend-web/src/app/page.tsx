@@ -6,6 +6,8 @@ import PublicShell from '@/components/layout/PublicShell';
 import CountdownTimer from '@/components/lottery/CountdownTimer';
 import NetworkPill from '@/components/lottery/NetworkPill';
 import { LinkButton } from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import Icon, { IconName } from '@/components/ui/Icon';
 import { Skeleton } from '@/components/ui/Loader';
 import ProgressBar from '@/components/ui/ProgressBar';
 import { trackEvent } from '@/lib/analytics';
@@ -31,6 +33,7 @@ export default function LandingPage() {
   const steps = [
     {
       key: 'Découvrir',
+      icon: 'globe' as IconName,
       title: t('Découvrir', 'Discover'),
       body: t(
         "La Ville d'EtherBay organise sa loterie de fin d'année, avec Epitech Digital School.",
@@ -39,6 +42,7 @@ export default function LandingPage() {
     },
     {
       key: 'Comprendre',
+      icon: 'document' as IconName,
       title: t('Comprendre', 'Understand'),
       body: t(
         'Des règles courtes, publiques, et un montant engagé exprimé en ethers fictifs.',
@@ -47,6 +51,7 @@ export default function LandingPage() {
     },
     {
       key: 'Accéder',
+      icon: 'envelope' as IconName,
       title: t('Accéder', 'Access'),
       body: t(
         'Connexion par email, sans mot de passe. Votre portefeuille est créé automatiquement.',
@@ -55,6 +60,7 @@ export default function LandingPage() {
     },
     {
       key: 'Participer',
+      icon: 'ticket' as IconName,
       title: t('Participer', 'Take part'),
       body: t(
         'Une seule action pour valider un ticket, signée par votre portefeuille BlockLucky intégré. Les frais réseau sont prélevés sur la dotation de bienvenue en ethers fictifs.',
@@ -63,6 +69,7 @@ export default function LandingPage() {
     },
     {
       key: 'Recevoir',
+      icon: 'check' as IconName,
       title: t('Recevoir', 'Receive'),
       body: t(
         'Un reçu distingue la demande en attente du ticket confirmé sur la blockchain.',
@@ -71,6 +78,7 @@ export default function LandingPage() {
     },
     {
       key: 'Vérifier',
+      icon: 'shield' as IconName,
       title: t('Vérifier', 'Verify'),
       body: t(
         'Le résultat et sa preuve Chainlink VRF sont consultables par tous.',
@@ -82,6 +90,9 @@ export default function LandingPage() {
   const guarantees = [
     {
       title: t('Ethers fictifs', 'Test ethers'),
+      icon: 'giftTicket' as IconName,
+      tone: 'bg-sun-soft text-on-sun',
+      badge: 'bg-sun text-on-sun',
       body: t(
         "La cagnotte et les tickets utilisent des unités de test : aucune somme d'argent réelle n'est engagée.",
         'The prize pool and tickets use test units: no real money is involved.'
@@ -89,6 +100,9 @@ export default function LandingPage() {
     },
     {
       title: t('Tirage certifié', 'Certified draw'),
+      icon: 'shield' as IconName,
+      tone: 'bg-lavender',
+      badge: 'bg-surface text-violet',
       body: t(
         "Le gagnant est désigné par Chainlink VRF, un oracle qui fournit une preuve mathématique d'impartialité.",
         'The winner is picked by Chainlink VRF, an oracle providing a mathematical proof of fairness.'
@@ -96,6 +110,9 @@ export default function LandingPage() {
     },
     {
       title: t('Remboursement automatique', 'Automatic refund'),
+      icon: 'check' as IconName,
+      tone: 'bg-mint',
+      badge: 'bg-surface text-green',
       body: t(
         'Si le tirage est annulé, le Smart Contract restitue automatiquement toutes les participations.',
         'If the draw is cancelled, the Smart Contract automatically refunds every entry.'
@@ -103,6 +120,9 @@ export default function LandingPage() {
     },
     {
       title: t('Jeu responsable', 'Responsible play'),
+      icon: 'idCard' as IconName,
+      tone: 'bg-peach',
+      badge: 'bg-surface text-terracotta',
       body: t(
         'Réservé aux 18 ans et plus, avec un plafond personnel de tickets réglable à tout moment.',
         'Adults only (18+), with a personal ticket cap you can change at any time.'
@@ -143,17 +163,17 @@ export default function LandingPage() {
 
   return (
     <PublicShell>
-      {}
-      <section className="border-b border-line">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:px-6 md:py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-14">
+      <section>
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-8 pb-10 md:px-6 md:pt-14 md:pb-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-14">
           <div>
-            <p className="eyebrow-caps mb-3 text-caption font-semibold text-secondary">
+            <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-sun-chip px-3 py-1 text-caption font-semibold text-on-sun dark:text-sun">
+              <Icon name="location" size={14} />
               {t("Ville d'EtherBay · Loterie de fin d'année", 'City of EtherBay · Year-end lottery')}
             </p>
-            <h1 className="mb-4 text-hero font-bold tracking-[-0.6px] md:text-display">
+            <h1 className="mb-4 text-hero font-bold tracking-[-0.8px] md:text-display md:tracking-[-1.2px]">
               {t('La loterie citoyenne que chacun peut vérifier.', 'The community lottery anyone can verify.')}
             </h1>
-            <p className="mb-6 max-w-xl text-subtitle text-fg-secondary">
+            <p className="mb-7 max-w-xl text-subtitle text-fg-secondary">
               {t(
                 "Participez au tirage municipal avec des ethers fictifs, suivez votre ticket sur la blockchain et cumulez des points à échanger chez les commerçants d'EtherBay.",
                 "Join the city draw with test ethers, follow your ticket on the blockchain and earn points to spend at EtherBay's local shops."
@@ -162,12 +182,14 @@ export default function LandingPage() {
             <div className="flex flex-col gap-2.5 sm:flex-row">
               <LinkButton href="/connexion" fullWidth={false} className="sm:min-w-52">
                 {t('Participer gratuitement', 'Take part for free')}
+                <Icon name="arrowRight" size={18} />
               </LinkButton>
               <LinkButton href="/transparence" variant="outline" fullWidth={false} className="sm:min-w-44">
                 {t('Lire les règles', 'Read the rules')}
               </LinkButton>
             </div>
-            <p className="mt-4 text-caption text-fg-muted">
+            <p className="mt-5 flex items-start gap-2 text-caption font-medium text-fg-muted">
+              <Icon name="shield" size={14} className="mt-px" />
               {t(
                 'Réservé aux personnes majeures · Ethers fictifs offerts par la Mairie · Remboursement automatique en cas d annulation',
                 'Adults only · Test ethers granted by City Hall · Automatic refund if cancelled'
@@ -175,15 +197,21 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-3.5">
-            {isLoading ? (
-              <>
-                <Skeleton className="h-40 w-full rounded-lg" />
-                <Skeleton className="h-28 w-full rounded-lg" />
-              </>
-            ) : isError || !status ? (
-              <div className="card p-5">
-                <p className="text-body font-bold">{t('Tirage municipal', 'City draw')}</p>
+          {isLoading ? (
+            <Card tone="sun" padding="lg" className="flex flex-col gap-3 rounded-[28px]">
+              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-28 w-full" />
+            </Card>
+          ) : isError || !status ? (
+            <Card tone="peach" padding="lg" className="flex items-start gap-4 rounded-[28px]">
+              <span
+                aria-hidden
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface text-terracotta"
+              >
+                <Icon name="alert" size={22} />
+              </span>
+              <div>
+                <p className="text-subtitle font-bold">{t('Tirage municipal', 'City draw')}</p>
                 <p className="mt-1 text-caption text-fg-secondary">
                   {t(
                     'Les données en direct sont momentanément indisponibles. Les règles restent consultables.',
@@ -191,55 +219,73 @@ export default function LandingPage() {
                   )}
                 </p>
               </div>
-            ) : (
-              <>
+            </Card>
+          ) : (
+            <Card
+              tone="sun"
+              padding="lg"
+              className="flex flex-col gap-3 rounded-[28px] shadow-[0_16px_40px_rgba(172,141,10,0.22)]"
+            >
+              <div className="flex items-center justify-between gap-3">
                 <NetworkPill network={status.network} />
-                <CountdownTimer
-                  targetTime={status.round.drawTargetTime}
-                  initialSeconds={status.round.remainingSeconds}
-                  prizePoolEth={status.round.prizePool}
-                  roundNumber={status.round.contractRoundId}
-                  simulated={Boolean(status.guarantees?.simulated)}
-                />
-                <ProgressBar
-                  percentage={status.progression.percentage}
-                  currentValue={status.progression.distinctParticipants ?? status.progression.ticketsSold}
-                  targetValue={status.progression.targetParticipants ?? TARGET_PARTICIPANTS}
-                  title={t('Objectif : 10 000 participants', 'Goal: 10,000 participants')}
-                />
-              </>
-            )}
-          </div>
+                <span
+                  aria-hidden
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-sun-soft"
+                >
+                  <Icon name="wheel" size={34} />
+                </span>
+              </div>
+              <CountdownTimer
+                targetTime={status.round.drawTargetTime}
+                initialSeconds={status.round.remainingSeconds}
+                prizePoolEth={status.round.prizePool}
+                roundNumber={status.round.contractRoundId}
+                simulated={Boolean(status.guarantees?.simulated)}
+              />
+              <ProgressBar
+                percentage={status.progression.percentage}
+                currentValue={status.progression.distinctParticipants ?? status.progression.ticketsSold}
+                targetValue={status.progression.targetParticipants ?? TARGET_PARTICIPANTS}
+                title={t('Objectif : 10 000 participants', 'Goal: 10,000 participants')}
+              />
+            </Card>
+          )}
         </div>
       </section>
 
-      {}
       <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16" aria-labelledby="parcours-title">
         <div className="mb-8 max-w-2xl">
-          <p className="text-caption font-medium text-secondary">{t('Comment ça marche', 'How it works')}</p>
-          <h2 id="parcours-title" className="text-title font-bold md:text-hero">
+          <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-sun-chip px-3 py-1 text-caption font-semibold text-on-sun dark:text-sun">{t('Comment ça marche', 'How it works')}</p>
+          <h2 id="parcours-title" className="text-title font-bold tracking-[-0.5px] md:text-hero">
             {t('Six étapes, de la découverte au résultat', 'Six steps, from discovery to result')}
           </h2>
         </div>
-        <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ol className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
           {steps.map((step, idx) => (
-            <li key={step.key} className="card flex flex-col gap-2 p-[18px]">
-              <span className="self-start rounded-sm bg-surface-elevated px-2.5 py-1 text-caption font-bold text-secondary">
-                {t(`Étape ${idx + 1} / 6`, `Step ${idx + 1} / 6`)}
-              </span>
-              <h3 className="text-subtitle font-bold">{step.title}</h3>
+            <li key={step.key} className="card flex flex-col gap-3 p-5">
+              <div className="flex items-center justify-between gap-3">
+                <span
+                  aria-hidden
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-sun-chip text-on-sun dark:text-sun"
+                >
+                  <Icon name={step.icon} size={20} />
+                </span>
+                <span className="rounded-full bg-surface-elevated px-3 py-1 text-caption font-semibold text-fg-secondary tabular">
+                  {t(`Étape ${idx + 1} / 6`, `Step ${idx + 1} / 6`)}
+                </span>
+              </div>
+              <h3 className="text-subtitle font-bold tracking-[-0.2px]">{step.title}</h3>
               <p className="text-body text-fg-secondary">{step.body}</p>
             </li>
           ))}
         </ol>
       </section>
 
-      {}
-      <section className="border-y border-line bg-surface" aria-labelledby="garanties-title">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:px-6 md:py-16 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="mx-auto max-w-6xl px-4 md:px-6" aria-labelledby="garanties-title">
+        <div className="card grid gap-8 p-6 md:p-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p className="text-caption font-medium text-secondary">{t('Ce que vous engagez', 'What you commit')}</p>
-            <h2 id="garanties-title" className="mb-3 text-title font-bold md:text-hero">
+            <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-sun-chip px-3 py-1 text-caption font-semibold text-on-sun dark:text-sun">{t('Ce que vous engagez', 'What you commit')}</p>
+            <h2 id="garanties-title" className="mb-3 text-title font-bold tracking-[-0.5px] md:text-hero">
               {t('0,01 ETH fictif par ticket. Rien de réel.', '0.01 test ETH per ticket. Nothing real.')}
             </h2>
             <p className="mb-5 text-body text-fg-secondary">
@@ -248,69 +294,92 @@ export default function LandingPage() {
                 'Each ticket costs 0.01 test ether and earns 50 EtherPoints, redeemable for perks at partner shops. The winner takes the test prize pool and a commemorative certificate.'
               )}
             </p>
-            <Link href="/transparence" className="text-small font-medium text-primary underline underline-offset-4">
+            <Link
+              href="/transparence"
+              className="inline-flex items-center gap-1.5 text-small font-semibold text-fg underline-offset-4 hover:underline"
+            >
               {t('Consulter la charte de transparence complète', 'Read the full transparency charter')}
+              <Icon name="chevronRight" size={16} />
             </Link>
           </div>
           <ul className="grid gap-3 sm:grid-cols-2">
             {guarantees.map((g) => (
-              <li key={g.title} className="rounded-lg border border-line bg-background p-4">
-                <h3 className="mb-1 text-body font-bold text-primary">{g.title}</h3>
-                <p className="text-small text-fg-secondary">{g.body}</p>
+              <li key={g.title} className={`flex flex-col gap-2.5 rounded-[20px] p-4 ${g.tone}`}>
+                <span aria-hidden className={`flex h-10 w-10 items-center justify-center rounded-full ${g.badge}`}>
+                  <Icon name={g.icon} size={18} />
+                </span>
+                <h3 className="text-body font-bold">{g.title}</h3>
+                <p className="text-small opacity-80">{g.body}</p>
               </li>
             ))}
           </ul>
         </div>
       </section>
 
-      {}
       <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16" aria-labelledby="resultat-title">
-        <div className="card flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between md:p-8">
-          <div>
-            <p className="text-caption font-medium text-secondary">{t('Résultat du tirage', 'Draw result')}</p>
-            <h2 id="resultat-title" className="text-title font-bold">
-              {winner
-                ? t(`Gagnant : ${shortenWallet(winner, 6)}`, `Winner: ${shortenWallet(winner, 6)}`)
-                : t('Publié ici le jour du tirage', 'Published here on draw day')}
-            </h2>
-            <p className="mt-1 max-w-xl text-body text-fg-secondary">
-              {winner
-                ? status?.guarantees?.simulated
-                  ? t(
-                      'Mode démonstration : ce résultat a été tiré par le serveur, sans certification Chainlink VRF.',
-                      'Demo mode: this result was drawn by the server, without Chainlink VRF certification.'
-                    )
+        <Card
+          tone="ink"
+          padding="lg"
+          className="flex flex-col gap-5 rounded-[28px] md:flex-row md:items-center md:justify-between md:p-8"
+        >
+          <div className="flex items-start gap-4">
+            <span
+              aria-hidden
+              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-sun text-on-sun"
+            >
+              <Icon name="trophy" size={26} />
+            </span>
+            <div>
+              <p className="mb-2 inline-flex rounded-full bg-white/10 px-3 py-1 text-caption font-semibold text-sun">
+                {t('Résultat du tirage', 'Draw result')}
+              </p>
+              <h2 id="resultat-title" className="text-title font-bold tracking-[-0.5px]">
+                {winner
+                  ? t(`Gagnant : ${shortenWallet(winner, 6)}`, `Winner: ${shortenWallet(winner, 6)}`)
+                  : t('Publié ici le jour du tirage', 'Published here on draw day')}
+              </h2>
+              <p className="mt-1 max-w-xl text-body text-white/70">
+                {winner
+                  ? status?.guarantees?.simulated
+                    ? t(
+                        'Mode démonstration : ce résultat a été tiré par le serveur, sans certification Chainlink VRF.',
+                        'Demo mode: this result was drawn by the server, without Chainlink VRF certification.'
+                      )
+                    : t(
+                        'La preuve Chainlink VRF associée permet à chacun de vérifier le résultat.',
+                        'The associated Chainlink VRF proof lets anyone verify the result.'
+                      )
                   : t(
-                      'La preuve Chainlink VRF associée permet à chacun de vérifier le résultat.',
-                      'The associated Chainlink VRF proof lets anyone verify the result.'
-                    )
-                : t(
-                    'Le tirage public est diffusé en direct. Le portefeuille gagnant et sa preuve seront affichés ici.',
-                    'The public draw is streamed live. The winning wallet and its proof will appear here.'
-                  )}
-            </p>
+                      'Le tirage public est diffusé en direct. Le portefeuille gagnant et sa preuve seront affichés ici.',
+                      'The public draw is streamed live. The winning wallet and its proof will appear here.'
+                    )}
+              </p>
+            </div>
           </div>
-          <LinkButton href="/tirage" variant="outline" fullWidth={false} className="md:min-w-48">
+          <LinkButton href="/tirage" fullWidth={false} className="shrink-0 md:min-w-48">
             {t('Salle de tirage', 'Live draw room')}
+            <Icon name="arrowRight" size={18} />
           </LinkButton>
-        </div>
+        </Card>
       </section>
 
-      {}
       <section className="mx-auto max-w-3xl px-4 pb-16 md:px-6" aria-labelledby="faq-title">
-        <h2 id="faq-title" className="mb-4 text-title font-bold">
+        <h2 id="faq-title" className="mb-5 text-title font-bold tracking-[-0.5px] md:text-hero">
           {t('Questions fréquentes', 'Frequently asked questions')}
         </h2>
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-3">
           {faq.map((item) => (
-            <details key={item.q} className="card group p-4">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-body font-semibold">
+            <details key={item.q} className="card group p-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-body font-bold">
                 {item.q}
-                <span aria-hidden className="text-fg-muted transition-transform group-open:rotate-45">
+                <span
+                  aria-hidden
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-elevated text-fg transition-transform group-open:rotate-45"
+                >
                   +
                 </span>
               </summary>
-              <p className="mt-2 text-body text-fg-secondary">{item.a}</p>
+              <p className="mt-3 text-body text-fg-secondary">{item.a}</p>
             </details>
           ))}
         </div>
