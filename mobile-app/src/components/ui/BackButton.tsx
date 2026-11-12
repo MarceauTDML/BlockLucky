@@ -1,46 +1,42 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+
+import Icon from './icons/Icon';
 import useAppTheme from '../../hooks/useAppTheme';
-import AppText from './AppText';
 
 export interface BackButtonProps {
   onPress: () => void;
   label?: string;
+  style?: StyleProp<ViewStyle>;
 }
 
-export const BackButton: React.FC<BackButtonProps> = ({
-  onPress,
-  label,
-}) => {
-  const { colors, borderRadius, t } = useAppTheme();
-  const displayLabel = label || t('Retour', 'Back');
+export const BackButton: React.FC<BackButtonProps> = ({ onPress, label, style }) => {
+  const { colors, t } = useAppTheme();
 
   return (
-    <TouchableOpacity
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label || t('Retour', 'Back')}
+      hitSlop={8}
       onPress={onPress}
-      activeOpacity={0.7}
-      style={[
+      style={({ pressed }) => [
         styles.button,
-        {
-          backgroundColor: colors.surfaceElevated,
-          borderRadius: borderRadius.sm,
-        },
+        { backgroundColor: colors.surface, opacity: pressed ? 0.8 : 1 },
+        style,
       ]}
     >
-      <AppText variant="caption" weight="medium" color={colors.textPrimary}>
-        {'← '}
-        {displayLabel}
-      </AppText>
-    </TouchableOpacity>
+      <Icon name="arrowLeft" size={24} color={colors.ink} />
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginBottom: 10,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

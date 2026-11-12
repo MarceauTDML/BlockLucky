@@ -9,19 +9,20 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1A0B2E"
+      "backgroundColor": "#F6F7FA"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "fr.etherbay.blocklucky",
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#1A0B2E"
+        "backgroundColor": "#FFDA38"
       },
       "package": "fr.etherbay.blocklucky",
       "allowBackup": false
@@ -33,7 +34,17 @@
     "plugins": [
       "expo-secure-store",
       "expo-font",
-      "expo-status-bar"
-    ]
+      "expo-status-bar",
+      "expo-web-browser",
+      "expo-apple-authentication",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "BlockLucky accède à vos photos pour envoyer le recto et le verso de votre pièce d'identité à la Mairie.",
+          "cameraPermission": "BlockLucky utilise l'appareil photo pour photographier votre pièce d'identité afin de vérifier votre âge."
+        }
+      ]
+    ],
+    "scheme": "blocklucky"
   }
 }

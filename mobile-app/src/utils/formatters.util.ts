@@ -12,6 +12,9 @@ export const formatPoints = (points: number): string => {
   return `${Number(points || 0)} pts`;
 };
 
+export const formatPercentage = (value: number): string => {
+  return `${Math.round(Number(value || 0))}%`;
+};
 
 export const formatEthBalance = (amount: number, decimals = 4): string => {
   return Number(amount || 0).toFixed(decimals);

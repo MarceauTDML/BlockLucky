@@ -1,61 +1,78 @@
 import React from 'react';
 import { Text, TextProps, StyleSheet } from 'react-native';
+
 import useAppTheme from '../../hooks/useAppTheme';
+import { FontWeightName, rf } from '../../theme/typography';
+
+type Variant =
+  | 'display'
+  | 'hero'
+  | 'title'
+  | 'section'
+  | 'subtitle'
+  | 'body'
+  | 'small'
+  | 'caption'
+  | 'overline'
+  | 'label';
+
+const VARIANTS: Record<Variant, { size: number; weight: FontWeightName; uppercase?: boolean }> = {
+  display: { size: 43, weight: 'bold' },
+  hero: { size: 28, weight: 'bold' },
+  title: { size: 23, weight: 'bold' },
+  section: { size: 21, weight: 'bold' },
+  subtitle: { size: 16, weight: 'bold' },
+  body: { size: 13, weight: 'regular' },
+  small: { size: 12, weight: 'regular' },
+  caption: { size: 11, weight: 'regular' },
+  overline: { size: 10, weight: 'bold', uppercase: true },
+  label: { size: 9, weight: 'bold', uppercase: true },
+};
 
 export interface AppTextProps extends TextProps {
-  variant?: 'hero' | 'title' | 'subtitle' | 'body' | 'caption' | 'overline';
-  weight?: 'regular' | 'medium' | 'semibold' | 'bold';
+  variant?: Variant;
+  size?: number;
+  weight?: FontWeightName;
+  italic?: boolean;
   color?: string;
   align?: 'left' | 'center' | 'right';
+  lineHeight?: number;
 }
 
 export const AppText: React.FC<AppTextProps> = ({
   children,
   variant = 'body',
-  weight = 'regular',
+  size,
+  weight,
+  italic = false,
   color,
   align = 'left',
+  lineHeight,
   style,
   ...rest
 }) => {
   const { colors, typography } = useAppTheme();
-
-  const fontSizeMap = {
-    hero: typography.fontSize.hero,
-    title: typography.fontSize.xxl,
-    subtitle: typography.fontSize.lg,
-    body: typography.fontSize.md,
-    caption: typography.fontSize.xs,
-    overline: typography.fontSize.xs,
-  };
-
-  const lineHeightMap = {
-    hero: typography.lineHeight.hero,
-    title: typography.lineHeight.xxl,
-    subtitle: typography.lineHeight.lg,
-    body: typography.lineHeight.md,
-    caption: typography.lineHeight.xs,
-    overline: typography.lineHeight.xs,
-  };
-
-  const fontWeightMap = {
-    regular: '400' as const,
-    medium: '500' as const,
-    semibold: '600' as const,
-    bold: '700' as const,
-  };
+  const preset = VARIANTS[variant];
+  const fontSize = rf(size ?? preset.size);
+  const resolvedWeight = weight ?? preset.weight;
+  const fontFamily =
+    italic && resolvedWeight === 'bold'
+      ? typography.fontFamily.boldItalic
+      : typography.fontFamily[resolvedWeight];
 
   return (
     <Text
       style={[
         styles.base,
-        variant === 'overline' ? styles.overline : undefined,
         {
-          color: color || colors.textPrimary,
-          fontSize: fontSizeMap[variant],
-          lineHeight: lineHeightMap[variant],
-          fontWeight: fontWeightMap[weight],
+          color: color ?? colors.ink,
+          fontSize,
+          lineHeight: lineHeight
+            ? rf(lineHeight)
+            : Math.round(fontSize * typography.lineHeightRatio),
+          fontFamily,
           textAlign: align,
+          textTransform: preset.uppercase ? 'uppercase' : 'none',
         },
         style,
       ]}
@@ -69,11 +86,6 @@ export const AppText: React.FC<AppTextProps> = ({
 const styles = StyleSheet.create({
   base: {
     includeFontPadding: false,
-    letterSpacing: -0.15,
-  },
-  overline: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
   },
 });
 
