@@ -22,7 +22,7 @@ Deux autres réglages complètent la liste :
 |---|---|---|
 | `poweredByHeader` | `false` | Supprime l'en-tête `X-Powered-By: Next.js` |
 | `productionBrowserSourceMaps` | `false` | Aucune source map publique en production |
-| `Cache-Control` sur `/_next/static/:path*` | `public, max-age=31536000, immutable` | Les fichiers à empreinte sont mis en cache un an |
+| `Cache-Control` sur `/_next/static/:path*` | `public, max-age=31536000, immutable`, en production seulement | Les fichiers à empreinte sont mis en cache un an. En développement, l'en-tête n'est pas envoyé : il empêchait le navigateur de recharger le code modifié et provoquait des erreurs d'hydratation |
 
 `Strict-Transport-Security` est envoyé même en développement sur `http://localhost` ; les navigateurs l'ignorent sur une connexion non chiffrée, il ne gêne donc pas le travail local. En production, il ne protège que si le site est réellement servi en HTTPS par le proxy (voir [Déploiement sur etherbay.tech](../infrastructure/deploiement-etherbay.md)).
 
