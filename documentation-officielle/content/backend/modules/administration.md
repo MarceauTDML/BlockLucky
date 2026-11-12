@@ -1,13 +1,13 @@
 # Administration Mairie
 
-Le module `admin` sert l'espace d'administration de la Mairie d'EtherBay : tableau de bord, disjoncteur du smart contract, reversement de la commission à la trésorerie, suspension des partenaires, export de rapports et journal d'audit. Le tirage et l'annulation d'un tour, aussi réservés à l'ADMIN, sont dans le module [Loterie](loterie.md#post-lottery-draw).
+Le module `admin` sert l'espace d'administration de la Mairie d'EtherBay : tableau de bord, disjoncteur du smart contract, reversement de la commission à la trésorerie, suspension des partenaires, vérification des pièces d'identité, export de rapports et journal d'audit. Le tirage et l'annulation d'un tour, aussi réservés à l'ADMIN, sont dans le module [Loterie](loterie.md#post-lottery-draw).
 
 | Fichier | Contenu |
 |---|---|
-| [`backend/src/api/admin/admin.routes.ts`](src:backend/src/api/admin/admin.routes.ts) | 6 routes, protection au niveau du routeur |
-| [`backend/src/api/admin/admin.validators.ts`](src:backend/src/api/admin/admin.validators.ts) | 3 schémas Zod |
+| [`backend/src/api/admin/admin.routes.ts`](src:backend/src/api/admin/admin.routes.ts) | 9 routes, protection au niveau du routeur |
+| [`backend/src/api/admin/admin.validators.ts`](src:backend/src/api/admin/admin.validators.ts) | 6 schémas Zod |
 | [`backend/src/api/admin/admin.services.ts`](src:backend/src/api/admin/admin.services.ts) | Règles métier et écriture de l'audit |
-| [`backend/src/api/admin/admin.repo.ts`](src:backend/src/api/admin/admin.repo.ts) | Agrégats, audit, statut des partenaires |
+| [`backend/src/api/admin/admin.repo.ts`](src:backend/src/api/admin/admin.repo.ts) | Agrégats, audit, statut des partenaires, demandes de vérification d'identité |
 | [`backend/src/services/blockchain.service.ts`](src:backend/src/services/blockchain.service.ts) | Disjoncteur et trésorerie en mode simulé |
 
 ## Protection
@@ -19,7 +19,7 @@ Le routeur applique `router.use(authenticate, requireRoles('ADMIN'))` avant tout
 | Jeton présent et valide | `401` |
 | Rôle du jeton égal à `ADMIN` | `403 Accès refusé (RBAC) : Rôle ADMIN requis pour cette ressource` |
 | Compte encore présent, non supprimé, rôle inchangé en base | `403 Droits révoqués ou modifiés : reconnectez-vous` |
-| 2FA active sur le compte si `ADMIN_MFA_REQUIRED=true` | `403 La double authentification est obligatoire pour les comptes d'administration. Activez-la depuis votre profil.` |
+| 2FA active sur le compte si `ADMIN_MFA_REQUIRED=true` | `403 La double authentification est obligatoire pour les comptes d'administration. Activez-la depuis votre profil.`, avec `errors.code` à `ADMIN_MFA_REQUIRED` |
 | Base de données joignable pour ces vérifications | `503 Vérification des droits impossible` |
 
 Pendant une maintenance (`MAINTENANCE_MODE=true`), seules les routes appelées par `/api/admin/...` restent accessibles ; le préfixe `/api/v1/admin/...` est bloqué comme le reste de l'API (voir [Structure et cycle d'une requête](../structure.md#middlewares-globaux)).
@@ -33,6 +33,9 @@ Pendant une maintenance (`MAINTENANCE_MODE=true`), seules les routes appelées p
 | `POST /api/v1/admin/treasury/withdraw` | `validate(treasuryWithdrawalSchema)` | Reversement de la commission | `TREASURY_WITHDRAWAL_MULTISIG` |
 | `PATCH /api/v1/admin/partners/:partnerId/status` | `validate(approvePartnerSchema)` | Activation ou suspension d'un partenaire | `PARTNER_APPROVED` ou `PARTNER_SUSPENDED` |
 | `GET /api/v1/admin/reports/export` | aucun | Rapport CSV ou « PDF » | `EXPORT_REPORT_CSV` ou `EXPORT_REPORT_PDF` |
+| `GET /api/v1/admin/identity-verifications` | `validate(listIdentityVerificationsSchema)` | File des pièces d'identité par statut | non |
+| `GET /api/v1/admin/identity-verifications/:id` | `validate(identityVerificationIdSchema)` | Consultation d'une pièce | `IDENTITY_DOCUMENT_VIEWED` |
+| `POST /api/v1/admin/identity-verifications/:id/decision` | `validate(identityDecisionSchema)` | Approbation ou refus | `IDENTITY_VERIFICATION_DECISION` |
 | `GET /api/v1/admin/audit-logs` | aucun | Journal d'audit | non |
 
 ## GET /admin/dashboard
@@ -149,6 +152,51 @@ Le rapport reprend les `kpis` du tableau de bord.
 > [!WARNING]
 > Aucun PDF n'est produit : le fichier `.pdf` ne s'ouvre pas dans un lecteur PDF. `downloadUrl` est construit comme `AWS_S3_ENDPOINT/AWS_S3_BUCKET/clé`, sans URL présignée : il ne fonctionne que si le bucket est public. Si le dépôt S3 échoue, l'erreur est seulement journalisée et l'URL renvoyée pointe vers un fichier absent.
 
+## Vérification des pièces d'identité
+
+Ces trois routes servent la page [Identités](../../web/pages.md) de l'espace Mairie. Elles traitent les demandes envoyées par `POST /user/identity` (voir [Utilisateur](utilisateur.md#verification-d-age)).
+
+### GET /admin/identity-verifications
+
+| Paramètre | Règles |
+|---|---|
+| `status` | `PENDING` (défaut), `VERIFIED` ou `REJECTED` |
+| `page`, `limit` | pagination, `limit` de 1 à 100 |
+
+La liste est triée par date d'envoi, la plus ancienne en premier. Chaque entrée contient `id`, `userId`, `email`, `submittedAt` et `status`, sans image. La réponse porte un objet `meta` de pagination.
+
+### GET /admin/identity-verifications/:id
+
+L'identifiant doit être un UUID (`400 Identifiant de demande invalide`) ; une demande inconnue renvoie 404. La réponse, servie avec `Cache-Control: no-store`, contient le compte (`email`, `walletAddress`, `accountCreatedAt`), le statut, les dates, l'agent qui a statué, le motif d'un refus et les deux images `front` et `back` sous forme d'URL `data:` déchiffrées.
+
+Les images ne sont renvoyées que pour une demande `PENDING`. Après une décision, `front` et `back` valent `null`, puisque les images ont été effacées. Chaque consultation est tracée dans l'audit, même sans image.
+
+### POST /admin/identity-verifications/:id/decision
+
+| Champ | Type | Règles |
+|---|---|---|
+| `approved` | booléen | obligatoire |
+| `note` | chaîne | 500 caractères au plus ; au moins 3 caractères obligatoires en cas de refus (`Le motif du refus est obligatoire`) |
+
+| Cas | Réponse |
+|---|---|
+| Demande inconnue | `404 Demande de vérification d'identité introuvable` |
+| Demande de l'administrateur lui-même | `403 Vous ne pouvez pas statuer sur votre propre pièce d'identité.` |
+| Demande déjà traitée, y compris par un autre agent au même moment | `409 Cette demande a déjà été traitée.` |
+
+La décision est écrite dans une transaction qui ne s'applique qu'à une demande encore `PENDING` :
+
+| Donnée | Approbation | Refus |
+|---|---|---|
+| `IdentityDocument.status` | `VERIFIED` | `REJECTED` |
+| `frontEncrypted`, `backEncrypted` | effacés | effacés |
+| `reviewedAt`, `reviewerId` | date et agent | date et agent |
+| `User.ageVerificationStatus` | `VERIFIED` | `REJECTED` |
+| `User.ageVerifiedAt` | date de la décision | `null` |
+| `User.ageVerificationNote` | `null` | motif |
+
+L'administrateur reçoit `{ "decision": { "id", "userId", "status", "reviewedAt", "note" } }`. Le citoyen reçoit l'email `identity-decision`, avec le motif en cas de refus ; il peut alors envoyer une nouvelle pièce. Un compte sans email n'est pas prévenu.
+
 ## Journal d'audit
 
 Chaque action sensible écrit une ligne `Analytics` avec `eventType = ADMIN_AUDIT:<action>`, `userId` de l'administrateur, `utmSource = admin-dashboard` et le détail en `metadata`. Les clients ne peuvent pas écrire de lignes avec ce préfixe (voir [Analytique](analytique.md#post-analytics-track)).
@@ -159,6 +207,8 @@ Chaque action sensible écrit une ligne `Analytics` avec `eventType = ADMIN_AUDI
 | `TREASURY_WITHDRAWAL_MULTISIG` | `multisigWallet`, `amountEth` (versé), `requestedAmountEth`, `note`, `transactionHash` |
 | `PARTNER_APPROVED`, `PARTNER_SUSPENDED` | `partnerId`, `partnerName`, `isActive` |
 | `EXPORT_REPORT_CSV`, `EXPORT_REPORT_PDF` | `format`, `timestamp` |
+| `IDENTITY_DOCUMENT_VIEWED` | `verificationId`, `userId`, `imagesShown` |
+| `IDENTITY_VERIFICATION_DECISION` | `verificationId`, `userId`, `approved`, `status`, `note` s'il est fourni |
 
 L'audit est écrit après l'action : une action qui échoue n'est pas tracée, et un échec d'écriture de l'audit après une transaction réussie renvoie une erreur alors que l'action a eu lieu. Le tirage et l'annulation de tour (`POST /lottery/draw`, `/refund`) ne sont pas audités.
 

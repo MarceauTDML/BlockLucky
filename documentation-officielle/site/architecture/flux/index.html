@@ -54,16 +54,16 @@
 <tbody><tr>
 <td>Inscription et portefeuille</td>
 <td>Citoyen</td>
-<td><code>POST /api/v1/auth/login</code> puis <code>POST /api/v1/auth/2fa/verify</code></td>
-<td>Défi OTP, création du compte et du portefeuille, EtherPoints de bienvenue, JWT</td>
-<td>Email du code, dotation de bienvenue, email de bienvenue</td>
+<td><code>POST /api/v1/auth/signup</code> (mobile) ou <code>/auth/login</code> (web), puis <code>POST /api/v1/auth/2fa/verify</code> ; ensuite <code>POST /api/v1/user/identity</code></td>
+<td>Défi OTP, création du compte et du portefeuille, EtherPoints de bienvenue, JWT, envoi chiffré de la pièce d&#39;identité</td>
+<td>Email du code, dotation de bienvenue, email de bienvenue, décision de la Mairie et son email</td>
 <td><a href="inscription.html">Inscription et portefeuille</a></td>
 </tr>
 <tr>
 <td>Achat et cadeau</td>
-<td>Citoyen</td>
+<td>Citoyen dont l&#39;âge est vérifié</td>
 <td><code>POST /api/v1/lottery/buy</code>, <code>POST /api/v1/lottery/gift</code></td>
-<td>Transaction signée par le citoyen, attente du reçu, indexation, EtherPoints</td>
+<td>Contrôle de l&#39;âge et du ticket unique, transaction signée par le citoyen, attente du reçu, indexation, EtherPoints</td>
 <td>Frappe du badge POAP, événement <code>points:awarded</code></td>
 <td><a href="achat-cadeau.html">Achat et cadeau de ticket</a></td>
 </tr>
@@ -71,7 +71,7 @@
 <td>Tirage et cagnotte</td>
 <td>Keeper ou Mairie</td>
 <td><code>runKeeperOnce</code>, <code>POST /api/v1/lottery/draw</code></td>
-<td>Demande VRF</td>
+<td>Salle d&#39;attente de <code>DRAW_REVEAL_DELAY_SECONDS</code> côté keeper, demande VRF</td>
 <td>Réponse VRF, indexation de <code>WinnerPicked</code>, annonce <code>draw:winner</code>, retrait de la cagnotte</td>
 <td><a href="tirage.html">Tirage et versement de la cagnotte</a></td>
 </tr>
@@ -93,8 +93,8 @@
 </tr>
 <tr>
 <td>Échange de récompense</td>
-<td>Citoyen, puis commerçant</td>
-<td><code>POST /api/v1/marketplace/claim</code>, <code>POST /api/v1/marketplace/redeem</code></td>
+<td>Citoyen dont l&#39;âge est vérifié, puis commerçant</td>
+<td><code>POST /api/v1/marketplace/claim</code> ou <code>/scratch</code>, <code>POST /api/v1/marketplace/redeem</code></td>
 <td>Débit des points, code promo, décrément du stock</td>
 <td>Email du code promo</td>
 <td><a href="recompense.html">Échange de récompense</a></td>
@@ -124,7 +124,7 @@
 <h2 id="principes-communs"><a class="anchor" href="#principes-communs" aria-hidden="true" tabindex="-1">#</a>Principes communs</h2>
 <h3 id="chaine-d-une-requete"><a class="anchor" href="#chaine-d-une-requete" aria-hidden="true" tabindex="-1">#</a>Chaîne d&#39;une requête</h3>
 <p>Toutes les requêtes HTTP traversent la même chaîne, montée dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a> : contexte de requête, métriques, Helmet, CORS, parsing JSON, mode maintenance, rate limit global (300 requêtes par 15 minutes et par IP), puis le routeur du module. Dans le routeur, l&#39;ordre est toujours :</p>
-<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">authenticate -&gt; requireRoles -&gt; idempotency -&gt; validate -&gt; controller -&gt; service -&gt; repo ou passerelle</code></pre></div>
+<div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">authenticate -&gt; requireRoles ou requireAgeVerification -&gt; idempotency -&gt; validate -&gt; controller -&gt; service -&gt; repo ou passerelle</code></pre></div>
 <p>Le controller appelle un service, puis répond avec <code>sendSuccess</code>. Toute exception remonte par <code>next(error)</code> jusqu&#39;à <code>errorHandler</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/error.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/error.middleware.ts</code></a>). Voir <a href="../../backend/reponses-erreurs.html">Réponses et erreurs</a>.</p>
 <h3 id="erreurs-communes-a-tous-les-flux"><a class="anchor" href="#erreurs-communes-a-tous-les-flux" aria-hidden="true" tabindex="-1">#</a>Erreurs communes à tous les flux</h3>
 <div class="table-wrap"><table>
@@ -151,13 +151,18 @@
 <td><code>requireRoles</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/rbac.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/rbac.middleware.ts</code></a></td>
 </tr>
 <tr>
+<td>403</td>
+<td>Âge non vérifié (<code>AGE_VERIFICATION_REQUIRED</code>) sur l&#39;achat, le cadeau, l&#39;échange et le ticket à gratter</td>
+<td><code>requireAgeVerification</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/age-verification.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/age-verification.middleware.ts</code></a></td>
+</tr>
+<tr>
 <td>409</td>
 <td>Unicité ou contrainte CHECK violée en base, conflit de transaction</td>
 <td><code>errorHandler</code></td>
 </tr>
 <tr>
 <td>413</td>
-<td>Corps supérieur à 1 Mo</td>
+<td>Corps supérieur à 1 Mo, ou à 12 Mo pour l&#39;envoi d&#39;une pièce d&#39;identité</td>
 <td><code>errorHandler</code></td>
 </tr>
 <tr>

@@ -86,9 +86,13 @@
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/integration/full-draw-flow.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/integration/full-draw-flow.test.ts</code></a></td>
 <td>Parcours inscription, achat, tirage simulé et gagnant</td>
 </tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/services/keeper.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/services/keeper.test.ts</code></a></td>
+<td><code>runKeeperOnce</code> avec un contrat et un Redis simulés : attente de <code>DRAW_REVEAL_DELAY_SECONDS</code>, tirage immédiat avec un délai nul, clôture d&#39;un tour expiré sans attente</td>
+</tr>
 </tbody></table></div>
 <div class="hint hint-important"><p class="hint-title">Important</p>
-<p>Aucun test unitaire n&#39;exerce le code de <code>backend/src/blockchain/</code> en mode onchain : la passerelle, l&#39;indexeur, le keeper, la file d&#39;actions et la dotation de bienvenue ne sont vérifiés que par la suite sur nœud réel. Une modification de ces fichiers doit donc être validée avec <code>npm run test:chain</code>, localement ou par le job CI <code>chain</code>.</p>
+<p>Hormis la logique de délai du keeper, testée avec un contrat simulé, aucun test unitaire n&#39;exerce le code de <code>backend/src/blockchain/</code> en mode onchain : la passerelle, l&#39;indexeur, l&#39;envoi des transactions du keeper, la file d&#39;actions et la dotation de bienvenue ne sont vérifiés que par la suite sur nœud réel. Une modification de ces fichiers doit donc être validée avec <code>npm run test:chain</code>, localement ou par le job CI <code>chain</code>.</p>
 </div>
 <h2 id="test-sur-n-ud-reel-npm-run-test-chain"><a class="anchor" href="#test-sur-n-ud-reel-npm-run-test-chain" aria-hidden="true" tabindex="-1">#</a>Test sur nœud réel : npm run test:chain</h2>
 <p>Le script lance <code>jest --runInBand --config jest.chain.config.json</code>. La configuration <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/jest.chain.config.json" class="external" target="_blank" rel="noopener noreferrer"><code>backend/jest.chain.config.json</code></a> :</p>
@@ -140,19 +144,27 @@ npm run <span class="hljs-built_in">test</span>:chain</code></pre></div>
 </tr>
 <tr>
 <td><code>GET /api/v1/lottery/status</code></td>
-<td><code>guarantees.vrfCertified</code> vaut <code>true</code></td>
+<td><code>guarantees.vrfCertified</code> vaut <code>true</code>, <code>round.phase</code> vaut <code>OPEN</code> et <code>revealAt</code> est nul</td>
 </tr>
 <tr>
-<td>Achat de 2 tickets par Alice</td>
-<td>Statut 201, hachage de transaction valide, reçu au statut 1 sur la chaîne, expéditeur égal au portefeuille d&#39;Alice</td>
+<td>Achat d&#39;un ticket par Alice</td>
+<td>Statut 201, numéro de ticket sur 5 chiffres, hachage de transaction valide, reçu au statut 1 sur la chaîne, expéditeur égal au portefeuille d&#39;Alice</td>
 </tr>
 <tr>
-<td>Achat d&#39;un ticket par Bob, puis cadeau d&#39;un ticket de Bob à Alice</td>
-<td>Statut 201 ; <code>recipientWallet</code> égal au portefeuille d&#39;Alice</td>
+<td>Second achat par Alice</td>
+<td>Statut 409, <code>errors.contractError</code> vaut <code>PlayerLimitReached</code></td>
 </tr>
 <tr>
-<td><code>ticketsOf(tour, Alice)</code> sur le contrat</td>
-<td>3</td>
+<td>Achat d&#39;un ticket par Bob, puis cadeau d&#39;un ticket de Bob à Dave, nouvelle adresse</td>
+<td>Statut 201</td>
+</tr>
+<tr>
+<td>Cadeau d&#39;un ticket de Bob à Alice</td>
+<td>Statut 409, « Cette personne a déjà son ticket pour ce grand tirage. »</td>
+</tr>
+<tr>
+<td><code>ticketsOf(tour, Alice)</code> et <code>ticketsOf(tour, Dave)</code> sur le contrat</td>
+<td>1 chacun</td>
 </tr>
 <tr>
 <td>Horloge du nœud avancée après <code>endTime</code> (<code>evm_increaseTime</code>, <code>evm_mine</code>), puis <code>runKeeperOnce()</code></td>
@@ -160,7 +172,7 @@ npm run <span class="hljs-built_in">test</span>:chain</code></pre></div>
 </tr>
 <tr>
 <td>Synchronisations de l&#39;indexeur jusqu&#39;au statut <code>COMPLETED</code> en base</td>
-<td>Gagnant parmi Alice et Bob ; <code>prizeWei</code> égal à 90 % de 4 tickets (commission de 10 %)</td>
+<td>Gagnant parmi Alice, Bob et Dave ; <code>prizeWei</code> égal à 90 % de 3 tickets (commission de 10 %)</td>
 </tr>
 <tr>
 <td>Synchronisations jusqu&#39;à <code>prizeClaimedAt</code></td>
@@ -168,7 +180,7 @@ npm run <span class="hljs-built_in">test</span>:chain</code></pre></div>
 </tr>
 <tr>
 <td><code>GET /api/v1/lottery/my-tickets</code> pour Alice</td>
-<td>Au moins un badge POAP avec un <code>tokenId</code> positif : le job <code>MINT_BADGE</code> a frappé le badge</td>
+<td>Tour <code>COMPLETED</code>, numéro gagnant sur 5 chiffres, <code>isWinner</code> cohérent avec le gagnant ; au moins un badge POAP avec un <code>tokenId</code> positif : le job <code>MINT_BADGE</code> a frappé le badge</td>
 </tr>
 </tbody></table></div>
 <p>Ce scénario traverse tous les composants de cette partie : <a href="portefeuilles.html">portefeuilles</a>, <a href="passerelle.html">passerelle</a>, <a href="indexeur.html">indexeur</a>, <a href="keeper.html">keeper</a>, <a href="actions.html">file d&#39;actions</a> et <a href="metadonnees-poap.html">métadonnées POAP</a>.</p>

@@ -66,9 +66,10 @@ Le label `route` est le chemin paramétré (`/api/v1/lottery/poap/:file`) et non
 
 | Valeur de `event` | Émise par |
 |---|---|
-| `ticket_purchased` | achat de tickets, avec la quantité |
+| `ticket_purchased` | achat d'un ticket |
 | `ticket_indexed` | indexation d'un achat (onchain ou webhook simulé) |
 | `reward_claimed` | échange d'une récompense |
+| `scratch_ticket_bought` | achat d'un ticket à gratter |
 | `points_credited_<type>`, `points_debited_<type>` | chaque mouvement d'EtherPoints, `<type>` en minuscules (`points_credited_ticket_purchase`) |
 
 Exemples de requêtes PromQL :

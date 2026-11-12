@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Achat et cadeau de ticket | Documentation BlockLucky</title>
-<meta name="description" content="Un citoyen achète de 1 à 10 tickets du tour en cours, ou offre un ticket à un proche par son adresse email. Dans les deux cas, la transaction est signée par le ">
+<meta name="description" content="Un citoyen dont l&#39;âge a été vérifié achète son ticket du tour en cours, ou offre un ticket à un proche par son adresse email. Chaque participant ne peut détenir">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../assets/css/doc.css">
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>3. Architecture</span><span>Flux métier</span></div>
     <article class="markdown">
 <h1>Achat et cadeau de ticket</h1>
-<p>Un citoyen achète de 1 à 10 tickets du tour en cours, ou offre un ticket à un proche par son adresse email. Dans les deux cas, la transaction est signée par le portefeuille intégré du citoyen qui paie, envoyée au contrat <code>BlockLucky</code>, puis indexée dès réception du reçu. Les EtherPoints sont crédités par l&#39;indexeur, et un badge POAP est frappé en arrière-plan.</p>
+<p>Un citoyen dont l&#39;âge a été vérifié achète son ticket du tour en cours, ou offre un ticket à un proche par son adresse email. Chaque participant ne peut détenir qu&#39;un ticket par grand tirage, qu&#39;il l&#39;ait acheté ou reçu. Dans les deux cas, la transaction est signée par le portefeuille intégré du citoyen qui paie, envoyée au contrat <code>BlockLucky</code>, puis indexée dès réception du reçu. Les EtherPoints sont crédités par l&#39;indexeur, et un badge POAP est frappé en arrière-plan.</p>
 <h2 id="diagramme-de-sequence-de-l-achat"><a class="anchor" href="#diagramme-de-sequence-de-l-achat" aria-hidden="true" tabindex="-1">#</a>Diagramme de séquence de l&#39;achat</h2>
 <div class="diagram"><pre class="mermaid">sequenceDiagram
   autonumber
@@ -53,40 +53,45 @@
   participant W as Worker
   participant P as Contrat BlockLuckyPOAP
 
-  C-&gt;&gt;API: POST /lottery/buy quantity, Idempotency-Key facultatif
+  C-&gt;&gt;API: POST /lottery/buy, Idempotency-Key facultatif
+  API-&gt;&gt;DB: requireAgeVerification : ageVerificationStatus
   API-&gt;&gt;R: idempotency, verrou __pending__ 60 s
   API-&gt;&gt;S: buyTickets(userId, body)
   S-&gt;&gt;BL: readCurrentRound via getRound
   S-&gt;&gt;DB: upsertRoundFromChain
   S-&gt;&gt;R: user:ticket_limit:userId
-  S-&gt;&gt;DB: countUserTicketsInRound
+  S-&gt;&gt;DB: countUserTicketsInRound, 409 si un ticket existe
   S-&gt;&gt;G: prepareWallet(user)
   G-&gt;&gt;G: ensureWallet puis grantWelcomeEthers ou waitForPendingGrant
-  S-&gt;&gt;G: buyTickets(buyer, quantity)
-  G-&gt;&gt;BL: buyTickets(quantity) signé par le citoyen, value = prix x quantité
+  S-&gt;&gt;BL: ticketsOf(tour, adresse), 409 si non nul
+  S-&gt;&gt;G: buyTickets(buyer, 1)
+  G-&gt;&gt;BL: buyTickets(1) signé par le citoyen, value = prix
   BL--&gt;&gt;G: reçu avec TicketsPurchased
   G-&gt;&gt;I: processReceipt(receipt)
   I-&gt;&gt;DB: transaction tickets et prizePool
-  I-&gt;&gt;DB: creditPoints 50 par ticket
+  I-&gt;&gt;DB: creditPoints 50
   I-)C: Socket.IO points:awarded
   I-&gt;&gt;Q: MINT_BADGE jobId MINT_BADGE-tour-adresse
-  S--&gt;&gt;C: 201 tickets, transactionHash, solde du portefeuille
+  S--&gt;&gt;C: 201 ticket et son numéro, transactionHash, solde du portefeuille
   Q--&gt;&gt;W: job MINT_BADGE
   W-&gt;&gt;P: mintBadge signé par l&#39;opérateur</pre></div>
 <h2 id="achat-pas-a-pas"><a class="anchor" href="#achat-pas-a-pas" aria-hidden="true" tabindex="-1">#</a>Achat pas à pas</h2>
-<p><strong>Route.</strong> <code>POST /api/v1/lottery/buy</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.routes.ts</code></a> : <code>authenticate</code>, <code>idempotency</code>, <code>validate(buyTicketSchema)</code>, puis <code>lotteryController.buyTicket</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.controllers.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.controllers.ts</code></a>).</p>
-<p><strong>Validation.</strong> <code>buyTicketSchema</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.validators.ts</code></a>) : <code>quantity</code> entier de 1 à 10, 1 par défaut ; <code>roundId</code> et <code>retryAttempt</code> sont acceptés mais ignorés en mode <code>onchain</code>.</p>
+<p><strong>Route.</strong> <code>POST /api/v1/lottery/buy</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.routes.ts</code></a> : <code>authenticate</code>, <code>requireAgeVerification</code>, <code>idempotency</code>, <code>validate(buyTicketSchema)</code>, puis <code>lotteryController.buyTicket</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.controllers.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.controllers.ts</code></a>).</p>
+<p><strong>Âge.</strong> <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/age-verification.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>requireAgeVerification</code></a> relit <code>ageVerificationStatus</code> en base et répond <code>403 AGE_VERIFICATION_REQUIRED</code> s&#39;il ne vaut pas <code>VERIFIED</code>. Ce contrôle passe avant l&#39;idempotence : un refus n&#39;est pas mémorisé.</p>
+<p><strong>Validation.</strong> <code>buyTicketSchema</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.validators.ts</code></a>) : <code>quantity</code> vaut 1, valeur par défaut et seule admise (<code>Un seul ticket par participant et par grand tirage.</code>) ; <code>roundId</code> et <code>retryAttempt</code> sont acceptés mais ignorés en mode <code>onchain</code>.</p>
 <p><strong>Service.</strong> <code>lotteryService.buyTickets</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.services.ts</code></a>) délègue à <code>buyOnchain</code> :</p>
 <ol>
 <li><code>authRepository.findById</code> : 404 si le compte n&#39;existe plus.</li>
 <li><code>lotteryGateway.readCurrentRound</code> lit <code>currentRoundId</code> puis <code>getRound</code> dans le contrat. <code>syncRound</code> recopie l&#39;état du tour dans <code>LotteryRound</code> par <code>lotteryRepository.upsertRoundFromChain</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.repo.ts</code></a>).</li>
-<li><strong>Jeu responsable.</strong> La limite personnelle est lue dans <code>user:ticket_limit:&lt;userId&gt;</code> (50 par défaut, modifiable par <code>PUT /user/responsible-limit</code>) et comparée au nombre de tickets du citoyen dans ce tour en base. Ce contrôle s&#39;ajoute à <code>maxTicketsPerPlayer</code>, vérifié par le contrat.</li>
+<li><strong>Jeu responsable.</strong> La limite personnelle est lue dans <code>user:ticket_limit:&lt;userId&gt;</code> (50 par défaut, modifiable par <code>PUT /user/responsible-limit</code>) et comparée au nombre de tickets du citoyen dans ce tour en base. Avec un seul ticket admis, elle ne peut plus être dépassée.</li>
+<li><strong>Ticket unique.</strong> Si le citoyen a déjà un ticket dans ce tour en base, la réponse est <code>409 Vous avez déjà votre ticket pour ce grand tirage.</code> avec <code>contractError: &#39;PlayerLimitReached&#39;</code>.</li>
 <li><code>lotteryGateway.prepareWallet(user)</code> garantit un portefeuille et une dotation. Si la dotation lancée à l&#39;inscription est encore en cours, <code>grantWelcomeEthers</code> trouve le verrou <code>wallet:grant-lock:&lt;id&gt;</code> et attend sa fin par <code>waitForPendingGrant</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/wallet.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/wallet.service.ts</code></a>), jusqu&#39;à 30 s.</li>
+<li><code>lotteryGateway.ticketsOf(tour, adresse)</code> relit sur le contrat le nombre de tickets du portefeuille. Un ticket acheté directement sur la chaîne et pas encore indexé donne la même réponse 409.</li>
 <li><code>lotteryGateway.buyTickets(buyer, quantity)</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.gateway.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.gateway.ts</code></a>) relit le tour, refuse s&#39;il n&#39;est pas <code>OPEN</code> (409), déchiffre la clé du citoyen par <code>walletService.signerFor</code>, calcule <code>value = ticketPriceWei * quantity</code> et appelle <code>buyTickets(quantity)</code> sur le contrat.</li>
 <li><code>sendAndIndex</code> attend le reçu par <code>tx.wait()</code>, puis appelle <code>lotteryIndexer.processReceipt(receipt)</code>. Une erreur <code>NONCE_EXPIRED</code> à l&#39;envoi provoque une seule nouvelle tentative.</li>
-<li>Le service relit les tickets créés (<code>findTicketsByIds</code>), le solde d&#39;EtherPoints et le solde d&#39;ethers du portefeuille (<code>walletService.balanceOf</code>), puis répond 201.</li>
+<li>Le service relit le ticket créé (<code>findTicketsByIds</code>), ajoute son numéro sur 5 chiffres (<code>ticketNumber</code>), le solde d&#39;EtherPoints et le solde d&#39;ethers du portefeuille (<code>walletService.balanceOf</code>), puis répond 201.</li>
 </ol>
-<p><strong>Contrat.</strong> <code>_buyTickets</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a>) vérifie dans l&#39;ordre : tour <code>Open</code>, <code>endTime</code> non atteint, quantité non nulle, tickets restants, limite par participant, montant exact. Il ajoute l&#39;adresse du joueur à <code>ticketOwners</code> une fois par ticket, crédite <code>contributions[roundId][msg.sender]</code> et émet <code>TicketsPurchased(roundId, player, payer, quantity, firstTicketIndex, totalTickets, amount)</code>.</p>
+<p><strong>Contrat.</strong> <code>_buyTickets</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLucky.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLucky.sol</code></a>) vérifie dans l&#39;ordre : tour <code>Open</code>, <code>endTime</code> non atteint, quantité non nulle, tickets restants, limite par participant (<code>maxTicketsPerPlayer</code>, 1 avec la configuration de déploiement par défaut), montant exact. Il ajoute l&#39;adresse du joueur à <code>ticketOwners</code> une fois par ticket, crédite <code>contributions[roundId][msg.sender]</code> et émet <code>TicketsPurchased(roundId, player, payer, quantity, firstTicketIndex, totalTickets, amount)</code>.</p>
 <p><strong>Indexation.</strong> <code>onTicketsPurchased</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.indexer.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.indexer.ts</code></a>) :</p>
 <ol>
 <li><code>ensureRound</code> crée le tour en base s&#39;il manque, <code>userForWallet</code> retrouve le compte du joueur par son adresse (ou crée un compte sans email pour une adresse inconnue).</li>
@@ -97,7 +102,7 @@
 </ol>
 <p><strong>Badge POAP.</strong> La file <code>chain-actions</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/chain-actions.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/chain-actions.ts</code></a>) exécute <code>mintBadge(player, roundId)</code> avec le compte opérateur. La réponse de l&#39;achat indique <code>poapBadge.status: &#39;MINT_PENDING&#39;</code> : le badge n&#39;est pas encore frappé à ce moment. L&#39;erreur <code>BadgeAlreadyMinted</code> (deuxième achat dans le même tour) est considérée comme une réussite.</p>
 <h2 id="cadeau-de-ticket"><a class="anchor" href="#cadeau-de-ticket" aria-hidden="true" tabindex="-1">#</a>Cadeau de ticket</h2>
-<p><strong>Route.</strong> <code>POST /api/v1/lottery/gift</code> avec <code>authenticate</code>, <code>idempotency</code>, <code>validate(giftTicketSchema)</code>. Le corps contient <code>recipientEmail</code> ; <code>recipientWallet</code> et <code>personalMessage</code> sont validés mais ignorés en mode <code>onchain</code>.</p>
+<p><strong>Route.</strong> <code>POST /api/v1/lottery/gift</code> avec <code>authenticate</code>, <code>requireAgeVerification</code>, <code>idempotency</code>, <code>validate(giftTicketSchema)</code>. Seul l&#39;âge de l&#39;expéditeur est contrôlé. Le corps contient <code>recipientEmail</code> ; <code>recipientWallet</code> et <code>personalMessage</code> sont validés mais ignorés en mode <code>onchain</code>.</p>
 <div class="diagram"><pre class="mermaid">sequenceDiagram
   autonumber
   participant C as Client
@@ -116,6 +121,7 @@
   else destinataire connu
     S-&gt;&gt;WS: ensureWallet
   end
+  S-&gt;&gt;BL: ticketsOf(tour, destinataire), 409 si non nul
   S-&gt;&gt;G: prepareWallet(expéditeur)
   S-&gt;&gt;G: buyTickets(payer, 1, adresse du destinataire)
   G-&gt;&gt;BL: buyTicketsFor(destinataire, 1) signé par l&#39;expéditeur
@@ -127,10 +133,11 @@
 <ol>
 <li>Refuse de s&#39;offrir un ticket à soi-même (400).</li>
 <li>Crée le destinataire s&#39;il n&#39;a pas de compte, avec un portefeuille intégré et <code>referredById</code> pointant vers l&#39;expéditeur. Aucun email n&#39;est envoyé au destinataire, aucune dotation ne lui est versée.</li>
+<li>Relit le tour courant et refuse si le destinataire a déjà un ticket sur le contrat : <code>409 Cette personne a déjà son ticket pour ce grand tirage.</code></li>
 <li>Prépare le portefeuille de l&#39;expéditeur, qui paie le ticket et les frais.</li>
-<li>Appelle <code>lotteryGateway.buyTickets(payer, 1, recipient.walletAddress)</code>, qui utilise <code>buyTicketsFor</code>.</li>
+<li>Appelle <code>lotteryGateway.buyTickets(payer, 1, recipient.walletAddress)</code>, qui utilise <code>buyTicketsFor</code>. Si le contrat répond <code>PlayerLimitReached</code>, le message est remplacé par celui du point 3.</li>
 </ol>
-<p>Le contrat enregistre la contribution au nom de l&#39;expéditeur : en cas d&#39;annulation du tour, c&#39;est lui qui est remboursé. La limite de jeu responsable n&#39;est pas vérifiée pour un cadeau, mais <code>maxTicketsPerPlayer</code> s&#39;applique au destinataire.</p>
+<p>Le contrat enregistre la contribution au nom de l&#39;expéditeur : en cas d&#39;annulation du tour, c&#39;est lui qui est remboursé. La limite de jeu responsable n&#39;est pas vérifiée pour un cadeau, mais <code>maxTicketsPerPlayer</code> s&#39;applique au destinataire. L&#39;expéditeur peut donc avoir son propre ticket et en offrir d&#39;autres, à des destinataires différents.</p>
 <h2 id="erreurs-possibles"><a class="anchor" href="#erreurs-possibles" aria-hidden="true" tabindex="-1">#</a>Erreurs possibles</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -142,7 +149,7 @@
 </thead>
 <tbody><tr>
 <td>400</td>
-<td><code>quantity</code> hors de 1 à 10, email du destinataire invalide</td>
+<td><code>quantity</code> différent de 1, email du destinataire invalide</td>
 <td><code>validate</code></td>
 </tr>
 <tr>
@@ -157,8 +164,13 @@
 </tr>
 <tr>
 <td>400</td>
-<td><code>PlayerLimitReached</code>, <code>InvalidQuantity</code>, <code>IncorrectPayment</code></td>
+<td><code>InvalidQuantity</code>, <code>IncorrectPayment</code></td>
 <td>Contrat</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Âge non vérifié (<code>AGE_VERIFICATION_REQUIRED</code>)</td>
+<td><code>requireAgeVerification</code></td>
 </tr>
 <tr>
 <td>402</td>
@@ -169,6 +181,11 @@
 <td>404</td>
 <td>Compte introuvable</td>
 <td>Service</td>
+</tr>
+<tr>
+<td>409</td>
+<td>Ticket déjà détenu par l&#39;acheteur ou par le destinataire (<code>PlayerLimitReached</code>)</td>
+<td>Service et contrat</td>
 </tr>
 <tr>
 <td>409</td>
@@ -193,13 +210,13 @@
 </tbody></table></div>
 <h2 id="idempotence"><a class="anchor" href="#idempotence" aria-hidden="true" tabindex="-1">#</a>Idempotence</h2>
 <ul>
-<li><strong>Côté HTTP.</strong> Avec un en-tête <code>Idempotency-Key</code> (8 à 128 caractères <code>A-Za-z0-9_-</code>), la clé <code>idempotency:&lt;userId&gt;:POST:/api/v1/lottery/buy:&lt;clé&gt;</code> est posée pour 60 s pendant le traitement, puis remplacée par la réponse pour 24 h. Les réponses 5xx libèrent la clé pour permettre une nouvelle tentative. Les clients actuels n&#39;envoient pas cet en-tête.</li>
+<li><strong>Côté HTTP.</strong> Avec un en-tête <code>Idempotency-Key</code> (8 à 128 caractères <code>A-Za-z0-9_-</code>), la clé <code>idempotency:&lt;userId&gt;:POST:/api/v1/lottery/buy:&lt;clé&gt;</code> est posée pour 60 s pendant le traitement, puis remplacée par la réponse pour 24 h. Les réponses 5xx libèrent la clé pour permettre une nouvelle tentative. Ni le web ni le mobile n&#39;envoient cet en-tête.</li>
 <li><strong>Côté indexation.</strong> L&#39;API indexe le reçu immédiatement, et l&#39;indexeur périodique du worker relit le même événement plus tard. L&#39;unicité <code>(lotteryId, ticketIndex)</code> et le contrôle préalable font que les tickets et les EtherPoints ne sont créés qu&#39;une fois. Une violation d&#39;unicité pendant la transaction (les deux process en même temps) est rattrapée par <code>isUniqueViolation</code> et traitée comme un événement déjà indexé.</li>
 <li><strong>Côté badge.</strong> L&#39;identifiant de job <code>MINT_BADGE-&lt;tour&gt;-&lt;adresse&gt;</code> empêche une seconde mise en file pour le même joueur et le même tour tant que le job est conservé, et <code>BadgeAlreadyMinted</code> est ignorée.</li>
-<li><strong>Réponse.</strong> <code>pointsAwarded</code> vaut toujours <code>50 * quantity</code> dans la réponse, y compris si c&#39;est le worker qui a indexé l&#39;achat le premier et crédité les points.</li>
+<li><strong>Réponse.</strong> <code>pointsAwarded</code> vaut toujours 50 dans la réponse, y compris si c&#39;est le worker qui a indexé l&#39;achat le premier et crédité les points.</li>
 </ul>
 <h2 id="en-mode-simule"><a class="anchor" href="#en-mode-simule" aria-hidden="true" tabindex="-1">#</a>En mode simulé</h2>
-<p><code>buyTickets</code> boucle sur la quantité et appelle <code>blockchainService.relayTicketPurchase</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/blockchain.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/blockchain.service.ts</code></a>), qui renvoie un hash et un numéro de bloc aléatoires. Les tickets sont créés directement par <code>createTicketWithPrizeIncrement</code>, les points crédités dans la requête et le badge renvoyé par <code>mintPoapBadge</code> est fictif. Le disjoncteur est lu dans Redis. Aucun ether ne circule.</p>
+<p><code>buyTickets</code> refuse un achat après les 48 heures du tour (409) ou un second ticket (409), puis appelle <code>blockchainService.relayTicketPurchase</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/blockchain.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/blockchain.service.ts</code></a>), qui renvoie un hash et un numéro de bloc aléatoires. Le ticket est créé directement par <code>createTicketWithPrizeIncrement</code>, avec un indice égal au nombre de tickets déjà enregistrés sur le tour, les points crédités dans la requête et le badge renvoyé par <code>mintPoapBadge</code> est fictif. Le disjoncteur est lu dans Redis. Aucun ether ne circule.</p>
 
     </article>
     <nav class="pager" aria-label="Pages voisines"><a class="pager-prev" href="inscription.html"><span>Précédent</span><strong>Inscription et portefeuille</strong></a><a class="pager-next" href="tirage.html"><span>Suivant</span><strong>Tirage et versement de la cagnotte</strong></a></nav>

@@ -16,7 +16,7 @@ Cette page recense ce que les contrats et leur outillage ne font pas, ou font im
 
 | Limite | Détail |
 |---|---|
-| Plafond par participant contournable | `maxTicketsPerPlayer` s'applique par adresse bénéficiaire. Rien n'empêche une personne de jouer avec plusieurs adresses, ou d'offrir des tickets à des adresses qu'elle contrôle. Le contrat ne connaît pas l'identité des citoyens : seul le backend, qui crée un portefeuille par compte, limite cet usage, et seulement pour les achats faits par l'application |
+| Plafond par participant contournable | `maxTicketsPerPlayer` (1 au déploiement) s'applique par adresse bénéficiaire. Rien n'empêche une personne de jouer avec plusieurs adresses, ou d'offrir des tickets à des adresses qu'elle contrôle. Le contrat ne connaît pas l'identité des citoyens : seul le backend, qui crée un portefeuille par compte, exige un âge vérifié par la Mairie et refuse un second ticket ou un cadeau à soi-même, limite cet usage, et seulement pour les achats faits par l'application |
 | Remboursement au payeur | En cas d'annulation, les tickets offerts sont remboursés à celui qui les a payés, pas au bénéficiaire. C'est voulu, mais peut surprendre |
 | Paiement exact obligatoire | Un excédent n'est pas rendu, l'achat est refusé. Un client qui lit un prix périmé (après un changement de configuration entre deux tours) voit son achat échouer avec `IncorrectPayment` |
 | Pas de date limite de tirage | Un tour expiré avec assez de tickets reste `Open`, sans achat possible, tant que personne n'appelle `requestDraw` |

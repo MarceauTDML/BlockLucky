@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Boutique et récompenses | Documentation BlockLucky</title>
-<meta name="description" content="Le module marketplace permet aux citoyens de dépenser leurs EtherPoints contre des récompenses proposées par les commerçants partenaires, puis aux commerçants d">
+<meta name="description" content="Le module marketplace permet aux citoyens de dépenser leurs EtherPoints contre des récompenses proposées par les commerçants partenaires, soit en choisissant un">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../assets/css/doc.css">
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>7. Backend</span><span>Modules métier</span></div>
     <article class="markdown">
 <h1>Boutique et récompenses</h1>
-<p>Le module <code>marketplace</code> permet aux citoyens de dépenser leurs EtherPoints contre des récompenses proposées par les commerçants partenaires, puis aux commerçants de valider en magasin le code obtenu. Les EtherPoints sont des points de fidélité stockés uniquement en base : ils ne circulent pas sur la blockchain. Les offres et les lots de codes sont créés par le module <a href="partenaires.html">Partenaires</a>.</p>
+<p>Le module <code>marketplace</code> permet aux citoyens de dépenser leurs EtherPoints contre des récompenses proposées par les commerçants partenaires, soit en choisissant une offre, soit en achetant un ticket à gratter qui en tire une au hasard, puis aux commerçants de valider en magasin le code obtenu. Les EtherPoints sont des points de fidélité stockés uniquement en base : ils ne circulent pas sur la blockchain. Les offres et les lots de codes sont créés par le module <a href="partenaires.html">Partenaires</a>.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -47,15 +47,15 @@
 </thead>
 <tbody><tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/marketplace.routes.ts</code></a></td>
-<td>6 routes</td>
+<td>7 routes</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/marketplace.validators.ts</code></a></td>
-<td>2 schémas Zod</td>
+<td>3 schémas Zod</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/marketplace.services.ts</code></a></td>
-<td>Catalogue, échange, validation en magasin</td>
+<td>Catalogue, échange, ticket à gratter, validation en magasin</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/marketplace.repo.ts</code></a></td>
@@ -97,9 +97,15 @@
 </tr>
 <tr>
 <td><code>POST /api/v1/marketplace/claim</code></td>
-<td>connecté</td>
-<td><code>authenticate</code>, <code>idempotency</code>, <code>validate(claimRewardSchema)</code></td>
+<td>connecté, âge vérifié</td>
+<td><code>authenticate</code>, <code>requireAgeVerification</code>, <code>idempotency</code>, <code>validate(claimRewardSchema)</code></td>
 <td>Échange de points contre un code</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/marketplace/scratch</code></td>
+<td>connecté, âge vérifié</td>
+<td><code>authenticate</code>, <code>requireAgeVerification</code>, <code>idempotency</code>, <code>validate(scratchTicketSchema)</code></td>
+<td>Achat d&#39;un ticket à gratter</td>
 </tr>
 <tr>
 <td><code>GET /api/v1/marketplace/my-codes</code></td>
@@ -115,7 +121,7 @@
 </tr>
 </tbody></table></div>
 <h2 id="sources-des-etherpoints"><a class="anchor" href="#sources-des-etherpoints" aria-hidden="true" tabindex="-1">#</a>Sources des EtherPoints</h2>
-<p>Le solde <code>User.pointsBalance</code> ne bouge que par <a href="../services.html#ledgerservice"><code>ledgerService</code></a>, qui écrit en même temps une ligne <code>PointTransaction</code>. Une contrainte <code>CHECK (&quot;pointsBalance&quot; &gt;= 0)</code> interdit un solde négatif en base.</p>
+<p>Le solde <code>User.pointsBalance</code> bouge par <a href="../services.html#ledgerservice"><code>ledgerService</code></a>, qui écrit en même temps une ligne <code>PointTransaction</code>, sauf pour le ticket à gratter, dont la transaction écrit le débit et sa ligne directement. Une contrainte <code>CHECK (&quot;pointsBalance&quot; &gt;= 0)</code> interdit un solde négatif en base.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -153,6 +159,11 @@
 <td><code>REWARD_CLAIM</code></td>
 <td>moins le coût de l&#39;offre</td>
 <td>échange dans la boutique</td>
+</tr>
+<tr>
+<td><code>REWARD_CLAIM</code></td>
+<td>moins le prix du ticket à gratter</td>
+<td>ticket à gratter</td>
 </tr>
 </tbody></table></div>
 <p>Le type <code>ADMIN_BONUS</code> existe dans <code>LedgerActionType</code> mais aucune route ne l&#39;utilise.</p>
@@ -210,6 +221,7 @@
 </tbody></table></div>
 <h3 id="regles"><a class="anchor" href="#regles" aria-hidden="true" tabindex="-1">#</a>Règles</h3>
 <ol>
+<li>L&#39;âge du compte doit être vérifié, sinon <code>403 AGE_VERIFICATION_REQUIRED</code> (voir <a href="utilisateur.html#controle-a-l-achat">Utilisateur</a>).</li>
 <li>L&#39;offre doit exister et être active : sinon <code>404 Cette offre n&#39;est plus disponible</code>. L&#39;état du partenaire n&#39;est pas contrôlé ici.</li>
 <li>Le stock restant doit être positif : sinon <code>400 Stock épuisé pour cette récompense partenaire</code>.</li>
 <li>Le solde doit couvrir le coût : sinon <code>400 EtherPoints insuffisants (80 disponibles, 100 requis)</code>.</li>
@@ -275,6 +287,55 @@
 <td><code>business_events_total{event=&quot;reward_claimed&quot;}</code> et <code>points_debited_reward_claim</code></td>
 </tr>
 </tbody></table></div>
+<h2 id="post-marketplace-scratch"><a class="anchor" href="#post-marketplace-scratch" aria-hidden="true" tabindex="-1">#</a>POST /marketplace/scratch</h2>
+<p>Le ticket à gratter est acheté en EtherPoints et attribue au hasard une récompense partenaire en stock. L&#39;application mobile révèle ensuite le code en grattant l&#39;écran.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>offer</code></td>
+<td>énumération</td>
+<td><code>violet</code> ou <code>lucky</code>, sinon <code>400 Offre de ticket à gratter inconnue (violet ou lucky)</code></td>
+</tr>
+</tbody></table></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Offre</th>
+<th>Prix</th>
+<th>Variable</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>violet</code></td>
+<td>50 EtherPoints par défaut</td>
+<td><code>SCRATCH_COST_VIOLET</code></td>
+</tr>
+<tr>
+<td><code>lucky</code></td>
+<td>100 EtherPoints par défaut</td>
+<td><code>SCRATCH_COST_LUCKY</code></td>
+</tr>
+</tbody></table></div>
+<h3 id="regles-2"><a class="anchor" href="#regles-2" aria-hidden="true" tabindex="-1">#</a>Règles</h3>
+<ol>
+<li>L&#39;âge du compte doit être vérifié (<code>403 AGE_VERIFICATION_REQUIRED</code>).</li>
+<li>Les récompenses candidates sont les offres actives, dont le stock restant est positif et dont le partenaire est actif. S&#39;il n&#39;y en a aucune : <code>404 Aucune récompense n&#39;est disponible pour le moment dans les tickets à gratter.</code></li>
+<li>Un solde inférieur au prix renvoie <code>402 EtherPoints insuffisants pour ce ticket à gratter (30 disponibles, 50 requis).</code>, avec <code>errors: { &quot;code&quot;: &quot;INSUFFICIENT_POINTS&quot;, &quot;balance&quot;, &quot;cost&quot; }</code>.</li>
+<li>Le tirage se fait par <code>crypto.randomInt</code> parmi les offres dont le coût en points est au moins égal au prix du ticket, ou parmi toutes les candidates si aucune n&#39;atteint ce prix. Chaque offre a la même chance, quel que soit son stock.</li>
+<li>Le code est obtenu comme pour <code>claim</code> : lot du partenaire, sinon code généré. Il est pris dans le lot avant la transaction : si la transaction échoue, ce code est perdu.</li>
+<li>Une transaction débite le prix seulement si le solde le couvre encore, réserve une unité de stock, crée le <code>ClaimedReward</code> et écrit la ligne <code>PointTransaction</code> (<code>REWARD_CLAIM</code>, description <code>Ticket à gratter &lt;offre&gt; : &lt;titre&gt; (&lt;partenaire&gt;)</code>). Un solde devenu insuffisant entre-temps renvoie 402 ; un stock épuisé entre-temps renvoie <code>409 Cette récompense vient d’être épuisée, veuillez réessayer.</code> et annule le débit.</li>
+<li>Le QR code et l&#39;email <code>reward-claim</code> sont produits comme pour <code>claim</code>, puis la métrique <code>business_events_total{event=&quot;scratch_ticket_bought&quot;}</code> est incrémentée.</li>
+</ol>
+<p>La réponse, en 201, contient <code>offer</code>, l&#39;objet <code>claim</code> (même forme que pour <code>claim</code>, avec <code>scratchCardReady: true</code>), <code>remainingStock</code>, <code>pointsSpent</code> et le nouveau solde, présent deux fois sous <code>newBalance</code> et <code>newPointsBalance</code>.</p>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Le prix payé ne dépend pas de la valeur de la récompense tirée : une offre qui coûte 300 points dans le catalogue peut sortir d&#39;un ticket violet à 50 points. Le caractère aléatoire de ce mécanisme payant est discuté dans <a href="../../juridique/veille-juridique.html">Veille juridique</a>.</p>
+</div>
 <h2 id="get-marketplace-my-codes"><a class="anchor" href="#get-marketplace-my-codes" aria-hidden="true" tabindex="-1">#</a>GET /marketplace/my-codes</h2>
 <p>Renvoie <code>codes</code>, la liste des récompenses obtenues par le citoyen, de la plus récente à la plus ancienne : identifiant, <code>uniqueCode</code>, <code>isUsed</code>, <code>claimedAt</code>, titre, coût, partenaire et <code>qrCodeDataUrl</code>. Contrairement à la réponse de <code>claim</code>, ce QR code encode seulement le texte du code, pas l&#39;objet JSON. Les QR codes sont recalculés à chaque appel.</p>
 <h2 id="post-marketplace-redeem"><a class="anchor" href="#post-marketplace-redeem" aria-hidden="true" tabindex="-1">#</a>POST /marketplace/redeem</h2>
@@ -319,7 +380,7 @@
 <tbody><tr>
 <td>400</td>
 <td><code>Erreur de validation des données</code></td>
-<td><code>claim</code>, <code>redeem</code></td>
+<td><code>claim</code>, <code>scratch</code>, <code>redeem</code></td>
 </tr>
 <tr>
 <td>400</td>
@@ -335,6 +396,16 @@
 <td>400</td>
 <td><code>Ce code promo a déjà été utilisé en magasin</code></td>
 <td><code>redeem</code></td>
+</tr>
+<tr>
+<td>402</td>
+<td><code>EtherPoints insuffisants pour ce ticket à gratter ...</code></td>
+<td><code>scratch</code></td>
+</tr>
+<tr>
+<td>403</td>
+<td><code>Vérifiez votre âge pour jouer.</code></td>
+<td><code>claim</code>, <code>scratch</code></td>
 </tr>
 <tr>
 <td>403</td>
@@ -357,9 +428,19 @@
 <td><code>redeem</code></td>
 </tr>
 <tr>
+<td>404</td>
+<td><code>Aucune récompense n&#39;est disponible pour le moment dans les tickets à gratter.</code></td>
+<td><code>scratch</code></td>
+</tr>
+<tr>
 <td>409</td>
 <td><code>L&#39;opération viole une règle d&#39;intégrité des données (solde ou stock insuffisant)</code></td>
 <td><code>claim</code> en concurrence</td>
+</tr>
+<tr>
+<td>409</td>
+<td><code>Cette récompense vient d’être épuisée, veuillez réessayer.</code></td>
+<td><code>scratch</code> en concurrence</td>
 </tr>
 </tbody></table></div>
 
@@ -370,7 +451,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#sources-des-etherpoints">Sources des EtherPoints</a></li><li class="toc-h2"><a href="#get-marketplace-catalog">GET /marketplace/catalog</a></li><li class="toc-h2"><a href="#get-marketplace-rewards-id">GET /marketplace/rewards/:id</a></li><li class="toc-h2"><a href="#get-marketplace-points">GET /marketplace/points</a></li><li class="toc-h2"><a href="#post-marketplace-claim">POST /marketplace/claim</a></li><li class="toc-h3"><a href="#corps">Corps</a></li><li class="toc-h3"><a href="#regles">Règles</a></li><li class="toc-h3"><a href="#effets-de-bord">Effets de bord</a></li><li class="toc-h2"><a href="#get-marketplace-my-codes">GET /marketplace/my-codes</a></li><li class="toc-h2"><a href="#post-marketplace-redeem">POST /marketplace/redeem</a></li><li class="toc-h2"><a href="#erreurs-du-module">Erreurs du module</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#sources-des-etherpoints">Sources des EtherPoints</a></li><li class="toc-h2"><a href="#get-marketplace-catalog">GET /marketplace/catalog</a></li><li class="toc-h2"><a href="#get-marketplace-rewards-id">GET /marketplace/rewards/:id</a></li><li class="toc-h2"><a href="#get-marketplace-points">GET /marketplace/points</a></li><li class="toc-h2"><a href="#post-marketplace-claim">POST /marketplace/claim</a></li><li class="toc-h3"><a href="#corps">Corps</a></li><li class="toc-h3"><a href="#regles">Règles</a></li><li class="toc-h3"><a href="#effets-de-bord">Effets de bord</a></li><li class="toc-h2"><a href="#post-marketplace-scratch">POST /marketplace/scratch</a></li><li class="toc-h3"><a href="#regles-2">Règles</a></li><li class="toc-h2"><a href="#get-marketplace-my-codes">GET /marketplace/my-codes</a></li><li class="toc-h2"><a href="#post-marketplace-redeem">POST /marketplace/redeem</a></li><li class="toc-h2"><a href="#erreurs-du-module">Erreurs du module</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

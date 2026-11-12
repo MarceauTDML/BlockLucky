@@ -53,7 +53,7 @@ Paramètres des tours à venir, modifiables par l'administrateur.
 | `ticketPrice` | `uint256` | Non nul | `10000000000000000` wei (0,01 ETH) |
 | `maxTickets` | `uint32` | Non nul | 10 000 |
 | `minTicketsToDraw` | `uint32` | Non nul et au plus `maxTickets` | 2 |
-| `maxTicketsPerPlayer` | `uint32` | Non nul et au plus `maxTickets` | 100 |
+| `maxTicketsPerPlayer` | `uint32` | Non nul et au plus `maxTickets` | 1 : un ticket par participant et par tour |
 | `duration` | `uint64` | Non nul, en secondes | 1 800 (30 min) en local, 172 800 (48 h) sur Sepolia |
 | `feeBps` | `uint16` | Au plus `MAX_FEE_BPS` | 1 000 (10 %) |
 

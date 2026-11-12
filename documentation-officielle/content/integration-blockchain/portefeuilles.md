@@ -86,7 +86,7 @@ Les transactions du citoyen paient leur gaz depuis son propre portefeuille. Ce g
 
 ## Dotation de bienvenue
 
-`grantWelcomeEthers(owner)` envoie au portefeuille du citoyen `WELCOME_GRANT_WEI` wei depuis le compte opérateur. La valeur par défaut est `100000000000000000`, soit 0,1 ETH fictif ; avec le prix de ticket du déploiement local (0,01 ETH), elle couvre quelques tickets et le gaz.
+`grantWelcomeEthers(owner)` envoie au portefeuille du citoyen `WELCOME_GRANT_WEI` wei depuis le compte opérateur. La valeur par défaut est `500000000000000000`, soit 0,5 ETH fictif ; avec le prix de ticket du déploiement local (0,01 ETH), elle couvre quelques tickets et le gaz.
 
 La fonction ne fait rien et renvoie la valeur existante dans ces cas :
 

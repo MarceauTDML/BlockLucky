@@ -27,14 +27,15 @@ Les trois comptes sont créés par `upsert` sur `walletAddress` : relancer le se
 | `boulangerie@etherbay.fr` | `PARTNER` | `0xpartner00000000000000000000000000etherbay` | 500 | Gestionnaire des deux commerces |
 | `citoyen@etherbay.fr` | `USER` | `0xcitizen00000000000000000000000000etherbay` | 250 | Parrainé par le compte administrateur |
 
-Les trois comptes ont `isEmailVerified` à vrai, la double authentification désactivée, et un `referralCode` généré par défaut.
+Les trois comptes ont `isEmailVerified` à vrai, la double authentification désactivée, un `referralCode` généré par défaut, l'empreinte bcrypt du mot de passe de démonstration `EtherBay2026demo` dans `passwordHash`, et `ageVerificationStatus = VERIFIED` avec `ageVerifiedAt` à la date du seed. Ces trois champs sont aussi écrits par la branche `update` de l'`upsert` : relancer le seed les remet sur des comptes déjà présents. Le mot de passe est affiché dans le résumé de fin du script (`demoPassword`).
 
 Points d'attention :
 
 - **Adresses factices** : ces valeurs contiennent des lettres hors de l'alphabet hexadécimal ; ce ne sont pas des adresses Ethereum. Elles ne servent qu'à satisfaire l'unicité de la colonne.
 - **Pas de portefeuille intégré** : `walletEncryptedKey` est vide. En mode onchain, le premier achat ou la première consultation de `GET /lottery/wallet` crée un portefeuille et **remplace** `walletAddress` par la nouvelle adresse (voir [Portefeuilles intégrés](../integration-blockchain/portefeuilles.md#creation-a-la-demande-ensurewallet)). Après cela, relancer le seed tente de recréer le compte avec l'adresse factice et échoue sur l'unicité de l'email, déjà pris par le compte modifié.
 - **Soldes sans historique** : `pointsBalance` est écrit directement, sans ligne `PointTransaction`. La règle « le solde est la somme des mouvements » n'est pas respectée pour ces comptes ; l'historique des points affiché pour eux est vide alors que le solde ne l'est pas.
-- **Pas de mot de passe** : la connexion se fait par email et code à usage unique (voir [Comptes et connexion](../demarrage/comptes-et-connexion.md)). Avec `LOGIN_EMAIL_CODE_REQUIRED` actif, le code arrive dans Mailpit (`http://localhost:8025`).
+- **Mot de passe public** : `EtherBay2026demo` est écrit en clair dans [`backend/prisma/seed.ts`](src:backend/prisma/seed.ts). Le mobile se connecte avec lui (`/auth/signin`) ; le web continue de passer par l'email et un code à usage unique, qui arrive dans Mailpit (`http://localhost:8025`). Voir [Comptes et connexion](../demarrage/comptes-et-connexion.md).
+- **Âge vérifié sans pièce** : aucune ligne `IdentityDocument` n'est créée. Les trois comptes peuvent jouer d'emblée, et la page Identités de la Mairie est vide après un seed.
 - **Double authentification administrateur** : avec `ADMIN_MFA_REQUIRED` actif (valeur par défaut), les routes d'administration exigent que `maire@etherbay.fr` configure d'abord une double authentification.
 
 ### Tour de loterie

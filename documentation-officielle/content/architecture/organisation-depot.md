@@ -115,9 +115,9 @@ Application Expo en TypeScript.
 | Chemin | Rôle |
 |---|---|
 | [`src/App.tsx`](src:mobile-app/src/App.tsx) | Point d'entrée déclaré dans `package.json` |
-| [`src/navigation/`](src:mobile-app/src/navigation/) | Navigateurs React Navigation : racine, authentification, onglets, réglages |
-| [`src/screens/`](src:mobile-app/src/screens/) | Écrans par domaine : `auth`, `lottery`, `marketplace`, `settings` |
-| [`src/components/`](src:mobile-app/src/components/) | Composants `lottery`, `marketplace`, `ui`, `web3` |
+| [`src/navigation/`](src:mobile-app/src/navigation/) | Navigateurs React Navigation : pile racine, authentification, quatre onglets, hooks de navigation typés |
+| [`src/screens/`](src:mobile-app/src/screens/) | Écrans par domaine : `auth`, `lottery`, `marketplace`, `settings`, `sponsors` |
+| [`src/components/`](src:mobile-app/src/components/) | Composants `auth`, `draw`, `lottery`, `marketplace`, `profile`, `ui` (dont les icônes SVG), `web3` |
 | [`src/services/`](src:mobile-app/src/services/) | Client HTTP axios, stockage sécurisé, client Socket.IO, collecteur d'erreurs local `sentry.client.ts` (sans SDK Sentry) |
 | [`src/store/`](src:mobile-app/src/store/) | RTK Query et slices, même découpage que le web |
 | [`app.json`](src:mobile-app/app.json), [`eas.json`](src:mobile-app/eas.json) | Configuration Expo et profils de build EAS |
@@ -163,7 +163,7 @@ Voir [Architecture JavaScript](../office-tourisme/architecture.md).
 | Contrats | PascalCase, un contrat par fichier ; tests TypeScript en `*.test.ts`, fuzzing en `*.t.sol` | `BlockLucky.sol`, `BlockLucky.test.ts`, `BlockLucky.t.sol` |
 | Web et mobile | Composants en PascalCase `.tsx`, hooks en `useX.ts`, slices en `xSlice.ts`, API en `xApi.ts` | `TicketCard.tsx`, `useSocket.ts`, `authSlice.ts`, `lotteryApi.ts` |
 | Web | Segments de route en français, en minuscules | `app/(citoyen)/boutique/mes-codes/page.tsx`, `app/mairie/partenaires/page.tsx` |
-| Mobile | Écrans suffixés `Screen`, navigateurs suffixés `Stack` ou `Tabs`, utilitaires en `*.util.ts` | `BuyTicketScreen.tsx`, `SettingsStack.tsx`, `formatters.util.ts` |
+| Mobile | Écrans suffixés `Screen`, navigateurs suffixés `Stack` ou `Tabs`, utilitaires en `*.util.ts` | `BuyTicketScreen.tsx`, `AuthStack.tsx`, `formatters.util.ts` |
 | Office de Tourisme | Pages et modules en minuscules, mots séparés par des tirets | `infos-pratiques.html`, `pages/billetterie.js` |
 | Migrations | Horodatage puis description en snake_case | `20261111150000_onchain_wallets_tickets_indexer` |
 

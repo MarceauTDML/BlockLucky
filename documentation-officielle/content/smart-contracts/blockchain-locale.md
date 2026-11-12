@@ -150,7 +150,7 @@ Le service compose ajoute `cap_drop: [ALL]`, `no-new-privileges` et `restart: un
 | `TICKET_PRICE_WEI` | `lib/deployment.ts` | `10000000000000000` | Prix du ticket |
 | `MAX_TICKETS` | `lib/deployment.ts` | `10000` | Plafond de tickets par tour |
 | `MIN_TICKETS_TO_DRAW` | `lib/deployment.ts` | `2` | Minimum pour tirer |
-| `MAX_TICKETS_PER_PLAYER` | `lib/deployment.ts` | `100` | Plafond par participant |
+| `MAX_TICKETS_PER_PLAYER` | `lib/deployment.ts` | `1` | Plafond par participant ; le backend refuse aussi un second ticket |
 | `ROUND_DURATION_SECONDS` | `lib/deployment.ts` | `1800` en local | Durée d'un tour |
 | `MUNICIPALITY_FEE_BPS` | `lib/deployment.ts` | `1000` | Commission en points de base |
 | `DEPLOYMENTS_DIR` | `lib/deployment.ts` | `smart-contract/deployments` | Dossier des fichiers de déploiement |

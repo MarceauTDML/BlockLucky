@@ -10,7 +10,7 @@ Chaque table a une clé primaire `<Table>_pkey` sur la colonne `id`, de type tex
 
 | Table | Génération de `id` |
 |---|---|
-| `User`, `Token`, `LotteryRound`, `Ticket`, `PointTransaction`, `Partner`, `RewardCatalog`, `ClaimedReward`, `Analytics` | UUID v7 par Prisma (`@default(uuid(7))`) |
+| `User`, `IdentityDocument`, `Token`, `LotteryRound`, `Ticket`, `PointTransaction`, `Partner`, `RewardCatalog`, `ClaimedReward`, `Analytics` | UUID v7 par Prisma (`@default(uuid(7))`) |
 | `ChainCursor` | Fixée par l'indexeur (`BlockLucky`) |
 
 Les UUID v7 commencent par un horodatage : les nouvelles lignes s'ajoutent en fin d'index, ce qui limite la fragmentation par rapport à des UUID v4 aléatoires.
@@ -22,6 +22,7 @@ Les UUID v7 commencent par un horodatage : les nouvelles lignes s'ajoutent en fi
 | `User_walletAddress_key` | `User(walletAddress)` | `init` | Une adresse Ethereum correspond à un seul compte. L'indexeur et la file d'actions retrouvent le compte par l'adresse émise dans un événement (`findUnique({ where: { walletAddress } })`) |
 | `User_email_key` | `User(email)` | `init` | Un email, un compte : c'est l'identifiant de connexion. PostgreSQL autorise plusieurs `NULL`, donc plusieurs comptes sans email (comptes créés par l'indexeur, comptes anonymisés) |
 | `User_referralCode_key` | `User(referralCode)` | `init` | Le code d'un lien de parrainage désigne un parrain unique (`findByReferralCode`) |
+| `IdentityDocument_userId_key` | `IdentityDocument(userId)` | `password_accounts_identity_verification` | Une seule demande par compte : un nouvel envoi remplace la précédente (`upsert` sur `userId`) |
 | `Token_token_key` | `Token(token)` | `init` | Recherche d'un jeton par son empreinte lors de la confirmation ; empêche deux jetons identiques |
 | `LotteryRound_contractRoundId_key` | `LotteryRound(contractRoundId)` | `init` | Un tour du contrat n'a qu'une projection en base. Base des `upsert` de l'indexeur et de `upsertRoundFromChain` |
 | `ClaimedReward_uniqueCode_key` | `ClaimedReward(uniqueCode)` | `init` | Un code promo n'est délivré qu'une fois et désigne un seul échange lors de la validation en magasin |
@@ -49,6 +50,8 @@ PostgreSQL considère deux `NULL` comme distincts dans un index unique. Conséqu
 | Index | Table et colonnes | Migration | Requête servie |
 |---|---|---|---|
 | `User_referredById_idx` | `User(referredById)` | `infra_indexes…` | Liste et comptage des filleuls d'un parrain (`_count.referrals` du classement, page parrainage) |
+| `IdentityDocument_status_submittedAt_idx` | `IdentityDocument(status, submittedAt)` | `password_accounts…` | File de la Mairie : demandes d'un statut, des plus anciennes aux plus récentes (`GET /admin/identity-verifications`) |
+| `IdentityDocument_reviewerId_idx` | `IdentityDocument(reviewerId)` | `password_accounts…` | Mise à `NULL` lors de la suppression du compte d'un agent |
 | `Token_userId_idx` | `Token(userId)` | `infra_indexes…` | Suppression en cascade des jetons d'un compte, sans parcours complet de la table |
 | `LotteryRound_status_idx` | `LotteryRound(status)` | `infra_indexes…` | Recherche du tour courant `OPEN` ou `LOCKED` (`getCurrentOrCreateRound`) |
 | `Ticket_userId_purchasedAt_idx` | `Ticket(userId, purchasedAt)` | `infra_indexes…` | Historique des tickets d'un citoyen trié par date (`GET /lottery/my-tickets`), et comptage par compte |
@@ -68,7 +71,7 @@ PostgreSQL n'indexe pas automatiquement les colonnes de clé étrangère. Sans i
 
 ### Index composites
 
-Les index `(userId, purchasedAt)`, `(userId, createdAt)`, `(userId, claimedAt)` et `(eventType, timestamp)` mettent la colonne d'égalité en premier et la colonne de tri en second. Une requête « les 20 derniers éléments de tel compte » lit directement les bonnes entrées dans l'ordre, sans tri. Ces index servent aussi les requêtes qui ne filtrent que sur la première colonne ; c'est pourquoi il n'existe pas d'index séparé sur `Ticket(userId)` ou `PointTransaction(userId)`.
+Les index `(userId, purchasedAt)`, `(userId, createdAt)`, `(userId, claimedAt)`, `(eventType, timestamp)` et `(status, submittedAt)` mettent la colonne d'égalité en premier et la colonne de tri en second. Une requête « les 20 derniers éléments de tel compte » lit directement les bonnes entrées dans l'ordre, sans tri. Ces index servent aussi les requêtes qui ne filtrent que sur la première colonne ; c'est pourquoi il n'existe pas d'index séparé sur `Ticket(userId)` ou `PointTransaction(userId)`.
 
 ## Clés étrangères
 
@@ -84,12 +87,14 @@ Les index `(userId, purchasedAt)`, `(userId, createdAt)`, `(userId, claimedAt)` 
 | `ClaimedReward_rewardId_fkey` | `ClaimedReward.rewardId` | `RewardCatalog.id` | `RESTRICT` | `init` |
 | `Analytics_userId_fkey` | `Analytics.userId` | `User.id` | `SET NULL` | `init` |
 | `Partner_ownerId_fkey` | `Partner.ownerId` | `User.id` | `SET NULL` | `security_backup_codes…` |
+| `IdentityDocument_userId_fkey` | `IdentityDocument.userId` | `User.id` | `CASCADE` | `password_accounts…` |
+| `IdentityDocument_reviewerId_fkey` | `IdentityDocument.reviewerId` | `User.id` | `SET NULL` | `password_accounts…` |
 
 Toutes ont `ON UPDATE CASCADE`, valeur générée par Prisma ; les clés primaires n'étant jamais modifiées, cela n'a pas d'effet pratique.
 
 `RESTRICT` sur les tickets, les mouvements de points et les échanges interdit de supprimer un compte qui a une activité. La suppression RGPD contourne ce point par l'anonymisation de la ligne `User` (voir [Portefeuilles intégrés](../integration-blockchain/portefeuilles.md#effacement-rgpd)).
 
-`Partner_ownerId_fkey` a été ajoutée en `NOT VALID` puis validée par `VALIDATE CONSTRAINT`. Sur une table existante, cela évite de bloquer les écritures pendant la vérification des lignes ; voir [Migrations](migrations.md#contraintes-ajoutees-sans-bloquer).
+Les deux clés de `IdentityDocument` sont créées directement, sans `NOT VALID` : la table est nouvelle et vide au moment de la migration. `Partner_ownerId_fkey` a été ajoutée en `NOT VALID` puis validée par `VALIDATE CONSTRAINT`. Sur une table existante, cela évite de bloquer les écritures pendant la vérification des lignes ; voir [Migrations](migrations.md#contraintes-ajoutees-sans-bloquer).
 
 ## Contraintes CHECK
 

@@ -61,7 +61,7 @@ Le public cible a entre 18 et 35 ans. La Mairie veut un événement inclusif : d
 ## Conséquences
 
 - La Mairie détient les clés des portefeuilles citoyens : le modèle est custodial. C'est acceptable avec des ethers fictifs sur un testnet. Sur un réseau principal, il faudrait une autorisation de prestataire de services sur crypto-actifs (règlement MiCA) ou un modèle non custodial (voir la [veille juridique](../../juridique/veille-juridique.md)).
-- Chaque achat coûte des frais de réseau au citoyen. La dotation de bienvenue doit les couvrir : 0,1 ETH fictif par défaut, pour un ticket à 0,01 ETH.
+- Chaque achat coûte des frais de réseau au citoyen. La dotation de bienvenue doit les couvrir : 0,5 ETH fictif par défaut, pour un ticket à 0,01 ETH.
 - Le compte opérateur (`RELAYER_PRIVATE_KEY`) est critique :
   - il porte les rôles opérateur, pause et frappe des POAP ;
   - il finance les dotations de bienvenue ;
@@ -110,7 +110,7 @@ Cette section confronte la décision au dépôt actuel. Elle ne modifie pas la d
 | Keeper | Verrou `chain:keeper-lock` posé par `setIfAbsent`, durée égale à l'intervalle avec un minimum de 5 s | [`backend/src/blockchain/lottery.keeper.ts`](src:backend/src/blockchain/lottery.keeper.ts) |
 | File `chain-actions` | Jobs `MINT_BADGE`, `CLAIM_PRIZE`, `CLAIM_REFUND`, identifiant de job `<type>-<tour>-<adresse>` | [`backend/src/blockchain/chain-actions.ts`](src:backend/src/blockchain/chain-actions.ts) |
 | Relais temps réel | `emitSocketEvent` publie sur Redis quand le process n'a pas de serveur Socket.IO | [`backend/src/socket/event-bridge.ts`](src:backend/src/socket/event-bridge.ts) |
-| Dotation | `WELCOME_GRANT_WEI` vaut `100000000000000000` (0,1 ETH) par défaut | [`backend/src/config/env.config.ts`](src:backend/src/config/env.config.ts) |
+| Dotation | `WELCOME_GRANT_WEI` vaut `500000000000000000` (0,5 ETH) par défaut | [`backend/src/config/env.config.ts`](src:backend/src/config/env.config.ts) |
 
 ### Écarts et précisions
 

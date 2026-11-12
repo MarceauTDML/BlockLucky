@@ -27,12 +27,12 @@ Cette commande démarre `postgres` (port 5434), `redis` (6380), `mailpit` (1025 
 | --- | --- | --- |
 | backend | `backend/.env` | `NODE_ENV=development`, `DATABASE_URL` vers `localhost:5434`, `REDIS_URL` vers `localhost:6380`, `RPC_URL=http://127.0.0.1:8545`, secrets de développement |
 | frontend web | `frontend-web/.env` | `NEXT_PUBLIC_API_URL=http://localhost:2053/api`, `NEXT_PUBLIC_WS_URL=http://localhost:2053` |
-| mobile | `mobile-app/.env` | `EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_WS_URL` ; adresse IP du poste à la place de `localhost` sur un téléphone physique |
+| mobile | `mobile-app/.env` | `EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_WS_URL` ; adresse IP du poste à la place de `localhost` sur un téléphone physique ; `EXPO_PUBLIC_GOOGLE_*_CLIENT_ID` pour la connexion Google |
 | Office de Tourisme | aucun | `npm run dev` sert le dossier sur le port 4000 |
 
 Particularités de ce mode :
 
-- en `development`, le backend accepte les valeurs par défaut des secrets, la désactivation de `LOGIN_EMAIL_CODE_REQUIRED` et `ADMIN_MFA_REQUIRED`, et `BLOCKCHAIN_MODE=simulated` ;
+- en `development`, le backend accepte les valeurs par défaut des secrets, la désactivation de `LOGIN_EMAIL_CODE_REQUIRED`, `ADMIN_MFA_REQUIRED` et `AGE_VERIFICATION_REQUIRED`, et `BLOCKCHAIN_MODE=simulated` ;
 - `RUN_WORKERS=true` par défaut : un seul processus `npm run dev` porte l'API, les workers BullMQ, l'indexeur et le keeper ;
 - les journaux sont colorés et lisibles, au niveau `debug` ;
 - `/metrics` et le détail de `/health/deep` sont accessibles sans jeton si `METRICS_TOKEN` est vide ;

@@ -146,9 +146,44 @@ console.log({
 <p>L&#39;indexeur repart de <code>CHAIN_START_BLOCK</code> (0 en local) et reconstruit les tours. Chaque citoyen reçoit une nouvelle dotation à son prochain achat. Les EtherPoints déjà gagnés et l&#39;historique <code>PointTransaction</code> sont conservés. La reconstruction est détaillée dans <a href="../base-de-donnees/reconstruction.html">Reconstruire depuis la chaîne</a>.</p>
 <h3 id="prevention"><a class="anchor" href="#prevention" aria-hidden="true" tabindex="-1">#</a>Prévention</h3>
 <p>Ne jamais redémarrer le conteneur <code>blockchain</code> pendant une démonstration. Sur la VM, un redémarrage de la machine (mise à jour du noyau par exemple) suffit à déclencher l&#39;incident : prévoir l&#39;option B avant la soutenance.</p>
+<h2 id="tour-bloque-en-salle-d-attente"><a class="anchor" href="#tour-bloque-en-salle-d-attente" aria-hidden="true" tabindex="-1">#</a>Tour bloqué en salle d&#39;attente</h2>
+<p>Les achats sont clos (fin du temps ou dernier ticket vendu), <code>GET /api/v1/lottery/status</code> renvoie <code>phase: &quot;WAITING_ROOM&quot;</code>, mais le tirage n&#39;est pas demandé après l&#39;heure <code>revealAt</code>.</p>
+<h3 id="fonctionnement-normal"><a class="anchor" href="#fonctionnement-normal" aria-hidden="true" tabindex="-1">#</a>Fonctionnement normal</h3>
+<p>Quand <code>isDrawReady</code> devient vrai, le keeper mémorise dans Redis l&#39;heure à laquelle le tour est devenu tirable (clé <code>chain:draw-ready-at:&lt;tour&gt;</code>, préfixée par <code>REDIS_KEY_PREFIX</code> et <code>NODE_ENV</code>, conservée 7 jours), puis attend <code>DRAW_REVEAL_DELAY_SECONDS</code> (600 par défaut) avant d&#39;appeler <code>requestDraw</code>. Pendant l&#39;attente, il renvoie <code>waiting-room</code> sans rien journaliser. Le code est dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/draw-reveal.ts" class="external" target="_blank" rel="noopener noreferrer"><code>draw-reveal.ts</code></a> et <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.keeper.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lottery.keeper.ts</code></a>.</p>
+<h3 id="causes"><a class="anchor" href="#causes" aria-hidden="true" tabindex="-1">#</a>Causes</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cause</th>
+<th>Indice</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Le keeper ne tourne pas</td>
+<td>aucun processus avec <code>RUN_WORKERS=true</code> ou worker arrêté ; sonde du worker en échec</td>
+</tr>
+<tr>
+<td>Le contrat est en pause</td>
+<td><code>paused()</code> vaut <code>true</code> : le keeper ne fait rien</td>
+</tr>
+<tr>
+<td>Le tour n&#39;a pas <code>minTicketsToDraw</code> tickets</td>
+<td><code>isDrawReady</code> reste faux ; à l&#39;échéance, le keeper clôt le tour par <code>closeExpiredRound</code> au lieu de le tirer</td>
+</tr>
+<tr>
+<td>Redis a perdu la clé</td>
+<td>le keeper recrée la clé avec l&#39;heure courante quand le tour a été complet avant son échéance : le délai repart de zéro</td>
+</tr>
+<tr>
+<td>Opérateur sans fonds</td>
+<td>ligne <code>Automate du tirage : …</code> dans les journaux du worker (voir <a href="#operateur-a-court-d-eth">Opérateur à court d&#39;ETH</a>)</td>
+</tr>
+</tbody></table></div>
+<h3 id="resolution-2"><a class="anchor" href="#resolution-2" aria-hidden="true" tabindex="-1">#</a>Résolution</h3>
+<p>Corriger la cause, puis attendre le passage suivant du keeper (<code>KEEPER_INTERVAL_MS</code>). Pour lancer le tirage sans attendre la fin du délai, un administrateur utilise « Lancer le tirage VRF » sur <code>/mairie/securite</code> (<code>POST /api/v1/lottery/draw</code>), qui ne lit pas la clé Redis. <code>requestDraw</code> est aussi appelable par n&#39;importe quel compte dès que le contrat l&#39;accepte.</p>
 <h2 id="oracle-vrf-muet"><a class="anchor" href="#oracle-vrf-muet" aria-hidden="true" tabindex="-1">#</a>Oracle VRF muet</h2>
 <p>Le tirage est demandé (<code>requestDraw</code>), le tour passe en <code>Drawing</code> (en base : <code>LOCKED</code>), mais aucun aléa n&#39;arrive. Le tour reste bloqué et les achats sont refusés en 409 « Le tirage de ce tour est en cours ».</p>
-<h3 id="causes"><a class="anchor" href="#causes" aria-hidden="true" tabindex="-1">#</a>Causes</h3>
+<h3 id="causes-2"><a class="anchor" href="#causes-2" aria-hidden="true" tabindex="-1">#</a>Causes</h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -208,14 +243,14 @@ console.log(tx.hash);
 <p>Sur Sepolia, consulter le solde LINK et ETH de l&#39;abonnement sur <code>vrf.chain.link</code>. Le script de déploiement Sepolia refuse de déployer si l&#39;abonnement n&#39;est pas financé, mais le solde peut s&#39;épuiser ensuite. Le mode de paiement (<code>nativePayment</code>) est fixé au déploiement : ETH si l&#39;abonnement n&#39;avait pas de LINK, LINK sinon.</p>
 <p>En local, l&#39;identifiant de l&#39;abonnement simulé est dans le fichier de déploiement du conteneur :</p>
 <div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose <span class="hljs-built_in">exec</span> blockchain <span class="hljs-built_in">cat</span> deployments/localhost.json</code></pre></div>
-<h3 id="resolution-2"><a class="anchor" href="#resolution-2" aria-hidden="true" tabindex="-1">#</a>Résolution</h3>
+<h3 id="resolution-3"><a class="anchor" href="#resolution-3" aria-hidden="true" tabindex="-1">#</a>Résolution</h3>
 <ol>
 <li>Financer l&#39;abonnement : sur Sepolia, depuis <code>vrf.chain.link</code> avec du LINK ou de l&#39;ETH de test, dans la monnaie de <code>nativePayment</code> ; en local, appeler <code>fundSubscription(subId, montant)</code> sur le coordinateur simulé, comme le fait <code>deploy-local.ts</code>.</li>
 <li>Sur Sepolia, Chainlink traite en général la requête en attente une fois l&#39;abonnement financé. En local, l&#39;oracle ne retente jamais une requête échouée.</li>
 <li>Si le tour est toujours en <code>Drawing</code> après <code>drawTimeout</code>, appliquer <a href="#resolution-retrydraw">retryDraw</a>.</li>
 </ol>
 <h2 id="operateur-a-court-d-eth"><a class="anchor" href="#operateur-a-court-d-eth" aria-hidden="true" tabindex="-1">#</a>Opérateur à court d&#39;ETH</h2>
-<p>Le compte opérateur paie le gas de toutes les transactions du backend et finance la dotation de bienvenue de chaque nouveau portefeuille (<code>WELCOME_GRANT_WEI</code>, 0,1 ETH par défaut). En local, <code>deploy-local.ts</code> lui verse 1 000 ethers fictifs, soit environ 10 000 dotations. Sur Sepolia, il dépend des robinets.</p>
+<p>Le compte opérateur paie le gas de toutes les transactions du backend et finance la dotation de bienvenue de chaque nouveau portefeuille (<code>WELCOME_GRANT_WEI</code>, 0,5 ETH par défaut). En local, <code>deploy-local.ts</code> lui verse 1 000 ethers fictifs, soit un peu moins de 2 000 dotations. Sur Sepolia, il dépend des robinets.</p>
 <h3 id="symptomes-3"><a class="anchor" href="#symptomes-3" aria-hidden="true" tabindex="-1">#</a>Symptômes</h3>
 <ul>
 <li>Journaux de l&#39;API : <code>Dotation de bienvenue impossible pour le compte …</code> avec une raison <code>insufficient funds</code>. Le nouveau citoyen ne reçoit rien et son premier achat échoue en 402.</li>
@@ -226,7 +261,7 @@ console.log(tx.hash);
 <h3 id="diagnostic-4"><a class="anchor" href="#diagnostic-4" aria-hidden="true" tabindex="-1">#</a>Diagnostic</h3>
 <p>Solde de l&#39;opérateur, en wei et en hexadécimal :</p>
 <div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -X POST -H <span class="hljs-string">&quot;content-type: application/json&quot;</span> --data <span class="hljs-string">&#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;eth_getBalance&quot;,&quot;params&quot;:[&quot;0xADRESSE_OPERATEUR&quot;,&quot;latest&quot;]}&#x27;</span> http://127.0.0.1:8545</code></pre></div>
-<h3 id="resolution-3"><a class="anchor" href="#resolution-3" aria-hidden="true" tabindex="-1">#</a>Résolution</h3>
+<h3 id="resolution-4"><a class="anchor" href="#resolution-4" aria-hidden="true" tabindex="-1">#</a>Résolution</h3>
 <p>En local, le nœud Hardhat accepte la méthode <code>hardhat_setBalance</code>. Cette commande fixe le solde à 1 000 ethers (<code>0x3635C9ADC5DEA00000</code> wei) :</p>
 <div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -X POST -H <span class="hljs-string">&quot;content-type: application/json&quot;</span> --data <span class="hljs-string">&#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;hardhat_setBalance&quot;,&quot;params&quot;:[&quot;0xADRESSE_OPERATEUR&quot;,&quot;0x3635C9ADC5DEA00000&quot;]}&#x27;</span> http://127.0.0.1:8545</code></pre></div>
 <p>Sur Sepolia, envoyer de l&#39;ETH de test à l&#39;adresse de l&#39;opérateur depuis un robinet ou un autre compte, et réduire <code>WELCOME_GRANT_WEI</code> (ou le mettre à <code>0</code> pour supprimer la dotation). Les dotations manquées sont rattrapées automatiquement : <code>prepareWallet</code> retente la dotation tant que <code>welcomeGrantTxHash</code> est vide.</p>
@@ -242,7 +277,7 @@ console.log(tx.hash);
 <p>Comparer le nombre de transactions confirmées et en attente de l&#39;opérateur :</p>
 <div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -X POST -H <span class="hljs-string">&quot;content-type: application/json&quot;</span> --data <span class="hljs-string">&#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;eth_getTransactionCount&quot;,&quot;params&quot;:[&quot;0xADRESSE_OPERATEUR&quot;,&quot;latest&quot;]}&#x27;</span> http://127.0.0.1:8545</code></pre></div>
 <div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -X POST -H <span class="hljs-string">&quot;content-type: application/json&quot;</span> --data <span class="hljs-string">&#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;eth_getTransactionCount&quot;,&quot;params&quot;:[&quot;0xADRESSE_OPERATEUR&quot;,&quot;pending&quot;]}&#x27;</span> http://127.0.0.1:8545</code></pre></div>
-<h3 id="resolution-4"><a class="anchor" href="#resolution-4" aria-hidden="true" tabindex="-1">#</a>Résolution</h3>
+<h3 id="resolution-5"><a class="anchor" href="#resolution-5" aria-hidden="true" tabindex="-1">#</a>Résolution</h3>
 <ul>
 <li><p><strong>Les deux valeurs sont égales</strong> : aucune transaction n&#39;est en attente, seul un compteur en mémoire est faux. Redémarrer les processus, qui relisent le nonce sur la chaîne :</p>
 <div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose --profile app restart backend worker</code></pre></div>
@@ -298,7 +333,7 @@ console.log(tx.hash);
 </ul>
 <h3 id="diagnostic-6"><a class="anchor" href="#diagnostic-6" aria-hidden="true" tabindex="-1">#</a>Diagnostic</h3>
 <p>Appeler <code>eth_blockNumber</code> sur l&#39;URL configurée, depuis l&#39;hôte ou depuis le conteneur de l&#39;API. En local, l&#39;URL est <code>http://blockchain:8545</code> à l&#39;intérieur du réseau Compose : vérifier d&#39;abord <code>docker compose ps blockchain</code>. Un conteneur arrêté puis relancé implique la <a href="#chaine-locale-reinitialisee">procédure de chaîne réinitialisée</a>.</p>
-<h3 id="resolution-5"><a class="anchor" href="#resolution-5" aria-hidden="true" tabindex="-1">#</a>Résolution</h3>
+<h3 id="resolution-6"><a class="anchor" href="#resolution-6" aria-hidden="true" tabindex="-1">#</a>Résolution</h3>
 <div class="hint hint-warning"><p class="hint-title">Attention</p>
 <p>En mode <code>onchain</code>, la bascule de secours n&#39;est pas automatique et ne peut pas être déclenchée à chaud. Le seul déclencheur prévu, l&#39;événement <code>RPC_FALLBACK_SWITCH</code> du webhook <code>POST /api/webhooks/blockchain</code>, est refusé avec un 409 dès que <code>BLOCKCHAIN_MODE=onchain</code>. Il ne fonctionne qu&#39;en mode simulé, et seulement pour le processus qui reçoit l&#39;appel.</p>
 </div>
@@ -323,7 +358,7 @@ console.log(tx.hash);
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#outils-de-diagnostic">Outils de diagnostic</a></li><li class="toc-h3"><a href="#appels-json-rpc">Appels JSON-RPC</a></li><li class="toc-h3"><a href="#lire-l-etat-du-tour">Lire l&#39;état du tour</a></li><li class="toc-h3"><a href="#curseur-d-indexation">Curseur d&#39;indexation</a></li><li class="toc-h3"><a href="#adresse-du-compte-operateur">Adresse du compte opérateur</a></li><li class="toc-h2"><a href="#chaine-locale-reinitialisee">Chaîne locale réinitialisée</a></li><li class="toc-h3"><a href="#symptomes">Symptômes</a></li><li class="toc-h3"><a href="#diagnostic">Diagnostic</a></li><li class="toc-h3"><a href="#resolution">Résolution</a></li><li class="toc-h3"><a href="#prevention">Prévention</a></li><li class="toc-h2"><a href="#oracle-vrf-muet">Oracle VRF muet</a></li><li class="toc-h3"><a href="#causes">Causes</a></li><li class="toc-h3"><a href="#diagnostic-2">Diagnostic</a></li><li class="toc-h3"><a href="#resolution-retrydraw">Résolution : retryDraw</a></li><li class="toc-h3"><a href="#alternative-annuler-le-tour">Alternative : annuler le tour</a></li><li class="toc-h2"><a href="#abonnement-vrf-vide">Abonnement VRF vide</a></li><li class="toc-h3"><a href="#symptomes-2">Symptômes</a></li><li class="toc-h3"><a href="#diagnostic-3">Diagnostic</a></li><li class="toc-h3"><a href="#resolution-2">Résolution</a></li><li class="toc-h2"><a href="#operateur-a-court-d-eth">Opérateur à court d&#39;ETH</a></li><li class="toc-h3"><a href="#symptomes-3">Symptômes</a></li><li class="toc-h3"><a href="#diagnostic-4">Diagnostic</a></li><li class="toc-h3"><a href="#resolution-3">Résolution</a></li><li class="toc-h2"><a href="#nonce-bloque">Nonce bloqué</a></li><li class="toc-h3"><a href="#symptomes-4">Symptômes</a></li><li class="toc-h3"><a href="#diagnostic-5">Diagnostic</a></li><li class="toc-h3"><a href="#resolution-4">Résolution</a></li><li class="toc-h2"><a href="#pause-d-urgence">Pause d&#39;urgence</a></li><li class="toc-h3"><a href="#effet-de-la-pause">Effet de la pause</a></li><li class="toc-h3"><a href="#declencher">Déclencher</a></li><li class="toc-h3"><a href="#verifier-et-reprendre">Vérifier et reprendre</a></li><li class="toc-h2"><a href="#rpc-principal-en-panne">RPC principal en panne</a></li><li class="toc-h3"><a href="#symptomes-5">Symptômes</a></li><li class="toc-h3"><a href="#diagnostic-6">Diagnostic</a></li><li class="toc-h3"><a href="#resolution-5">Résolution</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#outils-de-diagnostic">Outils de diagnostic</a></li><li class="toc-h3"><a href="#appels-json-rpc">Appels JSON-RPC</a></li><li class="toc-h3"><a href="#lire-l-etat-du-tour">Lire l&#39;état du tour</a></li><li class="toc-h3"><a href="#curseur-d-indexation">Curseur d&#39;indexation</a></li><li class="toc-h3"><a href="#adresse-du-compte-operateur">Adresse du compte opérateur</a></li><li class="toc-h2"><a href="#chaine-locale-reinitialisee">Chaîne locale réinitialisée</a></li><li class="toc-h3"><a href="#symptomes">Symptômes</a></li><li class="toc-h3"><a href="#diagnostic">Diagnostic</a></li><li class="toc-h3"><a href="#resolution">Résolution</a></li><li class="toc-h3"><a href="#prevention">Prévention</a></li><li class="toc-h2"><a href="#tour-bloque-en-salle-d-attente">Tour bloqué en salle d&#39;attente</a></li><li class="toc-h3"><a href="#fonctionnement-normal">Fonctionnement normal</a></li><li class="toc-h3"><a href="#causes">Causes</a></li><li class="toc-h3"><a href="#resolution-2">Résolution</a></li><li class="toc-h2"><a href="#oracle-vrf-muet">Oracle VRF muet</a></li><li class="toc-h3"><a href="#causes-2">Causes</a></li><li class="toc-h3"><a href="#diagnostic-2">Diagnostic</a></li><li class="toc-h3"><a href="#resolution-retrydraw">Résolution : retryDraw</a></li><li class="toc-h3"><a href="#alternative-annuler-le-tour">Alternative : annuler le tour</a></li><li class="toc-h2"><a href="#abonnement-vrf-vide">Abonnement VRF vide</a></li><li class="toc-h3"><a href="#symptomes-2">Symptômes</a></li><li class="toc-h3"><a href="#diagnostic-3">Diagnostic</a></li><li class="toc-h3"><a href="#resolution-3">Résolution</a></li><li class="toc-h2"><a href="#operateur-a-court-d-eth">Opérateur à court d&#39;ETH</a></li><li class="toc-h3"><a href="#symptomes-3">Symptômes</a></li><li class="toc-h3"><a href="#diagnostic-4">Diagnostic</a></li><li class="toc-h3"><a href="#resolution-4">Résolution</a></li><li class="toc-h2"><a href="#nonce-bloque">Nonce bloqué</a></li><li class="toc-h3"><a href="#symptomes-4">Symptômes</a></li><li class="toc-h3"><a href="#diagnostic-5">Diagnostic</a></li><li class="toc-h3"><a href="#resolution-5">Résolution</a></li><li class="toc-h2"><a href="#pause-d-urgence">Pause d&#39;urgence</a></li><li class="toc-h3"><a href="#effet-de-la-pause">Effet de la pause</a></li><li class="toc-h3"><a href="#declencher">Déclencher</a></li><li class="toc-h3"><a href="#verifier-et-reprendre">Vérifier et reprendre</a></li><li class="toc-h2"><a href="#rpc-principal-en-panne">RPC principal en panne</a></li><li class="toc-h3"><a href="#symptomes-5">Symptômes</a></li><li class="toc-h3"><a href="#diagnostic-6">Diagnostic</a></li><li class="toc-h3"><a href="#resolution-6">Résolution</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

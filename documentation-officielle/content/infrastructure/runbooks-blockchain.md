@@ -132,6 +132,28 @@ L'indexeur repart de `CHAIN_START_BLOCK` (0 en local) et reconstruit les tours. 
 
 Ne jamais redémarrer le conteneur `blockchain` pendant une démonstration. Sur la VM, un redémarrage de la machine (mise à jour du noyau par exemple) suffit à déclencher l'incident : prévoir l'option B avant la soutenance.
 
+## Tour bloqué en salle d'attente
+
+Les achats sont clos (fin du temps ou dernier ticket vendu), `GET /api/v1/lottery/status` renvoie `phase: "WAITING_ROOM"`, mais le tirage n'est pas demandé après l'heure `revealAt`.
+
+### Fonctionnement normal
+
+Quand `isDrawReady` devient vrai, le keeper mémorise dans Redis l'heure à laquelle le tour est devenu tirable (clé `chain:draw-ready-at:<tour>`, préfixée par `REDIS_KEY_PREFIX` et `NODE_ENV`, conservée 7 jours), puis attend `DRAW_REVEAL_DELAY_SECONDS` (600 par défaut) avant d'appeler `requestDraw`. Pendant l'attente, il renvoie `waiting-room` sans rien journaliser. Le code est dans [`draw-reveal.ts`](src:backend/src/blockchain/draw-reveal.ts) et [`lottery.keeper.ts`](src:backend/src/blockchain/lottery.keeper.ts).
+
+### Causes
+
+| Cause | Indice |
+| --- | --- |
+| Le keeper ne tourne pas | aucun processus avec `RUN_WORKERS=true` ou worker arrêté ; sonde du worker en échec |
+| Le contrat est en pause | `paused()` vaut `true` : le keeper ne fait rien |
+| Le tour n'a pas `minTicketsToDraw` tickets | `isDrawReady` reste faux ; à l'échéance, le keeper clôt le tour par `closeExpiredRound` au lieu de le tirer |
+| Redis a perdu la clé | le keeper recrée la clé avec l'heure courante quand le tour a été complet avant son échéance : le délai repart de zéro |
+| Opérateur sans fonds | ligne `Automate du tirage : …` dans les journaux du worker (voir [Opérateur à court d'ETH](#operateur-a-court-d-eth)) |
+
+### Résolution
+
+Corriger la cause, puis attendre le passage suivant du keeper (`KEEPER_INTERVAL_MS`). Pour lancer le tirage sans attendre la fin du délai, un administrateur utilise « Lancer le tirage VRF » sur `/mairie/securite` (`POST /api/v1/lottery/draw`), qui ne lit pas la clé Redis. `requestDraw` est aussi appelable par n'importe quel compte dès que le contrat l'accepte.
+
 ## Oracle VRF muet
 
 Le tirage est demandé (`requestDraw`), le tour passe en `Drawing` (en base : `LOCKED`), mais aucun aléa n'arrive. Le tour reste bloqué et les achats sont refusés en 409 « Le tirage de ce tour est en cours ».
@@ -210,7 +232,7 @@ docker compose exec blockchain cat deployments/localhost.json
 
 ## Opérateur à court d'ETH
 
-Le compte opérateur paie le gas de toutes les transactions du backend et finance la dotation de bienvenue de chaque nouveau portefeuille (`WELCOME_GRANT_WEI`, 0,1 ETH par défaut). En local, `deploy-local.ts` lui verse 1 000 ethers fictifs, soit environ 10 000 dotations. Sur Sepolia, il dépend des robinets.
+Le compte opérateur paie le gas de toutes les transactions du backend et finance la dotation de bienvenue de chaque nouveau portefeuille (`WELCOME_GRANT_WEI`, 0,5 ETH par défaut). En local, `deploy-local.ts` lui verse 1 000 ethers fictifs, soit un peu moins de 2 000 dotations. Sur Sepolia, il dépend des robinets.
 
 ### Symptômes
 

@@ -66,6 +66,7 @@ L'étiquette `route` vaut `req.baseUrl` suivi du chemin déclaré dans le routeu
 | `ticket_purchased` | [`lottery.services.ts`](src:backend/src/api/lottery/lottery.services.ts) | achat ou cadeau réussi, incrémenté de la quantité |
 | `ticket_indexed` | [`lottery.indexer.ts`](src:backend/src/blockchain/lottery.indexer.ts) | tickets créés en base depuis un événement `TicketsPurchased` |
 | `reward_claimed` | [`marketplace.services.ts`](src:backend/src/api/marketplace/marketplace.services.ts) | échange d'une récompense |
+| `scratch_ticket_bought` | [`marketplace.services.ts`](src:backend/src/api/marketplace/marketplace.services.ts) | achat d'un ticket à gratter en EtherPoints |
 | `points_credited_<action>`, `points_debited_<action>` | [`ledger.service.ts`](src:backend/src/services/ledger.service.ts) | mouvement d'EtherPoints, `<action>` étant le type d'action en minuscules (par exemple `ticket_purchase`) |
 
 ### Où lire les métriques

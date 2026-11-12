@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>7. Backend</span></div>
     <article class="markdown">
 <h1>Modules métier</h1>
-<p>Le dossier <code>backend/src/api</code> contient neuf modules. Chacun est un routeur Express monté par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a> sous <code>/api/v1/&lt;module&gt;</code> et, pour compatibilité, sous <code>/api/&lt;module&gt;</code>. Le module système fait exception : ses routes sont montées à la racine du serveur. Les pages de cette section décrivent chaque route avec ses règles métier, sa validation, ses autorisations, ses erreurs et ses effets de bord. La liste brute des 52 routes est générée sur la page <a href="../reference-api.html">Référence de l&#39;API</a>.</p>
+<p>Le dossier <code>backend/src/api</code> contient neuf modules. Chacun est un routeur Express monté par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a> sous <code>/api/v1/&lt;module&gt;</code> et, pour compatibilité, sous <code>/api/&lt;module&gt;</code>. Le module système fait exception : ses routes sont montées à la racine du serveur. Les pages de cette section décrivent chaque route avec ses règles métier, sa validation, ses autorisations, ses erreurs et ses effets de bord. La liste brute des 64 routes est générée sur la page <a href="../reference-api.html">Référence de l&#39;API</a>.</p>
 <h2 id="vue-d-ensemble"><a class="anchor" href="#vue-d-ensemble" aria-hidden="true" tabindex="-1">#</a>Vue d&#39;ensemble</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -59,22 +59,22 @@
 <tr>
 <td><code>auth</code></td>
 <td><code>/api/v1/auth</code></td>
-<td>6</td>
-<td>Connexion par code email, création de compte et de portefeuille, 2FA, déconnexion</td>
+<td>12</td>
+<td>Connexion par mot de passe, Google, Apple ou code email, réinitialisation du mot de passe, création de compte et de portefeuille, 2FA, déconnexion</td>
 <td><a href="auth.html">Authentification</a></td>
 </tr>
 <tr>
 <td><code>lottery</code></td>
 <td><code>/api/v1/lottery</code></td>
 <td>11</td>
-<td>État du tour, achat et cadeau de tickets, tirage, annulation, portefeuille, POAP</td>
+<td>État et phase du tour, achat et cadeau du ticket unique, tirage, annulation, portefeuille, POAP</td>
 <td><a href="loterie.html">Loterie</a></td>
 </tr>
 <tr>
 <td><code>marketplace</code></td>
 <td><code>/api/v1/marketplace</code></td>
-<td>6</td>
-<td>Catalogue, solde d&#39;EtherPoints, échange de récompenses, validation en magasin</td>
+<td>7</td>
+<td>Catalogue, solde d&#39;EtherPoints, échange de récompenses, ticket à gratter, validation en magasin</td>
 <td><a href="boutique.html">Boutique et récompenses</a></td>
 </tr>
 <tr>
@@ -87,8 +87,8 @@
 <tr>
 <td><code>user</code></td>
 <td><code>/api/v1/user</code></td>
-<td>10</td>
-<td>Profil, parrainage, quêtes, jeu responsable, préférences, RGPD</td>
+<td>12</td>
+<td>Profil, vérification d&#39;âge, parrainage, quêtes, jeu responsable, préférences, RGPD</td>
 <td><a href="utilisateur.html">Utilisateur et RGPD</a></td>
 </tr>
 <tr>
@@ -101,8 +101,8 @@
 <tr>
 <td><code>admin</code></td>
 <td><code>/api/v1/admin</code></td>
-<td>6</td>
-<td>Tableau de bord Mairie, disjoncteur, trésorerie, partenaires, rapports, audit</td>
+<td>9</td>
+<td>Tableau de bord Mairie, disjoncteur, trésorerie, partenaires, pièces d&#39;identité, rapports, audit</td>
 <td><a href="administration.html">Administration Mairie</a></td>
 </tr>
 <tr>
@@ -118,6 +118,7 @@
 <div class="diagram"><pre class="mermaid">flowchart LR
     auth[&quot;auth&quot;] --&gt; ledger[&quot;ledgerService&quot;]
     auth --&gt; wallet[&quot;walletService&quot;]
+    auth --&gt; oauth[&quot;oauthVerifierService&quot;]
     lottery[&quot;lottery&quot;] --&gt; authRepo[&quot;authRepository&quot;]
     lottery --&gt; ledger
     lottery --&gt; gateway[&quot;lotteryGateway&quot;]
@@ -129,6 +130,7 @@
     admin[&quot;admin&quot;] --&gt; analytics[&quot;analytics&quot;]
     admin --&gt; bsvc
     admin --&gt; gateway
+    admin --&gt; emails[&quot;file emails-queue&quot;]
     webhooks[&quot;webhooks&quot;] --&gt; indexer[&quot;blockchainIndexerWorker&quot;]
     gateway --&gt; indexer2[&quot;lotteryIndexer&quot;]
     indexer2 --&gt; ledger</pre></div>
@@ -159,7 +161,11 @@
 </tr>
 <tr>
 <td>Idempotence</td>
-<td>En-tête <code>Idempotency-Key</code> sur <code>buy</code>, <code>gift</code>, <code>claim-prize</code> et <code>marketplace/claim</code></td>
+<td>En-tête <code>Idempotency-Key</code> sur <code>buy</code>, <code>gift</code>, <code>claim-prize</code>, <code>marketplace/claim</code> et <code>marketplace/scratch</code></td>
+</tr>
+<tr>
+<td>Âge</td>
+<td><code>403 Vérifiez votre âge pour jouer.</code> avec <code>errors.code = AGE_VERIFICATION_REQUIRED</code> sur <code>buy</code>, <code>gift</code>, <code>marketplace/claim</code> et <code>marketplace/scratch</code> tant que la pièce d&#39;identité n&#39;est pas validée</td>
 </tr>
 <tr>
 <td>Exemples</td>
@@ -180,7 +186,7 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>Système, <code>GET /auth/onboarding</code>, <code>POST /auth/login</code>, <code>POST /auth/2fa/verify</code></td>
+<td>Système, <code>GET /auth/onboarding</code>, <code>POST /auth/login</code>, <code>/signup</code>, <code>/signin</code>, <code>/password/*</code>, <code>/oauth/*</code>, <code>/2fa/verify</code></td>
 <td>oui</td>
 <td>oui</td>
 <td>oui</td>
@@ -201,11 +207,18 @@
 <td>oui</td>
 </tr>
 <tr>
-<td><code>POST /lottery/buy</code>, <code>/gift</code>, <code>/claim-prize</code>, <code>GET /my-tickets</code>, <code>/wallet</code></td>
+<td><code>POST /lottery/claim-prize</code>, <code>GET /my-tickets</code>, <code>/wallet</code></td>
 <td>non</td>
 <td>oui</td>
 <td>oui</td>
 <td>oui</td>
+</tr>
+<tr>
+<td><code>POST /lottery/buy</code>, <code>/gift</code></td>
+<td>non</td>
+<td>âge vérifié</td>
+<td>âge vérifié</td>
+<td>âge vérifié</td>
 </tr>
 <tr>
 <td><code>POST /lottery/draw</code>, <code>/refund</code></td>
@@ -222,11 +235,18 @@
 <td>oui</td>
 </tr>
 <tr>
-<td><code>GET /marketplace/points</code>, <code>/my-codes</code>, <code>POST /marketplace/claim</code></td>
+<td><code>GET /marketplace/points</code>, <code>/my-codes</code></td>
 <td>non</td>
 <td>oui</td>
 <td>oui</td>
 <td>oui</td>
+</tr>
+<tr>
+<td><code>POST /marketplace/claim</code>, <code>/scratch</code></td>
+<td>non</td>
+<td>âge vérifié</td>
+<td>âge vérifié</td>
+<td>âge vérifié</td>
 </tr>
 <tr>
 <td><code>POST /marketplace/redeem</code>, <code>POST /partners</code>, <code>/offers</code>, <code>/codes/upload</code>, <code>GET /partners/:id/consumption</code></td>

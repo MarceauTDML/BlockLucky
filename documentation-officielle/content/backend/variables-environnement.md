@@ -17,7 +17,7 @@ Quatre variables sont des secrets refusés en production s'ils gardent leur vale
 | `METRICS_TOKEN` | chaîne non vide en production | `node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))"` |
 
 > [!CAUTION]
-> `ENCRYPTION_KEY` chiffre en AES-256-GCM la clé privée de chaque portefeuille intégré (`User.walletEncryptedKey`) et les secrets TOTP. Si elle est perdue ou changée, les portefeuilles ne peuvent plus signer : les ethers fictifs et les tickets qu'ils détiennent deviennent inaccessibles, et les citoyens doivent reconfigurer leur 2FA. Sauvegardez-la hors du serveur avant la mise en service et ne la faites jamais tourner sans plan de rechiffrement. Voir [Clés et garde des portefeuilles](../securite/cles-portefeuilles.md).
+> `ENCRYPTION_KEY` chiffre en AES-256-GCM la clé privée de chaque portefeuille intégré (`User.walletEncryptedKey`), les secrets TOTP et les images des pièces d'identité en attente. Si elle est perdue ou changée, les portefeuilles ne peuvent plus signer : les ethers fictifs et les tickets qu'ils détiennent deviennent inaccessibles, les citoyens doivent reconfigurer leur 2FA et les pièces en attente ne peuvent plus être examinées. Sauvegardez-la hors du serveur avant la mise en service et ne la faites jamais tourner sans plan de rechiffrement. Voir [Clés et garde des portefeuilles](../securite/cles-portefeuilles.md).
 
 Changer `JWT_SECRET` invalide toutes les sessions ouvertes : c'est un moyen radical de déconnecter tout le monde. Changer `WEBHOOK_SECRET` impose de mettre à jour l'émetteur du webhook en même temps.
 
@@ -30,9 +30,12 @@ Changer `JWT_SECRET` invalide toutes les sessions ouvertes : c'est un moyen radi
 | Besoin | Réglage |
 |---|---|
 | Travailler sans nœud blockchain | `BLOCKCHAIN_MODE=simulated` : achats, tirages et pause sont simulés, `/lottery/claim-prize` répond 409 |
-| Lire le code de connexion sans ouvrir Mailpit | rien à faire : en `NODE_ENV=development`, la réponse de `/auth/login` contient `devOtpPreview` |
+| Lire le code de connexion sans ouvrir Mailpit | rien à faire : en `NODE_ENV=development`, les réponses de `/auth/login`, `/auth/signup` et `/auth/password/forgot` contiennent `devOtpPreview` |
 | Se connecter sans code email | `LOGIN_EMAIL_CODE_REQUIRED=false` (refusé en production) |
 | Utiliser l'administration sans 2FA | `ADMIN_MFA_REQUIRED=false` (refusé en production) |
+| Jouer sans faire vérifier son âge | `AGE_VERIFICATION_REQUIRED=false` (refusé en production) ; les comptes du seed sont déjà vérifiés |
+| Raccourcir la salle d'attente du tirage | `DRAW_REVEAL_DELAY_SECONDS=0` pour un tirage dès la fermeture des achats, ou une valeur courte pour une démonstration |
+| Tester la connexion Google ou Apple | renseigner `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` avec les identifiants client de l'application ; sans eux, les routes répondent 503 |
 | Voir les requêtes SQL | `DB_LOG_QUERIES=true` |
 | Tester l'application mobile sur un téléphone | ajouter l'origine Expo à `CORS_ORIGINS` (voir [Tester sur un téléphone](../mobile/telephone-physique.md)) |
 

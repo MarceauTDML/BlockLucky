@@ -36,7 +36,7 @@ Les séparer limite l'impact d'une fuite : la clé de l'opérateur vit sur le se
 Obtenir de l'ETH Sepolia sur un faucet public, par exemple ceux de Google Cloud ou d'Alchemy, pour les deux comptes. Les besoins :
 
 - l'administrateur paie le déploiement des deux contrats (environ 3,2 millions et 1,5 million de gaz, d'après le [rapport de gaz](tests.md#rapport-de-gaz)) et les transactions de configuration ;
-- l'opérateur paie le gaz du keeper (environ 213 000 gaz par tirage), des frappes de badges (jusqu'à 143 000 gaz chacune) et la dotation de bienvenue de chaque citoyen, 0,1 ETH par défaut (`WELCOME_GRANT_WEI`). C'est le poste dominant.
+- l'opérateur paie le gaz du keeper (environ 213 000 gaz par tirage), des frappes de badges (jusqu'à 143 000 gaz chacune) et la dotation de bienvenue de chaque citoyen, 0,5 ETH par défaut (`WELCOME_GRANT_WEI`). C'est le poste dominant : réduire cette valeur sur Sepolia, où l'ETH de test se distribue au compte-gouttes, en gardant de quoi payer un ticket et ses frais.
 
 ## 3. Accès RPC et clé Etherscan
 

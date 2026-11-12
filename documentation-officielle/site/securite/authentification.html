@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Authentification et 2FA | Documentation BlockLucky</title>
-<meta name="description" content="BlockLucky n&#39;a pas de mot de passe. Un citoyen se connecte avec son adresse email, prouvée par un code à usage unique, ou avec un code TOTP s&#39;il a activé une ap">
+<meta name="description" content="Un compte BlockLucky s&#39;ouvre de trois façons : avec une adresse email et un mot de passe, avec un compte Google ou Apple, ou, sur le web, avec un code à usage u">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>11. Sécurité</span></div>
     <article class="markdown">
 <h1>Authentification et 2FA</h1>
-<p>BlockLucky n&#39;a pas de mot de passe. Un citoyen se connecte avec son adresse email, prouvée par un code à usage unique, ou avec un code TOTP s&#39;il a activé une application d&#39;authentification. Cette page décrit les mécanismes et leurs paramètres tels qu&#39;ils sont codés. Le fonctionnement fonctionnel du module (routes, réponses) est décrit dans <a href="../backend/modules/auth.html">le module Authentification</a>.</p>
+<p>Un compte BlockLucky s&#39;ouvre de trois façons : avec une adresse email et un mot de passe, avec un compte Google ou Apple, ou, sur le web, avec un code à usage unique reçu par email. Une fois connecté, le citoyen peut ajouter une double authentification par application TOTP ou par email. Cette page décrit les mécanismes et leurs paramètres tels qu&#39;ils sont codés. Le fonctionnement fonctionnel du module (routes, réponses) est décrit dans <a href="../backend/modules/auth.html">le module Authentification</a>.</p>
 <p>Fichiers principaux :</p>
 <div class="table-wrap"><table>
 <thead>
@@ -48,7 +48,15 @@
 </thead>
 <tbody><tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.services.ts</code></a></td>
-<td>Logique de connexion, d&#39;inscription, d&#39;activation et de désactivation de la 2FA</td>
+<td>Logique de connexion, d&#39;inscription, de réinitialisation, d&#39;activation et de désactivation de la 2FA</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.validators.ts</code></a></td>
+<td>Politique de mot de passe et schémas des routes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/oauth-verifier.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/oauth-verifier.service.ts</code></a></td>
+<td>Vérification des jetons Google et Apple</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/otp-challenge.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/otp-challenge.service.ts</code></a></td>
@@ -60,18 +68,222 @@
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/crypto.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/utils/crypto.util.ts</code></a></td>
-<td>Aléa, HMAC, comparaison en temps constant, chiffrement</td>
+<td>Aléa, bcrypt, HMAC, comparaison en temps constant, chiffrement</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/rbac.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/rbac.middleware.ts</code></a></td>
 <td>2FA obligatoire pour les administrateurs</td>
 </tr>
 <tr>
-<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/api/auth-security.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/api/auth-security.test.ts</code></a></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/api/auth-security.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/api/auth-security.test.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/api/auth-password.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>auth-password.test.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/api/auth-oauth.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>auth-oauth.test.ts</code></a></td>
 <td>Tests de sécurité de l&#39;authentification</td>
 </tr>
 </tbody></table></div>
+<h2 id="vue-d-ensemble"><a class="anchor" href="#vue-d-ensemble" aria-hidden="true" tabindex="-1">#</a>Vue d&#39;ensemble</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Client</th>
+<th>Preuve demandée</th>
+<th>Résultat sans 2FA</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>POST /api/auth/signup</code></td>
+<td>Mobile</td>
+<td>Mot de passe conforme, conditions acceptées, puis code email</td>
+<td>Compte créé et session délivrée par <code>/2fa/verify</code></td>
+</tr>
+<tr>
+<td><code>POST /api/auth/signin</code></td>
+<td>Mobile</td>
+<td>Email et mot de passe</td>
+<td>Session immédiate</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/password/forgot</code>, <code>/password/reset</code></td>
+<td>Mobile</td>
+<td>Code email à 6 chiffres</td>
+<td>Nouveau mot de passe, toutes les sessions révoquées</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/oauth/google</code>, <code>/oauth/apple</code></td>
+<td>Mobile</td>
+<td>Jeton d&#39;identité signé par le fournisseur</td>
+<td>Session immédiate, compte créé au besoin</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/login</code></td>
+<td>Web</td>
+<td>Code email, avec déclaration de majorité dans la requête</td>
+<td>Session délivrée par <code>/2fa/verify</code></td>
+</tr>
+</tbody></table></div>
+<p>Quelle que soit la route, un compte vérifié dont la 2FA est active doit encore fournir son code TOTP ou son code email à <code>/2fa/verify</code> avant de recevoir un jeton (<code>completePrimaryLogin</code>). Toutes ces routes passent par <code>authRateLimiter</code> : 30 requêtes par adresse IP en 10 minutes.</p>
+<h2 id="mot-de-passe"><a class="anchor" href="#mot-de-passe" aria-hidden="true" tabindex="-1">#</a>Mot de passe</h2>
+<h3 id="politique-et-stockage"><a class="anchor" href="#politique-et-stockage" aria-hidden="true" tabindex="-1">#</a>Politique et stockage</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Règle</th>
+<th>Valeur</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Longueur</td>
+<td>10 à 128 caractères</td>
+<td><code>passwordPolicy</code></td>
+</tr>
+<tr>
+<td>Composition</td>
+<td>Au moins une lettre (<code>\p{L}</code>, accents compris) et un chiffre</td>
+<td><code>passwordPolicy</code></td>
+</tr>
+<tr>
+<td>Hachage</td>
+<td>bcrypt, coût 12, sel intégré</td>
+<td><code>hashValue</code></td>
+</tr>
+<tr>
+<td>Colonne</td>
+<td><code>User.passwordHash</code>, <code>NULL</code> pour un compte sans mot de passe</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/schema.prisma" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/schema.prisma</code></a></td>
+</tr>
+<tr>
+<td>Conditions</td>
+<td><code>acceptTerms</code> doit valoir <code>true</code> à l&#39;inscription</td>
+<td><code>signupSchema</code></td>
+</tr>
+</tbody></table></div>
+<p>La politique ne vérifie ni les mots de passe compromis (aucune consultation d&#39;une liste de fuites) ni la ressemblance avec l&#39;email. Le mobile affiche les mêmes règles avant l&#39;envoi (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/auth/PasswordRules.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>PasswordRules.tsx</code></a>).</p>
+<h3 id="inscription"><a class="anchor" href="#inscription" aria-hidden="true" tabindex="-1">#</a>Inscription</h3>
+<p><code>POST /api/auth/signup</code> ne crée pas le compte. Il hache le mot de passe, place l&#39;empreinte, l&#39;email, le parrain éventuel et la source dans un défi <code>SIGNUP</code> stocké dans Redis, puis envoie un code à 6 chiffres. Le compte n&#39;est créé qu&#39;à la vérification de ce code par <code>POST /api/auth/2fa/verify</code> : un mot de passe ne peut donc pas être attaché à une adresse que son auteur ne contrôle pas.</p>
+<p>Si l&#39;adresse appartient à un compte non vérifié, par exemple créé pour le bénéficiaire d&#39;un ticket offert, la vérification active ce compte et lui donne le mot de passe au lieu d&#39;en créer un second (<code>activateExistingAccount</code>). Si elle appartient à un compte vérifié ou anonymisé, la route répond 409 « Un compte existe déjà avec cette adresse email. ».</p>
+<h3 id="connexion"><a class="anchor" href="#connexion" aria-hidden="true" tabindex="-1">#</a>Connexion</h3>
+<p><code>POST /api/auth/signin</code> applique trois protections :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Protection</th>
+<th>Mise en œuvre</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Message unique</td>
+<td>« Email ou mot de passe incorrect. » (401), que l&#39;adresse soit inconnue, anonymisée ou sans mot de passe, ou que le mot de passe soit faux</td>
+</tr>
+<tr>
+<td>Temps de réponse égalisé</td>
+<td>Sans empreinte enregistrée, le mot de passe est comparé à une empreinte bcrypt factice calculée une seule fois (<code>dummyHash</code>), pour que la réponse prenne le même temps</td>
+</tr>
+<tr>
+<td>Blocage</td>
+<td>10 échecs en une heure bloquent le sujet pendant une heure (429). Le sujet est l&#39;identifiant du compte ou, pour une adresse inconnue, <code>signin:&lt;HMAC de l&#39;adresse&gt;</code></td>
+</tr>
+</tbody></table></div>
+<p>Pour un compte existant, le compteur d&#39;échecs est celui des codes email : des échecs de mot de passe et des codes faux s&#39;additionnent. Comme pour les codes, un tiers peut bloquer la connexion d&#39;un compte pendant une heure. Le test <code>bloque le compte après 10 échecs, y compris pour une adresse inconnue</code> couvre ce comportement.</p>
+<h3 id="reinitialisation"><a class="anchor" href="#reinitialisation" aria-hidden="true" tabindex="-1">#</a>Réinitialisation</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Comportement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>POST /api/auth/password/forgot</code></td>
+<td>Réponse identique (<code>{ &quot;sent&quot;: true }</code>, 200) que le compte existe ou non. Pour un compte actif, un code <code>PASSWORD_RESET</code> est émis sous le sujet <code>password-reset:&lt;userId&gt;</code> et envoyé par email, sans attendre la fin de l&#39;envoi</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/password/reset</code></td>
+<td>Email, code et nouveau mot de passe conforme. Code faux ou adresse inconnue : 400 « Code invalide ou expiré. » et un échec compté (sujet anonyme <code>password-reset:&lt;HMAC&gt;</code> pour une adresse inconnue)</td>
+</tr>
+<tr>
+<td>Effet</td>
+<td>Nouveau <code>passwordHash</code>, <code>isEmailVerified</code> à <code>true</code>, révocation de toutes les sessions du compte (<code>revokeAllForUser</code>), email <code>security-alert</code></td>
+</tr>
+</tbody></table></div>
+<p>Le code suit les paramètres décrits dans <a href="#parametres-du-code">Paramètres du code</a>. La même route permet à un compte créé sans mot de passe d&#39;en définir un ; l&#39;alerte indique alors « Mot de passe défini sur votre compte ».</p>
+<h2 id="google-et-apple"><a class="anchor" href="#google-et-apple" aria-hidden="true" tabindex="-1">#</a>Google et Apple</h2>
+<p>Le mobile obtient un jeton d&#39;identité auprès du fournisseur et l&#39;envoie au backend, qui le vérifie lui-même avant toute création de compte.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Contrôle</th>
+<th>Google (<code>/oauth/google</code>)</th>
+<th>Apple (<code>/oauth/apple</code>)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bibliothèque</td>
+<td><code>google-auth-library</code>, <code>verifyIdToken</code></td>
+<td><code>jose</code>, <code>jwtVerify</code></td>
+</tr>
+<tr>
+<td>Clés</td>
+<td>Clés publiques de Google, gérées par la bibliothèque</td>
+<td>JWKS <code>https://appleid.apple.com/auth/keys</code></td>
+</tr>
+<tr>
+<td>Algorithme et émetteur</td>
+<td>Contrôlés par la bibliothèque</td>
+<td><code>RS256</code> seulement, émetteur <code>https://appleid.apple.com</code></td>
+</tr>
+<tr>
+<td>Audience</td>
+<td><code>GOOGLE_CLIENT_IDS</code></td>
+<td><code>APPLE_CLIENT_IDS</code></td>
+</tr>
+<tr>
+<td>Email</td>
+<td>Obligatoire, <code>email_verified</code> doit être vrai</td>
+<td>Obligatoire ; <code>email_verified</code>, s&#39;il est présent, doit être vrai</td>
+</tr>
+<tr>
+<td>Fournisseur non configuré</td>
+<td>503 « Connexion Google non configurée. »</td>
+<td>503 « Connexion Apple non configurée. »</td>
+</tr>
+<tr>
+<td>Jeton refusé</td>
+<td>401</td>
+<td>401</td>
+</tr>
+</tbody></table></div>
+<p>Les deux listes d&#39;identifiants sont vides par défaut : la connexion sociale reste donc désactivée tant qu&#39;elles ne sont pas renseignées (voir <a href="../backend/variables-environnement.html">Variables d&#39;environnement</a>).</p>
+<h3 id="rattachement-par-adresse-email"><a class="anchor" href="#rattachement-par-adresse-email" aria-hidden="true" tabindex="-1">#</a>Rattachement par adresse email</h3>
+<p><code>oauthLogin</code> cherche le compte par l&#39;adresse email du jeton, sans enregistrer l&#39;identifiant <code>sub</code> du fournisseur.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Aucun compte</td>
+<td>Création du compte, du portefeuille et des 25 EtherPoints de bienvenue, session immédiate</td>
+</tr>
+<tr>
+<td>Compte non vérifié (bénéficiaire d&#39;un cadeau)</td>
+<td>Activation du compte et session immédiate</td>
+</tr>
+<tr>
+<td>Compte vérifié</td>
+<td>Connexion à ce compte, avec l&#39;étape 2FA si elle est active</td>
+</tr>
+<tr>
+<td>Compte anonymisé</td>
+<td>Création d&#39;un nouveau compte</td>
+</tr>
+</tbody></table></div>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le rattachement repose entièrement sur l&#39;adresse email garantie par le fournisseur. Quiconque contrôle chez Google ou Apple l&#39;adresse d&#39;un compte BlockLucky existant ouvre une session sur ce compte sans connaître son mot de passe. Le niveau de preuve équivaut à celui du code email (la possession de l&#39;adresse), mais la sécurité du compte dépend aussi de celle du compte Google ou Apple. Une adresse relais Apple crée un compte distinct de celui de l&#39;adresse réelle, et un changement d&#39;adresse chez le fournisseur crée un nouveau compte, puisque <code>sub</code> n&#39;est pas conservé. Le nom transmis par Apple (<code>fullName</code>) est validé puis ignoré.</p>
+</div>
 <h2 id="connexion-par-code-email"><a class="anchor" href="#connexion-par-code-email" aria-hidden="true" tabindex="-1">#</a>Connexion par code email</h2>
+<p>Ce parcours est celui du web (<code>POST /api/auth/login</code>). Il reste ouvert à tous les comptes, y compris à ceux qui ont un mot de passe.</p>
 <h3 id="deroule"><a class="anchor" href="#deroule" aria-hidden="true" tabindex="-1">#</a>Déroulé</h3>
 <div class="diagram"><pre class="mermaid">sequenceDiagram
     participant C as Client
@@ -124,7 +336,7 @@
 </tr>
 <tr>
 <td>Limite par adresse IP</td>
-<td>30 requêtes en 10 minutes sur <code>/login</code>, <code>/2fa/verify</code> et <code>/2fa/disable</code></td>
+<td>30 requêtes en 10 minutes sur chaque route d&#39;authentification (<code>/login</code>, <code>/signup</code>, <code>/signin</code>, <code>/password/*</code>, <code>/oauth/*</code>, <code>/2fa/verify</code>, <code>/2fa/disable</code>)</td>
 <td><code>authRateLimiter</code></td>
 </tr>
 <tr>
@@ -139,7 +351,7 @@
 </tr>
 </tbody></table></div>
 <p>Le compteur d&#39;échecs est indexé par compte, pas par adresse IP. Un attaquant qui change d&#39;adresse IP ne contourne donc pas le blocage. En contrepartie, un tiers peut bloquer la connexion d&#39;un compte pendant une heure en saisissant dix codes faux : le blocage est temporaire et ne demande aucune intervention humaine.</p>
-<h3 id="inscription"><a class="anchor" href="#inscription" aria-hidden="true" tabindex="-1">#</a>Inscription</h3>
+<h3 id="inscription-par-code"><a class="anchor" href="#inscription-par-code" aria-hidden="true" tabindex="-1">#</a>Inscription par code</h3>
 <p>Un compte n&#39;existe qu&#39;une fois l&#39;email prouvé. Pour une adresse inconnue, le backend :</p>
 <ol>
 <li>génère un identifiant de défi aléatoire (<code>randomUUID</code>) ;</li>
@@ -147,9 +359,9 @@
 <li>envoie le code.</li>
 </ol>
 <p>À la vérification, <code>createVerifiedUser</code> crée le compte avec <code>isEmailVerified: true</code>, son portefeuille chiffré, les 25 EtherPoints de bienvenue et, le cas échéant, le bonus de parrainage. Aucun point n&#39;est donc attribué à une adresse non prouvée. Le test <code>exige le code envoyé par email avant de créer le compte et de délivrer un jeton</code> couvre ce comportement.</p>
-<p>La case <code>isAdultConfirmed</code> doit valoir <code>true</code> : le schéma Zod la refuse sinon. Il s&#39;agit d&#39;une déclaration, pas d&#39;une vérification d&#39;âge.</p>
+<p>La case <code>isAdultConfirmed</code> doit valoir <code>true</code> : le schéma Zod la refuse sinon. Il s&#39;agit d&#39;une déclaration ; la vérification d&#39;âge effective passe par la pièce d&#39;identité (voir <a href="autorisations.html#verification-d-age">Vérification d&#39;âge</a>). Les routes <code>/signup</code>, <code>/signin</code> et OAuth ne demandent pas cette déclaration.</p>
 <h3 id="code-visible-en-developpement"><a class="anchor" href="#code-visible-en-developpement" aria-hidden="true" tabindex="-1">#</a>Code visible en développement</h3>
-<p>Quand <code>NODE_ENV</code> vaut <code>development</code>, les réponses de <code>/login</code> et de <code>/2fa/setup</code> contiennent <code>devOtpPreview</code>, la valeur du code. Ce champ n&#39;existe ni en test ni en production.</p>
+<p>Quand <code>NODE_ENV</code> vaut <code>development</code>, les réponses qui déclenchent un code email (<code>/login</code>, <code>/signup</code>, <code>/signin</code> avec 2FA par email, <code>/password/forgot</code>, <code>/2fa/setup</code>) contiennent <code>devOtpPreview</code>, la valeur du code. Ce champ n&#39;existe ni en test ni en production.</p>
 <h2 id="double-authentification-totp"><a class="anchor" href="#double-authentification-totp" aria-hidden="true" tabindex="-1">#</a>Double authentification TOTP</h2>
 <h3 id="activation"><a class="anchor" href="#activation" aria-hidden="true" tabindex="-1">#</a>Activation</h3>
 <ol>
@@ -232,7 +444,7 @@
 <h2 id="double-authentification-par-email"><a class="anchor" href="#double-authentification-par-email" aria-hidden="true" tabindex="-1">#</a>Double authentification par email</h2>
 <p>Avec <code>{ &quot;method&quot;: &quot;EMAIL&quot; }</code>, <code>setup</code> envoie un code de type <code>SETUP</code>. Sa vérification active la 2FA par email, révoque les sessions existantes et envoie une alerte. Ensuite, chaque connexion passe par le même code email que la connexion standard.</p>
 <h2 id="connexion-d-un-compte-protege-par-totp"><a class="anchor" href="#connexion-d-un-compte-protege-par-totp" aria-hidden="true" tabindex="-1">#</a>Connexion d&#39;un compte protégé par TOTP</h2>
-<p>Pour un compte dont <code>twoFactorMethod</code> vaut <code>APP</code> et <code>isTwoFactorEnabled</code> vaut <code>true</code>, <code>POST /api/auth/login</code> ne génère pas de code email. Il renvoie directement <code>twoFactorMethod: &quot;APP&quot;</code> et l&#39;identifiant du compte. Le client envoie ensuite un code TOTP ou un code de secours à <code>/2fa/verify</code>.</p>
+<p>Pour un compte dont <code>twoFactorMethod</code> vaut <code>APP</code> et <code>isTwoFactorEnabled</code> vaut <code>true</code>, <code>POST /api/auth/login</code>, <code>/signin</code> et les routes OAuth ne délivrent pas de session et ne génèrent pas de code email. Ils renvoient directement <code>twoFactorMethod: &quot;APP&quot;</code> et l&#39;identifiant du compte. Le client envoie ensuite un code TOTP ou un code de secours à <code>/2fa/verify</code>.</p>
 <h2 id="desactivation"><a class="anchor" href="#desactivation" aria-hidden="true" tabindex="-1">#</a>Désactivation</h2>
 <p><code>POST /api/auth/2fa/disable</code> exige l&#39;une de ces preuves :</p>
 <ul>
@@ -267,10 +479,14 @@
 <td>Utilisation d&#39;un code de secours</td>
 <td>Nombre de codes restants</td>
 </tr>
+<tr>
+<td>Réinitialisation du mot de passe</td>
+<td>« Mot de passe réinitialisé » ou « Mot de passe défini sur votre compte »</td>
+</tr>
 </tbody></table></div>
 <h2 id="limites-connues"><a class="anchor" href="#limites-connues" aria-hidden="true" tabindex="-1">#</a>Limites connues</h2>
 <div class="hint hint-warning"><p class="hint-title">Attention</p>
-<p>Le terme « double authentification » est trompeur dans l&#39;implémentation actuelle. Il n&#39;existe pas de premier facteur secret (pas de mot de passe). Avec la méthode <code>APP</code>, le code TOTP <strong>remplace</strong> le code email au lieu de s&#39;y ajouter. Avec la méthode <code>EMAIL</code>, la connexion est identique à celle d&#39;un compte sans 2FA. Chaque connexion repose donc sur un seul facteur : la possession de la boîte mail, ou celle de l&#39;application TOTP.</p>
+<p>Le mot de passe n&#39;est pas un facteur imposé. <code>POST /api/auth/login</code> et les routes OAuth restent ouverts à tous les comptes : la possession de la boîte mail, ou du compte Google ou Apple de même adresse, suffit à ouvrir une session sans mot de passe. De plus, <code>POST /api/auth/2fa/verify</code> accepte un code TOTP valide accompagné du seul <code>userId</code>, sans exiger qu&#39;une connexion par mot de passe ait eu lieu juste avant. Avec la méthode <code>APP</code>, le code TOTP peut donc <strong>remplacer</strong> le premier facteur au lieu de s&#39;y ajouter. Avec la méthode <code>EMAIL</code> sur <code>/login</code>, la connexion est identique à celle d&#39;un compte sans 2FA. Seuls <code>/signin</code> et <code>/oauth/*</code> suivis d&#39;une 2FA active combinent deux facteurs, et rien n&#39;oblige un attaquant à passer par eux.</p>
 </div>
 <p>Autres limites relevées dans le code :</p>
 <div class="table-wrap"><table>
@@ -286,7 +502,11 @@
 </tr>
 <tr>
 <td>Énumération</td>
-<td>La réponse de <code>/login</code> diffère selon que le compte existe avec TOTP (<code>twoFactorMethod: &quot;APP&quot;</code>) ou non. Pour un compte existant, <code>userId</code> est l&#39;identifiant réel ; pour une adresse inconnue, c&#39;est un identifiant de défi aléatoire.</td>
+<td>La réponse de <code>/login</code> diffère selon que le compte existe avec TOTP (<code>twoFactorMethod: &quot;APP&quot;</code>) ou non. Pour un compte existant, <code>userId</code> est l&#39;identifiant réel ; pour une adresse inconnue, c&#39;est un identifiant de défi aléatoire. <code>/signup</code> répond 409 pour une adresse déjà vérifiée. <code>/signin</code> et <code>/password/forgot</code> ne révèlent rien par leur réponse.</td>
+</tr>
+<tr>
+<td>Pas de contrôle des mots de passe compromis</td>
+<td>La politique se limite à la longueur et à la composition.</td>
 </tr>
 <tr>
 <td>Défi non atomique</td>
@@ -314,7 +534,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#connexion-par-code-email">Connexion par code email</a></li><li class="toc-h3"><a href="#deroule">Déroulé</a></li><li class="toc-h3"><a href="#parametres-du-code">Paramètres du code</a></li><li class="toc-h3"><a href="#inscription">Inscription</a></li><li class="toc-h3"><a href="#code-visible-en-developpement">Code visible en développement</a></li><li class="toc-h2"><a href="#double-authentification-totp">Double authentification TOTP</a></li><li class="toc-h3"><a href="#activation">Activation</a></li><li class="toc-h3"><a href="#verification">Vérification</a></li><li class="toc-h3"><a href="#codes-de-secours">Codes de secours</a></li><li class="toc-h2"><a href="#double-authentification-par-email">Double authentification par email</a></li><li class="toc-h2"><a href="#connexion-d-un-compte-protege-par-totp">Connexion d&#39;un compte protégé par TOTP</a></li><li class="toc-h2"><a href="#desactivation">Désactivation</a></li><li class="toc-h2"><a href="#2fa-obligatoire-pour-les-administrateurs">2FA obligatoire pour les administrateurs</a></li><li class="toc-h2"><a href="#notifications-de-securite">Notifications de sécurité</a></li><li class="toc-h2"><a href="#limites-connues">Limites connues</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#vue-d-ensemble">Vue d&#39;ensemble</a></li><li class="toc-h2"><a href="#mot-de-passe">Mot de passe</a></li><li class="toc-h3"><a href="#politique-et-stockage">Politique et stockage</a></li><li class="toc-h3"><a href="#inscription">Inscription</a></li><li class="toc-h3"><a href="#connexion">Connexion</a></li><li class="toc-h3"><a href="#reinitialisation">Réinitialisation</a></li><li class="toc-h2"><a href="#google-et-apple">Google et Apple</a></li><li class="toc-h3"><a href="#rattachement-par-adresse-email">Rattachement par adresse email</a></li><li class="toc-h2"><a href="#connexion-par-code-email">Connexion par code email</a></li><li class="toc-h3"><a href="#deroule">Déroulé</a></li><li class="toc-h3"><a href="#parametres-du-code">Paramètres du code</a></li><li class="toc-h3"><a href="#inscription-par-code">Inscription par code</a></li><li class="toc-h3"><a href="#code-visible-en-developpement">Code visible en développement</a></li><li class="toc-h2"><a href="#double-authentification-totp">Double authentification TOTP</a></li><li class="toc-h3"><a href="#activation">Activation</a></li><li class="toc-h3"><a href="#verification">Vérification</a></li><li class="toc-h3"><a href="#codes-de-secours">Codes de secours</a></li><li class="toc-h2"><a href="#double-authentification-par-email">Double authentification par email</a></li><li class="toc-h2"><a href="#connexion-d-un-compte-protege-par-totp">Connexion d&#39;un compte protégé par TOTP</a></li><li class="toc-h2"><a href="#desactivation">Désactivation</a></li><li class="toc-h2"><a href="#2fa-obligatoire-pour-les-administrateurs">2FA obligatoire pour les administrateurs</a></li><li class="toc-h2"><a href="#notifications-de-securite">Notifications de sécurité</a></li><li class="toc-h2"><a href="#limites-connues">Limites connues</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

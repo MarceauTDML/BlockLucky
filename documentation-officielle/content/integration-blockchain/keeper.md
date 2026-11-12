@@ -2,7 +2,7 @@
 
 Un tour de loterie ne se termine pas tout seul : le contrat `BlockLucky` attend qu'un compte appelle `requestDraw()` quand le tour est prêt, ou `closeExpiredRound()` quand il a expiré sans assez de participants. Sur un réseau public, Chainlink Automation peut jouer ce rôle grâce à `checkUpkeep` et `performUpkeep` (voir [Chainlink Automation](../smart-contracts/automation.md)). Le backend embarque son propre automate, le keeper, pour que le cycle tourne aussi sur le nœud local et sans abonnement Automation.
 
-Le code est dans [`backend/src/blockchain/lottery.keeper.ts`](src:backend/src/blockchain/lottery.keeper.ts). Le même fichier démarre l'indexeur périodique.
+Le code est dans [`backend/src/blockchain/lottery.keeper.ts`](src:backend/src/blockchain/lottery.keeper.ts). Le même fichier démarre l'indexeur périodique. Le délai de la salle d'attente est calculé par [`backend/src/blockchain/draw-reveal.ts`](src:backend/src/blockchain/draw-reveal.ts).
 
 ## runKeeperOnce
 
@@ -12,7 +12,12 @@ Le code est dans [`backend/src/blockchain/lottery.keeper.ts`](src:backend/src/bl
 |---|---|
 | `draw-requested` | Le keeper a appelé `requestDraw()` |
 | `round-closed` | Le keeper a appelé `closeExpiredRound()` |
+| `waiting-room` | Le tour est prêt au tirage, mais le délai de révélation n'est pas écoulé |
 | `idle` | Rien à faire, verrou déjà pris, contrat en pause, mode simulé ou erreur |
+
+### Horloge de la blockchain locale
+
+Sur un nœud Hardhat, l'heure du contrat (`block.timestamp`) n'avance qu'à chaque bloc miné, donc à chaque transaction. Sans activité, `isDrawReady()` et `isExpiredWithoutDraw()` restent fausses après la fin d'un tour, et le tour ne serait jamais tiré ni annulé. Au début de chaque passe, `syncLocalChainClock()` mine donc un bloc vide (`evm_mine`) quand le dernier bloc a plus de 5 secondes de retard sur l'horloge du serveur. Elle n'agit qu'avec `CHAIN_ID=31337`, hors production et hors relais RPC de secours ; une erreur est journalisée sans bloquer la passe.
 
 ### Déroulé d'une passe
 
@@ -22,10 +27,13 @@ flowchart TD
     B -->|"non"| I["idle"]
     B -->|"oui"| C{"verrou chain:keeper-lock obtenu ?"}
     C -->|"non"| I
-    C -->|"oui"| D{"paused() ?"}
+    C -->|"oui"| S["syncLocalChainClock()"]
+    S --> D{"paused() ?"}
     D -->|"oui"| R["idle, verrou libéré"]
     D -->|"non"| E{"isDrawReady() ?"}
-    E -->|"oui"| F["requestDraw() puis processReceipt"]
+    E -->|"oui"| W{"instant prêt + DRAW_REVEAL_DELAY_SECONDS atteint ?"}
+    W -->|"non"| WR["waiting-room, verrou libéré"]
+    W -->|"oui"| F["requestDraw() puis processReceipt"]
     F --> G["draw-requested, verrou libéré"]
     E -->|"non"| H{"isExpiredWithoutDraw() ?"}
     H -->|"oui"| J["closeExpiredRound() puis processReceipt"]
@@ -41,6 +49,20 @@ Les deux conditions sont des fonctions `view` du contrat, ce qui évite de dupli
 | `isExpiredWithoutDraw()` | Tour `Open`, `endTime` atteint et moins de `minTicketsToDraw` tickets |
 
 Avec la configuration du déploiement local (`smart-contract/deployments/localhost.json`), un tour dure 1 800 s, se tire à partir de 2 tickets et s'arrête à 10 000 tickets.
+
+### Salle d'attente et délai de révélation
+
+Quand `isDrawReady()` devient vrai, le keeper ne tire pas tout de suite. Il lit le tour courant, puis appelle `markDrawReady` : la clé Redis `chain:draw-ready-at:<tour>` reçoit, si elle n'existe pas encore, l'instant où le tour est devenu prêt, c'est-à-dire le plus petit de l'heure courante et de `endTime`. La clé vit 7 jours. Tant que l'heure courante est inférieure à cet instant plus `DRAW_REVEAL_DELAY_SECONDS` (600 s par défaut, de 0 à 86 400), la passe renvoie `waiting-room`.
+
+| Situation | Instant enregistré | Tirage demandé |
+|---|---|---|
+| Fin du temps constatée après `endTime` | `endTime` | `endTime` + délai |
+| Dernier ticket vendu avant `endTime` | heure de la première passe ou lecture qui le constate | cet instant + délai |
+| `DRAW_REVEAL_DELAY_SECONDS=0` | idem | à la passe suivante |
+
+`GET /lottery/status` appelle le même `markDrawReady` : le premier des deux, keeper ou lecture du statut, fixe l'instant, et `revealAt` publié aux clients correspond à l'heure où le keeper tirera, à `KEEPER_INTERVAL_MS` près. Si Redis est vidé pendant l'attente, l'instant est recalculé ; avec un `endTime` dépassé, il revient à `endTime`, sinon l'attente repart de zéro.
+
+Le délai ne bloque que le keeper. `POST /lottery/draw`, Chainlink Automation ou tout autre compte peuvent appeler `requestDraw` dès que le contrat l'accepte. Un tour expiré sans assez de tickets est clos sans attente.
 
 Les deux transactions sont signées par le [compte opérateur](client-rpc.md#compte-operateur). Leur reçu est passé à `lotteryIndexer.processReceipt` : le statut `LOCKED` (événement `DrawRequested`) ou `CANCELLED` (événement `RoundCancelled`) est en base dès la fin de la passe, et les jobs de remboursement sont mis en file. Le tour suivant est ouvert par le contrat dans la même transaction pour une annulation (`RoundOpened` du tour suivant dans le même reçu) et dans la transaction de réponse de l'oracle pour un tirage.
 

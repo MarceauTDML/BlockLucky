@@ -130,7 +130,7 @@
 <tr>
 <td>mobile</td>
 <td><code>mobile-app/.env</code></td>
-<td><code>EXPO_PUBLIC_API_URL</code>, <code>EXPO_PUBLIC_WS_URL</code> ; adresse IP du poste à la place de <code>localhost</code> sur un téléphone physique</td>
+<td><code>EXPO_PUBLIC_API_URL</code>, <code>EXPO_PUBLIC_WS_URL</code> ; adresse IP du poste à la place de <code>localhost</code> sur un téléphone physique ; <code>EXPO_PUBLIC_GOOGLE_*_CLIENT_ID</code> pour la connexion Google</td>
 </tr>
 <tr>
 <td>Office de Tourisme</td>
@@ -140,7 +140,7 @@
 </tbody></table></div>
 <p>Particularités de ce mode :</p>
 <ul>
-<li>en <code>development</code>, le backend accepte les valeurs par défaut des secrets, la désactivation de <code>LOGIN_EMAIL_CODE_REQUIRED</code> et <code>ADMIN_MFA_REQUIRED</code>, et <code>BLOCKCHAIN_MODE=simulated</code> ;</li>
+<li>en <code>development</code>, le backend accepte les valeurs par défaut des secrets, la désactivation de <code>LOGIN_EMAIL_CODE_REQUIRED</code>, <code>ADMIN_MFA_REQUIRED</code> et <code>AGE_VERIFICATION_REQUIRED</code>, et <code>BLOCKCHAIN_MODE=simulated</code> ;</li>
 <li><code>RUN_WORKERS=true</code> par défaut : un seul processus <code>npm run dev</code> porte l&#39;API, les workers BullMQ, l&#39;indexeur et le keeper ;</li>
 <li>les journaux sont colorés et lisibles, au niveau <code>debug</code> ;</li>
 <li><code>/metrics</code> et le détail de <code>/health/deep</code> sont accessibles sans jeton si <code>METRICS_TOKEN</code> est vide ;</li>

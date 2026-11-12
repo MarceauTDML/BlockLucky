@@ -28,7 +28,7 @@ sequenceDiagram
   API->>US: confirmGdprAccountDeletion(token)
   US->>UR: findValidDeletionToken, sha256, type, échéance
   US->>UR: anonymizeUserAccount(userId, tokenId)
-  UR->>DB: transaction : anonymisation du User, suppression du Token
+  UR->>DB: transaction : anonymisation du User, suppression de IdentityDocument et du Token
   US->>SS: revokeAllForUser(userId)
   SS->>R: auth:revoked-before:userId, 30 jours
   US-->>C: 200 deleted, anonymized, deletedAt
@@ -58,7 +58,7 @@ sequenceDiagram
 **Service.** `userService.confirmGdprAccountDeletion` :
 
 1. `findValidDeletionToken` cherche un `Token` dont l'empreinte SHA-256 correspond, de type `ACCOUNT_DELETION` et non expiré. Sinon : 400 « Jeton de suppression RGPD invalide ou expiré ».
-2. `anonymizeUserAccount(userId, tokenId)` exécute une transaction qui met à jour le compte et supprime le jeton utilisé.
+2. `anonymizeUserAccount(userId, tokenId)` exécute une transaction qui met à jour le compte, supprime sa pièce d'identité et supprime le jeton utilisé.
 3. `sessionService.revokeAllForUser` ([`backend/src/services/session.service.ts`](src:backend/src/services/session.service.ts)) écrit `auth:revoked-before:<userId>` pour 30 jours : tout jeton émis avant cet instant est refusé par `authenticate`.
 4. Réponse 200 avec `deleted: true`, `anonymized: true`, `userId` et `deletedAt`.
 
@@ -70,10 +70,13 @@ sequenceDiagram
 | `User.walletAddress` | Remplacée par `0xdeleted_gdpr_` suivi des 8 premiers caractères de l'identifiant |
 | `User.walletEncryptedKey`, `welcomeGrantTxHash` | `null` : la clé privée du portefeuille intégré est détruite |
 | `twoFactorSecret`, `twoFactorMethod`, `twoFactorBackupCodes`, `isTwoFactorEnabled` | Effacés ou désactivés |
+| `User.passwordHash`, `ageVerificationNote` | `null` |
+| `IdentityDocument` du compte | Supprimé, avec les images si la Mairie n'avait pas encore statué |
+| `ageVerificationStatus`, `ageVerifiedAt` | Conservés |
 | `User.deletedAt` | Date de la suppression ; `getProfile` répond alors 404 et `requireRoles` refuse le compte |
 | Jeton de suppression utilisé | Supprimé |
 | `role`, `pointsBalance`, `referralCode`, `referredById`, dates | Conservés |
-| `Ticket`, `PointTransaction`, `ClaimedReward`, `Analytics` | Conservés, toujours rattachés à l'identifiant du compte |
+| `Ticket`, `PointTransaction`, `ClaimedReward`, `Analytics` | Conservés, toujours rattachés à l'identifiant du compte ; les entrées d'audit de la Mairie sur la pièce d'identité, motif de refus compris, restent aussi |
 | Clés Redis `user:prefs:<id>`, `user:quests:<id>`, `user:ticket_limit:<id>` | Conservées |
 | Données on-chain : adresse du portefeuille dans les événements, tickets, badges POAP | Conservées : la blockchain est immuable |
 

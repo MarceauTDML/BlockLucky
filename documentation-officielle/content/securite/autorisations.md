@@ -20,6 +20,7 @@ Aucune route ne permet de changer un rôle : cela se fait par le seed ([`backend
 | `authenticate` | [`backend/src/middlewares/auth.middleware.ts`](src:backend/src/middlewares/auth.middleware.ts) | Exige un jeton valide et non révoqué, sinon 401 |
 | `optionalAuthenticate` | idem | Lit le jeton s'il est présent et valide, sans jamais refuser |
 | `requireRoles(...roles)` | [`backend/src/middlewares/rbac.middleware.ts`](src:backend/src/middlewares/rbac.middleware.ts) | 403 si le rôle du jeton n'est pas dans la liste, si le rôle en base diffère, si le compte est supprimé, ou si un ADMIN n'a pas activé la 2FA ; 503 si la base ne répond pas |
+| `requireAgeVerification` | [`backend/src/middlewares/age-verification.middleware.ts`](src:backend/src/middlewares/age-verification.middleware.ts) | 403 `AGE_VERIFICATION_REQUIRED` si l'âge du compte n'est pas vérifié par la Mairie ; 503 si la base ne répond pas ; sans effet si `AGE_VERIFICATION_REQUIRED` vaut `false` |
 | `requireWebhookSignature` | [`backend/src/api/webhooks/webhook-signature.ts`](src:backend/src/api/webhooks/webhook-signature.ts) | 401 si la signature HMAC est absente, fausse ou expirée |
 | Jeton `METRICS_TOKEN` | [`backend/src/api/system/system.routes.ts`](src:backend/src/api/system/system.routes.ts), [`backend/src/observability/metrics.ts`](src:backend/src/observability/metrics.ts) | Protège `/metrics` et le détail de `/health/deep` |
 | `assertPartnerAccess` | [`backend/src/api/partners/partners.services.ts`](src:backend/src/api/partners/partners.services.ts) | Contrôle de propriété sur une entreprise partenaire |
@@ -30,7 +31,7 @@ Toutes les routes `/api/...` existent aussi sous `/api/v1/...` avec les mêmes c
 
 ## Matrice complète
 
-Légende : **oui** accès accordé, **non** refusé (401 sans jeton, 403 avec un rôle insuffisant), **propre** limité aux données du compte ou de ses entreprises.
+Légende : **oui** accès accordé, **non** refusé (401 sans jeton, 403 avec un rôle insuffisant), **propre** limité aux données du compte ou de ses entreprises, **majeur** limité aux données du compte et réservé à un âge vérifié.
 
 ### Système et documentation
 
@@ -47,6 +48,9 @@ Légende : **oui** accès accordé, **non** refusé (401 sans jeton, 403 avec un
 | Route | Contrôle | Anonyme | USER | PARTNER | ADMIN |
 |---|---|---|---|---|---|
 | `GET /api/auth/onboarding` | Aucun | oui | oui | oui | oui |
+| `POST /api/auth/signup`, `/signin` | `authRateLimiter` | oui | oui | oui | oui |
+| `POST /api/auth/password/forgot`, `/password/reset` | `authRateLimiter` | oui | oui | oui | oui |
+| `POST /api/auth/oauth/google`, `/oauth/apple` | `authRateLimiter` ; 503 si le fournisseur n'est pas configuré | oui | oui | oui | oui |
 | `POST /api/auth/login` | `authRateLimiter` | oui | oui | oui | oui |
 | `POST /api/auth/2fa/verify` | `authRateLimiter`, `optionalAuthenticate` | oui | oui | oui | oui |
 | `POST /api/auth/2fa/setup` | `authenticate` | non | propre | propre | propre |
@@ -61,8 +65,8 @@ Légende : **oui** accès accordé, **non** refusé (401 sans jeton, 403 avec un
 | `GET /api/lottery/transparency-charter` | Aucun | oui | oui | oui | oui |
 | `GET /api/lottery/leaderboard` | Aucun | oui | oui | oui | oui |
 | `GET /api/lottery/poap/:file` | Aucun (nom de fichier `<n>.json` ou `<n>.svg`, au plus 9 chiffres) | oui | oui | oui | oui |
-| `POST /api/lottery/buy` | `authenticate`, `idempotency` | non | propre | propre | propre |
-| `POST /api/lottery/gift` | `authenticate`, `idempotency` | non | propre | propre | propre |
+| `POST /api/lottery/buy` | `authenticate`, `requireAgeVerification`, `idempotency` | non | majeur | majeur | majeur |
+| `POST /api/lottery/gift` | `authenticate`, `requireAgeVerification`, `idempotency` | non | majeur | majeur | majeur |
 | `GET /api/lottery/my-tickets` | `authenticate` | non | propre | propre | propre |
 | `GET /api/lottery/wallet` | `authenticate` | non | propre | propre | propre |
 | `POST /api/lottery/claim-prize` | `authenticate`, `idempotency` ; le contrat vérifie que l'appelant est le gagnant | non | propre | propre | propre |
@@ -76,7 +80,8 @@ Légende : **oui** accès accordé, **non** refusé (401 sans jeton, 403 avec un
 | `GET /api/marketplace/catalog` | Aucun | oui | oui | oui | oui |
 | `GET /api/marketplace/rewards/:id` | Aucun | oui | oui | oui | oui |
 | `GET /api/marketplace/points` | `authenticate` | non | propre | propre | propre |
-| `POST /api/marketplace/claim` | `authenticate`, `idempotency` | non | propre | propre | propre |
+| `POST /api/marketplace/claim` | `authenticate`, `requireAgeVerification`, `idempotency` | non | majeur | majeur | majeur |
+| `POST /api/marketplace/scratch` | `authenticate`, `requireAgeVerification`, `idempotency` | non | majeur | majeur | majeur |
 | `GET /api/marketplace/my-codes` | `authenticate` | non | propre | propre | propre |
 | `POST /api/marketplace/redeem` | `requireRoles('PARTNER', 'ADMIN')`, propriété du code | non | non | propre | oui |
 | `GET /api/partners` | Aucun | oui | oui | oui | oui |
@@ -90,6 +95,8 @@ Légende : **oui** accès accordé, **non** refusé (401 sans jeton, 403 avec un
 | Route | Contrôle | Anonyme | USER | PARTNER | ADMIN |
 |---|---|---|---|---|---|
 | `GET /api/user/profile` | `authenticate` | non | propre | propre | propre |
+| `POST /api/user/identity` | `identityUploadRateLimiter` (10 envois par adresse IP et par heure), `authenticate`, corps de 12 Mo au plus | non | propre | propre | propre |
+| `GET /api/user/identity` | `authenticate` | non | propre | propre | propre |
 | `GET /api/user/referrals` | `authenticate` | non | propre | propre | propre |
 | `GET /api/user/quests` | `authenticate` | non | propre | propre | propre |
 | `POST /api/user/quests/complete` | `authenticate` | non | propre | propre | propre |
@@ -114,9 +121,38 @@ Les routes « propres » de ce module n'acceptent aucun identifiant de compte en
 | `PATCH /api/admin/partners/:partnerId/status` | idem, journalisé | non | non | non | oui |
 | `GET /api/admin/reports/export` | idem, journalisé | non | non | non | oui |
 | `GET /api/admin/audit-logs` | idem | non | non | non | oui |
+| `GET /api/admin/identity-verifications` | idem | non | non | non | oui |
+| `GET /api/admin/identity-verifications/:id` | idem, journalisé, `Cache-Control: no-store` | non | non | non | oui |
+| `POST /api/admin/identity-verifications/:id/decision` | idem, journalisé, interdit sur sa propre pièce | non | non | non | oui |
 | `POST /api/webhooks/blockchain` | Signature HMAC `x-webhook-signature` | signature | signature | signature | signature |
 
 Toutes les routes ADMIN, y compris `/api/lottery/draw`, `/api/lottery/refund` et `/api/analytics/dashboard`, passent par `requireRoles('ADMIN')` et exigent donc la 2FA active sur le compte.
+
+## Vérification d'âge
+
+L'achat et le cadeau d'un ticket, l'échange d'une récompense et l'achat d'un ticket à gratter exigent que `User.ageVerificationStatus` vaille `VERIFIED`. Le middleware relit ce statut en base à chaque requête : il ne fait pas confiance au jeton ni au statut que le client garde en mémoire.
+
+| Statut du compte | Réponse |
+|---|---|
+| `VERIFIED` | La requête continue |
+| `NONE`, `PENDING`, `REJECTED` | 403 « Vérifiez votre âge pour jouer. », détails `{ "code": "AGE_VERIFICATION_REQUIRED", "status": "<statut>" }` |
+| Base indisponible | 503, la requête est refusée |
+
+`AGE_VERIFICATION_REQUIRED` vaut `true` par défaut et ne peut pas valoir `false` en production : le schéma d'environnement arrête le processus. Seules les suites de tests la désactivent ([`backend/__tests__/setup-env.ts`](src:backend/__tests__/setup-env.ts)).
+
+Le statut ne change que par une décision de la Mairie. Le parcours est le suivant :
+
+| Étape | Route | Contrôle |
+|---|---|---|
+| Envoi du recto et du verso | `POST /api/user/identity` | Session ; refus 409 si l'âge est déjà vérifié ; images JPEG ou PNG vérifiées et chiffrées (voir [Validation des entrées](validation.md#pieces-d-identite)) |
+| Consultation du statut | `GET /api/user/identity` | Session ; renvoie le statut, les dates et le motif d'un refus |
+| File de la Mairie | `GET /api/admin/identity-verifications?status=PENDING` | ADMIN avec 2FA ; ne renvoie ni image ni adresse de portefeuille |
+| Consultation d'une pièce | `GET /api/admin/identity-verifications/:id` | ADMIN avec 2FA ; images déchiffrées seulement tant que la demande est `PENDING` ; entrée d'audit `IDENTITY_DOCUMENT_VIEWED` à chaque consultation |
+| Décision | `POST /api/admin/identity-verifications/:id/decision` | ADMIN avec 2FA ; 403 sur sa propre pièce ; 409 si la demande est déjà traitée ; motif de 3 à 500 caractères obligatoire pour un refus |
+
+La décision est prise dans une transaction qui ne s'applique qu'à une demande encore `PENDING` (`updateMany` conditionnel) : deux agents qui statuent en même temps ne produisent qu'une décision, l'autre reçoit 409. La même transaction efface le recto et le verso et met à jour le compte. Une entrée d'audit `IDENTITY_VERIFICATION_DECISION` est ensuite écrite, puis l'email `identity-decision` est envoyé au citoyen. L'interface est la page Identités de l'espace Mairie ([`frontend-web/src/app/mairie/identites/page.tsx`](src:frontend-web/src/app/mairie/identites/page.tsx)).
+
+Le contrôle ne couvre que les routes de l'API. Une adresse qui achète directement sur le contrat, sans passer par BlockLucky, n'est soumise à aucune vérification d'âge (voir [Limites du contrat](../smart-contracts/limites.md)). Le retrait d'une cagnotte (`/lottery/claim-prize`) n'est pas non plus soumis au contrôle, puisqu'il suppose un ticket acheté.
 
 ## Contrôles de propriété (IDOR partenaires)
 
@@ -161,3 +197,4 @@ Une entreprise sans propriétaire (`ownerId` nul, par exemple après la suppress
 | Validation d'un code promo non atomique | `validateAndRedeemStoreCode` lit `isUsed` puis met à jour sans condition. Deux validations simultanées du même code peuvent toutes deux réussir. Une mise à jour conditionnelle (`updateMany` avec `isUsed: false`) fermerait cette fenêtre. |
 | Rôle non relu hors `requireRoles` | Voir [Sessions](sessions.md#droits-relus-a-chaque-requete). |
 | Pas de revue périodique des accès | Aucun outil ne liste les comptes ADMIN et PARTNER ; la revue se fait en base. |
+| Tout ADMIN voit les pièces d'identité | Aucun rôle plus fin ne restreint la consultation des pièces à des agents habilités ; la traçabilité repose sur le journal d'audit. |

@@ -114,13 +114,13 @@
 </tr>
 </tbody></table></div>
 <h2 id="idempotence"><a class="anchor" href="#idempotence" aria-hidden="true" tabindex="-1">#</a>Idempotence</h2>
-<p>Quatre routes acceptent l&#39;en-tête <code>Idempotency-Key</code> : <code>POST /lottery/buy</code>, <code>POST /lottery/gift</code>, <code>POST /lottery/claim-prize</code> et <code>POST /marketplace/claim</code>. Le middleware <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/idempotency.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/idempotency.middleware.ts</code></a> protège contre le double clic et les nouvelles tentatives réseau d&#39;une opération qui dépense des ethers ou des points.</p>
+<p>Cinq routes acceptent l&#39;en-tête <code>Idempotency-Key</code> : <code>POST /lottery/buy</code>, <code>POST /lottery/gift</code>, <code>POST /lottery/claim-prize</code>, <code>POST /marketplace/claim</code> et <code>POST /marketplace/scratch</code>. Le middleware <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/idempotency.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/idempotency.middleware.ts</code></a> protège contre le double clic et les nouvelles tentatives réseau d&#39;une opération qui dépense des ethers ou des points.</p>
 <div class="code-block"><div class="code-head"><span>HTTP</span></div><pre><code class="hljs language-http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/api/v1/lottery/buy</span> <span class="hljs-meta">HTTP/1.1</span>
 <span class="hljs-attribute">Authorization</span><span class="hljs-punctuation">: </span>Bearer eyJhbGciOi...
 <span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/json
 <span class="hljs-attribute">Idempotency-Key</span><span class="hljs-punctuation">: </span>6b0f3c2e-9d41-4a7e-b5a8-1c2d3e4f5a6b
 
-<span class="language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">&quot;quantity&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">2</span><span class="hljs-punctuation">}</span></span></code></pre></div>
+<span class="language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">&quot;quantity&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">1</span><span class="hljs-punctuation">}</span></span></code></pre></div>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -174,13 +174,18 @@
 </tr>
 <tr>
 <td><code>authRateLimiter</code></td>
-<td><code>/auth/login</code>, <code>/auth/2fa/verify</code>, <code>/auth/2fa/disable</code></td>
-<td>30 requêtes par 10 minutes et par IP, en plus de la limite globale</td>
+<td><code>/auth/login</code>, <code>/signup</code>, <code>/signin</code>, <code>/password/forgot</code>, <code>/password/reset</code>, <code>/oauth/google</code>, <code>/oauth/apple</code>, <code>/2fa/verify</code>, <code>/2fa/disable</code></td>
+<td>30 requêtes par 10 minutes et par IP pour l&#39;ensemble de ces routes, en plus de la limite globale</td>
+</tr>
+<tr>
+<td><code>identityUploadRateLimiter</code></td>
+<td><code>POST /user/identity</code></td>
+<td>10 requêtes par heure et par IP, en plus de la limite globale</td>
 </tr>
 </tbody></table></div>
-<p>Les réponses portent les en-têtes <code>RateLimit</code> et <code>RateLimit-Policy</code> (format draft-7 de l&#39;IETF), exposés aux navigateurs par CORS. Au-delà de la limite, la réponse est un <code>429</code> au format habituel, par exemple <code>{ &quot;success&quot;: false, &quot;message&quot;: &quot;Trop de requêtes depuis cette adresse IP, veuillez réessayer plus tard.&quot; }</code>. Les compteurs sont dans Redis (<code>ratelimit:global:</code> et <code>ratelimit:auth:</code>) ; si Redis répond en erreur, la requête passe (<code>passOnStoreError</code>). Derrière un proxy, <code>TRUST_PROXY</code> doit être réglé, sinon tous les clients partagent l&#39;IP du proxy.</p>
+<p>Les réponses portent les en-têtes <code>RateLimit</code> et <code>RateLimit-Policy</code> (format draft-7 de l&#39;IETF), exposés aux navigateurs par CORS. Au-delà de la limite, la réponse est un <code>429</code> au format habituel, par exemple <code>{ &quot;success&quot;: false, &quot;message&quot;: &quot;Trop de requêtes depuis cette adresse IP, veuillez réessayer plus tard.&quot; }</code>. Les compteurs sont dans Redis (<code>ratelimit:global:</code>, <code>ratelimit:auth:</code> et <code>ratelimit:identity:</code>) ; si Redis répond en erreur, la requête passe (<code>passOnStoreError</code>). Derrière un proxy, <code>TRUST_PROXY</code> doit être réglé, sinon tous les clients partagent l&#39;IP du proxy.</p>
 <h2 id="corps-et-formats"><a class="anchor" href="#corps-et-formats" aria-hidden="true" tabindex="-1">#</a>Corps et formats</h2>
-<p>Les corps sont en JSON (<code>Content-Type: application/json</code>) ou en formulaire URL-encodé, 1 Mo au plus. Un JSON mal formé renvoie <code>400 Corps de requête JSON invalide</code>, un corps trop gros <code>413 Corps de requête trop volumineux</code>. Les réponses suivent le format décrit dans <a href="reponses-erreurs.html">Réponses et erreurs</a>, sauf trois exceptions : les sondes <code>/health*</code>, les métadonnées POAP <code>GET /lottery/poap/:file</code> et <code>/metrics</code>.</p>
+<p>Les corps sont en JSON (<code>Content-Type: application/json</code>) ou en formulaire URL-encodé, 1 Mo au plus, sauf <code>POST /user/identity</code>, qui accepte 12 Mo de JSON pour les deux photos encodées en base64. Un JSON mal formé renvoie <code>400 Corps de requête JSON invalide</code>, un corps trop gros <code>413 Corps de requête trop volumineux</code>. Les réponses suivent le format décrit dans <a href="reponses-erreurs.html">Réponses et erreurs</a>, sauf trois exceptions : les sondes <code>/health*</code>, les métadonnées POAP <code>GET /lottery/poap/:file</code> et <code>/metrics</code>.</p>
 <h2 id="lire-les-resumes-openapi"><a class="anchor" href="#lire-les-resumes-openapi" aria-hidden="true" tabindex="-1">#</a>Lire les résumés OpenAPI</h2>
 <p>La colonne « Résumé » du tableau reprend le <code>summary</code> du bloc <code>@openapi</code> placé au-dessus de chaque route, celui qu&#39;affiche aussi Swagger. Les résumés ont été alignés sur le comportement réel du code. Quelques nuances ne tiennent pas dans une ligne : elles sont détaillées dans les pages de modules.</p>
 <div class="table-wrap"><table>
@@ -191,8 +196,20 @@
 </tr>
 </thead>
 <tbody><tr>
+<td><code>POST /auth/login</code></td>
+<td>La déclaration de majorité est déclarative ; l&#39;achat exige en plus la vérification d&#39;âge par pièce d&#39;identité.</td>
+</tr>
+<tr>
+<td><code>POST /auth/oauth/google</code>, <code>/oauth/apple</code></td>
+<td>Répondent 503 tant que <code>GOOGLE_CLIENT_IDS</code> ou <code>APPLE_CLIENT_IDS</code> est vide, ce qui est le cas par défaut.</td>
+</tr>
+<tr>
 <td><code>POST /lottery/gift</code></td>
-<td>Le destinataire est désigné par son email, mais aucun email ne lui est envoyé.</td>
+<td>Le destinataire est désigné par son email, mais aucun email ne lui est envoyé ; seul l&#39;âge de l&#39;expéditeur est vérifié.</td>
+</tr>
+<tr>
+<td><code>PUT /user/responsible-limit</code></td>
+<td>La limite est enregistrée mais sans effet avec un ticket par participant.</td>
 </tr>
 <tr>
 <td><code>POST /lottery/refund</code></td>

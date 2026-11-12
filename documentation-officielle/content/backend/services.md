@@ -85,10 +85,11 @@ Rend un gabarit HTML et l'envoie par Nodemailer ([`backend/src/config/mailer.con
 
 | Gabarit | Variables | Envoyé par |
 |---|---|---|
-| `otp-code` | `CODE`, `EXPIRES_MINUTES` | connexion, inscription, activation de la 2FA par email |
+| `otp-code` | `CODE`, `EXPIRES_MINUTES` | connexion, inscription, activation de la 2FA par email, réinitialisation du mot de passe |
 | `welcome` | `WALLET_ADDRESS`, `REFERRAL_CODE` | création de compte |
-| `security-alert` | `EVENT`, `DATE` | activation ou désactivation de la 2FA, utilisation d'un code de secours |
-| `reward-claim` | `REWARD_TITLE`, `PARTNER_NAME`, `PROMO_CODE` | échange de récompense |
+| `security-alert` | `EVENT`, `DATE` | activation ou désactivation de la 2FA, utilisation d'un code de secours, mot de passe réinitialisé ou défini |
+| `reward-claim` | `REWARD_TITLE`, `PARTNER_NAME`, `PROMO_CODE` | échange de récompense, ticket à gratter |
+| `identity-decision` | `DECISION`, `DETAILS` | décision de la Mairie sur une pièce d'identité |
 | `gdpr-deletion` | `CONFIRM_URL`, `TOKEN` | demande de suppression RGPD |
 
 Les gabarits sont dans `backend/src/templates/emails/`. Chaque `{{VARIABLE}}` est remplacée par sa valeur échappée pour HTML. Si le fichier est introuvable, le corps se réduit aux variables en JSON. `npm run compile` copie le dossier dans `dist/src/templates`.
@@ -138,6 +139,8 @@ Le service crée ses propres fournisseurs ethers vers `RPC_URL` et `FALLBACK_RPC
 | `generateOtpCode`, `generateRandomToken`, `generatePromoCode`, `generateBackupCode` | `crypto.util.ts` | aléas cryptographiques |
 | `anonymizeWallet`, `maskEmail` | `crypto.util.ts` | `0x8b3f...6a08`, `c***@etherbay.fr` |
 | `neutralizeSpreadsheetCell` | `crypto.util.ts` | met entre guillemets et préfixe d'une apostrophe une cellule commençant par `=`, `+`, `-`, `@`, tabulation ou retour chariot |
-| `hashValue`, `compareHash` | `crypto.util.ts` | bcrypt à 12 tours ; non utilisés par le code actuel |
+| `hashValue`, `compareHash` | `crypto.util.ts` | bcrypt à 12 tours, pour les mots de passe |
+| `encryptBuffer`, `decryptBuffer` | `crypto.util.ts` | AES-256-GCM sur des octets, au format binaire vecteur d'initialisation de 12 octets, étiquette de 16 octets puis données ; utilisés pour les images des pièces d'identité |
+| `decodeIdentityImage`, `detectImageMime`, `toDataUrl` | [`identity-image.util.ts`](src:backend/src/utils/identity-image.util.ts) | décodage du base64, contrôle de la taille et des octets d'un JPEG ou d'un PNG, URL `data:` pour l'affichage Mairie |
 
 Les choix cryptographiques sont justifiés dans [Cryptographie et secrets](../securite/cryptographie-secrets.md).

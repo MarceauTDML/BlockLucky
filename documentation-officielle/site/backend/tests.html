@@ -105,8 +105,9 @@ Time:        33.055 s</code></pre></div>
 <p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/setup-env.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/setup-env.ts</code></a> s&#39;exécute avant chaque suite et fixe :</p>
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript">process.<span class="hljs-property">env</span>.<span class="hljs-property">LOGIN_EMAIL_CODE_REQUIRED</span> = <span class="hljs-string">&#x27;false&#x27;</span>;
 process.<span class="hljs-property">env</span>.<span class="hljs-property">ADMIN_MFA_REQUIRED</span> = <span class="hljs-string">&#x27;false&#x27;</span>;
-process.<span class="hljs-property">env</span>.<span class="hljs-property">BLOCKCHAIN_MODE</span> = <span class="hljs-string">&#x27;simulated&#x27;</span>;</code></pre></div>
-<p>Jest définit <code>NODE_ENV=test</code>, ce qui coupe la création du client Redis, l&#39;envoi SMTP, le dépôt S3, les logs et les métriques par défaut, et relève les limites de débit à 10 000 requêtes. Les suites qui testent le code email ou la 2FA obligatoire des administrateurs modifient <code>env.LOGIN_EMAIL_CODE_REQUIRED</code> et <code>env.ADMIN_MFA_REQUIRED</code> au début de la suite et les restaurent à la fin.</p>
+process.<span class="hljs-property">env</span>.<span class="hljs-property">BLOCKCHAIN_MODE</span> = <span class="hljs-string">&#x27;simulated&#x27;</span>;
+process.<span class="hljs-property">env</span>.<span class="hljs-property">AGE_VERIFICATION_REQUIRED</span> = <span class="hljs-string">&#x27;false&#x27;</span>;</code></pre></div>
+<p>Jest définit <code>NODE_ENV=test</code>, ce qui coupe la création du client Redis, l&#39;envoi SMTP, le dépôt S3, les logs et les métriques par défaut, et relève les limites de débit à 10 000 requêtes. Les suites qui testent le code email, la 2FA obligatoire des administrateurs ou la vérification d&#39;âge modifient <code>env.LOGIN_EMAIL_CODE_REQUIRED</code>, <code>env.ADMIN_MFA_REQUIRED</code> ou <code>env.AGE_VERIFICATION_REQUIRED</code> au début du test ou de la suite et les restaurent à la fin. La vérification d&#39;âge n&#39;est réactivée que dans des blocs de <code>lottery.test.ts</code> et <code>marketplace.test.ts</code>.</p>
 <h2 id="doublures-de-prisma-et-redis"><a class="anchor" href="#doublures-de-prisma-et-redis" aria-hidden="true" tabindex="-1">#</a>Doublures de Prisma et Redis</h2>
 <p>Chaque suite remplace les deux modules de configuration avant d&#39;importer l&#39;application :</p>
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript">jest.<span class="hljs-title function_">mock</span>(<span class="hljs-string">&#x27;../../src/config/prisma.config&#x27;</span>, <span class="hljs-function">() =&gt;</span> ({
@@ -133,7 +134,7 @@ jest.<span class="hljs-title function_">mock</span>(<span class="hljs-string">&#
 <tbody><tr>
 <td><code>prismaMock</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/__mocks__/prisma.mock.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/__mocks__/prisma.mock.ts</code></a></td>
-<td>une <code>Map</code> par modèle (<code>user</code>, <code>token</code>, <code>lotteryRound</code>, <code>ticket</code>, <code>pointTransaction</code>, <code>partner</code>, <code>rewardCatalog</code>, <code>claimedReward</code>, <code>analytics</code>) et des fonctions <code>jest.fn</code> qui imitent les requêtes utilisées par le code ; <code>resetPrismaMockStore()</code> vide tout</td>
+<td>une <code>Map</code> par modèle (<code>user</code>, <code>identityDocument</code>, <code>token</code>, <code>lotteryRound</code>, <code>ticket</code>, <code>pointTransaction</code>, <code>partner</code>, <code>rewardCatalog</code>, <code>claimedReward</code>, <code>analytics</code>) et des fonctions <code>jest.fn</code> qui imitent les requêtes utilisées par le code ; <code>resetPrismaMockStore()</code> vide tout</td>
 </tr>
 <tr>
 <td><code>redisMock</code></td>
@@ -191,9 +192,24 @@ jest.<span class="hljs-title function_">mock</span>(<span class="hljs-string">&#
 <td>écrans d&#39;accueil ; refus sans certification 18+ ; inscription, +25 points, configuration et vérification TOTP</td>
 </tr>
 <tr>
+<td><code>api/auth-password.test.ts</code></td>
+<td>10</td>
+<td>inscription après code email ; refus d&#39;une seconde inscription ; politique de mot de passe et conditions ; activation d&#39;un compte créé par un cadeau ; message unique d&#39;échec ; blocage après 10 échecs, adresse inconnue comprise ; code TOTP demandé ; réinitialisation et révocation des sessions ; mot de passe défini sur un compte sans mot de passe ; <code>hasPassword</code> et <code>ageVerificationStatus</code> dans le profil</td>
+</tr>
+<tr>
+<td><code>api/auth-oauth.test.ts</code></td>
+<td>8</td>
+<td>jetons Google et Apple vérifiés avec audience, émetteur et clés ; email non vérifié ou jeton rejeté ; 503 sans configuration ; création puis reconnexion par email ; 2FA demandée avant la session</td>
+</tr>
+<tr>
+<td><code>api/identity.test.ts</code></td>
+<td>7</td>
+<td>envoi chiffré au repos et statut <code>PENDING</code> ; corps de plus de 1 Mo accepté sur cette route seule ; image trop lourde, format inconnu ou face manquante ; session exigée ; consultation, approbation, effacement des images et email ; motif obligatoire puis nouvel envoi ; routes réservées à l&#39;ADMIN et interdiction de statuer sur sa propre pièce</td>
+</tr>
+<tr>
 <td><code>api/lottery.test.ts</code></td>
-<td>4</td>
-<td>statut et paliers ; achat et +50 points ; cadeau ; métadonnées POAP</td>
+<td>11</td>
+<td>statut et paliers ; phase, salle d&#39;attente et participants ; achats refusés en salle d&#39;attente ; ticket unique, +50 points et numéro ; second ticket refusé ; cadeau ; cadeau à une personne qui a déjà son ticket ; numéro et résultat dans <code>my-tickets</code> ; achat, cadeau et échange refusés sans âge vérifié, puis achat accepté ; métadonnées POAP</td>
 </tr>
 <tr>
 <td><code>api/idempotency.test.ts</code></td>
@@ -202,8 +218,8 @@ jest.<span class="hljs-title function_">mock</span>(<span class="hljs-string">&#
 </tr>
 <tr>
 <td><code>api/marketplace.test.ts</code></td>
-<td>1</td>
-<td>catalogue, échange, QR code dans « Mes codes »</td>
+<td>5</td>
+<td>catalogue, échange, QR code dans « Mes codes » ; ticket à gratter : débit et récompense en stock, refus sans points et sans débit, 404 sans récompense, offre inconnue et âge exigé</td>
 </tr>
 <tr>
 <td><code>api/partners.test.ts</code></td>
@@ -236,6 +252,11 @@ jest.<span class="hljs-title function_">mock</span>(<span class="hljs-string">&#
 <td>inscription, achat, tirage simulé, gagnant</td>
 </tr>
 <tr>
+<td><code>services/keeper.test.ts</code></td>
+<td>3</td>
+<td>attente de <code>DRAW_REVEAL_DELAY_SECONDS</code> avant <code>requestDraw</code> ; tirage immédiat si le délai vaut 0 ; clôture sans attente d&#39;un tour expiré sans assez de participants</td>
+</tr>
+<tr>
 <td><code>services/ledger.test.ts</code></td>
 <td>2</td>
 <td>crédit et débit avec historique, refus d&#39;un débit supérieur au solde</td>
@@ -248,9 +269,9 @@ jest.<span class="hljs-title function_">mock</span>(<span class="hljs-string">&#
 </tbody></table></div>
 <p>Plusieurs suites (<code>admin</code>, <code>auth-security</code>, <code>partners</code>, <code>full-draw-flow</code>) signent directement leurs jetons avec <code>sessionService.sign(...)</code> après insertion du compte dans la doublure ; les autres passent par <code>POST /auth/login</code>, qui délivre le jeton immédiatement puisque le code email est désactivé.</p>
 <h2 id="test-sur-une-vraie-chaine"><a class="anchor" href="#test-sur-une-vraie-chaine" aria-hidden="true" tabindex="-1">#</a>Test sur une vraie chaîne</h2>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/chain/onchain-lottery.chain.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/chain/onchain-lottery.chain.ts</code></a> contient deux tests, avec un délai de 120 secondes par test (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/jest.chain.config.json" class="external" target="_blank" rel="noopener noreferrer"><code>backend/jest.chain.config.json</code></a>). Sa préparation <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/chain/setup-chain-env.ts" class="external" target="_blank" rel="noopener noreferrer"><code>setup-chain-env.ts</code></a> force <code>BLOCKCHAIN_MODE=onchain</code>, <code>NODE_ENV=development</code>, les adresses des contrats locaux et désactive le code email et la 2FA obligatoire.</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/chain/onchain-lottery.chain.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/chain/onchain-lottery.chain.ts</code></a> contient deux tests, avec un délai de 120 secondes par test (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/jest.chain.config.json" class="external" target="_blank" rel="noopener noreferrer"><code>backend/jest.chain.config.json</code></a>). Sa préparation <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/chain/setup-chain-env.ts" class="external" target="_blank" rel="noopener noreferrer"><code>setup-chain-env.ts</code></a> force <code>BLOCKCHAIN_MODE=onchain</code>, <code>NODE_ENV=development</code>, les adresses des contrats locaux, désactive le code email, la 2FA obligatoire et la vérification d&#39;âge, et met <code>DRAW_REVEAL_DELAY_SECONDS</code> à 0 s&#39;il n&#39;est pas défini.</p>
 <ol>
-<li><strong>Achat, cadeau, tirage et versement.</strong> Deux citoyens se connectent ; leur portefeuille intégré est différent de l&#39;adresse envoyée et a reçu la dotation. Alice achète 2 tickets, Bob 1, puis Bob en offre 1 à Alice. Le test avance le temps du nœud (<code>evm_increaseTime</code>, <code>evm_mine</code>) au-delà de la fin du tour, appelle <code>runKeeperOnce()</code> qui demande le tirage, attend que l&#39;indexeur enregistre le gagnant, vérifie que la cagnotte vaut 90 % des 4 tickets, attend le versement par le worker <code>chain-actions</code> puis la frappe des POAP visibles dans <code>my-tickets</code>.</li>
+<li><strong>Achat, cadeau, tirage et versement.</strong> Deux citoyens se connectent ; leur portefeuille intégré est différent de l&#39;adresse envoyée et a reçu la dotation. Le statut est en phase <code>OPEN</code> sans <code>revealAt</code>. Alice achète son ticket, dont le numéro a 5 chiffres, puis un second achat est refusé en 409 <code>PlayerLimitReached</code>. Bob achète le sien, en offre un à Dave, puis se voit refuser un cadeau à Alice, qui a déjà son ticket. Le test avance le temps du nœud (<code>evm_increaseTime</code>, <code>evm_mine</code>) au-delà de la fin du tour, appelle <code>runKeeperOnce()</code> qui demande le tirage, attend que l&#39;indexeur enregistre le gagnant, vérifie que la cagnotte vaut 90 % des 3 tickets et que l&#39;historique donne le numéro gagnant et <code>isWinner</code>, attend le versement par le worker <code>chain-actions</code> puis la frappe des POAP visibles dans <code>my-tickets</code>.</li>
 <li><strong>Disjoncteur.</strong> Un administrateur met le contrat en pause par <code>POST /api/v1/admin/circuit-breaker</code> ; <code>paused()</code> vaut <code>true</code> sur la chaîne ; un achat renvoie 503 avec <code>circuitBreaker: true</code> ; la reprise remet <code>paused()</code> à <code>false</code>.</li>
 </ol>
 <p>Prérequis : PostgreSQL et Redis joignables, nœud Hardhat lancé avec les contrats et l&#39;oracle VRF local (conteneur <code>blockchain</code> de <code>docker-compose.yml</code>), base migrée et vierge, cohérente avec l&#39;état de la chaîne. Le test crée ses comptes avec un suffixe unique et suppose un tour ouvert sur la chaîne.</p>

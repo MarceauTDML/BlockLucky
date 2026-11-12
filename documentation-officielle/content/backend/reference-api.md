@@ -45,7 +45,7 @@ Le jeton s'obtient par `POST /auth/login` puis `POST /auth/2fa/verify` (voir [Au
 
 ## Idempotence
 
-Quatre routes acceptent l'en-tête `Idempotency-Key` : `POST /lottery/buy`, `POST /lottery/gift`, `POST /lottery/claim-prize` et `POST /marketplace/claim`. Le middleware [`backend/src/middlewares/idempotency.middleware.ts`](src:backend/src/middlewares/idempotency.middleware.ts) protège contre le double clic et les nouvelles tentatives réseau d'une opération qui dépense des ethers ou des points.
+Cinq routes acceptent l'en-tête `Idempotency-Key` : `POST /lottery/buy`, `POST /lottery/gift`, `POST /lottery/claim-prize`, `POST /marketplace/claim` et `POST /marketplace/scratch`. Le middleware [`backend/src/middlewares/idempotency.middleware.ts`](src:backend/src/middlewares/idempotency.middleware.ts) protège contre le double clic et les nouvelles tentatives réseau d'une opération qui dépense des ethers ou des points.
 
 ```http
 POST /api/v1/lottery/buy HTTP/1.1
@@ -53,7 +53,7 @@ Authorization: Bearer eyJhbGciOi...
 Content-Type: application/json
 Idempotency-Key: 6b0f3c2e-9d41-4a7e-b5a8-1c2d3e4f5a6b
 
-{"quantity":2}
+{"quantity":1}
 ```
 
 | Règle | Détail |
@@ -73,13 +73,14 @@ Le corps de la requête ne fait pas partie de la clé : la même clé avec un au
 | Limiteur | Portée | Limite |
 |---|---|---|
 | `globalRateLimiter` | toutes les routes après la maintenance, sauf sondes, `/api/config` et `/metrics` | 300 requêtes par 15 minutes et par IP |
-| `authRateLimiter` | `/auth/login`, `/auth/2fa/verify`, `/auth/2fa/disable` | 30 requêtes par 10 minutes et par IP, en plus de la limite globale |
+| `authRateLimiter` | `/auth/login`, `/signup`, `/signin`, `/password/forgot`, `/password/reset`, `/oauth/google`, `/oauth/apple`, `/2fa/verify`, `/2fa/disable` | 30 requêtes par 10 minutes et par IP pour l'ensemble de ces routes, en plus de la limite globale |
+| `identityUploadRateLimiter` | `POST /user/identity` | 10 requêtes par heure et par IP, en plus de la limite globale |
 
-Les réponses portent les en-têtes `RateLimit` et `RateLimit-Policy` (format draft-7 de l'IETF), exposés aux navigateurs par CORS. Au-delà de la limite, la réponse est un `429` au format habituel, par exemple `{ "success": false, "message": "Trop de requêtes depuis cette adresse IP, veuillez réessayer plus tard." }`. Les compteurs sont dans Redis (`ratelimit:global:` et `ratelimit:auth:`) ; si Redis répond en erreur, la requête passe (`passOnStoreError`). Derrière un proxy, `TRUST_PROXY` doit être réglé, sinon tous les clients partagent l'IP du proxy.
+Les réponses portent les en-têtes `RateLimit` et `RateLimit-Policy` (format draft-7 de l'IETF), exposés aux navigateurs par CORS. Au-delà de la limite, la réponse est un `429` au format habituel, par exemple `{ "success": false, "message": "Trop de requêtes depuis cette adresse IP, veuillez réessayer plus tard." }`. Les compteurs sont dans Redis (`ratelimit:global:`, `ratelimit:auth:` et `ratelimit:identity:`) ; si Redis répond en erreur, la requête passe (`passOnStoreError`). Derrière un proxy, `TRUST_PROXY` doit être réglé, sinon tous les clients partagent l'IP du proxy.
 
 ## Corps et formats
 
-Les corps sont en JSON (`Content-Type: application/json`) ou en formulaire URL-encodé, 1 Mo au plus. Un JSON mal formé renvoie `400 Corps de requête JSON invalide`, un corps trop gros `413 Corps de requête trop volumineux`. Les réponses suivent le format décrit dans [Réponses et erreurs](reponses-erreurs.md), sauf trois exceptions : les sondes `/health*`, les métadonnées POAP `GET /lottery/poap/:file` et `/metrics`.
+Les corps sont en JSON (`Content-Type: application/json`) ou en formulaire URL-encodé, 1 Mo au plus, sauf `POST /user/identity`, qui accepte 12 Mo de JSON pour les deux photos encodées en base64. Un JSON mal formé renvoie `400 Corps de requête JSON invalide`, un corps trop gros `413 Corps de requête trop volumineux`. Les réponses suivent le format décrit dans [Réponses et erreurs](reponses-erreurs.md), sauf trois exceptions : les sondes `/health*`, les métadonnées POAP `GET /lottery/poap/:file` et `/metrics`.
 
 ## Lire les résumés OpenAPI
 
@@ -87,7 +88,10 @@ La colonne « Résumé » du tableau reprend le `summary` du bloc `@openapi` pla
 
 | Route | Nuance |
 |---|---|
-| `POST /lottery/gift` | Le destinataire est désigné par son email, mais aucun email ne lui est envoyé. |
+| `POST /auth/login` | La déclaration de majorité est déclarative ; l'achat exige en plus la vérification d'âge par pièce d'identité. |
+| `POST /auth/oauth/google`, `/oauth/apple` | Répondent 503 tant que `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` est vide, ce qui est le cas par défaut. |
+| `POST /lottery/gift` | Le destinataire est désigné par son email, mais aucun email ne lui est envoyé ; seul l'âge de l'expéditeur est vérifié. |
+| `PUT /user/responsible-limit` | La limite est enregistrée mais sans effet avec un ticket par participant. |
 | `POST /lottery/refund` | En mode simulé, seul le statut du tour change ; le remboursement réel n'existe qu'en mode onchain. |
 | `GET /lottery/my-tickets` | En mode simulé, les badges POAP sont fictifs. |
 | `POST /partners/offers` | La date d'expiration est enregistrée dans Redis mais n'est jamais appliquée. |

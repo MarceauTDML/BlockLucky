@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Loterie | Documentation BlockLucky</title>
-<meta name="description" content="Le module lottery expose l&#39;état du tour en cours, l&#39;achat et le cadeau de tickets, le portefeuille intégré du citoyen, la galerie POAP, le retrait de la cagnott">
+<meta name="description" content="Le module lottery expose l&#39;état du tour en cours et sa phase, l&#39;achat et le cadeau du ticket unique de chaque participant, le portefeuille intégré du citoyen, l">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../assets/css/doc.css">
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>7. Backend</span><span>Modules métier</span></div>
     <article class="markdown">
 <h1>Loterie</h1>
-<p>Le module <code>lottery</code> expose l&#39;état du tour en cours, l&#39;achat et le cadeau de tickets, le portefeuille intégré du citoyen, la galerie POAP, le retrait de la cagnotte et les deux actions d&#39;administration du tour : le tirage et l&#39;annulation. C&#39;est le module où la différence entre les modes <code>onchain</code> et <code>simulated</code> est la plus forte. En mode <code>onchain</code>, le service délègue tous les appels au contrat à la passerelle <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.gateway.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.gateway.ts</code></a> et laisse l&#39;indexeur projeter les événements en base.</p>
+<p>Le module <code>lottery</code> expose l&#39;état du tour en cours et sa phase, l&#39;achat et le cadeau du ticket unique de chaque participant, le portefeuille intégré du citoyen, la galerie POAP, le retrait de la cagnotte et les deux actions d&#39;administration du tour : le tirage et l&#39;annulation. C&#39;est le module où la différence entre les modes <code>onchain</code> et <code>simulated</code> est la plus forte. En mode <code>onchain</code>, le service délègue tous les appels au contrat à la passerelle <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.gateway.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.gateway.ts</code></a> et laisse l&#39;indexeur projeter les événements en base.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -59,7 +59,11 @@
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.services.ts</code></a></td>
-<td>Règles métier des deux modes</td>
+<td>Règles métier des deux modes, phases, paliers, numéros de ticket</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/draw-reveal.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/draw-reveal.ts</code></a></td>
+<td>Instant d&#39;ouverture de la salle d&#39;attente et heure de révélation</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.repo.ts</code></a></td>
@@ -107,14 +111,14 @@
 </tr>
 <tr>
 <td><code>POST /api/v1/lottery/buy</code></td>
-<td>connecté</td>
-<td><code>authenticate</code>, <code>idempotency</code>, <code>validate(buyTicketSchema)</code></td>
-<td>Achat de 1 à 10 tickets</td>
+<td>connecté, âge vérifié</td>
+<td><code>authenticate</code>, <code>requireAgeVerification</code>, <code>idempotency</code>, <code>validate(buyTicketSchema)</code></td>
+<td>Achat du ticket du grand tirage</td>
 </tr>
 <tr>
 <td><code>POST /api/v1/lottery/gift</code></td>
-<td>connecté</td>
-<td><code>authenticate</code>, <code>idempotency</code>, <code>validate(giftTicketSchema)</code></td>
+<td>connecté, âge vérifié</td>
+<td><code>authenticate</code>, <code>requireAgeVerification</code>, <code>idempotency</code>, <code>validate(giftTicketSchema)</code></td>
 <td>Cadeau d&#39;un ticket à un email</td>
 </tr>
 <tr>
@@ -148,6 +152,7 @@
 <td>Annulation du tour et remboursements</td>
 </tr>
 </tbody></table></div>
+<p><code>requireAgeVerification</code> répond <code>403</code> avec <code>code: AGE_VERIFICATION_REQUIRED</code> tant que la pièce d&#39;identité du compte n&#39;a pas été validée par la Mairie (voir <a href="utilisateur.html#controle-a-l-achat">Utilisateur</a>).</p>
 <h2 id="constantes-metier"><a class="anchor" href="#constantes-metier" aria-hidden="true" tabindex="-1">#</a>Constantes métier</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -183,17 +188,27 @@
 <td><code>POINTS_PER_GIFT</code> et <code>POINTS_PER_GIFTED_TICKET</code></td>
 </tr>
 <tr>
+<td>Tickets par participant et par tour</td>
+<td>1</td>
+<td><code>quantity</code> limité à 1 par <code>buyTicketSchema</code>, contrôle en base et sur le contrat</td>
+</tr>
+<tr>
 <td>Limite de jeu responsable par défaut</td>
-<td>50 tickets par tour</td>
+<td>50 tickets par tour, sans effet avec un seul ticket</td>
 <td>clé Redis <code>user:ticket_limit:&lt;userId&gt;</code>, réglable par <a href="utilisateur.html#put-user-responsible-limit"><code>PUT /user/responsible-limit</code></a></td>
 </tr>
 <tr>
-<td>Salle d&#39;attente</td>
+<td>Délai de révélation</td>
+<td>600 secondes après la fermeture des achats</td>
+<td><code>DRAW_REVEAL_DELAY_SECONDS</code></td>
+</tr>
+<tr>
+<td>Indicateur historique <code>inWaitingRoom</code></td>
 <td>600 secondes avant la fin du tour</td>
 <td><code>inWaitingRoom</code></td>
 </tr>
 </tbody></table></div>
-<p>En mode <code>onchain</code>, le prix, le nombre maximal de tickets et la limite par joueur viennent du contrat (<code>getRound</code>). Le déploiement local fixe 0,01 ETH, 10 000 tickets, 100 tickets par joueur et une commission de 10 % (<code>smart-contract/deployments/localhost.json</code>). Voir <a href="../../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a>.</p>
+<p>En mode <code>onchain</code>, le prix, le nombre maximal de tickets et la limite par joueur viennent du contrat (<code>getRound</code>). Le script de déploiement fixe par défaut 0,01 ETH, 10 000 tickets, 1 ticket par joueur (<code>MAX_TICKETS_PER_PLAYER</code>) et une commission de 10 % (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/lib/deployment.ts" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/scripts/lib/deployment.ts</code></a>). Voir <a href="../../smart-contracts/cycle-tour.html">Cycle de vie d&#39;un tour</a>.</p>
 <h2 id="get-lottery-status"><a class="anchor" href="#get-lottery-status" aria-hidden="true" tabindex="-1">#</a>GET /lottery/status</h2>
 <p>Renvoie le tour courant. Les deux modes écrivent en base pendant cette lecture : le mode simulé crée le tour 1 (ou le suivant) si aucun tour <code>OPEN</code> ou <code>LOCKED</code> n&#39;existe, le mode onchain fait un <code>upsert</code> du tour lu sur la chaîne.</p>
 <div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
@@ -213,7 +228,12 @@
       <span class="hljs-attr">&quot;drawTargetTime&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T13:53:16.000Z&quot;</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;remainingSeconds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">412</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;inWaitingRoom&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
-      <span class="hljs-attr">&quot;maxTicketsPerPlayer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span>
+      <span class="hljs-attr">&quot;maxTicketsPerPlayer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;phase&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;OPEN&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;waitingRoomOpensAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T13:53:16.000Z&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;revealAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;participants&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">4</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;maxParticipants&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">10000</span>
     <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;progression&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
       <span class="hljs-attr">&quot;ticketsSold&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">4</span><span class="hljs-punctuation">,</span>
@@ -221,7 +241,7 @@
       <span class="hljs-attr">&quot;targetParticipants&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">10000</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;percentage&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.04</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;milestones&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
-        <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;target&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1000</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Palier Quartier Innovant (1 000 participants)&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;rewardDescription&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;+10% de cagnotte bonus abondée par la Mairie d&#x27;EtherBay&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;unlocked&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span> <span class="hljs-punctuation">}</span>
+        <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;target&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">5000</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Coulisses dévoilées&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;rewardDescription&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Les coulisses du grand tirage et des lots des commerçants sont dévoilées.&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;unlocked&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span> <span class="hljs-punctuation">}</span>
       <span class="hljs-punctuation">]</span>
     <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;guarantees&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
@@ -236,7 +256,76 @@
     <span class="hljs-attr">&quot;blockchain&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;mode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;onchain&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;chainId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">31337</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;lotteryContract&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;poapContract&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5FC8d32690cc91D4c39d9d3abcBD16989F875707&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;lotteryExplorerUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span> <span class="hljs-punctuation">}</span>
   <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span></code></pre></div>
-<p>La liste <code>milestones</code> contient trois paliers (1 000, 5 000 et 10 000 tickets). Ils sont uniquement affichés : aucun code n&#39;abonde la cagnotte ni ne débloque d&#39;offre quand un palier est atteint. <code>ticketsSold</code> compte des tickets, pas des participants distincts, malgré les libellés.</p>
+<h3 id="phases-du-tour"><a class="anchor" href="#phases-du-tour" aria-hidden="true" tabindex="-1">#</a>Phases du tour</h3>
+<p><code>round.phase</code> résume l&#39;état du tour pour les interfaces :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Condition</th>
+<th>Ce que voit le citoyen</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>OPEN</code></td>
+<td>Statut <code>OPEN</code>, achats ouverts</td>
+<td>Billetterie</td>
+</tr>
+<tr>
+<td><code>WAITING_ROOM</code></td>
+<td>Statut <code>OPEN</code>, achats clos : fin du temps ou, en mode onchain, plafond de tickets atteint</td>
+<td>Salle d&#39;attente, compte à rebours jusqu&#39;à <code>revealAt</code></td>
+</tr>
+<tr>
+<td><code>DRAWING</code></td>
+<td>Statut <code>LOCKED</code> : tirage demandé, réponse de Chainlink VRF attendue</td>
+<td>Roue en cours</td>
+</tr>
+<tr>
+<td><code>COMPLETED</code></td>
+<td>Gagnant désigné</td>
+<td>Résultat</td>
+</tr>
+<tr>
+<td><code>CANCELLED</code></td>
+<td>Tour annulé</td>
+<td>Remboursement</td>
+</tr>
+</tbody></table></div>
+<p><code>waitingRoomOpensAt</code> est l&#39;instant où les achats se ferment et <code>revealAt</code> l&#39;heure prévue du tirage, égale à cet instant plus <code>DRAW_REVEAL_DELAY_SECONDS</code>. En mode onchain, l&#39;instant de fermeture est enregistré dans Redis (<code>chain:draw-ready-at:&lt;tour&gt;</code>, 7 jours) par la première lecture qui constate que le tour est prêt au tirage, par cette route ou par le <a href="../../integration-blockchain/keeper.html">keeper</a> ; <code>revealAt</code> reste <code>null</code> tant que le minimum de tickets n&#39;est pas atteint. En mode simulé, la fermeture est la fin des 48 heures et <code>revealAt</code> est calculé sans Redis.</p>
+<h3 id="paliers-et-compteurs"><a class="anchor" href="#paliers-et-compteurs" aria-hidden="true" tabindex="-1">#</a>Paliers et compteurs</h3>
+<p>La liste <code>milestones</code> contient quatre paliers, communs aux deux modes :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cible</th>
+<th>Titre</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>5 000</td>
+<td>Coulisses dévoilées</td>
+<td>Les coulisses du grand tirage et des lots des commerçants sont dévoilées.</td>
+</tr>
+<tr>
+<td>7 500</td>
+<td>Offre spéciale ouverte</td>
+<td>Une offre spéciale des commerçants partenaires est ouverte à tous les participants.</td>
+</tr>
+<tr>
+<td>9 000</td>
+<td>Jeu bonus débloqué</td>
+<td>Un jeu bonus est débloqué pour tous les participants du tirage.</td>
+</tr>
+<tr>
+<td>10 000</td>
+<td>Ouverture de la salle</td>
+<td>Les achats sont clos et la salle d&#39;attente du tirage ouvre.</td>
+</tr>
+</tbody></table></div>
+<p><code>unlocked</code> est vrai dès que <code>ticketsSold</code> atteint la cible. Ces paliers sont uniquement affichés : aucun code ne dévoile de contenu, n&#39;ouvre d&#39;offre ni ne débloque de jeu quand ils sont atteints. Seul le dernier correspond à un comportement réel, puisque le contrat refuse les achats au-delà de <code>maxTickets</code>.</p>
+<p><code>round.participants</code> vaut <code>ticketsSold</code> quand le contrat limite chaque joueur à un ticket, sinon le nombre de participants distincts en base ; <code>round.maxParticipants</code> vaut <code>maxTickets</code> en mode onchain et 10 000 en mode simulé.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -266,6 +355,11 @@
 <td>absents</td>
 </tr>
 <tr>
+<td><code>phase</code> <code>WAITING_ROOM</code></td>
+<td>fin du temps ou plafond atteint</td>
+<td>fin des 48 h</td>
+</tr>
+<tr>
 <td><code>vrfCertified</code>, <code>simulated</code></td>
 <td><code>true</code>, <code>false</code></td>
 <td><code>false</code>, <code>true</code></td>
@@ -284,7 +378,7 @@
 <tbody><tr>
 <td><code>quantity</code></td>
 <td>entier</td>
-<td>1 à 10, défaut 1, converti depuis une chaîne</td>
+<td>exactement 1 (défaut), converti depuis une chaîne ; au-delà, <code>400</code> avec <code>Un seul ticket par participant et par grand tirage.</code></td>
 </tr>
 <tr>
 <td><code>roundId</code></td>
@@ -299,7 +393,8 @@
 </tbody></table></div>
 <h3 id="regles-communes"><a class="anchor" href="#regles-communes" aria-hidden="true" tabindex="-1">#</a>Règles communes</h3>
 <ol>
-<li>Le nombre de tickets du citoyen sur le tour courant, compté en base, plus <code>quantity</code> ne doit pas dépasser sa limite de jeu responsable (50 par défaut). Sinon : <code>400 Jeu Responsable : Limite d&#39;achat atteinte (48/50 tickets autorisés sur ce tirage).</code></li>
+<li>L&#39;âge du compte doit être vérifié (<code>403 AGE_VERIFICATION_REQUIRED</code>, voir plus haut).</li>
+<li>Un citoyen qui a déjà un ticket sur le tour courant, compté en base, reçoit <code>409 Vous avez déjà votre ticket pour ce grand tirage.</code> avec <code>errors: { &quot;contractError&quot;: &quot;PlayerLimitReached&quot; }</code>. La limite de jeu responsable est encore comparée (<code>400 Jeu Responsable : Limite d&#39;achat atteinte...</code>), mais elle ne peut plus être atteinte avant ce contrôle.</li>
 <li>La requête accepte <code>Idempotency-Key</code> : un double clic avec la même clé rejoue la première réponse au lieu d&#39;acheter deux fois (voir <a href="../reference-api.html#idempotence">Référence de l&#39;API</a>).</li>
 </ol>
 <h3 id="mode-onchain"><a class="anchor" href="#mode-onchain" aria-hidden="true" tabindex="-1">#</a>Mode onchain</h3>
@@ -309,15 +404,17 @@
     participant G as &quot;lotteryGateway&quot;
     participant BC as &quot;Contrat BlockLucky&quot;
     participant I as &quot;lotteryIndexer&quot;
-    C-&gt;&gt;S: POST /lottery/buy quantity 2
+    C-&gt;&gt;S: POST /lottery/buy quantity 1
     S-&gt;&gt;G: readCurrentRound puis upsert du tour
     S-&gt;&gt;G: prepareWallet : portefeuille et dotation si absents
-    G-&gt;&gt;BC: buyTickets(2) signé par le portefeuille, value = prix x 2
+    S-&gt;&gt;G: ticketsOf : aucun ticket sur ce tour
+    G-&gt;&gt;BC: buyTickets(1) signé par le portefeuille, value = prix
     BC--&gt;&gt;G: reçu avec TicketsPurchased
     G-&gt;&gt;I: processReceipt
-    I-&gt;&gt;I: tickets en base, +100 points, points:awarded, job MINT_BADGE
+    I-&gt;&gt;I: ticket en base, +50 points, points:awarded, job MINT_BADGE
     S--&gt;&gt;C: 201 tickets, transactionHash, solde</pre></div>
 <ol>
+<li>Le contrôle du ticket unique est fait deux fois : en base, puis sur le contrat par <code>ticketsOf(tour, adresse)</code>, pour couvrir un ticket acheté directement sur la chaîne et pas encore indexé. Le contrat applique en plus <code>maxTicketsPerPlayer</code>, qui vaut 1 avec la configuration de déploiement par défaut.</li>
 <li><code>prepareWallet</code> crée le portefeuille intégré s&#39;il manque (comptes créés avant l&#39;ADR 0004 ou par l&#39;indexeur) et verse la dotation de bienvenue si elle n&#39;a jamais été versée.</li>
 <li>Le tour doit être <code>OPEN</code> sur la chaîne, sinon <code>409 Le tirage de ce tour est en cours, les achats reprendront au tour suivant.</code></li>
 <li>La transaction <code>buyTickets(quantity)</code> est signée par la clé déchiffrée du citoyen. Le gaz est payé par son portefeuille : il n&#39;y a pas de transaction sponsorisée.</li>
@@ -354,8 +451,8 @@
 </tr>
 <tr>
 <td><code>PlayerLimitReached</code></td>
-<td>400</td>
-<td><code>Limite de tickets par participant atteinte pour ce tour.</code></td>
+<td>409</td>
+<td><code>Vous avez déjà votre ticket pour ce grand tirage.</code></td>
 </tr>
 <tr>
 <td><code>InvalidQuantity</code></td>
@@ -389,21 +486,21 @@
   <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Ticket acheté avec succès&quot;</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
     <span class="hljs-attr">&quot;tickets&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
-      <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c45-2e1f-7a09-b3d4-8e6f0a1c2b37&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;transactionHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5d1c...e9a4&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;blockNumber&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">42</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ticketIndex&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;payerWallet&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x8b3f0e5c2d9a71b46e0f3c8d2a5b7e9f1c4d6a08&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-5d2b-7f41-9c0e-6a8b2d4f1e37&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;lotteryId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c41-0b6e-7d2a-8f13-5c9e2a7b4d60&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;purchasedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T13:41:02.000Z&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;etherscanUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span> <span class="hljs-punctuation">}</span>
+      <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c45-2e1f-7a09-b3d4-8e6f0a1c2b37&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;transactionHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5d1c...e9a4&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;blockNumber&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">42</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ticketIndex&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ticketNumber&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;00003&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;payerWallet&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x8b3f0e5c2d9a71b46e0f3c8d2a5b7e9f1c4d6a08&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-5d2b-7f41-9c0e-6a8b2d4f1e37&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;lotteryId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c41-0b6e-7d2a-8f13-5c9e2a7b4d60&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;purchasedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T13:41:02.000Z&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;etherscanUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span> <span class="hljs-punctuation">}</span>
     <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
-    <span class="hljs-attr">&quot;pointsAwarded&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span>
-    <span class="hljs-attr">&quot;newPointsBalance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">125</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;pointsAwarded&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">50</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;newPointsBalance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">75</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;poapBadge&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;MINT_PENDING&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;contractAddress&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5FC8d32690cc91D4c39d9d3abcBD16989F875707&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;roundId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;gaslessSponsored&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;transactionHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5d1c...e9a4&quot;</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;etherscanUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;walletAddress&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x8b3f0e5c2d9a71b46e0f3c8d2a5b7e9f1c4d6a08&quot;</span><span class="hljs-punctuation">,</span>
-    <span class="hljs-attr">&quot;walletBalanceEth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.0799</span>
+    <span class="hljs-attr">&quot;walletBalanceEth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.4899</span>
   <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span></code></pre></div>
-<p>Le tableau <code>tickets</code> contient un élément par ticket. <code>etherscanUrl</code> est <code>null</code> tant que <code>EXPLORER_URL</code> est vide.</p>
+<p>Le tableau <code>tickets</code> garde la forme d&#39;une liste, mais ne contient plus qu&#39;un élément. <code>ticketNumber</code> est le numéro affiché au citoyen : <code>ticketIndex + 1</code> sur 5 chiffres (<code>formatTicketNumber</code>), soit <code>00001</code> pour le premier ticket du tour. <code>etherscanUrl</code> est <code>null</code> tant que <code>EXPLORER_URL</code> est vide.</p>
 <h3 id="mode-simule"><a class="anchor" href="#mode-simule" aria-hidden="true" tabindex="-1">#</a>Mode simulé</h3>
-<p>Le tour en base doit être <code>OPEN</code> (<code>400 Cette session de loterie n&#39;est plus ouverte aux achats de tickets.</code>). Pour chaque ticket, <code>blockchainService.relayTicketPurchase</code> vérifie le disjoncteur Redis puis fabrique un hachage et un numéro de bloc aléatoires ; le ticket est inséré et la cagnotte augmentée de 0,01 ETH dans la même transaction. Disjoncteur actif : <code>503 CIRCUIT_BREAKER_ACTIVE: Le Smart Contract est temporairement en pause de sécurité.</code> avec <code>circuitBreaker: true</code>. Le service crédite ensuite <code>50 x quantity</code> points, émet <code>points:awarded</code> et renvoie un faux badge POAP (<code>tokenId</code> aléatoire, <code>metadataUri</code> en <code>ipfs://QmEtherBayPOAP2026/...</code>) avec <code>gaslessSponsored: true</code>.</p>
+<p>Le tour en base doit être <code>OPEN</code> (<code>400 Cette session de loterie n&#39;est plus ouverte aux achats de tickets.</code>) et ses 48 heures ne doivent pas être écoulées (<code>409 Ce tour est terminé, le tirage va être lancé.</code>). Le ticket reçoit l&#39;indice égal au nombre de tickets déjà enregistrés sur le tour ; deux achats simultanés peuvent obtenir le même indice, et le second échoue alors sur l&#39;index unique <code>(lotteryId, ticketIndex)</code>. Pour le ticket, <code>blockchainService.relayTicketPurchase</code> vérifie le disjoncteur Redis puis fabrique un hachage et un numéro de bloc aléatoires ; le ticket est inséré et la cagnotte augmentée de 0,01 ETH dans la même transaction. Disjoncteur actif : <code>503 CIRCUIT_BREAKER_ACTIVE: Le Smart Contract est temporairement en pause de sécurité.</code> avec <code>circuitBreaker: true</code>. Le service crédite ensuite 50 points, émet <code>points:awarded</code> et renvoie un faux badge POAP (<code>tokenId</code> aléatoire, <code>metadataUri</code> en <code>ipfs://QmEtherBayPOAP2026/...</code>) avec <code>gaslessSponsored: true</code>.</p>
 <h3 id="effets-de-bord"><a class="anchor" href="#effets-de-bord" aria-hidden="true" tabindex="-1">#</a>Effets de bord</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -473,22 +570,24 @@
 <p>Règles en mode onchain :</p>
 <ol>
 <li>S&#39;offrir un ticket est refusé : <code>400 Vous ne pouvez pas vous offrir un ticket à vous-même.</code></li>
+<li>Si le destinataire a déjà un ticket sur le tour courant, lu sur le contrat par <code>ticketsOf</code>, la demande est refusée : <code>409 Cette personne a déjà son ticket pour ce grand tirage.</code> Le même message remplace celui de <code>PlayerLimitReached</code> si le contrat refuse l&#39;achat.</li>
 <li>Si aucun compte n&#39;a cet email, un compte est créé avec un portefeuille intégré, <code>referredById</code> égal à l&#39;expéditeur et <code>isEmailVerified = false</code>. Un compte existant sans portefeuille en reçoit un.</li>
 <li>L&#39;expéditeur paie : <code>buyTicketsFor(destinataire, 1)</code> est signé par son portefeuille. Les erreurs sont celles de l&#39;achat.</li>
 <li>L&#39;indexeur attribue le ticket au destinataire, crédite +50 points au destinataire et +75 points <code>GIFT_TICKET</code> à l&#39;expéditeur, et met en file la frappe du POAP du destinataire.</li>
 </ol>
-<p>En mode simulé, il n&#39;y a pas de contrôle d&#39;auto-cadeau ; un destinataire inconnu est créé avec <code>recipientWallet</code> ou une adresse aléatoire sans clé, et seul l&#39;expéditeur reçoit ses 75 points.</p>
+<p>L&#39;expéditeur peut offrir un ticket tout en ayant le sien : le plafond porte sur le bénéficiaire. Seul l&#39;âge de l&#39;expéditeur est vérifié.</p>
+<p>En mode simulé, l&#39;auto-cadeau et un destinataire qui a déjà un ticket en base sont refusés avec les mêmes messages ; un destinataire inconnu est créé avec <code>recipientWallet</code> ou une adresse aléatoire sans clé, et seul l&#39;expéditeur reçoit ses 75 points.</p>
 <div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Ticket offert avec succès à votre proche !&quot;</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
-    <span class="hljs-attr">&quot;ticket&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c47-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ticketIndex&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">4</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c46-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;recipientEmail&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;voisine@etherbay.fr&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;recipientWallet&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x2c4e...91ab&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;etherscanUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;ticket&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c47-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ticketIndex&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">4</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ticketNumber&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;00005&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c46-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;recipientEmail&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;voisine@etherbay.fr&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;recipientWallet&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x2c4e...91ab&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;etherscanUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;senderPointsAwarded&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">75</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;senderNewBalance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">200</span>
   <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span></code></pre></div>
 <div class="hint hint-note"><p class="hint-title">À savoir</p>
-<p>Aucun email n&#39;est envoyé au destinataire et la limite de jeu responsable n&#39;est pas appliquée aux cadeaux. Un destinataire créé par un cadeau qui se connecte ensuite passe par le parcours <code>LOGIN</code>, pas <code>SIGNUP</code> : il ne reçoit pas les 25 points de bienvenue.</p>
+<p>Aucun email n&#39;est envoyé au destinataire et la limite de jeu responsable n&#39;est pas appliquée aux cadeaux. Un destinataire créé par un cadeau qui se connecte ensuite par <code>/login</code> passe par le parcours <code>LOGIN</code> et ne reçoit pas les 25 points de bienvenue. S&#39;il s&#39;inscrit par <code>/signup</code> ou par Google ou Apple, son compte non vérifié est activé et reçoit le bonus de bienvenue (voir <a href="auth.html#post-auth-signup">Authentification</a>).</p>
 </div>
 <h2 id="get-lottery-my-tickets"><a class="anchor" href="#get-lottery-my-tickets" aria-hidden="true" tabindex="-1">#</a>GET /lottery/my-tickets</h2>
 <div class="table-wrap"><table>
@@ -507,7 +606,40 @@
 <td>entier, défaut 20, entre 1 et 100</td>
 </tr>
 </tbody></table></div>
-<p>Renvoie <code>walletAddress</code>, <code>tickets</code> (identifiant, hachage, bloc, date, tour, statut du tour, <code>etherscanUrl</code>) triés du plus récent au plus ancien, <code>poapBadges</code> et <code>meta</code> (<code>page</code>, <code>limit</code>, <code>total</code>, <code>totalPages</code>). En mode onchain, les badges sont lus sur le contrat POAP (<code>badgeOf</code>, <code>tokenURI</code>) pour au plus 20 tours distincts de la page courante ; seuls les badges frappés apparaissent, <code>mintedAt</code> vaut <code>null</code>. En mode simulé, chaque ticket de la page produit un badge fictif.</p>
+<p>Renvoie <code>walletAddress</code>, <code>tickets</code> triés du plus récent au plus ancien, <code>poapBadges</code> et <code>meta</code> (<code>page</code>, <code>limit</code>, <code>total</code>, <code>totalPages</code>). En mode onchain, les badges sont lus sur le contrat POAP (<code>badgeOf</code>, <code>tokenURI</code>) pour au plus 20 tours distincts de la page courante ; seuls les badges frappés apparaissent, <code>mintedAt</code> vaut <code>null</code>. En mode simulé, chaque ticket de la page produit un badge fictif.</p>
+<p>Chaque ticket contient :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code>, <code>transactionHash</code>, <code>blockNumber</code>, <code>purchasedAt</code>, <code>etherscanUrl</code></td>
+<td>Ticket et transaction</td>
+</tr>
+<tr>
+<td><code>ticketIndex</code>, <code>ticketNumber</code></td>
+<td>Indice sur le tour et numéro sur 5 chiffres</td>
+</tr>
+<tr>
+<td><code>roundId</code>, <code>contractRoundId</code>, <code>roundStatus</code>, <code>drawnAt</code></td>
+<td>Tour</td>
+</tr>
+<tr>
+<td><code>isWinner</code></td>
+<td>Vrai si le tour est terminé et que l&#39;indice gagnant (<code>winningTicket</code>) est celui du ticket ; à défaut d&#39;indice, comparaison de l&#39;adresse gagnante avec celle du compte</td>
+</tr>
+<tr>
+<td><code>winningTicketNumber</code></td>
+<td>Numéro du ticket gagnant une fois le tour terminé, <code>null</code> avant</td>
+</tr>
+<tr>
+<td><code>prizeEth</code></td>
+<td>Cagnotte du tour : <code>prizeWei</code> du contrat si connu, sinon <code>prizePool</code> en base</td>
+</tr>
+</tbody></table></div>
 <h2 id="get-lottery-wallet"><a class="anchor" href="#get-lottery-wallet" aria-hidden="true" tabindex="-1">#</a>GET /lottery/wallet</h2>
 <div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
@@ -516,7 +648,7 @@
     <span class="hljs-attr">&quot;mode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;onchain&quot;</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;walletAddress&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x8b3f0e5c2d9a71b46e0f3c8d2a5b7e9f1c4d6a08&quot;</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;custodial&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
-    <span class="hljs-attr">&quot;balanceEth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.1</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;balanceEth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.5</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;welcomeGrantTxHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x9a2f...c41e&quot;</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;explorerUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
   <span class="hljs-punctuation">}</span>
@@ -582,7 +714,7 @@
 <td>facultatif ; utilisé seulement en mode simulé</td>
 </tr>
 </tbody></table></div>
-<p>Mode onchain : le compte opérateur appelle <code>requestDraw()</code> sur le tour courant. La réponse est immédiate, le gagnant n&#39;est pas encore connu :</p>
+<p>Mode onchain : le compte opérateur appelle <code>requestDraw()</code> sur le tour courant, sans attendre le délai de révélation que respecte le keeper. La réponse est immédiate, le gagnant n&#39;est pas encore connu :</p>
 <div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Tirage au sort Chainlink VRF demandé&quot;</span><span class="hljs-punctuation">,</span>
@@ -593,7 +725,7 @@
   <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span></code></pre></div>
 <p>L&#39;indexeur passe le tour en <code>LOCKED</code> à l&#39;événement <code>DrawRequested</code>. À l&#39;événement <code>WinnerPicked</code>, il enregistre le gagnant, diffuse <code>draw:winner</code> et met en file le versement. Le keeper déclenche le même tirage sans intervention dès que <code>isDrawReady()</code> est vrai (voir <a href="../../integration-blockchain/keeper.html">Keeper du tirage</a>). Erreurs : <code>409 Le tirage ne peut pas encore être lancé (participants ou durée insuffisants).</code> (<code>DrawNotReady</code>), <code>503</code> si le contrat est en pause.</p>
-<p>Mode simulé : le tour visé (ou le tour courant) doit exister (<code>404 Session de loterie introuvable</code>), ne pas être <code>COMPLETED</code> (<code>400 Le tirage de cette session a déjà été effectué</code>) et compter au moins un ticket (<code>400 Aucun ticket vendu sur cette session pour effectuer un tirage</code>). Le gagnant est tiré par <code>crypto.randomInt</code> parmi les tickets, ce qui pondère par le nombre de tickets. Le tour passe <code>LOCKED</code> puis <code>COMPLETED</code>, <code>draw:winner</code> est diffusé et la réponse porte <code>verifiedFair: false, simulated: true</code>.</p>
+<p>Mode simulé : le tour visé (ou le tour courant) doit exister (<code>404 Session de loterie introuvable</code>), ne pas être <code>COMPLETED</code> (<code>400 Le tirage de cette session a déjà été effectué</code>) et compter au moins un ticket (<code>400 Aucun ticket vendu sur cette session pour effectuer un tirage</code>). Le gagnant est tiré par <code>crypto.randomInt</code> parmi les tickets, ce qui pondère par le nombre de tickets. Le tour passe <code>LOCKED</code> puis <code>COMPLETED</code> avec l&#39;indice du ticket gagnant (<code>winningTicket</code>), <code>draw:winner</code> est diffusé et la réponse porte <code>verifiedFair: false, simulated: true</code>.</p>
 <h2 id="post-lottery-refund"><a class="anchor" href="#post-lottery-refund" aria-hidden="true" tabindex="-1">#</a>POST /lottery/refund</h2>
 <p>Aucun schéma de validation. En mode simulé, <code>roundId</code> est lu dans le corps s&#39;il est fourni.</p>
 <p>Mode onchain : le compte opérateur appelle <code>cancelRound()</code> sur le tour courant (<code>409 Ce tour ne peut pas être annulé.</code> sinon). L&#39;indexeur passe le tour en <code>CANCELLED</code> et met en file un job <code>CLAIM_REFUND</code> par portefeuille payeur distinct ; chaque job signe <code>claimRefund</code> avec le portefeuille intégré du payeur. La réponse renvoie <code>refundedAmountEth</code> (total collecté avant annulation) et le hachage.</p>
@@ -626,7 +758,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#constantes-metier">Constantes métier</a></li><li class="toc-h2"><a href="#get-lottery-status">GET /lottery/status</a></li><li class="toc-h2"><a href="#post-lottery-buy">POST /lottery/buy</a></li><li class="toc-h3"><a href="#corps">Corps</a></li><li class="toc-h3"><a href="#regles-communes">Règles communes</a></li><li class="toc-h3"><a href="#mode-onchain">Mode onchain</a></li><li class="toc-h3"><a href="#mode-simule">Mode simulé</a></li><li class="toc-h3"><a href="#effets-de-bord">Effets de bord</a></li><li class="toc-h2"><a href="#post-lottery-gift">POST /lottery/gift</a></li><li class="toc-h2"><a href="#get-lottery-my-tickets">GET /lottery/my-tickets</a></li><li class="toc-h2"><a href="#get-lottery-wallet">GET /lottery/wallet</a></li><li class="toc-h2"><a href="#post-lottery-claim-prize">POST /lottery/claim-prize</a></li><li class="toc-h2"><a href="#post-lottery-draw">POST /lottery/draw</a></li><li class="toc-h2"><a href="#post-lottery-refund">POST /lottery/refund</a></li><li class="toc-h2"><a href="#routes-publiques-de-lecture">Routes publiques de lecture</a></li><li class="toc-h3"><a href="#get-lottery-leaderboard">GET /lottery/leaderboard</a></li><li class="toc-h3"><a href="#get-lottery-transparency-charter">GET /lottery/transparency-charter</a></li><li class="toc-h3"><a href="#get-lottery-poap-file">GET /lottery/poap/:file</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#constantes-metier">Constantes métier</a></li><li class="toc-h2"><a href="#get-lottery-status">GET /lottery/status</a></li><li class="toc-h3"><a href="#phases-du-tour">Phases du tour</a></li><li class="toc-h3"><a href="#paliers-et-compteurs">Paliers et compteurs</a></li><li class="toc-h2"><a href="#post-lottery-buy">POST /lottery/buy</a></li><li class="toc-h3"><a href="#corps">Corps</a></li><li class="toc-h3"><a href="#regles-communes">Règles communes</a></li><li class="toc-h3"><a href="#mode-onchain">Mode onchain</a></li><li class="toc-h3"><a href="#mode-simule">Mode simulé</a></li><li class="toc-h3"><a href="#effets-de-bord">Effets de bord</a></li><li class="toc-h2"><a href="#post-lottery-gift">POST /lottery/gift</a></li><li class="toc-h2"><a href="#get-lottery-my-tickets">GET /lottery/my-tickets</a></li><li class="toc-h2"><a href="#get-lottery-wallet">GET /lottery/wallet</a></li><li class="toc-h2"><a href="#post-lottery-claim-prize">POST /lottery/claim-prize</a></li><li class="toc-h2"><a href="#post-lottery-draw">POST /lottery/draw</a></li><li class="toc-h2"><a href="#post-lottery-refund">POST /lottery/refund</a></li><li class="toc-h2"><a href="#routes-publiques-de-lecture">Routes publiques de lecture</a></li><li class="toc-h3"><a href="#get-lottery-leaderboard">GET /lottery/leaderboard</a></li><li class="toc-h3"><a href="#get-lottery-transparency-charter">GET /lottery/transparency-charter</a></li><li class="toc-h3"><a href="#get-lottery-poap-file">GET /lottery/poap/:file</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

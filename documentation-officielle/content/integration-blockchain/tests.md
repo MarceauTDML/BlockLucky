@@ -20,9 +20,10 @@ Ce que ces tests couvrent pour la partie blockchain :
 | [`backend/__tests__/api/lottery.test.ts`](src:backend/__tests__/api/lottery.test.ts) | Achat, cadeau, statut, et routes POAP réelles : `/poap/3.json` renvoie une image en `/poap/3.svg`, le SVG est servi, `/poap/0.json` et `/poap/abc` renvoient 404 |
 | [`backend/__tests__/integration/blockchain-indexer.test.ts`](src:backend/__tests__/integration/blockchain-indexer.test.ts) | Webhook d'indexation simulé : idempotence par hachage de transaction, rejeu ignoré, signature HMAC obligatoire |
 | [`backend/__tests__/integration/full-draw-flow.test.ts`](src:backend/__tests__/integration/full-draw-flow.test.ts) | Parcours inscription, achat, tirage simulé et gagnant |
+| [`backend/__tests__/services/keeper.test.ts`](src:backend/__tests__/services/keeper.test.ts) | `runKeeperOnce` avec un contrat et un Redis simulés : attente de `DRAW_REVEAL_DELAY_SECONDS`, tirage immédiat avec un délai nul, clôture d'un tour expiré sans attente |
 
 > [!IMPORTANT]
-> Aucun test unitaire n'exerce le code de `backend/src/blockchain/` en mode onchain : la passerelle, l'indexeur, le keeper, la file d'actions et la dotation de bienvenue ne sont vérifiés que par la suite sur nœud réel. Une modification de ces fichiers doit donc être validée avec `npm run test:chain`, localement ou par le job CI `chain`.
+> Hormis la logique de délai du keeper, testée avec un contrat simulé, aucun test unitaire n'exerce le code de `backend/src/blockchain/` en mode onchain : la passerelle, l'indexeur, l'envoi des transactions du keeper, la file d'actions et la dotation de bienvenue ne sont vérifiés que par la suite sur nœud réel. Une modification de ces fichiers doit donc être validée avec `npm run test:chain`, localement ou par le job CI `chain`.
 
 ## Test sur nœud réel : npm run test:chain
 
@@ -59,14 +60,16 @@ Le test crée des comptes dont l'email est suffixé par un identifiant d'exécut
 |---|---|
 | Connexion d'Alice et Bob par `POST /api/v1/auth/login` | Statut 200 ; l'adresse du compte n'est pas celle envoyée par le client (portefeuille créé par le backend) |
 | `GET /api/v1/lottery/wallet` pour Alice | `mode` vaut `onchain`, `balanceEth` strictement positif (dotation de bienvenue versée) |
-| `GET /api/v1/lottery/status` | `guarantees.vrfCertified` vaut `true` |
-| Achat de 2 tickets par Alice | Statut 201, hachage de transaction valide, reçu au statut 1 sur la chaîne, expéditeur égal au portefeuille d'Alice |
-| Achat d'un ticket par Bob, puis cadeau d'un ticket de Bob à Alice | Statut 201 ; `recipientWallet` égal au portefeuille d'Alice |
-| `ticketsOf(tour, Alice)` sur le contrat | 3 |
+| `GET /api/v1/lottery/status` | `guarantees.vrfCertified` vaut `true`, `round.phase` vaut `OPEN` et `revealAt` est nul |
+| Achat d'un ticket par Alice | Statut 201, numéro de ticket sur 5 chiffres, hachage de transaction valide, reçu au statut 1 sur la chaîne, expéditeur égal au portefeuille d'Alice |
+| Second achat par Alice | Statut 409, `errors.contractError` vaut `PlayerLimitReached` |
+| Achat d'un ticket par Bob, puis cadeau d'un ticket de Bob à Dave, nouvelle adresse | Statut 201 |
+| Cadeau d'un ticket de Bob à Alice | Statut 409, « Cette personne a déjà son ticket pour ce grand tirage. » |
+| `ticketsOf(tour, Alice)` et `ticketsOf(tour, Dave)` sur le contrat | 1 chacun |
 | Horloge du nœud avancée après `endTime` (`evm_increaseTime`, `evm_mine`), puis `runKeeperOnce()` | `draw-requested` |
-| Synchronisations de l'indexeur jusqu'au statut `COMPLETED` en base | Gagnant parmi Alice et Bob ; `prizeWei` égal à 90 % de 4 tickets (commission de 10 %) |
+| Synchronisations de l'indexeur jusqu'au statut `COMPLETED` en base | Gagnant parmi Alice, Bob et Dave ; `prizeWei` égal à 90 % de 3 tickets (commission de 10 %) |
 | Synchronisations jusqu'à `prizeClaimedAt` | Date renseignée en base, `prizeClaimed` vrai dans le contrat : le job `CLAIM_PRIZE` a versé la cagnotte |
-| `GET /api/v1/lottery/my-tickets` pour Alice | Au moins un badge POAP avec un `tokenId` positif : le job `MINT_BADGE` a frappé le badge |
+| `GET /api/v1/lottery/my-tickets` pour Alice | Tour `COMPLETED`, numéro gagnant sur 5 chiffres, `isWinner` cohérent avec le gagnant ; au moins un badge POAP avec un `tokenId` positif : le job `MINT_BADGE` a frappé le badge |
 
 Ce scénario traverse tous les composants de cette partie : [portefeuilles](portefeuilles.md), [passerelle](passerelle.md), [indexeur](indexeur.md), [keeper](keeper.md), [file d'actions](actions.md) et [métadonnées POAP](metadonnees-poap.md).
 

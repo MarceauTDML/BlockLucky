@@ -185,6 +185,58 @@
 <li>redémarrer : <code>docker compose --profile app restart worker</code>.</li>
 </ol>
 <p>Un seul worker doit tourner à la fois tant que le compte opérateur est partagé : deux processus qui signent avec la même clé se disputent les nonces. Le keeper prend un verrou Redis (<code>chain:keeper-lock</code>), mais les émissions de badges n&#39;en ont pas.</p>
+<h2 id="file-des-verifications-d-age"><a class="anchor" href="#file-des-verifications-d-age" aria-hidden="true" tabindex="-1">#</a>File des vérifications d&#39;âge</h2>
+<p>Les citoyens dont l&#39;âge n&#39;est pas vérifié reçoivent 403 <code>AGE_VERIFICATION_REQUIRED</code> à l&#39;achat, au cadeau, à l&#39;échange et au ticket à gratter. Une file qui s&#39;allonge bloque donc la participation.</p>
+<h3 id="mesurer-la-file"><a class="anchor" href="#mesurer-la-file" aria-hidden="true" tabindex="-1">#</a>Mesurer la file</h3>
+<p>La page <code>/mairie/identites</code> liste les demandes <code>PENDING</code>, de la plus ancienne à la plus récente. En base :</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">docker compose <span class="hljs-built_in">exec</span> postgres psql -U etherbay_admin -d blocklucky_db -c <span class="hljs-string">&quot;SELECT status, count(*), min(\&quot;submittedAt\&quot;) AS oldest FROM \&quot;IdentityDocument\&quot; GROUP BY status;&quot;</span></code></pre></div>
+<p>Une demande en attente garde le recto et le verso chiffrés en base. Elles sont effacées à la décision, et la ligne disparaît avec l&#39;anonymisation RGPD du compte.</p>
+<h3 id="incidents-frequents"><a class="anchor" href="#incidents-frequents" aria-hidden="true" tabindex="-1">#</a>Incidents fréquents</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Symptôme</th>
+<th>Cause</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Le citoyen reçoit 413 à l&#39;envoi</td>
+<td>image de plus de 4 Mo (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/identity-image.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>identity-image.util.ts</code></a>)</td>
+<td>reprendre la photo de plus loin ou en qualité moindre</td>
+</tr>
+<tr>
+<td>Le citoyen reçoit 400 « Image recto invalide »</td>
+<td>ni JPEG ni PNG, ou moins de 1 Ko</td>
+<td>envoyer une photo JPEG ou PNG</td>
+</tr>
+<tr>
+<td>Le citoyen reçoit 429</td>
+<td>plus de 10 envois par heure depuis la même adresse (<code>identityUploadRateLimiter</code>)</td>
+<td>attendre une heure</td>
+</tr>
+<tr>
+<td>L&#39;agent reçoit 403 « Vous ne pouvez pas statuer sur votre propre pièce d&#39;identité »</td>
+<td>demande de son propre compte</td>
+<td>la faire traiter par un autre agent</td>
+</tr>
+<tr>
+<td>L&#39;agent reçoit 409 « Cette demande a déjà été traitée »</td>
+<td>décision déjà prise, par exemple par un autre agent</td>
+<td>recharger la liste</td>
+</tr>
+<tr>
+<td>Le détail ne montre pas les images</td>
+<td>demande déjà traitée : les images sont effacées</td>
+<td>aucune ; un nouvel envoi du citoyen crée une nouvelle demande <code>PENDING</code></td>
+</tr>
+<tr>
+<td>Le citoyen ne reçoit pas l&#39;email de décision</td>
+<td>file <code>emails-queue</code> en échec</td>
+<td>voir <a href="#files-bullmq">Files BullMQ</a></td>
+</tr>
+</tbody></table></div>
+<p>Chaque consultation (<code>IDENTITY_DOCUMENT_VIEWED</code>) et chaque décision (<code>IDENTITY_VERIFICATION_DECISION</code>) sont tracées dans <code>/mairie/audit</code>.</p>
 <h2 id="mode-maintenance"><a class="anchor" href="#mode-maintenance" aria-hidden="true" tabindex="-1">#</a>Mode maintenance</h2>
 <p>Avec <code>MAINTENANCE_MODE=true</code>, toutes les routes <code>/api/*</code> hors <code>/api/admin</code> répondent 503 avec <code>Retry-After: 300</code> et un message « Service en maintenance ». Les sondes <code>/health/*</code>, <code>/metrics</code> et <code>/api/config</code> restent accessibles ; <code>/api/config</code> renvoie <code>maintenance: true</code>.</p>
 <p>La variable n&#39;est pas présente dans <code>docker-compose.yml</code>. L&#39;ajouter dans la surcharge pour le service <code>backend</code>, puis recréer le conteneur :</p>
@@ -217,7 +269,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#premier-diagnostic">Premier diagnostic</a></li><li class="toc-h3"><a href="#sondes-de-l-api">Sondes de l&#39;API</a></li><li class="toc-h3"><a href="#retrouver-une-requete">Retrouver une requête</a></li><li class="toc-h2"><a href="#l-api-ne-demarre-pas">L&#39;API ne démarre pas</a></li><li class="toc-h2"><a href="#requetes-lentes-postgresql">Requêtes lentes PostgreSQL</a></li><li class="toc-h2"><a href="#postgresql-indisponible">PostgreSQL indisponible</a></li><li class="toc-h2"><a href="#files-bullmq">Files BullMQ</a></li><li class="toc-h2"><a href="#redis-indisponible">Redis indisponible</a></li><li class="toc-h2"><a href="#worker-en-defaut">Worker en défaut</a></li><li class="toc-h2"><a href="#mode-maintenance">Mode maintenance</a></li><li class="toc-h2"><a href="#revenir-a-la-version-precedente">Revenir à la version précédente</a></li><li class="toc-h2"><a href="#espace-disque">Espace disque</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#premier-diagnostic">Premier diagnostic</a></li><li class="toc-h3"><a href="#sondes-de-l-api">Sondes de l&#39;API</a></li><li class="toc-h3"><a href="#retrouver-une-requete">Retrouver une requête</a></li><li class="toc-h2"><a href="#l-api-ne-demarre-pas">L&#39;API ne démarre pas</a></li><li class="toc-h2"><a href="#requetes-lentes-postgresql">Requêtes lentes PostgreSQL</a></li><li class="toc-h2"><a href="#postgresql-indisponible">PostgreSQL indisponible</a></li><li class="toc-h2"><a href="#files-bullmq">Files BullMQ</a></li><li class="toc-h2"><a href="#redis-indisponible">Redis indisponible</a></li><li class="toc-h2"><a href="#worker-en-defaut">Worker en défaut</a></li><li class="toc-h2"><a href="#file-des-verifications-d-age">File des vérifications d&#39;âge</a></li><li class="toc-h3"><a href="#mesurer-la-file">Mesurer la file</a></li><li class="toc-h3"><a href="#incidents-frequents">Incidents fréquents</a></li><li class="toc-h2"><a href="#mode-maintenance">Mode maintenance</a></li><li class="toc-h2"><a href="#revenir-a-la-version-precedente">Revenir à la version précédente</a></li><li class="toc-h2"><a href="#espace-disque">Espace disque</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

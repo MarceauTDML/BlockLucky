@@ -55,7 +55,7 @@ Quand `NODE_ENV=production`, un `superRefine` ajoute des contrôles qui ne s'app
 
 | Règle | Message renvoyé |
 |---|---|
-| `LOGIN_EMAIL_CODE_REQUIRED` et `ADMIN_MFA_REQUIRED` doivent valoir `true` | `<variable> ne peut pas être désactivé en production` |
+| `LOGIN_EMAIL_CODE_REQUIRED`, `ADMIN_MFA_REQUIRED` et `AGE_VERIFICATION_REQUIRED` doivent valoir `true` | `<variable> ne peut pas être désactivé en production` |
 | `BLOCKCHAIN_MODE` doit valoir `onchain` | `BLOCKCHAIN_MODE doit valoir onchain en production : la simulation est réservée au développement` |
 | Si `METRICS_ENABLED=true`, `METRICS_TOKEN` doit être non vide | `METRICS_TOKEN est obligatoire en production pour protéger /metrics` |
 | `JWT_SECRET`, `ENCRYPTION_KEY`, `RELAYER_PRIVATE_KEY` et `WEBHOOK_SECRET` doivent différer des valeurs de développement | `<variable> utilise la valeur de développement, interdite en production` |

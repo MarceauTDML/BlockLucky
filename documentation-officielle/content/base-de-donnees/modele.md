@@ -2,7 +2,7 @@
 
 La base PostgreSQL 15 du backend est décrite par un seul fichier, [`backend/prisma/schema.prisma`](src:backend/prisma/schema.prisma), et créée par les migrations de [`backend/prisma/migrations/`](src:backend/prisma/migrations/migration_lock.toml). Le client est Prisma 7 avec l'adaptateur `@prisma/adapter-pg`, configuré dans [`backend/src/config/prisma.config.ts`](src:backend/src/config/prisma.config.ts). L'URL de connexion est lue par [`backend/prisma.config.ts`](src:backend/prisma.config.ts) pour les commandes Prisma, et par `DATABASE_URL` pour l'application.
 
-Le schéma compte **10 modèles** et **4 énumérations**. Le détail de chaque colonne est dans le [dictionnaire de données](dictionnaire.md), les index et contraintes dans [Index et contraintes](index-contraintes.md).
+Le schéma compte **11 modèles** et **5 énumérations**. Le détail de chaque colonne est dans le [dictionnaire de données](dictionnaire.md), les index et contraintes dans [Index et contraintes](index-contraintes.md).
 
 ## Diagramme
 
@@ -10,6 +10,8 @@ Le schéma compte **10 modèles** et **4 énumérations**. Le détail de chaque 
 erDiagram
     User ||--o{ User : "parraine"
     User ||--o{ Token : "possède"
+    User ||--o| IdentityDocument : "envoie"
+    User |o--o{ IdentityDocument : "examine"
     User ||--o{ Ticket : "bénéficie"
     LotteryRound ||--o{ Ticket : "contient"
     User ||--o{ PointTransaction : "mouvements"
@@ -25,18 +27,33 @@ erDiagram
         string walletEncryptedKey "AES-256-GCM, nullable"
         string welcomeGrantTxHash "nullable"
         string email UK "nullable"
+        string passwordHash "bcrypt, nullable"
         Role role
         boolean isTwoFactorEnabled
         TwoFactorMethod twoFactorMethod "nullable"
         string twoFactorSecret "chiffré, nullable"
         string_array twoFactorBackupCodes "empreintes"
         boolean isEmailVerified
+        AgeVerificationStatus ageVerificationStatus "NONE par défaut"
+        timestamptz ageVerifiedAt "nullable"
+        string ageVerificationNote "motif du refus, nullable"
         int pointsBalance "CHECK >= 0"
         string referralCode UK
         string referredById FK "nullable"
         timestamptz createdAt
         timestamptz updatedAt
         timestamptz deletedAt "nullable"
+    }
+    IdentityDocument {
+        string id PK
+        string userId FK, UK
+        AgeVerificationStatus status
+        bytes frontEncrypted "AES-256-GCM, nullable"
+        bytes backEncrypted "AES-256-GCM, nullable"
+        string mimeType
+        timestamptz submittedAt
+        timestamptz reviewedAt "nullable"
+        string reviewerId FK "nullable"
     }
     Token {
         string id PK
@@ -129,7 +146,7 @@ Les modèles se répartissent en quatre domaines.
 
 | Domaine | Modèles | Source de vérité |
 |---|---|---|
-| Comptes et sécurité | `User`, `Token` | PostgreSQL |
+| Comptes et sécurité | `User`, `Token`, `IdentityDocument` | PostgreSQL |
 | Loterie | `LotteryRound`, `Ticket`, `ChainCursor` | Le contrat `BlockLucky` en mode onchain ; PostgreSQL en mode simulé |
 | EtherPoints et récompenses | `PointTransaction`, `Partner`, `RewardCatalog`, `ClaimedReward` | PostgreSQL |
 | Analytique et audit | `Analytics` | PostgreSQL |
@@ -161,7 +178,18 @@ Le parrain est fixé à l'inscription par un code de parrainage, ou à la créat
 | Cardinalité | Un compte, zéro ou plusieurs jetons |
 | Suppression du compte | `CASCADE` : les jetons sont supprimés avec le compte |
 
-C'est la seule relation en cascade : un jeton n'a aucun sens sans son compte.
+Avec `IdentityDocument.userId`, ce sont les deux seules relations en cascade : un jeton ou une pièce d'identité n'ont aucun sens sans leur compte.
+
+### User et IdentityDocument : vérification d'âge
+
+| Propriété | `IdentityDocument.userId` | `IdentityDocument.reviewerId` |
+|---|---|---|
+| Cible | `User.id`, compte qui envoie la pièce | `User.id`, agent de la Mairie qui a statué |
+| Nom de la relation Prisma | `IdentityOwner` (`user` et `identityDocument`) | `IdentityReviewer` (`reviewer` et `reviewedIdentities`) |
+| Cardinalité | Un compte a zéro ou une demande (index unique) | Un agent a statué sur zéro ou plusieurs demandes |
+| Suppression du compte | `CASCADE` | `SET NULL` |
+
+Ajoutée par la migration `20261112090000_password_accounts_identity_verification`. Le statut est porté deux fois : `IdentityDocument.status` décrit la demande, `User.ageVerificationStatus` décrit le compte et sert au contrôle d'accès, sans jointure. Les deux sont écrits dans la même transaction à l'envoi et à la décision. Les colonnes d'images sont mises à `NULL` dès la décision ; la ligne garde la date, l'agent et le statut.
 
 ### User, LotteryRound et Ticket
 

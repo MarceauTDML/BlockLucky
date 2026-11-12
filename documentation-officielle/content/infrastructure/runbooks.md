@@ -174,6 +174,34 @@ Symptômes : `worker` en `unhealthy` ou en redémarrage, tickets achetés absent
 
 Un seul worker doit tourner à la fois tant que le compte opérateur est partagé : deux processus qui signent avec la même clé se disputent les nonces. Le keeper prend un verrou Redis (`chain:keeper-lock`), mais les émissions de badges n'en ont pas.
 
+## File des vérifications d'âge
+
+Les citoyens dont l'âge n'est pas vérifié reçoivent 403 `AGE_VERIFICATION_REQUIRED` à l'achat, au cadeau, à l'échange et au ticket à gratter. Une file qui s'allonge bloque donc la participation.
+
+### Mesurer la file
+
+La page `/mairie/identites` liste les demandes `PENDING`, de la plus ancienne à la plus récente. En base :
+
+```bash
+docker compose exec postgres psql -U etherbay_admin -d blocklucky_db -c "SELECT status, count(*), min(\"submittedAt\") AS oldest FROM \"IdentityDocument\" GROUP BY status;"
+```
+
+Une demande en attente garde le recto et le verso chiffrés en base. Elles sont effacées à la décision, et la ligne disparaît avec l'anonymisation RGPD du compte.
+
+### Incidents fréquents
+
+| Symptôme | Cause | Action |
+| --- | --- | --- |
+| Le citoyen reçoit 413 à l'envoi | image de plus de 4 Mo ([`identity-image.util.ts`](src:backend/src/utils/identity-image.util.ts)) | reprendre la photo de plus loin ou en qualité moindre |
+| Le citoyen reçoit 400 « Image recto invalide » | ni JPEG ni PNG, ou moins de 1 Ko | envoyer une photo JPEG ou PNG |
+| Le citoyen reçoit 429 | plus de 10 envois par heure depuis la même adresse (`identityUploadRateLimiter`) | attendre une heure |
+| L'agent reçoit 403 « Vous ne pouvez pas statuer sur votre propre pièce d'identité » | demande de son propre compte | la faire traiter par un autre agent |
+| L'agent reçoit 409 « Cette demande a déjà été traitée » | décision déjà prise, par exemple par un autre agent | recharger la liste |
+| Le détail ne montre pas les images | demande déjà traitée : les images sont effacées | aucune ; un nouvel envoi du citoyen crée une nouvelle demande `PENDING` |
+| Le citoyen ne reçoit pas l'email de décision | file `emails-queue` en échec | voir [Files BullMQ](#files-bullmq) |
+
+Chaque consultation (`IDENTITY_DOCUMENT_VIEWED`) et chaque décision (`IDENTITY_VERIFICATION_DECISION`) sont tracées dans `/mairie/audit`.
+
 ## Mode maintenance
 
 Avec `MAINTENANCE_MODE=true`, toutes les routes `/api/*` hors `/api/admin` répondent 503 avec `Retry-After: 300` et un message « Service en maintenance ». Les sondes `/health/*`, `/metrics` et `/api/config` restent accessibles ; `/api/config` renvoie `maintenance: true`.

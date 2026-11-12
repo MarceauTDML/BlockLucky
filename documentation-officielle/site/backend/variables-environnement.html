@@ -76,7 +76,7 @@
 </tr>
 </tbody></table></div>
 <div class="hint hint-caution"><p class="hint-title">Danger</p>
-<code>ENCRYPTION_KEY</code> chiffre en AES-256-GCM la clé privée de chaque portefeuille intégré (<code>User.walletEncryptedKey</code>) et les secrets TOTP. Si elle est perdue ou changée, les portefeuilles ne peuvent plus signer : les ethers fictifs et les tickets qu&#39;ils détiennent deviennent inaccessibles, et les citoyens doivent reconfigurer leur 2FA. Sauvegardez-la hors du serveur avant la mise en service et ne la faites jamais tourner sans plan de rechiffrement. Voir <a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a>.</p>
+<code>ENCRYPTION_KEY</code> chiffre en AES-256-GCM la clé privée de chaque portefeuille intégré (<code>User.walletEncryptedKey</code>), les secrets TOTP et les images des pièces d&#39;identité en attente. Si elle est perdue ou changée, les portefeuilles ne peuvent plus signer : les ethers fictifs et les tickets qu&#39;ils détiennent deviennent inaccessibles, les citoyens doivent reconfigurer leur 2FA et les pièces en attente ne peuvent plus être examinées. Sauvegardez-la hors du serveur avant la mise en service et ne la faites jamais tourner sans plan de rechiffrement. Voir <a href="../securite/cles-portefeuilles.html">Clés et garde des portefeuilles</a>.</p>
 </div>
 <p>Changer <code>JWT_SECRET</code> invalide toutes les sessions ouvertes : c&#39;est un moyen radical de déconnecter tout le monde. Changer <code>WEBHOOK_SECRET</code> impose de mettre à jour l&#39;émetteur du webhook en même temps.</p>
 <h2 id="valeurs-selon-l-environnement"><a class="anchor" href="#valeurs-selon-l-environnement" aria-hidden="true" tabindex="-1">#</a>Valeurs selon l&#39;environnement</h2>
@@ -95,7 +95,7 @@
 </tr>
 <tr>
 <td>Lire le code de connexion sans ouvrir Mailpit</td>
-<td>rien à faire : en <code>NODE_ENV=development</code>, la réponse de <code>/auth/login</code> contient <code>devOtpPreview</code></td>
+<td>rien à faire : en <code>NODE_ENV=development</code>, les réponses de <code>/auth/login</code>, <code>/auth/signup</code> et <code>/auth/password/forgot</code> contiennent <code>devOtpPreview</code></td>
 </tr>
 <tr>
 <td>Se connecter sans code email</td>
@@ -104,6 +104,18 @@
 <tr>
 <td>Utiliser l&#39;administration sans 2FA</td>
 <td><code>ADMIN_MFA_REQUIRED=false</code> (refusé en production)</td>
+</tr>
+<tr>
+<td>Jouer sans faire vérifier son âge</td>
+<td><code>AGE_VERIFICATION_REQUIRED=false</code> (refusé en production) ; les comptes du seed sont déjà vérifiés</td>
+</tr>
+<tr>
+<td>Raccourcir la salle d&#39;attente du tirage</td>
+<td><code>DRAW_REVEAL_DELAY_SECONDS=0</code> pour un tirage dès la fermeture des achats, ou une valeur courte pour une démonstration</td>
+</tr>
+<tr>
+<td>Tester la connexion Google ou Apple</td>
+<td>renseigner <code>GOOGLE_CLIENT_IDS</code> ou <code>APPLE_CLIENT_IDS</code> avec les identifiants client de l&#39;application ; sans eux, les routes répondent 503</td>
 </tr>
 <tr>
 <td>Voir les requêtes SQL</td>

@@ -149,15 +149,15 @@ Seule `GET /lottery/my-tickets` est paginée de cette façon. Les autres listes 
 | Code | Usage |
 |---|---|
 | 200 | lecture, action réussie, rejeu idempotent d'un 200, webhook déjà reçu |
-| 201 | création : tickets, cadeau, récompense, partenaire, offre, lot de codes, événement analytique |
+| 201 | création : inscription en attente de code, tickets, cadeau, récompense, ticket à gratter, pièce d'identité envoyée, partenaire, offre, lot de codes, événement analytique |
 | 400 | validation Zod, JSON illisible, règle métier non respectée, en-tête `Idempotency-Key` mal formé |
 | 401 | jeton absent, invalide, expiré ou révoqué ; code 2FA faux ; signature de webhook invalide ; jeton `/metrics` faux |
-| 402 | solde d'ethers fictifs insuffisant pour une transaction |
-| 403 | rôle insuffisant, droits modifiés, 2FA administrateur manquante, entreprise d'un autre partenaire, non-gagnant, rôle manquant du compte opérateur sur le contrat |
+| 402 | solde d'ethers fictifs insuffisant pour une transaction, EtherPoints insuffisants pour un ticket à gratter (`INSUFFICIENT_POINTS`) |
+| 403 | rôle insuffisant, droits modifiés, 2FA administrateur manquante, âge non vérifié (`AGE_VERIFICATION_REQUIRED`), décision sur sa propre pièce d'identité, entreprise d'un autre partenaire, non-gagnant, rôle manquant du compte opérateur sur le contrat |
 | 404 | route, ressource, offre, code, badge introuvables |
-| 409 | conflit : état du tour, double 2FA, contrainte d'unicité ou d'intégrité, requête idempotente en cours, mode blockchain incompatible |
-| 413 | corps de plus de 1 Mo |
-| 429 | rate limiting ou blocage du compte après 10 codes erronés |
+| 409 | conflit : état du tour, ticket déjà détenu pour ce grand tirage (`PlayerLimitReached`), compte déjà existant, âge déjà vérifié, demande d'identité déjà traitée, double 2FA, contrainte d'unicité ou d'intégrité, requête idempotente en cours, mode blockchain incompatible |
+| 413 | corps de plus de 1 Mo (12 Mo pour l'envoi d'une pièce d'identité), image de pièce d'identité de plus de 4 Mo |
+| 429 | rate limiting ou blocage du compte après 10 codes ou mots de passe erronés |
 | 500 | erreur non prévue |
 | 502 | transaction blockchain échouée sans cause reconnue |
 | 503 | maintenance, contrat en pause, nœud injoignable, base injoignable pour les rôles, requête SQL trop longue, sonde non prête |

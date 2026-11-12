@@ -49,7 +49,7 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>User</code>, <code>Token</code>, <code>LotteryRound</code>, <code>Ticket</code>, <code>PointTransaction</code>, <code>Partner</code>, <code>RewardCatalog</code>, <code>ClaimedReward</code>, <code>Analytics</code></td>
+<td><code>User</code>, <code>IdentityDocument</code>, <code>Token</code>, <code>LotteryRound</code>, <code>Ticket</code>, <code>PointTransaction</code>, <code>Partner</code>, <code>RewardCatalog</code>, <code>ClaimedReward</code>, <code>Analytics</code></td>
 <td>UUID v7 par Prisma (<code>@default(uuid(7))</code>)</td>
 </tr>
 <tr>
@@ -85,6 +85,12 @@
 <td><code>User(referralCode)</code></td>
 <td><code>init</code></td>
 <td>Le code d&#39;un lien de parrainage désigne un parrain unique (<code>findByReferralCode</code>)</td>
+</tr>
+<tr>
+<td><code>IdentityDocument_userId_key</code></td>
+<td><code>IdentityDocument(userId)</code></td>
+<td><code>password_accounts_identity_verification</code></td>
+<td>Une seule demande par compte : un nouvel envoi remplace la précédente (<code>upsert</code> sur <code>userId</code>)</td>
 </tr>
 <tr>
 <td><code>Token_token_key</code></td>
@@ -140,6 +146,18 @@
 <td><code>User(referredById)</code></td>
 <td><code>infra_indexes…</code></td>
 <td>Liste et comptage des filleuls d&#39;un parrain (<code>_count.referrals</code> du classement, page parrainage)</td>
+</tr>
+<tr>
+<td><code>IdentityDocument_status_submittedAt_idx</code></td>
+<td><code>IdentityDocument(status, submittedAt)</code></td>
+<td><code>password_accounts…</code></td>
+<td>File de la Mairie : demandes d&#39;un statut, des plus anciennes aux plus récentes (<code>GET /admin/identity-verifications</code>)</td>
+</tr>
+<tr>
+<td><code>IdentityDocument_reviewerId_idx</code></td>
+<td><code>IdentityDocument(reviewerId)</code></td>
+<td><code>password_accounts…</code></td>
+<td>Mise à <code>NULL</code> lors de la suppression du compte d&#39;un agent</td>
 </tr>
 <tr>
 <td><code>Token_userId_idx</code></td>
@@ -217,7 +235,7 @@
 <h3 id="pourquoi-indexer-les-cles-etrangeres"><a class="anchor" href="#pourquoi-indexer-les-cles-etrangeres" aria-hidden="true" tabindex="-1">#</a>Pourquoi indexer les clés étrangères</h3>
 <p>PostgreSQL n&#39;indexe pas automatiquement les colonnes de clé étrangère. Sans index, supprimer ou modifier une ligne parente oblige la base à parcourir toute la table enfant pour appliquer <code>RESTRICT</code>, <code>CASCADE</code> ou <code>SET NULL</code>, en tenant un verrou pendant ce parcours. La migration <code>20261109213843</code> a ajouté un index sur chaque clé étrangère existante, et la migration suivante a fait de même pour <code>Partner.ownerId</code>.</p>
 <h3 id="index-composites"><a class="anchor" href="#index-composites" aria-hidden="true" tabindex="-1">#</a>Index composites</h3>
-<p>Les index <code>(userId, purchasedAt)</code>, <code>(userId, createdAt)</code>, <code>(userId, claimedAt)</code> et <code>(eventType, timestamp)</code> mettent la colonne d&#39;égalité en premier et la colonne de tri en second. Une requête « les 20 derniers éléments de tel compte » lit directement les bonnes entrées dans l&#39;ordre, sans tri. Ces index servent aussi les requêtes qui ne filtrent que sur la première colonne ; c&#39;est pourquoi il n&#39;existe pas d&#39;index séparé sur <code>Ticket(userId)</code> ou <code>PointTransaction(userId)</code>.</p>
+<p>Les index <code>(userId, purchasedAt)</code>, <code>(userId, createdAt)</code>, <code>(userId, claimedAt)</code>, <code>(eventType, timestamp)</code> et <code>(status, submittedAt)</code> mettent la colonne d&#39;égalité en premier et la colonne de tri en second. Une requête « les 20 derniers éléments de tel compte » lit directement les bonnes entrées dans l&#39;ordre, sans tri. Ces index servent aussi les requêtes qui ne filtrent que sur la première colonne ; c&#39;est pourquoi il n&#39;existe pas d&#39;index séparé sur <code>Ticket(userId)</code> ou <code>PointTransaction(userId)</code>.</p>
 <h2 id="cles-etrangeres"><a class="anchor" href="#cles-etrangeres" aria-hidden="true" tabindex="-1">#</a>Clés étrangères</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -299,10 +317,24 @@
 <td><code>SET NULL</code></td>
 <td><code>security_backup_codes…</code></td>
 </tr>
+<tr>
+<td><code>IdentityDocument_userId_fkey</code></td>
+<td><code>IdentityDocument.userId</code></td>
+<td><code>User.id</code></td>
+<td><code>CASCADE</code></td>
+<td><code>password_accounts…</code></td>
+</tr>
+<tr>
+<td><code>IdentityDocument_reviewerId_fkey</code></td>
+<td><code>IdentityDocument.reviewerId</code></td>
+<td><code>User.id</code></td>
+<td><code>SET NULL</code></td>
+<td><code>password_accounts…</code></td>
+</tr>
 </tbody></table></div>
 <p>Toutes ont <code>ON UPDATE CASCADE</code>, valeur générée par Prisma ; les clés primaires n&#39;étant jamais modifiées, cela n&#39;a pas d&#39;effet pratique.</p>
 <p><code>RESTRICT</code> sur les tickets, les mouvements de points et les échanges interdit de supprimer un compte qui a une activité. La suppression RGPD contourne ce point par l&#39;anonymisation de la ligne <code>User</code> (voir <a href="../integration-blockchain/portefeuilles.html#effacement-rgpd">Portefeuilles intégrés</a>).</p>
-<p><code>Partner_ownerId_fkey</code> a été ajoutée en <code>NOT VALID</code> puis validée par <code>VALIDATE CONSTRAINT</code>. Sur une table existante, cela évite de bloquer les écritures pendant la vérification des lignes ; voir <a href="migrations.html#contraintes-ajoutees-sans-bloquer">Migrations</a>.</p>
+<p>Les deux clés de <code>IdentityDocument</code> sont créées directement, sans <code>NOT VALID</code> : la table est nouvelle et vide au moment de la migration. <code>Partner_ownerId_fkey</code> a été ajoutée en <code>NOT VALID</code> puis validée par <code>VALIDATE CONSTRAINT</code>. Sur une table existante, cela évite de bloquer les écritures pendant la vérification des lignes ; voir <a href="migrations.html#contraintes-ajoutees-sans-bloquer">Migrations</a>.</p>
 <h2 id="contraintes-check"><a class="anchor" href="#contraintes-check" aria-hidden="true" tabindex="-1">#</a>Contraintes CHECK</h2>
 <div class="table-wrap"><table>
 <thead>

@@ -111,7 +111,7 @@
 <td><code>bigint</code> en wei, sans conversion</td>
 </tr>
 <tr>
-<td><code>ticketCount</code>, <code>maxTickets</code>, <code>maxTicketsPerPlayer</code></td>
+<td><code>ticketCount</code>, <code>maxTickets</code>, <code>minTicketsToDraw</code>, <code>maxTicketsPerPlayer</code></td>
 <td><code>number</code></td>
 </tr>
 <tr>
@@ -185,6 +185,7 @@
 <td>« Le reversement de la commission à la trésorerie a échoué. »</td>
 </tr>
 </tbody></table></div>
+<p>La lecture <code>ticketsOf(tour, adresse)</code> renvoie le nombre de tickets d&#39;une adresse sur un tour. Le service de loterie l&#39;appelle avant chaque achat et chaque cadeau pour refuser un second ticket avant d&#39;envoyer la transaction.</p>
 <h3 id="achat"><a class="anchor" href="#achat" aria-hidden="true" tabindex="-1">#</a>Achat</h3>
 <p><code>buyTickets</code> lit d&#39;abord le tour courant. Si son statut n&#39;est pas <code>OPEN</code>, il refuse l&#39;achat avec une 409 sans envoyer de transaction. Sinon, il calcule la valeur exacte à payer, <code>ticketPriceWei × quantité</code>, car le contrat rejette tout montant différent (<code>IncorrectPayment</code>). Il envoie la transaction, attend le reçu, et renvoie la première entrée de <code>purchases</code> produite par l&#39;indexeur. Si le reçu ne contient aucun événement <code>TicketsPurchased</code>, il lève une 502 « L&#39;achat a été envoyé mais aucun ticket n&#39;a été émis par le contrat. ».</p>
 <p><code>prepareWallet(user)</code> doit être appelé avant <code>buyTickets</code> pour que le portefeuille existe et soit approvisionné ; voir <a href="portefeuilles.html#creation-a-la-demande-ensurewallet">Portefeuilles intégrés</a>.</p>
@@ -267,9 +268,9 @@
 </tr>
 <tr>
 <td><code>PlayerLimitReached</code></td>
-<td>400</td>
-<td>Limite de tickets par participant atteinte pour ce tour.</td>
-<td></td>
+<td>409</td>
+<td>Vous avez déjà votre ticket pour ce grand tirage.</td>
+<td>Pour un cadeau, le service remplace le message par « Cette personne a déjà son ticket pour ce grand tirage. »</td>
 </tr>
 <tr>
 <td><code>InvalidQuantity</code></td>

@@ -49,7 +49,7 @@
 │   └── webhooks/           webhook blockchain signé (mode simulé)
 ├── blockchain/             client RPC, passerelle du contrat, indexeur, keeper, file d&#x27;actions, ABI
 ├── config/                 env, Prisma, Redis, Nodemailer, Swagger
-├── middlewares/            auth, RBAC, validation Zod, idempotence, rate limiting, erreurs, contexte
+├── middlewares/            auth, RBAC, âge, validation Zod, idempotence, rate limiting, corps JSON, erreurs, contexte
 ├── observability/          métriques Prometheus, contexte de requête, arrêt propre
 ├── queues/                 producteurs BullMQ (emails, ledger) et options communes
 ├── workers/                consommateurs BullMQ et indexeur du webhook simulé
@@ -101,7 +101,7 @@
     B --&gt; C[&quot;httpMetricsMiddleware : histogramme et requêtes en cours&quot;]
     C --&gt; D[&quot;helmet : en-têtes de sécurité&quot;]
     D --&gt; E[&quot;cors : origines autorisées&quot;]
-    E --&gt; F[&quot;express.json 1 Mo et urlencoded&quot;]
+    E --&gt; F[&quot;globalJsonParser 1 Mo, sauf envoi de pièce d&#39;identité, et urlencoded&quot;]
     F --&gt; G{&quot;Route système ou /metrics ?&quot;}
     G -- oui --&gt; G1[&quot;Réponse /health, /api/config, /metrics&quot;]
     G -- non --&gt; H{&quot;MAINTENANCE_MODE ?&quot;}
@@ -147,12 +147,12 @@
 </tr>
 <tr>
 <td>5</td>
-<td><code>express.json</code></td>
-<td>Corps limité à 1 Mo. Pour les URL <code>/api/webhooks/</code> et <code>/api/v1/webhooks/</code>, le corps brut est conservé dans <code>req.rawBody</code> pour vérifier la signature HMAC.</td>
+<td><code>globalJsonParser</code></td>
+<td><code>express.json</code> avec un corps limité à 1 Mo, défini dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/body-parser.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>body-parser.middleware.ts</code></a>. Pour les URL <code>/api/webhooks/</code> et <code>/api/v1/webhooks/</code>, le corps brut est conservé dans <code>req.rawBody</code> pour vérifier la signature HMAC. La requête <code>POST /api/user/identity</code> (ou <code>/api/v1/user/identity</code>) n&#39;est pas lue ici : son corps est lu plus loin par <code>identityUploadJsonParser</code>, limité à 12 Mo, après le rate limiting et l&#39;authentification.</td>
 </tr>
 <tr>
 <td>6</td>
-<td><code>express.urlencoded</code></td>
+<td><code>globalUrlencodedParser</code></td>
 <td>Formulaires, même limite de 1 Mo.</td>
 </tr>
 <tr>
@@ -210,9 +210,9 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>authRateLimiter</code></td>
+<td><code>authRateLimiter</code>, <code>identityUploadRateLimiter</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/rateLimiter.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/rateLimiter.middleware.ts</code></a></td>
-<td>30 requêtes par 10 minutes et par IP sur <code>/auth/login</code>, <code>/auth/2fa/verify</code> et <code>/auth/2fa/disable</code>.</td>
+<td>30 requêtes par 10 minutes et par IP sur les routes de connexion, d&#39;inscription, de mot de passe, OAuth et 2FA ; 10 envois par heure et par IP sur <code>POST /user/identity</code>.</td>
 </tr>
 <tr>
 <td><code>authenticate</code></td>
@@ -230,9 +230,19 @@
 <td>Compare le rôle du jeton à la liste, puis relit le compte en base (rôle inchangé, compte non supprimé, 2FA active pour un ADMIN).</td>
 </tr>
 <tr>
+<td><code>requireAgeVerification</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/age-verification.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/age-verification.middleware.ts</code></a></td>
+<td>Relit <code>ageVerificationStatus</code> en base et répond 403 <code>AGE_VERIFICATION_REQUIRED</code> s&#39;il ne vaut pas <code>VERIFIED</code>. Inactif si <code>AGE_VERIFICATION_REQUIRED=false</code>.</td>
+</tr>
+<tr>
 <td><code>idempotency</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/idempotency.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/idempotency.middleware.ts</code></a></td>
 <td>Rejoue la réponse d&#39;une requête déjà traitée avec le même en-tête <code>Idempotency-Key</code>.</td>
+</tr>
+<tr>
+<td><code>identityUploadJsonParser</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/body-parser.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/body-parser.middleware.ts</code></a></td>
+<td>Lit le corps JSON de l&#39;envoi de pièce d&#39;identité, jusqu&#39;à 12 Mo.</td>
 </tr>
 <tr>
 <td><code>validate(schema)</code></td>
@@ -241,7 +251,7 @@
 </tr>
 </tbody></table></div>
 <div class="hint hint-note"><p class="hint-title">À savoir</p>
-<code>validate</code> ne réécrit ni <code>req.query</code> ni <code>req.params</code>. Les contrôleurs relisent la query brute : <code>limit</code> du classement et des journaux d&#39;audit, <code>page</code> et <code>limit</code> de <code>my-tickets</code>, <code>format</code> de l&#39;export. Aucun schéma Zod ne porte sur ces paramètres.</p>
+<code>validate</code> ne réécrit ni <code>req.query</code> ni <code>req.params</code>. Les contrôleurs relisent la query brute : <code>limit</code> du classement et des journaux d&#39;audit, <code>page</code> et <code>limit</code> de <code>my-tickets</code>, <code>format</code> de l&#39;export. Aucun schéma Zod ne porte sur ces paramètres, sauf pour la liste des vérifications d&#39;identité, dont le schéma rejette un statut ou une pagination invalides avant que le contrôleur ne relise la query brute.</p>
 </div>
 <p><code>idempotency</code> est placé avant <code>validate</code> : une réponse 400 de validation est mémorisée comme les autres réponses inférieures à 500. Une nouvelle tentative avec la même clé et un corps corrigé rejoue donc le 400 pendant 24 heures. Il faut générer une nouvelle clé après une erreur de validation.</p>
 <h2 id="points-d-entree"><a class="anchor" href="#points-d-entree" aria-hidden="true" tabindex="-1">#</a>Points d&#39;entrée</h2>

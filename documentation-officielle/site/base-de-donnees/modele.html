@@ -38,11 +38,13 @@
     <article class="markdown">
 <h1>Modèle de données</h1>
 <p>La base PostgreSQL 15 du backend est décrite par un seul fichier, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/schema.prisma" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/schema.prisma</code></a>, et créée par les migrations de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/migrations/migration_lock.toml" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/migrations/</code></a>. Le client est Prisma 7 avec l&#39;adaptateur <code>@prisma/adapter-pg</code>, configuré dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/config/prisma.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/config/prisma.config.ts</code></a>. L&#39;URL de connexion est lue par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma.config.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma.config.ts</code></a> pour les commandes Prisma, et par <code>DATABASE_URL</code> pour l&#39;application.</p>
-<p>Le schéma compte <strong>10 modèles</strong> et <strong>4 énumérations</strong>. Le détail de chaque colonne est dans le <a href="dictionnaire.html">dictionnaire de données</a>, les index et contraintes dans <a href="index-contraintes.html">Index et contraintes</a>.</p>
+<p>Le schéma compte <strong>11 modèles</strong> et <strong>5 énumérations</strong>. Le détail de chaque colonne est dans le <a href="dictionnaire.html">dictionnaire de données</a>, les index et contraintes dans <a href="index-contraintes.html">Index et contraintes</a>.</p>
 <h2 id="diagramme"><a class="anchor" href="#diagramme" aria-hidden="true" tabindex="-1">#</a>Diagramme</h2>
 <div class="diagram"><pre class="mermaid">erDiagram
     User ||--o{ User : &quot;parraine&quot;
     User ||--o{ Token : &quot;possède&quot;
+    User ||--o| IdentityDocument : &quot;envoie&quot;
+    User |o--o{ IdentityDocument : &quot;examine&quot;
     User ||--o{ Ticket : &quot;bénéficie&quot;
     LotteryRound ||--o{ Ticket : &quot;contient&quot;
     User ||--o{ PointTransaction : &quot;mouvements&quot;
@@ -58,18 +60,33 @@
         string walletEncryptedKey &quot;AES-256-GCM, nullable&quot;
         string welcomeGrantTxHash &quot;nullable&quot;
         string email UK &quot;nullable&quot;
+        string passwordHash &quot;bcrypt, nullable&quot;
         Role role
         boolean isTwoFactorEnabled
         TwoFactorMethod twoFactorMethod &quot;nullable&quot;
         string twoFactorSecret &quot;chiffré, nullable&quot;
         string_array twoFactorBackupCodes &quot;empreintes&quot;
         boolean isEmailVerified
+        AgeVerificationStatus ageVerificationStatus &quot;NONE par défaut&quot;
+        timestamptz ageVerifiedAt &quot;nullable&quot;
+        string ageVerificationNote &quot;motif du refus, nullable&quot;
         int pointsBalance &quot;CHECK &gt;= 0&quot;
         string referralCode UK
         string referredById FK &quot;nullable&quot;
         timestamptz createdAt
         timestamptz updatedAt
         timestamptz deletedAt &quot;nullable&quot;
+    }
+    IdentityDocument {
+        string id PK
+        string userId FK, UK
+        AgeVerificationStatus status
+        bytes frontEncrypted &quot;AES-256-GCM, nullable&quot;
+        bytes backEncrypted &quot;AES-256-GCM, nullable&quot;
+        string mimeType
+        timestamptz submittedAt
+        timestamptz reviewedAt &quot;nullable&quot;
+        string reviewerId FK &quot;nullable&quot;
     }
     Token {
         string id PK
@@ -165,7 +182,7 @@
 </thead>
 <tbody><tr>
 <td>Comptes et sécurité</td>
-<td><code>User</code>, <code>Token</code></td>
+<td><code>User</code>, <code>Token</code>, <code>IdentityDocument</code></td>
 <td>PostgreSQL</td>
 </tr>
 <tr>
@@ -235,7 +252,38 @@
 <td><code>CASCADE</code> : les jetons sont supprimés avec le compte</td>
 </tr>
 </tbody></table></div>
-<p>C&#39;est la seule relation en cascade : un jeton n&#39;a aucun sens sans son compte.</p>
+<p>Avec <code>IdentityDocument.userId</code>, ce sont les deux seules relations en cascade : un jeton ou une pièce d&#39;identité n&#39;ont aucun sens sans leur compte.</p>
+<h3 id="user-et-identitydocument-verification-d-age"><a class="anchor" href="#user-et-identitydocument-verification-d-age" aria-hidden="true" tabindex="-1">#</a>User et IdentityDocument : vérification d&#39;âge</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Propriété</th>
+<th><code>IdentityDocument.userId</code></th>
+<th><code>IdentityDocument.reviewerId</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cible</td>
+<td><code>User.id</code>, compte qui envoie la pièce</td>
+<td><code>User.id</code>, agent de la Mairie qui a statué</td>
+</tr>
+<tr>
+<td>Nom de la relation Prisma</td>
+<td><code>IdentityOwner</code> (<code>user</code> et <code>identityDocument</code>)</td>
+<td><code>IdentityReviewer</code> (<code>reviewer</code> et <code>reviewedIdentities</code>)</td>
+</tr>
+<tr>
+<td>Cardinalité</td>
+<td>Un compte a zéro ou une demande (index unique)</td>
+<td>Un agent a statué sur zéro ou plusieurs demandes</td>
+</tr>
+<tr>
+<td>Suppression du compte</td>
+<td><code>CASCADE</code></td>
+<td><code>SET NULL</code></td>
+</tr>
+</tbody></table></div>
+<p>Ajoutée par la migration <code>20261112090000_password_accounts_identity_verification</code>. Le statut est porté deux fois : <code>IdentityDocument.status</code> décrit la demande, <code>User.ageVerificationStatus</code> décrit le compte et sert au contrôle d&#39;accès, sans jointure. Les deux sont écrits dans la même transaction à l&#39;envoi et à la décision. Les colonnes d&#39;images sont mises à <code>NULL</code> dès la décision ; la ligne garde la date, l&#39;agent et le statut.</p>
 <h3 id="user-lotteryround-et-ticket"><a class="anchor" href="#user-lotteryround-et-ticket" aria-hidden="true" tabindex="-1">#</a>User, LotteryRound et Ticket</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -415,7 +463,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#diagramme">Diagramme</a></li><li class="toc-h2"><a href="#domaines">Domaines</a></li><li class="toc-h2"><a href="#relations">Relations</a></li><li class="toc-h3"><a href="#user-et-user-parrainage">User et User : parrainage</a></li><li class="toc-h3"><a href="#user-et-token">User et Token</a></li><li class="toc-h3"><a href="#user-lotteryround-et-ticket">User, LotteryRound et Ticket</a></li><li class="toc-h3"><a href="#user-et-pointtransaction">User et PointTransaction</a></li><li class="toc-h3"><a href="#user-et-partner-gestion-d-un-commerce">User et Partner : gestion d&#39;un commerce</a></li><li class="toc-h3"><a href="#partner-rewardcatalog-et-claimedreward">Partner, RewardCatalog et ClaimedReward</a></li><li class="toc-h3"><a href="#user-et-analytics">User et Analytics</a></li><li class="toc-h2"><a href="#types-et-conventions">Types et conventions</a></li><li class="toc-h2"><a href="#ce-qui-n-est-pas-en-base">Ce qui n&#39;est pas en base</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#diagramme">Diagramme</a></li><li class="toc-h2"><a href="#domaines">Domaines</a></li><li class="toc-h2"><a href="#relations">Relations</a></li><li class="toc-h3"><a href="#user-et-user-parrainage">User et User : parrainage</a></li><li class="toc-h3"><a href="#user-et-token">User et Token</a></li><li class="toc-h3"><a href="#user-et-identitydocument-verification-d-age">User et IdentityDocument : vérification d&#39;âge</a></li><li class="toc-h3"><a href="#user-lotteryround-et-ticket">User, LotteryRound et Ticket</a></li><li class="toc-h3"><a href="#user-et-pointtransaction">User et PointTransaction</a></li><li class="toc-h3"><a href="#user-et-partner-gestion-d-un-commerce">User et Partner : gestion d&#39;un commerce</a></li><li class="toc-h3"><a href="#partner-rewardcatalog-et-claimedreward">Partner, RewardCatalog et ClaimedReward</a></li><li class="toc-h3"><a href="#user-et-analytics">User et Analytics</a></li><li class="toc-h2"><a href="#types-et-conventions">Types et conventions</a></li><li class="toc-h2"><a href="#ce-qui-n-est-pas-en-base">Ce qui n&#39;est pas en base</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>
