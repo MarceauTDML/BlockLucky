@@ -51,3 +51,64 @@ export const logoutSchema = z.object({
     })
     .default({ allDevices: false }),
 });
+
+const email = z.string().trim().max(254).email('Adresse email invalide').transform((val) => val.toLowerCase());
+
+export const passwordPolicy = z
+  .string()
+  .min(10, 'Le mot de passe doit contenir au moins 10 caractères')
+  .max(128, 'Le mot de passe ne doit pas dépasser 128 caractères')
+  .regex(/\p{L}/u, 'Le mot de passe doit contenir au moins une lettre')
+  .regex(/\d/, 'Le mot de passe doit contenir au moins un chiffre');
+
+const emailCode = z
+  .string()
+  .trim()
+  .regex(/^\d{6}$/, 'Le code doit contenir 6 chiffres');
+
+export const signupSchema = z.object({
+  body: z.object({
+    email,
+    password: passwordPolicy,
+    acceptTerms: z.literal(true, {
+      error: "Vous devez accepter les conditions d'utilisation pour créer un compte.",
+    }),
+    referralCode: z.string().trim().max(64).optional(),
+    utmSource: z.string().trim().max(100).optional(),
+    ageGroup: z.enum(['18-25', '26-35', '36-50', '50+']).optional(),
+  }),
+});
+
+export const signinSchema = z.object({
+  body: z.object({
+    email,
+    password: z.string().min(1, 'Mot de passe requis').max(128, 'Email ou mot de passe incorrect.'),
+  }),
+});
+
+export const forgotPasswordSchema = z.object({
+  body: z.object({
+    email,
+  }),
+});
+
+export const resetPasswordSchema = z.object({
+  body: z.object({
+    email,
+    code: emailCode,
+    newPassword: passwordPolicy,
+  }),
+});
+
+export const googleOAuthSchema = z.object({
+  body: z.object({
+    idToken: z.string().trim().min(20, 'Jeton Google requis').max(8192),
+  }),
+});
+
+export const appleOAuthSchema = z.object({
+  body: z.object({
+    identityToken: z.string().trim().min(20, 'Jeton Apple requis').max(8192),
+    fullName: z.string().trim().max(200).optional(),
+  }),
+});

@@ -34,6 +34,7 @@ export class AuthRepository {
     referredById?: string;
     isEmailVerified?: boolean;
     walletEncryptedKey?: string;
+    passwordHash?: string;
   }) {
     return prisma.user.create({
       data: {
@@ -42,6 +43,7 @@ export class AuthRepository {
         role: data.role ?? 'USER',
         isEmailVerified: data.isEmailVerified ?? false,
         ...(data.walletEncryptedKey ? { walletEncryptedKey: data.walletEncryptedKey } : {}),
+        ...(data.passwordHash ? { passwordHash: data.passwordHash } : {}),
         ...(data.referredById ? { referredById: data.referredById } : {}),
       },
     });
@@ -73,6 +75,13 @@ export class AuthRepository {
     return prisma.user.update({
       where: { id: userId },
       data: { isEmailVerified: true },
+    });
+  }
+
+  public async setPassword(userId: string, passwordHash: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash, isEmailVerified: true },
     });
   }
 

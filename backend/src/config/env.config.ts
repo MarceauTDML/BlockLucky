@@ -70,9 +70,10 @@ const envSchema = z
     WELCOME_GRANT_WEI: z
       .string()
       .regex(/^\d+$/)
-      .default('100000000000000000'),
+      .default('500000000000000000'),
     INDEXER_INTERVAL_MS: z.coerce.number().int().min(500).default(3000),
     KEEPER_INTERVAL_MS: z.coerce.number().int().min(1000).default(10000),
+    DRAW_REVEAL_DELAY_SECONDS: z.coerce.number().int().min(0).max(86400).default(600),
     LOTTERY_CONTRACT_ADDRESS: z
       .string()
       .regex(/^0x[0-9a-fA-F]{40}$/)
@@ -105,10 +106,15 @@ const envSchema = z
     MAINTENANCE_MODE: booleanFromEnv(false),
     LOGIN_EMAIL_CODE_REQUIRED: booleanFromEnv(true),
     ADMIN_MFA_REQUIRED: booleanFromEnv(true),
+    AGE_VERIFICATION_REQUIRED: booleanFromEnv(true),
+    SCRATCH_COST_VIOLET: z.coerce.number().int().positive().default(50),
+    SCRATCH_COST_LUCKY: z.coerce.number().int().positive().default(100),
+    GOOGLE_CLIENT_IDS: csvList(''),
+    APPLE_CLIENT_IDS: csvList(''),
   })
   .superRefine((values, ctx) => {
     if (values.NODE_ENV !== 'production') return;
-    (['LOGIN_EMAIL_CODE_REQUIRED', 'ADMIN_MFA_REQUIRED'] as const).forEach((key) => {
+    (['LOGIN_EMAIL_CODE_REQUIRED', 'ADMIN_MFA_REQUIRED', 'AGE_VERIFICATION_REQUIRED'] as const).forEach((key) => {
       if (!values[key]) {
         ctx.addIssue({ code: 'custom', path: [key], message: `${key} ne peut pas être désactivé en production` });
       }

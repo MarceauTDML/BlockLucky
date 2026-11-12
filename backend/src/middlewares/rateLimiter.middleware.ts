@@ -45,3 +45,14 @@ export const authRateLimiter = rateLimit({
     message: 'Trop de tentatives de connexion/2FA, veuillez patienter quelques minutes.',
   },
 });
+
+export const identityUploadRateLimiter = rateLimit({
+  ...commonOptions,
+  windowMs: 60 * 60 * 1000,
+  limit: env.NODE_ENV === 'test' ? 10000 : 10,
+  ...withStore('identity'),
+  message: {
+    success: false,
+    message: "Trop d'envois de pièce d'identité, veuillez réessayer dans une heure.",
+  },
+});

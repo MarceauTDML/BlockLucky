@@ -183,7 +183,7 @@
 </div>
 <p><code>POST /admin/treasury/withdraw</code> appelle <code>setTreasury</code> sur le contrat quand l&#39;adresse demandée diffère de la trésorerie actuelle. Cette fonction exige le rôle d&#39;administrateur du contrat : si le compte opérateur n&#39;est pas aussi administrateur, seul un retrait vers la trésorerie déjà configurée fonctionne.</p>
 <h2 id="reference"><a class="anchor" href="#reference" aria-hidden="true" tabindex="-1">#</a>Référence</h2>
-<p>Le schéma de configuration compte <strong>53 variables</strong>, lues et validées au démarrage par <code>backend/src/config/env.config.ts</code>. Une valeur invalide arrête le processus avec la liste des erreurs.</p>
+<p>Le schéma de configuration compte <strong>59 variables</strong>, lues et validées au démarrage par <code>backend/src/config/env.config.ts</code>. Une valeur invalide arrête le processus avec la liste des erreurs.</p>
 <h3 id="serveur-http"><a class="anchor" href="#serveur-http" aria-hidden="true" tabindex="-1">#</a>Serveur HTTP</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -411,6 +411,27 @@
 <td>production : ne peut pas être désactivé en production</td>
 <td>Refuse les routes réservées à l&#39;ADMIN tant que la double authentification n&#39;est pas activée sur le compte.</td>
 </tr>
+<tr>
+<td><code>AGE_VERIFICATION_REQUIRED</code></td>
+<td>booléen (true, false, 1, 0)</td>
+<td><code>true</code></td>
+<td>production : ne peut pas être désactivé en production</td>
+<td>Exige une pièce d&#39;identité validée par la Mairie (<code>ageVerificationStatus = VERIFIED</code>) pour acheter ou offrir un ticket et échanger une récompense. Refusée à false en production ; désactivée seulement par la suite de tests.</td>
+</tr>
+<tr>
+<td><code>GOOGLE_CLIENT_IDS</code></td>
+<td>liste séparée par des virgules</td>
+<td>chaîne vide</td>
+<td>-</td>
+<td>Identifiants client OAuth Google acceptés comme audience des jetons d&#39;identité, séparés par des virgules. Vide par défaut : la connexion Google répond alors 503.</td>
+</tr>
+<tr>
+<td><code>APPLE_CLIENT_IDS</code></td>
+<td>liste séparée par des virgules</td>
+<td>chaîne vide</td>
+<td>-</td>
+<td>Identifiants de service ou bundle ID Apple acceptés comme audience des jetons Sign in with Apple, séparés par des virgules. Vide par défaut : la connexion Apple répond alors 503.</td>
+</tr>
 </tbody></table></div>
 <h3 id="email"><a class="anchor" href="#email" aria-hidden="true" tabindex="-1">#</a>Email</h3>
 <div class="table-wrap"><table>
@@ -522,9 +543,9 @@
 <tr>
 <td><code>WELCOME_GRANT_WEI</code></td>
 <td>chaîne</td>
-<td><code>100000000000000000</code></td>
+<td><code>500000000000000000</code></td>
 <td>format <code>/^\d+$/</code></td>
-<td>Dotation de bienvenue en wei versée une seule fois par le compte opérateur à chaque portefeuille intégré (0,1 ETH fictif par défaut, 0 la désactive).</td>
+<td>Dotation de bienvenue en wei versée une seule fois par le compte opérateur à chaque portefeuille intégré (0,5 ETH fictif par défaut, 0 la désactive).</td>
 </tr>
 <tr>
 <td><code>LOTTERY_CONTRACT_ADDRESS</code></td>
@@ -572,6 +593,13 @@
 <td><code>10000</code></td>
 <td>minimum 1000</td>
 <td>Période du keeper qui demande le tirage ou clôt un tour expiré. Elle fixe aussi la durée du verrou Redis du keeper.</td>
+</tr>
+<tr>
+<td><code>DRAW_REVEAL_DELAY_SECONDS</code></td>
+<td>entier</td>
+<td><code>600</code></td>
+<td>minimum 0 ; maximum 86400</td>
+<td>Durée de la salle d&#39;attente en secondes : délai que le keeper respecte entre le passage du tour à l&#39;état prêt au tirage (fin du temps ou plafond atteint) et l&#39;appel à <code>requestDraw</code> (600 par défaut, 0 la supprime).</td>
 </tr>
 <tr>
 <td><code>RUN_WORKERS</code></td>
@@ -685,6 +713,20 @@
 <td><code>false</code></td>
 <td>-</td>
 <td>Répond 503 avec <code>Retry-After: 300</code> sur les routes <code>/api/*</code> sauf celles qui commencent par <code>/api/admin</code>.</td>
+</tr>
+<tr>
+<td><code>SCRATCH_COST_VIOLET</code></td>
+<td>entier</td>
+<td><code>50</code></td>
+<td>strictement positif</td>
+<td>Prix en EtherPoints du ticket à gratter « violet » (<code>POST /marketplace/scratch</code>), qui attribue au hasard une récompense partenaire en stock (50 par défaut).</td>
+</tr>
+<tr>
+<td><code>SCRATCH_COST_LUCKY</code></td>
+<td>entier</td>
+<td><code>100</code></td>
+<td>strictement positif</td>
+<td>Prix en EtherPoints du ticket à gratter « lucky » (<code>POST /marketplace/scratch</code>), qui attribue au hasard une récompense partenaire en stock (100 par défaut).</td>
 </tr>
 </tbody></table></div>
 
