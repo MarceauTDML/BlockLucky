@@ -6,7 +6,7 @@ Fichiers principaux :
 
 | Fichier | Rôle |
 |---|---|
-| [`mobile-app/src/screens/auth/LoginScreen.tsx`](src:mobile-app/src/screens/auth/LoginScreen.tsx) | Formulaire de connexion |
+| [`mobile-app/src/screens/auth/SignInScreen.tsx`](src:mobile-app/src/screens/auth/SignInScreen.tsx) | Formulaire de connexion |
 | [`mobile-app/src/screens/auth/Verify2FAScreen.tsx`](src:mobile-app/src/screens/auth/Verify2FAScreen.tsx) | Saisie du code |
 | [`mobile-app/src/screens/auth/Setup2FAScreen.tsx`](src:mobile-app/src/screens/auth/Setup2FAScreen.tsx) | Activation de la 2FA |
 | [`mobile-app/src/hooks/useAuth.ts`](src:mobile-app/src/hooks/useAuth.ts) | Connexion, vérification, déconnexion |

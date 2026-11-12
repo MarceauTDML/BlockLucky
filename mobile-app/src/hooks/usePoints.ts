@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
+
 import { useAppDispatch, useAppSelector } from '../store';
 import { useGetPointsBalanceQuery } from '../store/api/marketplaceApi';
 import { updateUserPoints } from '../store/slices/authSlice';
@@ -18,8 +19,16 @@ export const usePoints = () => {
     }
   }, [data, dispatch]);
 
+  const setPointsBalance = useCallback(
+    (balance: number) => {
+      dispatch(updateUserPoints(balance));
+    },
+    [dispatch],
+  );
+
   return {
-    pointsBalance: data?.data?.pointsBalance ?? userPoints,
+    pointsBalance: userPoints,
+    setPointsBalance,
     ledgerIntegrityValid: data?.data?.ledgerIntegrityValid ?? true,
     history: data?.data?.history ?? [],
     isLoading,

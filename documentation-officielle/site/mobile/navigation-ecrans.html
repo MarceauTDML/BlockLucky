@@ -81,7 +81,7 @@
 <p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/MainTabs.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>MainTabs.tsx</code></a> déclare cinq onglets avec des libellés traduits : Accueil, Tickets, Tirage, Boutique, Profil. La barre <code>CustomTabBar</code> remplace celle de React Navigation : fond <code>surface</code>, bordure haute, marge basse égale à l&#39;encart de sécurité (10 au minimum), onglet actif sur fond <code>surfaceElevated</code> avec un trait de couleur primaire au-dessus du libellé. Il n&#39;y a pas d&#39;icône.</p>
 <p><code>CustomTabBar</code> émet l&#39;événement <code>tabPress</code> avant de naviguer, comme la barre standard, mais ne gère pas l&#39;appui long.</p>
 <h3 id="settingsstack"><a class="anchor" href="#settingsstack" aria-hidden="true" tabindex="-1">#</a>SettingsStack</h3>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/SettingsStack.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SettingsStack.tsx</code></a> est la pile de l&#39;onglet Profil : <code>ProfileMain</code> (écran d&#39;accueil), <code>Security</code>, <code>Setup2FA</code>, <code>GDPR</code>, <code>HelpSupport</code>. La barre d&#39;onglets reste visible sur ces écrans.</p>
+<p><code>SettingsStack</code> était la pile de l&#39;onglet Profil : <code>ProfileMain</code> (écran d&#39;accueil), <code>Security</code>, <code>Setup2FA</code>, <code>GDPR</code>, <code>HelpSupport</code>. La barre d&#39;onglets reste visible sur ces écrans.</p>
 <h3 id="ecrans-enregistres-plusieurs-fois"><a class="anchor" href="#ecrans-enregistres-plusieurs-fois" aria-hidden="true" tabindex="-1">#</a>Écrans enregistrés plusieurs fois</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -132,7 +132,7 @@
 </tr>
 <tr>
 <td>Connexion</td>
-<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/auth/LoginScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>LoginScreen.tsx</code></a></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/auth/SignInScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SignInScreen.tsx</code></a></td>
 <td><code>Login</code></td>
 <td>Majorité 18+ (modale ouverte d&#39;office), tranche d&#39;âge, email (prérempli <code>citoyen@etherbay.fr</code>), parrainage, choix FR ou EN, boutons Google et email</td>
 <td><code>loginWithSocial</code> (<code>POST /auth/login</code>), <code>navigate(&#39;Verify2FA&#39;)</code> si un code est demandé</td>

@@ -4,6 +4,8 @@ import {
   RewardItem,
   ClaimedRewardCode,
   PointsBalanceResponse,
+  ScratchOffer,
+  ScratchTicketResponse,
 } from '../../types/api.types';
 
 export const marketplaceApi = baseApi.injectEndpoints({
@@ -38,6 +40,14 @@ export const marketplaceApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Marketplace', 'Points', 'User'],
     }),
+    scratchTicket: builder.mutation<ApiResponse<ScratchTicketResponse>, { offer: ScratchOffer }>({
+      query: (body) => ({
+        url: '/marketplace/scratch',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Marketplace', 'Points', 'User'],
+    }),
     getMyCodes: builder.query<ApiResponse<{ codes: ClaimedRewardCode[] }>, void>({
       query: () => '/marketplace/my-codes',
       providesTags: ['Marketplace'],
@@ -50,5 +60,6 @@ export const {
   useGetRewardDetailQuery,
   useGetPointsBalanceQuery,
   useClaimRewardMutation,
+  useScratchTicketMutation,
   useGetMyCodesQuery,
 } = marketplaceApi;

@@ -50,7 +50,7 @@ Ce rendu conditionnel est le mécanisme de garde : quand `setCredentials` passe 
 
 ### SettingsStack
 
-[`SettingsStack.tsx`](src:mobile-app/src/navigation/SettingsStack.tsx) est la pile de l'onglet Profil : `ProfileMain` (écran d'accueil), `Security`, `Setup2FA`, `GDPR`, `HelpSupport`. La barre d'onglets reste visible sur ces écrans.
+`SettingsStack` était la pile de l'onglet Profil : `ProfileMain` (écran d'accueil), `Security`, `Setup2FA`, `GDPR`, `HelpSupport`. La barre d'onglets reste visible sur ces écrans.
 
 ### Écrans enregistrés plusieurs fois
 
@@ -66,7 +66,7 @@ Ce rendu conditionnel est le mécanisme de garde : quand `setCredentials` passe 
 | Écran | Fichier | Route | Rôle | Données et actions |
 |---|---|---|---|---|
 | Onboarding | [`OnboardingScreen.tsx`](src:mobile-app/src/screens/auth/OnboardingScreen.tsx) | `Onboarding` | Quatre diapositives (loterie, portefeuille intégré, EtherPoints, tirage), boutons « Passer » et « Suivant » | Texte codé en dur dans l'écran ; `markOnboardingComplete` puis `replace('Login')` |
-| Connexion | [`LoginScreen.tsx`](src:mobile-app/src/screens/auth/LoginScreen.tsx) | `Login` | Majorité 18+ (modale ouverte d'office), tranche d'âge, email (prérempli `citoyen@etherbay.fr`), parrainage, choix FR ou EN, boutons Google et email | `loginWithSocial` (`POST /auth/login`), `navigate('Verify2FA')` si un code est demandé |
+| Connexion | [`SignInScreen.tsx`](src:mobile-app/src/screens/auth/SignInScreen.tsx) | `Login` | Majorité 18+ (modale ouverte d'office), tranche d'âge, email (prérempli `citoyen@etherbay.fr`), parrainage, choix FR ou EN, boutons Google et email | `loginWithSocial` (`POST /auth/login`), `navigate('Verify2FA')` si un code est demandé |
 | Vérification 2FA | [`Verify2FAScreen.tsx`](src:mobile-app/src/screens/auth/Verify2FAScreen.tsx) | `Verify2FA` (`userId`, `method`, `email`) | Saisie du code à 6 chiffres | `verifyOtpCode` (`POST /auth/2fa/verify`) ; la connexion bascule seule vers les onglets |
 | Configuration 2FA | [`Setup2FAScreen.tsx`](src:mobile-app/src/screens/auth/Setup2FAScreen.tsx) | `Setup2FA` | Choix application TOTP ou email, affichage de la clé et des codes de secours, confirmation | `setup2FA` (`POST /auth/2fa/setup`), `verifyOtpCode` ; prérempli par `devOtpPreview` en développement |
 | Accueil | [`HomeScreen.tsx`](src:mobile-app/src/screens/lottery/HomeScreen.tsx) | `HomeTab` | Portefeuille, points, alertes, compte à rebours, garantie, achat d'un ticket, cadeau, accès au tirage, jauge, classement | `GET /lottery/status`, `GET /lottery/leaderboard`, `GET /lottery/wallet`, `usePoints`, `usePushNotifications`, `purchaseTickets(1, 0)` |

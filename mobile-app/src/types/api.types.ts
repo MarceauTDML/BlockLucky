@@ -18,25 +18,6 @@ export interface OnboardingSlide {
   description: string;
 }
 
-export interface SocialLoginPayload {
-  walletAddress: string;
-  email?: string;
-  provider?: 'GOOGLE' | 'APPLE' | 'EMAIL';
-  isAdultConfirmed: boolean;
-  ageGroup?: '18-25' | '26-35' | '36-50' | '50+';
-  referralCode?: string;
-  utmSource?: string;
-}
-
-export interface SocialLoginResponse {
-  requiresTwoFactor: boolean;
-  twoFactorMethod?: 'APP' | 'EMAIL' | null;
-  userId?: string;
-  token?: string;
-  isNewUser?: boolean;
-  user?: UserProfile;
-}
-
 export interface Setup2FAResponse {
   method: 'APP' | 'EMAIL';
   secret?: string;
@@ -51,6 +32,47 @@ export interface Verify2FAResponse {
   verified: boolean;
   token: string;
   user: UserProfile;
+  isNewUser?: boolean;
+}
+
+export interface AuthSessionResponse {
+  requiresTwoFactor: boolean;
+  twoFactorMethod?: 'APP' | 'EMAIL' | null;
+  userId?: string;
+  token?: string;
+  isNewUser?: boolean;
+  user?: UserProfile;
+  devOtpPreview?: string;
+}
+
+export interface SignInPayload {
+  email: string;
+  password: string;
+}
+
+export interface SignUpPayload {
+  email: string;
+  password: string;
+  acceptTerms: true;
+  referralCode?: string;
+  utmSource?: string;
+  ageGroup?: '18-25' | '26-35' | '36-50' | '50+';
+}
+
+export interface AppleSignInPayload {
+  identityToken: string;
+  fullName?: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  code: string;
+  newPassword: string;
+}
+
+export interface IdentitySubmitPayload {
+  front: string;
+  back: string;
 }
 
 export interface Milestone {
@@ -82,7 +104,14 @@ export interface LotteryRoundInfo {
   remainingSeconds: number;
   inWaitingRoom: boolean;
   maxTicketsPerPlayer?: number;
+  phase?: LotteryPhase;
+  waitingRoomOpensAt?: string | null;
+  revealAt?: string | null;
+  participants?: number;
+  maxParticipants?: number;
 }
+
+export type LotteryPhase = 'OPEN' | 'WAITING_ROOM' | 'DRAWING' | 'COMPLETED' | 'CANCELLED';
 
 export interface LotteryGuarantees {
   autoRefundEnabled: boolean;
@@ -124,6 +153,10 @@ export interface TicketItem {
   contractRoundId?: number;
   roundStatus?: string;
   etherscanUrl: string | null;
+  ticketNumber?: string;
+  isWinner?: boolean;
+  winningTicketNumber?: string | null;
+  prizeEth?: number | null;
 }
 
 export interface PoapBadge {
@@ -185,6 +218,8 @@ export interface ApiErrorDetails {
   contractError?: string;
   circuitBreaker?: boolean;
   canRetry?: boolean;
+  code?: string;
+  status?: string;
 }
 
 export interface LeaderboardEntry {
@@ -236,6 +271,15 @@ export interface ClaimedRewardCode {
   qrCodeDataUrl: string;
   scratchCardReady?: boolean;
 }
+
+export type ScratchOffer = 'violet' | 'lucky';
+
+export type ScratchTicketResponse = Partial<ClaimedRewardCode> & {
+  claim?: ClaimedRewardCode;
+  offer?: ScratchOffer;
+  pointsSpent: number;
+  newBalance: number;
+};
 
 export interface PointLedgerEntry {
   id: string;
