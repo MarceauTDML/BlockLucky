@@ -1,220 +1,272 @@
 import React, { useState } from 'react';
+import { Linking, StyleSheet, View } from 'react-native';
+
 import {
-  View,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import useAppTheme from '../../hooks/useAppTheme';
-import { useGetMyTransactionsQuery } from '../../store/api/lotteryApi';
-import AppText from '../../components/ui/AppText';
+  formatDayMonth,
+  formatMockEth,
+  formatRoundLabel,
+  getErrorMessage,
+} from '../../components/draw/drawFormat';
 import AppButton from '../../components/ui/AppButton';
-import BackButton from '../../components/ui/BackButton';
+import AppText from '../../components/ui/AppText';
+import Card from '../../components/ui/Card';
+import FilterChips from '../../components/ui/FilterChips';
+import ListRow from '../../components/ui/ListRow';
 import Loader from '../../components/ui/Loader';
-import TicketCard from '../../components/lottery/TicketCard';
-import POAPBadge from '../../components/lottery/POAPBadge';
+import Screen from '../../components/ui/Screen';
+import ScreenHeader from '../../components/ui/ScreenHeader';
+import useAppTheme from '../../hooks/useAppTheme';
+import { useRootNavigation } from '../../navigation/hooks';
+import { useGetMyTransactionsQuery, useGetWalletQuery } from '../../store/api/lotteryApi';
+import { TicketItem } from '../../types/api.types';
+import { shortenWallet } from '../../utils/formatters.util';
 
-export const TransactionHistoryScreen: React.FC<{ navigation: any }> = ({
-  navigation,
-}) => {
-  const { colors, borderRadius, spacing, t } = useAppTheme();
-  const { data, isLoading } = useGetMyTransactionsQuery({ page: 1, limit: 25 });
-  const [activeTab, setActiveTab] = useState<'TICKETS' | 'POAP'>('TICKETS');
+type HistoryTab = 'tickets' | 'badges';
 
-  const tickets = data?.data?.tickets ?? [];
-  const poapBadges = data?.data?.poapBadges ?? [];
+const openUrl = (url?: string | null) => {
+  if (url) Linking.openURL(url).catch(() => undefined);
+};
+
+export const TransactionHistoryScreen: React.FC = () => {
+  const { colors, t } = useAppTheme();
+  const navigation = useRootNavigation();
+  const [tab, setTab] = useState<HistoryTab>('tickets');
+
+  const history = useGetMyTransactionsQuery({ page: 1, limit: 50 });
+  const wallet = useGetWalletQuery();
+
+  const tickets = history.data?.data?.tickets ?? [];
+  const badges = history.data?.data?.poapBadges ?? [];
+  const walletInfo = wallet.data?.data;
+  const goBack = () =>
+    navigation.canGoBack()
+      ? navigation.goBack()
+      : navigation.navigate('Main', { screen: 'TicketsTab' });
+  const refresh = () => {
+    history.refetch();
+    wallet.refetch();
+  };
+
+  const ticketTitle = (ticket: TicketItem) => {
+    const round = formatRoundLabel(ticket.contractRoundId);
+    const number = ticket.ticketNumber
+      ? t(`Ticket ${ticket.ticketNumber}`, `Ticket ${ticket.ticketNumber}`)
+      : t('Ticket', 'Ticket');
+    return round ? `${number} · #${round}` : number;
+  };
+
+  const ticketStatus = (ticket: TicketItem) => {
+    if (ticket.roundStatus === 'CANCELLED') return t('Remboursé', 'Refunded');
+    if (ticket.roundStatus === 'COMPLETED')
+      return ticket.isWinner ? t('Gagnant', 'Winner') : t('Non gagnant', 'Not a winner');
+    return t('En cours', 'Ongoing');
+  };
 
   return (
-    <SafeAreaView
-      edges={['top', 'left', 'right']}
-      style={[styles.safeArea, { backgroundColor: colors.background }]}
+    <Screen
+      showSecurityFooter
+      refreshing={history.isFetching && !history.isLoading}
+      onRefresh={refresh}
     >
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={[
-          styles.content,
-          { padding: spacing.lg, paddingBottom: spacing.xxl },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        {navigation?.canGoBack?.() ? (
-          <BackButton onPress={() => navigation.goBack()} />
-        ) : null}
+      <ScreenHeader
+        title={t('Historique', 'History')}
+        subtitle={t(
+          'Vos tickets et certificats de participation',
+          'Your tickets and participation certificates',
+        )}
+        onBack={goBack}
+      />
 
-        <AppText variant="title" weight="bold" style={styles.title}>
-          {t('Historique & POAP', 'History & POAP')}
-        </AppText>
-        <AppText variant="body" color={colors.textSecondary} style={styles.subtitle}>
-          {t(
-            'Consultez vos tickets vérifiables sur Ethereum et vos certificats de participation.',
-            'View your verifiable Ethereum tickets and participation certificates.'
-          )}
-        </AppText>
+      {walletInfo ? (
+        <Card tone="sun" radius={24} padding={18}>
+          <AppText variant="overline" color={colors.onSun}>
+            {t('Votre portefeuille', 'Your wallet')}
+          </AppText>
+          <AppText size={28} weight="bold" color={colors.onSun} style={styles.balance}>
+            {walletInfo.balanceEth !== null ? formatMockEth(walletInfo.balanceEth, t) : '—'}
+          </AppText>
+          <View style={styles.walletRow}>
+            <AppText size={11} weight="medium" color={colors.onSunMuted} style={styles.flex}>
+              {shortenWallet(walletInfo.walletAddress)}
+            </AppText>
+            {walletInfo.explorerUrl ? (
+              <AppButton
+                title={t('Explorateur', 'Explorer')}
+                variant="dark"
+                size="sm"
+                rightIcon="arrowRight"
+                fullWidth={false}
+                onPress={() => openUrl(walletInfo.explorerUrl)}
+                style={styles.explorer}
+              />
+            ) : null}
+          </View>
+        </Card>
+      ) : null}
 
-        <View
-          style={[
-            styles.tabRow,
+      <View style={styles.filters}>
+        <FilterChips<HistoryTab>
+          value={tab}
+          onChange={setTab}
+          options={[
             {
-              backgroundColor: colors.surfaceElevated,
-              borderRadius: borderRadius.md,
+              value: 'tickets',
+              label: t(`Tickets · ${tickets.length}`, `Tickets · ${tickets.length}`),
+            },
+            {
+              value: 'badges',
+              label: t(`Certificats · ${badges.length}`, `Certificates · ${badges.length}`),
             },
           ]}
-        >
-          <TouchableOpacity
-            onPress={() => setActiveTab('TICKETS')}
-            style={[
-              styles.tabButton,
-              {
-                backgroundColor:
-                  activeTab === 'TICKETS' ? colors.surface : 'transparent',
-                borderRadius: borderRadius.sm,
-              },
-            ]}
-          >
-            <AppText
-              variant="caption"
-              weight="semibold"
-              align="center"
-              color={activeTab === 'TICKETS' ? colors.text : colors.textSecondary}
-            >
-              {t(`Tickets (${tickets.length})`, `Tickets (${tickets.length})`)}
-            </AppText>
-          </TouchableOpacity>
+        />
+      </View>
 
-          <TouchableOpacity
-            onPress={() => setActiveTab('POAP')}
-            style={[
-              styles.tabButton,
-              {
-                backgroundColor:
-                  activeTab === 'POAP' ? colors.surface : 'transparent',
-                borderRadius: borderRadius.sm,
-              },
-            ]}
-          >
-            <AppText
-              variant="caption"
-              weight="semibold"
-              align="center"
-              color={activeTab === 'POAP' ? colors.text : colors.textSecondary}
-            >
+      {history.isLoading ? (
+        <Loader message={t('Chargement de l’historique…', 'Loading history…')} />
+      ) : history.isError && !history.data ? (
+        <Card radius={24} style={styles.empty}>
+          <AppText variant="subtitle" align="center">
+            {t('Historique indisponible', 'History unavailable')}
+          </AppText>
+          <AppText size={12} color={colors.inkMuted} align="center">
+            {getErrorMessage(
+              history.error,
+              t(
+                'Impossible de charger l’historique. Vérifiez votre connexion.',
+                'Unable to load history. Check your connection.',
+              ),
+            )}
+          </AppText>
+          <AppButton
+            title={t('Réessayer', 'Try again')}
+            variant="dark"
+            size="md"
+            onPress={refresh}
+          />
+        </Card>
+      ) : tab === 'tickets' ? (
+        tickets.length === 0 ? (
+          <Card radius={24} style={styles.empty}>
+            <AppText variant="subtitle" align="center">
+              {t('Aucun ticket pour l’instant', 'No tickets yet')}
+            </AppText>
+            <AppText size={12} color={colors.inkMuted} align="center">
               {t(
-                `Certificats POAP (${poapBadges.length})`,
-                `POAP Badges (${poapBadges.length})`
+                'Chaque achat apparaît ici avec sa preuve d’enregistrement.',
+                'Every purchase appears here with its proof of record.',
               )}
             </AppText>
-          </TouchableOpacity>
-        </View>
-
-        {isLoading ? (
-          <Loader
-            message={t(
-              'Chargement des preuves on-chain...',
-              'Loading on-chain proofs...'
+            <AppButton
+              title={t('Acheter mon ticket', 'Buy my ticket')}
+              variant="dark"
+              size="md"
+              rightIcon="arrowRight"
+              onPress={() => navigation.navigate('BuyTicket')}
+            />
+          </Card>
+        ) : (
+          <Card radius={24} padding={0} style={styles.list}>
+            {tickets.map((ticket, index) => {
+              const date = formatDayMonth(ticket.purchasedAt, t);
+              const gain =
+                ticket.isWinner && ticket.prizeEth
+                  ? `+${formatMockEth(ticket.prizeEth, t)}`
+                  : undefined;
+              return (
+                <View key={ticket.id} style={styles.rowPad}>
+                  <ListRow
+                    icon={ticket.isWinner ? 'trophy' : 'ticket'}
+                    iconTone={
+                      ticket.isWinner
+                        ? 'mint'
+                        : ticket.roundStatus === 'CANCELLED'
+                          ? 'peach'
+                          : 'sun'
+                    }
+                    title={ticketTitle(ticket)}
+                    subtitle={[date, ticketStatus(ticket)].filter(Boolean).join(' · ')}
+                    value={gain}
+                    onPress={ticket.etherscanUrl ? () => openUrl(ticket.etherscanUrl) : undefined}
+                    divider={index < tickets.length - 1}
+                  />
+                </View>
+              );
+            })}
+          </Card>
+        )
+      ) : badges.length === 0 ? (
+        <Card radius={24} style={styles.empty}>
+          <AppText variant="subtitle" align="center">
+            {t('Aucun certificat', 'No certificates')}
+          </AppText>
+          <AppText size={12} color={colors.inkMuted} align="center">
+            {t(
+              'Chaque participation débloque un certificat commémoratif.',
+              'Every entry unlocks a commemorative certificate.',
             )}
-          />
-        ) : activeTab === 'TICKETS' ? (
-          tickets.length === 0 ? (
-            <View
-              style={[
-                styles.emptyState,
-                {
-                  backgroundColor: colors.surface,
-                  borderRadius: borderRadius.lg,
-                  borderColor: colors.border,
-                },
-              ]}
-            >
-              <AppText variant="subtitle" weight="semibold" align="center">
-                {t('Aucun ticket enregistré', 'No tickets recorded')}
-              </AppText>
-              <AppText
-                variant="body"
-                color={colors.textSecondary}
-                align="center"
-                style={styles.emptyDesc}
-              >
-                {t(
-                  'Achetez un ticket avec votre portefeuille BlockLucky intégré pour obtenir votre premier ticket vérifiable sur la blockchain.',
-                  'Buy a ticket with your integrated BlockLucky wallet to get your first ticket verifiable on the blockchain.'
-                )}
-              </AppText>
-              <AppButton
-                title={t('Acheter un ticket', 'Buy a ticket')}
-                onPress={() => navigation.navigate('BuyTicket')}
+          </AppText>
+        </Card>
+      ) : (
+        <Card radius={24} padding={0} style={styles.list}>
+          {badges.map((badge, index) => (
+            <View key={badge.id} style={styles.rowPad}>
+              <ListRow
+                icon="star"
+                iconTone="lavender"
+                title={badge.title}
+                subtitle={[badge.edition, formatDayMonth(badge.mintedAt, t)]
+                  .filter(Boolean)
+                  .join(' · ')}
+                onPress={badge.explorerUrl ? () => openUrl(badge.explorerUrl) : undefined}
+                divider={index < badges.length - 1}
               />
             </View>
-          ) : (
-            tickets.map((ticket) => <TicketCard key={ticket.id} ticket={ticket} />)
-          )
-        ) : poapBadges.length === 0 ? (
-          <View
-            style={[
-              styles.emptyState,
-              {
-                backgroundColor: colors.surface,
-                borderRadius: borderRadius.lg,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <AppText variant="subtitle" weight="semibold" align="center">
-              {t('Aucun certificat POAP', 'No POAP certificates')}
-            </AppText>
-            <AppText
-              variant="body"
-              color={colors.textSecondary}
-              align="center"
-              style={styles.emptyDesc}
-            >
-              {t(
-                'Chaque participation débloque automatiquement un certificat commémoratif.',
-                'Every ticket entry automatically unlocks a commemorative certificate.'
-              )}
-            </AppText>
-          </View>
-        ) : (
-          poapBadges.map((badge) => <POAPBadge key={badge.id} badge={badge} />)
+          ))}
+        </Card>
+      )}
+
+      <AppText size={10} color={colors.inkMuted} align="center" style={styles.note}>
+        {t(
+          'Montants en ETH fictifs, sans valeur réelle.',
+          'Amounts in mock ETH, with no real value.',
         )}
-      </ScrollView>
-    </SafeAreaView>
+      </AppText>
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
+  balance: {
+    marginTop: 6,
   },
-  container: {
-    flex: 1,
-  },
-  content: {},
-  title: {
-    marginBottom: 6,
-  },
-  subtitle: {
-    marginBottom: 18,
-    lineHeight: 22,
-  },
-  tabRow: {
+  walletRow: {
     flexDirection: 'row',
-    padding: 4,
-    marginBottom: 18,
-  },
-  tabButton: {
-    flex: 1,
-    paddingVertical: 10,
-  },
-  emptyState: {
-    padding: 24,
-    borderWidth: 1,
     alignItems: 'center',
     gap: 12,
+    marginTop: 8,
   },
-  emptyDesc: {
-    marginBottom: 8,
-    lineHeight: 22,
+  flex: {
+    flex: 1,
+  },
+  explorer: {
+    minHeight: 44,
+  },
+  filters: {
+    marginTop: 20,
+    marginBottom: 14,
+  },
+  list: {
+    paddingVertical: 4,
+  },
+  rowPad: {
+    paddingHorizontal: 18,
+  },
+  empty: {
+    alignItems: 'stretch',
+    gap: 10,
+  },
+  note: {
+    marginTop: 18,
   },
 });
 

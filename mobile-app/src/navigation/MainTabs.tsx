@@ -8,6 +8,7 @@ import SecurityFooter from '../components/ui/SecurityFooter';
 import Icon, { IconName } from '../components/ui/icons/Icon';
 import useAppTheme from '../hooks/useAppTheme';
 import HomeScreen from '../screens/lottery/HomeScreen';
+import MyTicketsScreen from '../screens/lottery/MyTicketsScreen';
 import ProfileScreen from '../screens/settings/ProfileScreen';
 import { MainTabsParamList } from '../types/navigation.types';
 
@@ -84,6 +85,11 @@ export const MainTabs: React.FC = () => {
         name="HomeTab"
         component={HomeScreen}
         options={{ tabBarLabel: t('Accueil', 'Home') }}
+      />
+      <Tab.Screen
+        name="TicketsTab"
+        component={MyTicketsScreen}
+        options={{ tabBarLabel: t('Mes tickets', 'My tickets') }}
       />
       <Tab.Screen
         name="ProfileTab"

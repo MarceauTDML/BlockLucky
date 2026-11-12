@@ -20,6 +20,7 @@ import GiftTicketScreen from '../screens/lottery/GiftTicketScreen';
 import HowItWorksScreen from '../screens/lottery/HowItWorksScreen';
 import LiveDrawScreen from '../screens/lottery/LiveDrawScreen';
 import TransactionHistoryScreen from '../screens/lottery/TransactionHistoryScreen';
+import WaitingRoomScreen from '../screens/lottery/WaitingRoomScreen';
 import MyCodesScreen from '../screens/marketplace/MyCodesScreen';
 import RewardDetailScreen from '../screens/marketplace/RewardDetailScreen';
 import RewardsCatalogScreen from '../screens/marketplace/RewardsCatalogScreen';
@@ -109,6 +110,7 @@ export const RootNavigator: React.FC = () => {
               <Stack.Screen name="Main" component={MainTabs} />
               <Stack.Screen name="BuyTicket" component={BuyTicketScreen} />
               <Stack.Screen name="GiftTicket" component={GiftTicketScreen} />
+              <Stack.Screen name="WaitingRoom" component={WaitingRoomScreen} />
               <Stack.Screen name="LiveDraw" component={LiveDrawScreen} />
               <Stack.Screen name="TransactionHistory" component={TransactionHistoryScreen} />
               <Stack.Screen name="Notifications" component={NotificationsScreen} />
