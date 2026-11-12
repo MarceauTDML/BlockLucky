@@ -6,7 +6,7 @@
 <title>État et appels API | Documentation BlockLucky</title>
 <meta name="description" content="L&#39;application mobile reprend l&#39;architecture du web : un store Redux Toolkit, RTK Query pour les appels au backend et trois slices (auth, lottery, ui). Les noms ">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>9. Application mobile</span></div>
     <article class="markdown">
 <h1>État et appels API</h1>
-<p>L&#39;application mobile reprend l&#39;architecture du web : un store Redux Toolkit, RTK Query pour les appels au backend et trois slices (<code>auth</code>, <code>lottery</code>, <code>ui</code>). Les noms des endpoints, des tags et des actions sont presque identiques, ce qui permet de passer d&#39;un code à l&#39;autre. Les différences tiennent au périmètre (pas d&#39;endpoint d&#39;administration ni de partenaire) et à plusieurs réglages absents côté mobile.</p>
+<p>L&#39;application mobile reprend l&#39;architecture du web : un store Redux Toolkit, RTK Query pour les appels au backend et trois slices (<code>auth</code>, <code>lottery</code>, <code>ui</code>). Les noms des endpoints de loterie et de boutique, des tags et des actions sont proches de ceux du web, ce qui permet de passer d&#39;un code à l&#39;autre. Les différences tiennent au périmètre (pas d&#39;endpoint d&#39;administration ni de partenaire, mais des endpoints de mot de passe, de connexion Google et Apple et de vérification d&#39;âge) et à plusieurs réglages absents côté mobile.</p>
 <p>Le store est créé une fois au chargement du module <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/index.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/index.ts</code></a> (<code>export const store</code>) et fourni par <code>App.tsx</code>. Les hooks typés <code>useAppDispatch</code> et <code>useAppSelector</code> sont exportés depuis ce fichier.</p>
 <h2 id="le-client-de-base"><a class="anchor" href="#le-client-de-base" aria-hidden="true" tabindex="-1">#</a>Le client de base</h2>
 <p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/api/baseApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/api/baseApi.ts</code></a> déclare l&#39;unique <code>createApi</code> :</p>
@@ -108,8 +108,8 @@
 </thead>
 <tbody><tr>
 <td><code>User</code></td>
-<td><code>getProfile</code>, <code>getReferrals</code></td>
-<td><code>socialLogin</code>, <code>verify2FA</code>, <code>disable2FA</code>, <code>completeQuest</code>, <code>setResponsibleLimit</code>, <code>updatePreferences</code>, <code>buyTicket</code>, <code>giftTicket</code>, <code>claimReward</code></td>
+<td><code>getProfile</code>, <code>getReferrals</code>, <code>getIdentityStatus</code></td>
+<td><code>signIn</code>, <code>googleSignIn</code>, <code>appleSignIn</code>, <code>submitIdentity</code>, <code>verify2FA</code>, <code>disable2FA</code>, <code>completeQuest</code>, <code>setResponsibleLimit</code>, <code>updatePreferences</code>, <code>buyTicket</code>, <code>giftTicket</code>, <code>claimReward</code>, <code>scratchTicket</code></td>
 </tr>
 <tr>
 <td><code>Lottery</code></td>
@@ -124,12 +124,12 @@
 <tr>
 <td><code>Marketplace</code></td>
 <td><code>getCatalog</code>, <code>getRewardDetail</code>, <code>getMyCodes</code></td>
-<td><code>claimReward</code></td>
+<td><code>claimReward</code>, <code>scratchTicket</code></td>
 </tr>
 <tr>
 <td><code>Points</code></td>
 <td><code>getPointsBalance</code></td>
-<td><code>socialLogin</code>, <code>completeQuest</code>, <code>buyTicket</code>, <code>giftTicket</code>, <code>claimReward</code></td>
+<td><code>signIn</code>, <code>googleSignIn</code>, <code>appleSignIn</code>, <code>completeQuest</code>, <code>buyTicket</code>, <code>giftTicket</code>, <code>claimReward</code>, <code>scratchTicket</code></td>
 </tr>
 <tr>
 <td><code>Quests</code></td>
@@ -142,16 +142,80 @@
 <td>aucune mutation</td>
 </tr>
 </tbody></table></div>
-<p>Les tags <code>Admin</code>, <code>Partners</code> et <code>Audit</code> du web n&#39;existent pas. Aucune requête n&#39;utilise <code>pollingInterval</code> : le statut de la loterie n&#39;est rafraîchi qu&#39;au montage d&#39;un écran, après une mutation, ou à la réception de <code>draw:winner</code>. RTK Query ne rafraîchit pas non plus les données au retour de l&#39;application au premier plan, faute d&#39;appel à <code>setupListeners</code>.</p>
+<p>Les tags <code>Admin</code>, <code>Partners</code>, <code>Audit</code> et <code>Identity</code> du web n&#39;existent pas. Quatre écrans rafraîchissent le statut de la loterie par <code>pollingInterval</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Écran</th>
+<th>Période</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Accueil</td>
+<td>30 s</td>
+</tr>
+<tr>
+<td>Mes tickets</td>
+<td>30 s</td>
+</tr>
+<tr>
+<td>Salle d&#39;attente</td>
+<td>5 s</td>
+</tr>
+<tr>
+<td>Tirage en direct</td>
+<td>4 s</td>
+</tr>
+</tbody></table></div>
+<p>RTK Query ne rafraîchit pas les données au retour de l&#39;application au premier plan, faute d&#39;appel à <code>setupListeners</code>. Les intervalles de rafraîchissement s&#39;arrêtent quand l&#39;écran est démonté.</p>
 <h2 id="endpoints-par-fichier"><a class="anchor" href="#endpoints-par-fichier" aria-hidden="true" tabindex="-1">#</a>Endpoints par fichier</h2>
 <h3 id="authapi"><a class="anchor" href="#authapi" aria-hidden="true" tabindex="-1">#</a>authApi</h3>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/api/authApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/api/authApi.ts</code></a> déclare les mêmes 16 endpoints que le web : <code>getOnboarding</code>, <code>socialLogin</code>, <code>setup2FA</code>, <code>verify2FA</code>, <code>disable2FA</code>, <code>logout</code>, <code>getProfile</code>, <code>getReferrals</code>, <code>getQuests</code>, <code>completeQuest</code>, <code>setResponsibleLimit</code>, <code>updatePreferences</code>, <code>getNotifications</code>, <code>exportGdprData</code>, <code>requestGdprDeletion</code>, <code>confirmGdprDeletion</code>.</p>
-<p>Deux différences :</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/api/authApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/api/authApi.ts</code></a> déclare 23 endpoints :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Groupe</th>
+<th>Endpoints</th>
+<th>Routes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Connexion et compte</td>
+<td><code>signIn</code>, <code>signUp</code>, <code>googleSignIn</code>, <code>appleSignIn</code>, <code>forgotPassword</code>, <code>resetPassword</code></td>
+<td><code>POST /auth/signin</code>, <code>/auth/signup</code>, <code>/auth/oauth/google</code>, <code>/auth/oauth/apple</code>, <code>/auth/password/forgot</code>, <code>/auth/password/reset</code></td>
+</tr>
+<tr>
+<td>Double authentification</td>
+<td><code>setup2FA</code>, <code>verify2FA</code>, <code>disable2FA</code>, <code>logout</code></td>
+<td><code>POST /auth/2fa/setup</code>, <code>/auth/2fa/verify</code>, <code>/auth/2fa/disable</code>, <code>/auth/logout</code></td>
+</tr>
+<tr>
+<td>Vérification d&#39;âge</td>
+<td><code>getIdentityStatus</code>, <code>submitIdentity</code></td>
+<td><code>GET /user/identity</code>, <code>POST /user/identity</code></td>
+</tr>
+<tr>
+<td>Profil et parrainage</td>
+<td><code>getProfile</code>, <code>getReferrals</code>, <code>getQuests</code>, <code>completeQuest</code>, <code>setResponsibleLimit</code>, <code>updatePreferences</code>, <code>getNotifications</code></td>
+<td>Routes <code>/user/*</code></td>
+</tr>
+<tr>
+<td>RGPD</td>
+<td><code>exportGdprData</code>, <code>requestGdprDeletion</code>, <code>confirmGdprDeletion</code></td>
+<td><code>GET /user/gdpr/export</code>, <code>POST /user/gdpr/delete-request</code>, <code>POST /user/gdpr/confirm-delete</code></td>
+</tr>
+<tr>
+<td>Introduction</td>
+<td><code>getOnboarding</code></td>
+<td><code>GET /auth/onboarding</code></td>
+</tr>
+</tbody></table></div>
+<p>L&#39;endpoint <code>socialLogin</code> (<code>POST /auth/login</code>), que le web utilise toujours, a été retiré du mobile.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Endpoint</th>
-<th>Différence</th>
+<th>Remarque</th>
 </tr>
 </thead>
 <tbody><tr>
@@ -159,8 +223,12 @@
 <td>Argument <code>{ allDevices }</code> seul ; le jeton part par <code>prepareHeaders</code></td>
 </tr>
 <tr>
-<td><code>getOnboarding</code>, <code>getProfile</code></td>
-<td>Déclarés mais jamais appelés par un écran : l&#39;introduction est codée en dur et le profil n&#39;est pas rechargé après la connexion</td>
+<td><code>getOnboarding</code>, <code>setResponsibleLimit</code></td>
+<td>Déclarés mais jamais appelés : l&#39;introduction est codée en dur et aucun écran ne propose plus le plafond de jeu responsable</td>
+</tr>
+<tr>
+<td><code>exportGdprData</code></td>
+<td>Déclaré en mutation alors que la route est un <code>GET</code> : l&#39;appel n&#39;a lieu qu&#39;à l&#39;appui sur le bouton et le résultat n&#39;est pas mis en cache</td>
 </tr>
 </tbody></table></div>
 <h3 id="lotteryapi"><a class="anchor" href="#lotteryapi" aria-hidden="true" tabindex="-1">#</a>lotteryApi</h3>
@@ -214,7 +282,7 @@
 <td>mutation</td>
 </tr>
 </tbody></table></div>
-<p><code>triggerDraw</code> et <code>refundRound</code>, réservés à la Mairie, n&#39;existent pas sur mobile.</p>
+<p><code>triggerDraw</code> et <code>refundRound</code>, réservés à la Mairie, n&#39;existent pas sur mobile. Les types de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/types/api.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>api.types.ts</code></a> déclarent les champs ajoutés par le backend : <code>phase</code>, <code>waitingRoomOpensAt</code>, <code>revealAt</code>, <code>participants</code> et <code>maxParticipants</code> pour le tour ; <code>ticketNumber</code>, <code>isWinner</code>, <code>winningTicketNumber</code> et <code>prizeEth</code> pour les tickets.</p>
 <h3 id="marketplaceapi"><a class="anchor" href="#marketplaceapi" aria-hidden="true" tabindex="-1">#</a>marketplaceApi</h3>
 <p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/api/marketplaceApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/api/marketplaceApi.ts</code></a></p>
 <div class="table-wrap"><table>
@@ -246,6 +314,11 @@
 <td>mutation</td>
 </tr>
 <tr>
+<td><code>scratchTicket</code></td>
+<td><code>POST /marketplace/scratch</code> avec <code>{ offer: &#39;violet&#39; | &#39;lucky&#39; }</code></td>
+<td>mutation</td>
+</tr>
+<tr>
 <td><code>getMyCodes</code></td>
 <td><code>GET /marketplace/my-codes</code></td>
 <td>query</td>
@@ -254,7 +327,7 @@
 <p>La validation en caisse (<code>redeemCode</code>) est propre à l&#39;espace partenaire du web. Il n&#39;y a pas d&#39;<code>adminApi</code> ni de <code>partnersApi</code> sur mobile.</p>
 <p>Les routes et leurs schémas sont décrits dans <a href="../backend/reference-api.html">Référence de l&#39;API</a>.</p>
 <div class="hint hint-warning"><p class="hint-title">Attention</p>
-<code>GET /marketplace/points</code> renvoie <code>{ balance, history }</code> (voir <code>getUserLedgerHistory</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/ledger.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/ledger.service.ts</code></a>). Le hook <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/usePoints.ts" class="external" target="_blank" rel="noopener noreferrer"><code>usePoints</code></a> lit <code>data.pointsBalance</code>, qui n&#39;existe pas : le solde affiché retombe sur <code>user.pointsBalance</code>, mis à jour seulement par les actions faites dans l&#39;application. Le web lit <code>balance</code> en priorité. De plus, aucun des deux clients ne reçoit <code>ledgerIntegrityValid</code> : l&#39;indicateur d&#39;intégrité du registre de points vaut toujours « valide » par défaut.</p>
+<code>GET /marketplace/points</code> renvoie <code>{ balance, history }</code> (voir <code>getUserLedgerHistory</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/ledger.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/ledger.service.ts</code></a>). Le hook <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/usePoints.ts" class="external" target="_blank" rel="noopener noreferrer"><code>usePoints</code></a> attend <code>data.pointsBalance</code>, qui n&#39;existe pas, et renvoie de toute façon <code>user.pointsBalance</code> du slice <code>auth</code>. Le solde affiché n&#39;est donc mis à jour que par les réponses des actions faites dans l&#39;application (<code>newPointsBalance</code> d&#39;un achat, <code>newBalance</code> d&#39;un ticket à gratter, nouvelle connexion). Le web lit <code>balance</code> en priorité. De plus, aucun des deux clients ne reçoit <code>ledgerIntegrityValid</code> : l&#39;indicateur d&#39;intégrité du registre de points vaut toujours « valide » par défaut.</p>
 </div>
 <h2 id="slices-redux"><a class="anchor" href="#slices-redux" aria-hidden="true" tabindex="-1">#</a>Slices Redux</h2>
 <h3 id="slice-auth"><a class="anchor" href="#slice-auth" aria-hidden="true" tabindex="-1">#</a>Slice auth</h3>
@@ -279,50 +352,58 @@
 <td>Vérification en cours (l&#39;écran utilise plutôt ses paramètres de route)</td>
 </tr>
 </tbody></table></div>
-<p>Actions : <code>completeOnboarding</code>, <code>setCredentials</code>, <code>setPendingTwoFactor</code>, <code>updateUserPoints</code>, <code>updateUserProfile</code>, <code>logout</code>. Il n&#39;y a pas d&#39;action d&#39;hydratation ni de champ <code>hydrated</code>.</p>
+<p>Actions : <code>completeOnboarding</code>, <code>setCredentials</code>, <code>setPendingTwoFactor</code>, <code>updateUserPoints</code>, <code>updateUserProfile</code>, <code>logout</code>. Il n&#39;y a pas d&#39;action d&#39;hydratation ni de champ <code>hydrated</code>. <code>useAuth</code> dérive de <code>user</code> trois valeurs : <code>hasPassword</code>, <code>ageVerificationStatus</code> (<code>NONE</code> par défaut) et <code>isAgeVerified</code>.</p>
 <h3 id="slice-lottery"><a class="anchor" href="#slice-lottery" aria-hidden="true" tabindex="-1">#</a>Slice lottery</h3>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/slices/lotterySlice.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/slices/lotterySlice.ts</code></a> contient <code>onlineWaitingUsers</code>, <code>liveChatMessages</code> (100 au plus, deux messages d&#39;accueil codés en dur et horodatés au chargement), <code>lastWinnerAnnouncement</code> et <code>isRouletteSpinning</code>. Par rapport au web, il manque <code>socketConnected</code> et le dédoublonnage des messages par identifiant.</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/slices/lotterySlice.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/slices/lotterySlice.ts</code></a> contient <code>onlineWaitingUsers</code> (0 au départ), <code>liveChatMessages</code> (vide au départ, 100 au plus, sans doublon d&#39;identifiant), <code>lastWinnerAnnouncement</code> et <code>isRouletteSpinning</code>. Par rapport au web, il manque <code>socketConnected</code>.</p>
 <h3 id="slice-ui"><a class="anchor" href="#slice-ui" aria-hidden="true" tabindex="-1">#</a>Slice ui</h3>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/slices/uiSlice.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/slices/uiSlice.ts</code></a> pilote les feuilles rendues par <code>RootNavigator</code> :</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/slices/uiSlice.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/slices/uiSlice.ts</code></a> pilote les fenêtres rendues par <code>RootNavigator</code> :</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Champ</th>
-<th>Feuille ou effet</th>
+<th>Fenêtre ou effet</th>
+<th>Déclencheur</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>pointsPopup</code></td>
-<td>« Points crédités »</td>
+<td>« +n EtherPoints »</td>
+<td>Événement <code>points:awarded</code>, validation d&#39;une mission, nouvel essai d&#39;achat réussi</td>
 </tr>
 <tr>
 <td><code>retryModal</code></td>
 <td>« Réseau encombré » et bouton « Réessayer l&#39;achat »</td>
+<td>Seulement <code>retryPurchaseFromQueue</code>, lui-même appelé par ce bouton</td>
 </tr>
 <tr>
 <td><code>queueModal</code></td>
-<td>« File d&#39;attente active », position 245 codée en dur</td>
+<td>« Forte affluence », position 245 codée en dur</td>
+<td>Seulement <code>retryPurchaseFromQueue</code></td>
 </tr>
 <tr>
 <td><code>sentryModal</code></td>
 <td>Information réseau ou erreur de transaction</td>
-</tr>
-<tr>
-<td><code>notificationDrawerOpen</code></td>
-<td>Tiroir des notifications</td>
+<td>Seulement <code>retryPurchaseFromQueue</code></td>
 </tr>
 <tr>
 <td><code>osPushBanner</code></td>
 <td>Bandeau de notification simulé (4,5 s)</td>
+<td><code>triggerSimulatedOsPush</code>, plus appelé</td>
+</tr>
+<tr>
+<td><code>notificationDrawerOpen</code></td>
+<td>Ancien tiroir des notifications</td>
+<td>Plus lu</td>
 </tr>
 <tr>
 <td><code>fallbackNetworkActive</code></td>
-<td>Déclaré avec <code>setFallbackNetworkActive</code>, jamais lu ni modifié</td>
+<td>Déclaré avec <code>setFallbackNetworkActive</code></td>
+<td>Jamais lu ni modifié</td>
 </tr>
 </tbody></table></div>
-<p><code>retryModal</code> ne garde pas la quantité demandée : le bouton de la feuille relance toujours <code>purchaseTickets(1, retryAttempt)</code>. Un achat de cinq tickets interrompu par une erreur 503 est donc rejoué pour un seul ticket. Le web conserve la quantité.</p>
+<p>Depuis la refonte, la billetterie et le cadeau affichent leurs propres fenêtres à partir du résultat de <code>useCitizenWallet</code>. Plus aucun écran n&#39;ouvre <code>retryModal</code> : les fenêtres globales de nouvel essai, d&#39;affluence et d&#39;information ne sont accessibles que par une chaîne qui ne démarre jamais. Le slice et ces fenêtres sont à retirer ou à rebrancher.</p>
 <h2 id="gestion-des-erreurs"><a class="anchor" href="#gestion-des-erreurs" aria-hidden="true" tabindex="-1">#</a>Gestion des erreurs</h2>
-<p>Les erreurs de transaction sont traduites par <code>describeBlockchainError</code> et <code>useCitizenWallet</code> (voir <a href="portefeuille-loterie.html#messages-d-erreur">Portefeuille et loterie</a>). Les autres écrans affichent <code>err?.data?.message</code> ou un texte de repli. Il n&#39;y a pas d&#39;équivalent de <code>getErrorMessage</code> : une panne réseau (<code>FETCH_ERROR</code>) produit le texte de repli propre à chaque écran, sans message « serveur injoignable » commun.</p>
+<p>Les erreurs de transaction sont traduites par <code>classifyTicketError</code> et <code>describeBlockchainError</code> de <code>useCitizenWallet</code> (voir <a href="portefeuille-loterie.html#messages-d-erreur">Portefeuille et loterie</a>). Les autres écrans utilisent des fonctions de lecture du message du backend avec un texte de repli : <code>getErrorMessage</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/auth/authErrors.ts" class="external" target="_blank" rel="noopener noreferrer"><code>authErrors.ts</code></a> et <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/draw/drawFormat.ts" class="external" target="_blank" rel="noopener noreferrer"><code>drawFormat.ts</code></a>) et <code>getApiErrorMessage</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/lottery/lotteryFormat.ts" class="external" target="_blank" rel="noopener noreferrer"><code>lotteryFormat.ts</code></a> et <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/marketplace/apiErrors.ts" class="external" target="_blank" rel="noopener noreferrer"><code>apiErrors.ts</code></a>). Ces fonctions sont dupliquées dans plusieurs dossiers. Une panne réseau (<code>FETCH_ERROR</code>) produit le texte de repli propre à chaque écran, sans message « serveur injoignable » commun.</p>
 <p>Les messages du backend sont en français et s&#39;affichent tels quels quand l&#39;interface est en anglais.</p>
 
     </article>

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Authentification et routes protégées | Documentation BlockLucky</title>
-<meta name="description" content="Le frontend web ne gère ni mot de passe ni portefeuille. Il envoie l&#39;email saisi au backend, qui décide s&#39;il faut un code de vérification, crée le compte et son">
+<meta name="description" content="Le frontend web ne gère ni mot de passe ni portefeuille. Il n&#39;utilise pas les routes de compte avec mot de passe ni la connexion Google ou Apple, réservées à l&#39;">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>8. Frontend web</span></div>
     <article class="markdown">
 <h1>Authentification et routes protégées</h1>
-<p>Le frontend web ne gère ni mot de passe ni portefeuille. Il envoie l&#39;email saisi au backend, qui décide s&#39;il faut un code de vérification, crée le compte et son portefeuille intégré si besoin, puis délivre un jeton de session (JWT). Cette page décrit la partie navigateur du parcours. Les règles côté serveur (expiration, verrouillage, révocation) sont dans <a href="../securite/authentification.html">Authentification et 2FA</a> et <a href="../securite/sessions.html">Sessions</a>.</p>
+<p>Le frontend web ne gère ni mot de passe ni portefeuille. Il n&#39;utilise pas les routes de compte avec mot de passe ni la connexion Google ou Apple, réservées à l&#39;application mobile (voir <a href="../mobile/authentification.html">Authentification mobile</a>). Il envoie l&#39;email saisi au backend, qui décide s&#39;il faut un code de vérification, crée le compte et son portefeuille intégré si besoin, puis délivre un jeton de session (JWT). Cette page décrit la partie navigateur du parcours. Les règles côté serveur (expiration, verrouillage, révocation) sont dans <a href="../securite/authentification.html">Authentification et 2FA</a> et <a href="../securite/sessions.html">Sessions</a>.</p>
 <p>Fichiers principaux :</p>
 <div class="table-wrap"><table>
 <thead>
@@ -134,7 +134,10 @@
 <p>Le bouton « Continuer avec Google » n&#39;ouvre aucune fenêtre Google : il envoie le même email avec <code>provider: &#39;GOOGLE&#39;</code>. Il n&#39;y a pas d&#39;OAuth dans le projet. La preuve de possession de l&#39;adresse vient uniquement du code envoyé par email.</p>
 </div>
 <p>Le carrousel d&#39;introduction (<code>OnboardingCarousel</code>) s&#39;affiche avant le formulaire sur mobile tant que <code>bl.onboarding.done</code> ne vaut pas <code>1</code>, et en colonne gauche sur grand écran. Le premier focus ou le premier clic envoie l&#39;événement <code>access_started</code> (voir <a href="analytique-consentement.html">Analytique et consentement</a>).</p>
-<p>Pour l&#39;espace professionnel (<code>/connexion?espace=pro</code>), la feuille de majorité n&#39;est pas ouverte d&#39;office, mais la case reste obligatoire. Le backend renvoie une erreur 403 si <code>isAdultConfirmed</code> est faux.</p>
+<p>Pour l&#39;espace professionnel (<code>/connexion?espace=pro</code>), la feuille de majorité n&#39;est pas ouverte d&#39;office, mais la case reste obligatoire. Le backend refuse la requête si <code>isAdultConfirmed</code> est faux.</p>
+<div class="hint hint-important"><p class="hint-title">Important</p>
+<p>Cette déclaration ne suffit plus pour jouer. L&#39;achat, le cadeau, l&#39;échange de récompense et le ticket à gratter exigent un âge vérifié par la Mairie à partir d&#39;une pièce d&#39;identité. Le citoyen l&#39;envoie depuis <code>/profil/identite</code> (voir <a href="portefeuille-loterie.html#verification-d-identite">Portefeuille et loterie</a>) ou depuis l&#39;application mobile. Tant que le statut n&#39;est pas <code>VERIFIED</code>, la billetterie désactive l&#39;achat et le cadeau ; les autres actions de jeu reçoivent <code>403 Vérifiez votre âge pour jouer.</code>, affiché dans la feuille d&#39;information générique. Les comptes du seed sont déjà vérifiés.</p>
+</div>
 <h3 id="adresse-calculee-cote-client"><a class="anchor" href="#adresse-calculee-cote-client" aria-hidden="true" tabindex="-1">#</a>Adresse calculée côté client</h3>
 <p>La page de connexion appelle encore <code>generateDeterministicWallet(email)</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/lib/wallet.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/lib/wallet.ts</code></a> et envoie le résultat dans <code>walletAddress</code>. Cette fonction n&#39;est pas cryptographique : elle produit 40 caractères hexadécimaux à partir des codes des caractères de l&#39;email. Elle ne correspond à aucune clé privée.</p>
 <p>Le backend n&#39;utilise pas cette adresse comme portefeuille :</p>

@@ -1,6 +1,6 @@
 # Authentification et routes protégées
 
-Le frontend web ne gère ni mot de passe ni portefeuille. Il envoie l'email saisi au backend, qui décide s'il faut un code de vérification, crée le compte et son portefeuille intégré si besoin, puis délivre un jeton de session (JWT). Cette page décrit la partie navigateur du parcours. Les règles côté serveur (expiration, verrouillage, révocation) sont dans [Authentification et 2FA](../securite/authentification.md) et [Sessions](../securite/sessions.md).
+Le frontend web ne gère ni mot de passe ni portefeuille. Il n'utilise pas les routes de compte avec mot de passe ni la connexion Google ou Apple, réservées à l'application mobile (voir [Authentification mobile](../mobile/authentification.md)). Il envoie l'email saisi au backend, qui décide s'il faut un code de vérification, crée le compte et son portefeuille intégré si besoin, puis délivre un jeton de session (JWT). Cette page décrit la partie navigateur du parcours. Les règles côté serveur (expiration, verrouillage, révocation) sont dans [Authentification et 2FA](../securite/authentification.md) et [Sessions](../securite/sessions.md).
 
 Fichiers principaux :
 
@@ -55,7 +55,10 @@ Le payload complet est typé `SocialLoginPayload` dans [`frontend-web/src/types/
 
 Le carrousel d'introduction (`OnboardingCarousel`) s'affiche avant le formulaire sur mobile tant que `bl.onboarding.done` ne vaut pas `1`, et en colonne gauche sur grand écran. Le premier focus ou le premier clic envoie l'événement `access_started` (voir [Analytique et consentement](analytique-consentement.md)).
 
-Pour l'espace professionnel (`/connexion?espace=pro`), la feuille de majorité n'est pas ouverte d'office, mais la case reste obligatoire. Le backend renvoie une erreur 403 si `isAdultConfirmed` est faux.
+Pour l'espace professionnel (`/connexion?espace=pro`), la feuille de majorité n'est pas ouverte d'office, mais la case reste obligatoire. Le backend refuse la requête si `isAdultConfirmed` est faux.
+
+> [!IMPORTANT]
+> Cette déclaration ne suffit plus pour jouer. L'achat, le cadeau, l'échange de récompense et le ticket à gratter exigent un âge vérifié par la Mairie à partir d'une pièce d'identité. Le citoyen l'envoie depuis `/profil/identite` (voir [Portefeuille et loterie](portefeuille-loterie.md#verification-d-identite)) ou depuis l'application mobile. Tant que le statut n'est pas `VERIFIED`, la billetterie désactive l'achat et le cadeau ; les autres actions de jeu reçoivent `403 Vérifiez votre âge pour jouer.`, affiché dans la feuille d'information générique. Les comptes du seed sont déjà vérifiés.
 
 ### Adresse calculée côté client
 

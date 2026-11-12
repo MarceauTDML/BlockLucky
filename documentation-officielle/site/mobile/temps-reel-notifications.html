@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Temps réel et notifications | Documentation BlockLucky</title>
-<meta name="description" content="L&#39;application mobile reçoit les événements Socket.IO du backend sur un seul écran, le tirage en direct. Elle n&#39;a pas de notifications push : la dépendance expo-">
+<meta name="description" content="L&#39;application mobile reçoit les événements Socket.IO du backend sur deux écrans, la salle d&#39;attente et le tirage en direct. Elle n&#39;a pas de notifications push :">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>9. Application mobile</span></div>
     <article class="markdown">
 <h1>Temps réel et notifications</h1>
-<p>L&#39;application mobile reçoit les événements Socket.IO du backend sur un seul écran, le tirage en direct. Elle n&#39;a pas de notifications push : la dépendance <code>expo-notifications</code> est installée mais jamais importée, aucun jeton d&#39;appareil n&#39;est enregistré et le backend n&#39;envoie aucune notification vers Expo, Apple ou Google. Le « tiroir des notifications » affiche une liste lue par l&#39;API, et le « test de notification » est un bandeau dessiné dans l&#39;application.</p>
+<p>L&#39;application mobile reçoit les événements Socket.IO du backend sur deux écrans, la salle d&#39;attente et le tirage en direct. Elle n&#39;a pas de notifications push : la dépendance <code>expo-notifications</code> est installée mais jamais importée, aucun jeton d&#39;appareil n&#39;est enregistré et le backend n&#39;envoie aucune notification vers Expo, Apple ou Google. L&#39;écran « Notifications » affiche une liste lue par l&#39;API.</p>
 <p>Cette page sépare ce qui fonctionne de ce qui n&#39;est pas branché. La liste des événements du serveur est dans <a href="../backend/socket-io.html">Temps réel Socket.IO</a> ; le comportement équivalent du web est dans <a href="../web/temps-reel.html">Temps réel du web</a>.</p>
 <h2 id="etat-des-fonctionnalites"><a class="anchor" href="#etat-des-fonctionnalites" aria-hidden="true" tabindex="-1">#</a>État des fonctionnalités</h2>
 <div class="table-wrap"><table>
@@ -56,12 +56,12 @@
 <tr>
 <td>Salle d&#39;attente du tirage</td>
 <td>branchée</td>
-<td><code>draw:join</code>, <code>draw:leave</code>, <code>draw:waiting-room</code></td>
+<td><code>draw:join</code>, <code>draw:leave</code>, <code>draw:waiting-room</code> ; la salle est rejointe à nouveau après une reconnexion</td>
 </tr>
 <tr>
 <td>Discussion en direct</td>
 <td>branchée</td>
-<td><code>chat:send</code>, <code>chat:message</code></td>
+<td><code>chat:send</code>, <code>chat:message</code> ; messages dédoublonnés par identifiant</td>
 </tr>
 <tr>
 <td>Annonce du gagnant</td>
@@ -81,7 +81,7 @@
 <tr>
 <td>Compte à rebours serveur, début du tirage, file d&#39;attente, bascule de nœud</td>
 <td>non émis</td>
-<td><code>draw:countdown</code>, <code>draw:started</code>, <code>queue:position</code> et <code>network:fallback</code> sont déclarés côté serveur mais jamais envoyés</td>
+<td><code>draw:countdown</code>, <code>draw:started</code>, <code>queue:position</code> et <code>network:fallback</code> sont déclarés côté serveur mais jamais envoyés ; les écrans interrogent <code>GET /lottery/status</code> à intervalle régulier</td>
 </tr>
 <tr>
 <td>Notifications push natives</td>
@@ -95,13 +95,13 @@
 </tr>
 <tr>
 <td>Bandeau « notification »</td>
-<td>simulé</td>
-<td><code>triggerSimulatedOsPush</code> affiche un bandeau interne pendant 4,5 s</td>
+<td>sans déclencheur</td>
+<td><code>triggerSimulatedOsPush</code> existe toujours dans le hook et <code>RootNavigator</code> sait afficher le bandeau, mais plus aucun écran ne l&#39;appelle</td>
 </tr>
 <tr>
 <td>Préférence <code>pushNotificationsEnabled</code></td>
-<td>sans effet</td>
-<td>Acceptée par <code>PUT /user/preferences</code>, aucun écran ne la modifie et rien ne la lit</td>
+<td>enregistrée, sans effet</td>
+<td>Interrupteur « Notifications push » de l&#39;écran Paramètres, envoyé par <code>PUT /user/preferences</code> ; rien ne la lit</td>
 </tr>
 </tbody></table></div>
 <h2 id="le-client-socket-io"><a class="anchor" href="#le-client-socket-io" aria-hidden="true" tabindex="-1">#</a>Le client Socket.IO</h2>
@@ -137,13 +137,30 @@
 <p>Si une connexion existe mais n&#39;est pas encore connectée (ou a été coupée), <code>connect()</code> en crée une seconde sans fermer la première. Le jeton n&#39;est relu qu&#39;à la création : après une reconnexion du compte, l&#39;ancienne connexion garde l&#39;ancien jeton.</p>
 <p>Le serveur accepte une connexion sans jeton en invité et refuse un jeton invalide ou révoqué (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/socket/socket.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>socket.middleware.ts</code></a>).</p>
 <h2 id="le-hook-usesocket"><a class="anchor" href="#le-hook-usesocket" aria-hidden="true" tabindex="-1">#</a>Le hook useSocket</h2>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useSocket.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/hooks/useSocket.ts</code></a> est utilisé uniquement par <code>LiveDrawScreen</code>, avec l&#39;identifiant du tour courant. À chaque exécution de l&#39;effet, il :</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useSocket.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/hooks/useSocket.ts</code></a> est utilisé par deux écrans, qui ne lui passent l&#39;identifiant du tour que lorsqu&#39;il est utile :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Écran</th>
+<th>Identifiant passé</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WaitingRoomScreen</code></td>
+<td>Seulement en phase <code>WAITING_ROOM</code> et si le citoyen a un ticket pour ce tour</td>
+</tr>
+<tr>
+<td><code>LiveDrawScreen</code></td>
+<td>Seulement en phase <code>DRAWING</code>, <code>COMPLETED</code> ou <code>CANCELLED</code></td>
+</tr>
+</tbody></table></div>
+<p>À chaque exécution de l&#39;effet, le hook :</p>
 <ol>
 <li>attend <code>socketClient.connect()</code> ;</li>
-<li>émet <code>draw:join</code> avec l&#39;identifiant du tour, s&#39;il est connu ;</li>
+<li>émet <code>draw:join</code> avec l&#39;identifiant du tour si la connexion est active, et le réémet à chaque événement <code>connect</code>, donc après une reconnexion ;</li>
 <li>ajoute quatre écouteurs : <code>draw:waiting-room</code>, <code>chat:message</code>, <code>draw:winner</code>, <code>points:awarded</code>.</li>
 </ol>
-<p>Au démontage, il émet <code>draw:leave</code> mais ne retire pas les écouteurs.</p>
+<p>La fonction de nettoyage retire ces écouteurs et celui de <code>connect</code> (<code>socket.off</code>), puis émet <code>draw:leave</code>. Les messages ne sont donc plus reçus en double quand l&#39;effet se relance, et <code>addLiveChatMessage</code> ignore de toute façon un identifiant déjà présent.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -157,7 +174,7 @@
 </tr>
 <tr>
 <td><code>chat:message</code></td>
-<td><code>addLiveChatMessage</code> (100 messages au plus)</td>
+<td><code>addLiveChatMessage</code> (100 messages au plus, sans doublon)</td>
 </tr>
 <tr>
 <td><code>draw:winner</code></td>
@@ -165,7 +182,7 @@
 </tr>
 <tr>
 <td><code>points:awarded</code></td>
-<td>Feuille « Points crédités » si <code>userId</code> correspond au compte</td>
+<td>Fenêtre « +n EtherPoints » si <code>userId</code> correspond au compte</td>
 </tr>
 </tbody></table></div>
 <div class="table-wrap"><table>
@@ -177,41 +194,41 @@
 </thead>
 <tbody><tr>
 <td><code>sendChatMessage(message, emoji)</code></td>
-<td><code>chat:send</code> si la connexion est active, sinon ajout local avec l&#39;auteur « Vous (Citoyen) »</td>
+<td><code>chat:send</code> si la connexion est active ; renvoie <code>false</code> sinon, et <code>RoomChat</code> affiche « Connexion à la salle en cours. Réessayez dans un instant. » sans ajouter le message</td>
 </tr>
 <tr>
 <td><code>sendReaction(emoji)</code></td>
 <td><code>chat:react</code>, jamais appelée</td>
 </tr>
 </tbody></table></div>
-<div class="hint hint-warning"><p class="hint-title">Attention</p>
-<p>Les écouteurs ne sont jamais retirés (<code>socket.on</code> sans <code>socket.off</code>). L&#39;effet se relance quand <code>roundId</code> ou l&#39;utilisateur change, et les deux enregistrements de <code>LiveDrawScreen</code> (onglet et écran empilé) peuvent le monter deux fois. Chaque relance ajoute un jeu d&#39;écouteurs : les messages de discussion apparaissent alors en double (le slice mobile ne dédoublonne pas par identifiant, contrairement au web) et la feuille de points peut s&#39;ouvrir plusieurs fois. Il faut retirer les écouteurs dans la fonction de nettoyage, comme le fait le web.</p>
-</div>
-<p>Autres écarts avec le web :</p>
+<p>Le slice <code>lottery</code> démarre avec une discussion vide et un compteur de présence à zéro : les messages d&#39;accueil codés en dur ont été retirés.</p>
+<p>Écarts restants avec le web :</p>
 <ul>
-<li><code>draw:join</code> n&#39;est émis qu&#39;une fois ; après une coupure et une reconnexion, l&#39;application ne rejoint pas la salle, et le compteur de présence n&#39;est plus mis à jour ;</li>
-<li>l&#39;état de connexion n&#39;est pas suivi (pas de <code>socketConnected</code>), donc <code>ChatBox</code> ne peut pas signaler une discussion hors ligne ;</li>
+<li>l&#39;état de connexion n&#39;est pas suivi (pas de <code>socketConnected</code>) : la discussion ne signale une coupure qu&#39;au moment d&#39;un envoi ;</li>
 <li>la connexion n&#39;est pas fermée à la déconnexion du compte.</li>
 </ul>
 <p><code>points:awarded</code> est diffusé par le serveur à tous les clients avec l&#39;identifiant interne du compte ; le filtrage se fait dans l&#39;application. Ce point de confidentialité est commun au web et au mobile.</p>
-<h2 id="sequence-sur-l-ecran-du-tirage"><a class="anchor" href="#sequence-sur-l-ecran-du-tirage" aria-hidden="true" tabindex="-1">#</a>Séquence sur l&#39;écran du tirage</h2>
+<h2 id="sequence-de-la-salle-d-attente-au-tirage"><a class="anchor" href="#sequence-de-la-salle-d-attente-au-tirage" aria-hidden="true" tabindex="-1">#</a>Séquence de la salle d&#39;attente au tirage</h2>
 <div class="diagram"><pre class="mermaid">sequenceDiagram
-  participant E as LiveDrawScreen
+  participant W as WaitingRoomScreen
+  participant L as LiveDrawScreen
   participant H as useSocket
   participant S as Serveur Socket.IO
   participant R as Store Redux
-  E-&gt;&gt;H: useSocket roundId
+  W-&gt;&gt;H: useSocket roundId, phase WAITING_ROOM
   H-&gt;&gt;S: connexion avec auth.token
   H-&gt;&gt;S: draw:join roundId
   S--&gt;&gt;H: draw:waiting-room
   H-&gt;&gt;R: setWaitingRoomOnlineCount
   S--&gt;&gt;H: chat:message
   H-&gt;&gt;R: addLiveChatMessage
+  W-&gt;&gt;W: phase DRAWING, replace LiveDraw
+  W-&gt;&gt;H: démontage, socket.off et draw:leave
+  L-&gt;&gt;H: useSocket roundId, phase DRAWING
+  H-&gt;&gt;S: draw:join roundId
   S--&gt;&gt;H: draw:winner
   H-&gt;&gt;R: setWinnerAnnouncement, invalidateTags Lottery Wallet
-  R--&gt;&gt;E: WinnerClaimCard si le compte a gagné
-  E-&gt;&gt;H: démontage
-  H-&gt;&gt;S: draw:leave roundId</pre></div>
+  R--&gt;&gt;L: arrêt de la roue sur le numéro gagnant</pre></div>
 <h2 id="notifications"><a class="anchor" href="#notifications" aria-hidden="true" tabindex="-1">#</a>Notifications</h2>
 <p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/usePushNotifications.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/hooks/usePushNotifications.ts</code></a> porte un nom trompeur : il ne gère aucune notification push.</p>
 <div class="table-wrap"><table>
@@ -222,26 +239,26 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>notifications</code>, <code>unreadCount</code>, <code>isLoading</code>, <code>refetchNotifications</code></td>
+<td><code>notifications</code>, <code>isLoading</code>, <code>isFetching</code>, <code>isError</code>, <code>refetchNotifications</code></td>
 <td>Résultat de <code>GET /user/notifications</code>, demandé seulement si <code>isAuthenticated</code></td>
 </tr>
 <tr>
-<td><code>drawerOpen</code>, <code>openDrawer</code>, <code>closeDrawer</code></td>
-<td>Tiroir <code>BottomSheet</code> rendu par <code>RootNavigator</code></td>
+<td><code>unreadCount</code>, <code>markAllAsSeen</code></td>
+<td>Notifications non lues ; <code>markAllAsSeen</code> mémorise les identifiants vus dans une variable du module</td>
 </tr>
 <tr>
 <td><code>osPushBanner</code>, <code>triggerSimulatedOsPush(title, body)</code></td>
-<td>Bandeau en haut de l&#39;écran, masqué après 4,5 secondes</td>
+<td>Bandeau en haut de l&#39;écran, masqué après 4,5 secondes ; plus appelé</td>
 </tr>
 </tbody></table></div>
-<p>L&#39;accueil affiche un bouton d&#39;alertes avec <code>unreadCount</code> et ouvre le tiroir. L&#39;écran Charte et aide propose « Simuler une notification », qui affiche le bandeau « Nouveau partenaire à EtherBay ». Ce bandeau est une vue React Native : il n&#39;apparaît pas si l&#39;application est en arrière-plan et ne passe pas par le centre de notifications du système.</p>
-<p>Le backend renvoie aujourd&#39;hui une liste fixe de trois notifications, générée par <code>UserService.getPushNotificationsHistory</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a>. La liste n&#39;est pas rafraîchie automatiquement.</p>
+<p>L&#39;accueil et « Mes tickets » affichent <code>NotificationButton</code>, une cloche avec une pastille quand <code>unreadCount</code> est positif ; l&#39;appui ouvre <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/NotificationsScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>NotificationsScreen.tsx</code></a>. Cet écran liste les notifications, permet de tirer pour rafraîchir et marque tout comme vu à sa fermeture. L&#39;état « vu » n&#39;est ni envoyé au backend ni enregistré sur l&#39;appareil : il est perdu au redémarrage de l&#39;application.</p>
+<p>Le backend renvoie aujourd&#39;hui une liste fixe de trois notifications, générée par <code>UserService.getPushNotificationsHistory</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a>. La liste est rechargée par le geste de rafraîchissement de l&#39;accueil et de l&#39;écran Notifications.</p>
 <h2 id="brancher-de-vraies-notifications-push"><a class="anchor" href="#brancher-de-vraies-notifications-push" aria-hidden="true" tabindex="-1">#</a>Brancher de vraies notifications push</h2>
 <p>Les étapes, non réalisées dans le projet, seraient :</p>
 <ol>
 <li>ajouter le plugin <code>expo-notifications</code> dans <code>app.json</code>, puis demander l&#39;autorisation à l&#39;utilisateur après la connexion ;</li>
 <li>obtenir un jeton Expo Push (ce qui suppose un projet EAS, voir <a href="builds-publication.html">Builds et publication</a>) et l&#39;envoyer au backend par une nouvelle route ;</li>
-<li>stocker ce jeton côté serveur et l&#39;utiliser depuis un worker pour les événements utiles (tirage imminent, gain, cadeau reçu) ;</li>
+<li>stocker ce jeton côté serveur et l&#39;utiliser depuis un worker pour les événements utiles (ouverture de la salle d&#39;attente, résultat, cadeau reçu, décision sur la vérification d&#39;âge) ;</li>
 <li>respecter la préférence <code>pushNotificationsEnabled</code> et l&#39;opposition de l&#39;utilisateur.</li>
 </ol>
 <p>Pour un nouvel événement temps réel, suivre <a href="../guides/ajouter-evenement-socket.html">Ajouter un événement temps réel</a>.</p>
@@ -253,7 +270,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#etat-des-fonctionnalites">État des fonctionnalités</a></li><li class="toc-h2"><a href="#le-client-socket-io">Le client Socket.IO</a></li><li class="toc-h2"><a href="#le-hook-usesocket">Le hook useSocket</a></li><li class="toc-h2"><a href="#sequence-sur-l-ecran-du-tirage">Séquence sur l&#39;écran du tirage</a></li><li class="toc-h2"><a href="#notifications">Notifications</a></li><li class="toc-h2"><a href="#brancher-de-vraies-notifications-push">Brancher de vraies notifications push</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#etat-des-fonctionnalites">État des fonctionnalités</a></li><li class="toc-h2"><a href="#le-client-socket-io">Le client Socket.IO</a></li><li class="toc-h2"><a href="#le-hook-usesocket">Le hook useSocket</a></li><li class="toc-h2"><a href="#sequence-de-la-salle-d-attente-au-tirage">Séquence de la salle d&#39;attente au tirage</a></li><li class="toc-h2"><a href="#notifications">Notifications</a></li><li class="toc-h2"><a href="#brancher-de-vraies-notifications-push">Brancher de vraies notifications push</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

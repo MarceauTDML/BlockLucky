@@ -6,7 +6,7 @@
 <title>Tester sur un téléphone | Documentation BlockLucky</title>
 <meta name="description" content="Cette page explique comment faire tourner l&#39;application mobile sur un vrai téléphone ou un émulateur, contre un backend lancé sur la machine de développement. L">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -69,7 +69,7 @@
   T --&gt;|&quot;HTTP EXPO_PUBLIC_API_URL&quot;| B[&quot;Backend : port 2053&quot;]
   T --&gt;|&quot;WebSocket EXPO_PUBLIC_WS_URL&quot;| B
   B --&gt; DB[&quot;PostgreSQL, Redis, blockchain locale&quot;]
-  B --&gt; MP[&quot;Mailpit : codes de connexion&quot;]</pre></div>
+  B --&gt; MP[&quot;Mailpit : codes de vérification&quot;]</pre></div>
 <p>Le téléphone télécharge le code JavaScript depuis Metro, puis appelle directement le backend. Dans <code>.env.example</code>, l&#39;API est <code>http://localhost:2053/api</code> : sur un téléphone, <code>localhost</code> désigne le téléphone lui-même, et toutes les requêtes échouent. Il faut remplacer <code>localhost</code> par l&#39;adresse de l&#39;ordinateur sur le réseau local.</p>
 <h2 id="etape-1-trouver-l-adresse-de-l-ordinateur"><a class="anchor" href="#etape-1-trouver-l-adresse-de-l-ordinateur" aria-hidden="true" tabindex="-1">#</a>Étape 1 : trouver l&#39;adresse de l&#39;ordinateur</h2>
 <p>Sous Windows :</p>
@@ -86,7 +86,7 @@
 <span class="hljs-attr">EXPO_PUBLIC_WS_URL</span>=http://<span class="hljs-number">192.168</span>.<span class="hljs-number">1.42</span>:<span class="hljs-number">2053</span>
 <span class="hljs-attr">EXPO_PUBLIC_SENTRY_DSN</span>=
 <span class="hljs-attr">EXPO_PUBLIC_WEB3AUTH_CLIENT_ID</span>=blocklucky-etherbay-client</code></pre></div>
-<p>Seules les deux premières lignes comptent (voir <a href="structure.html#configuration">Stack et structure</a>). Le fichier <code>.env</code> est ignoré par Git.</p>
+<p>Seules les deux premières lignes comptent (voir <a href="structure.html#configuration">Stack et structure</a>). Pour tester la connexion Google, renseigner <code>EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID</code> ou <code>EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID</code>, vides dans <code>.env.example</code>. Le fichier <code>.env</code> est ignoré par Git.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -122,10 +122,13 @@
 npm start</code></pre></div>
 <p>Metro affiche un QR code. Le scanner avec l&#39;appareil photo (iOS) ou depuis Expo Go (Android). Pour un émulateur ou un simulateur déjà ouvert, utiliser <code>npm run android</code> ou <code>npm run ios</code>.</p>
 <h2 id="etape-5-se-connecter"><a class="anchor" href="#etape-5-se-connecter" aria-hidden="true" tabindex="-1">#</a>Étape 5 : se connecter</h2>
+<p>Les trois comptes du seed (<code>citoyen@etherbay.fr</code>, <code>boulangerie@etherbay.fr</code>, <code>maire@etherbay.fr</code>) ont le mot de passe de démonstration <code>EtherBay2026demo</code> et un âge déjà vérifié : l&#39;écran « Connexion » ouvre directement les onglets, sans passer par la vérification d&#39;âge. Les comptes sont décrits dans <a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a>.</p>
+<p>Pour un nouveau compte créé depuis « Inscription », le code de vérification arrive dans Mailpit, publié sur <code>http://127.0.0.1:8025</code> de l&#39;ordinateur uniquement. En développement, l&#39;écran de saisie propose aussi le code renvoyé par le backend (<code>devOtpPreview</code>). Le nouveau compte doit ensuite envoyer sa pièce d&#39;identité et être validé dans l&#39;espace Mairie du web avant de pouvoir acheter un ticket.</p>
 <div class="hint hint-note"><p class="hint-title">À savoir</p>
-<p>La connexion se fait par code envoyé par email, comme sur le web : en local, le code arrive dans Mailpit sur <code>http://localhost:8025</code> du poste qui fait tourner le backend. Si l&#39;application affiche « Impossible de vous connecter au serveur », vérifier l&#39;adresse de l&#39;API dans <code>mobile-app/.env</code> et le pare-feu du poste.</p>
+<p>Si l&#39;application affiche « Connexion impossible. Vérifiez votre connexion et réessayez. », vérifier l&#39;adresse de l&#39;API dans <code>mobile-app/.env</code> et le pare-feu du poste.</p>
 </div>
-<p>Avec ce réglage, l&#39;email prérempli <code>citoyen@etherbay.fr</code>, après la case de majorité, ouvre directement les onglets. Les comptes de démonstration sont décrits dans <a href="../demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a>. Une fois le défaut corrigé, le code de connexion se lira dans Mailpit, publié sur <code>http://127.0.0.1:8025</code> de l&#39;ordinateur uniquement.</p>
+<p>La connexion Google n&#39;est disponible que si <code>EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID</code> ou <code>EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID</code> est défini dans <code>mobile-app/.env</code> et que <code>GOOGLE_CLIENT_IDS</code> est renseigné côté backend. La connexion Apple n&#39;apparaît que sur iOS, et le backend n&#39;accepte que les audiences listées dans <code>APPLE_CLIENT_IDS</code>. Sans ces réglages, les boutons sont désactivés ou masqués.</p>
+<p>La photo de la pièce d&#39;identité fonctionne sur un téléphone physique avec l&#39;appareil photo ou la galerie ; sur un émulateur ou un simulateur, choisir une image de la galerie.</p>
 <p>La session n&#39;est pas conservée : après avoir fermé complètement l&#39;application, il faut se reconnecter.</p>
 <h2 id="ce-qui-differe-d-un-environnement-reel"><a class="anchor" href="#ce-qui-differe-d-un-environnement-reel" aria-hidden="true" tabindex="-1">#</a>Ce qui diffère d&#39;un environnement réel</h2>
 <div class="table-wrap"><table>
@@ -140,12 +143,8 @@ npm start</code></pre></div>
 <td>Absents : <code>EXPLORER_URL</code> est vide dans <code>backend/.env.example</code>, donc le backend ne renvoie aucune URL</td>
 </tr>
 <tr>
-<td>Visuels POAP</td>
-<td>Chargés depuis l&#39;URI du badge ; si elle désigne <code>localhost</code>, le téléphone ne peut pas la joindre et l&#39;écran affiche le repli textuel</td>
-</tr>
-<tr>
 <td>Mode de la blockchain</td>
-<td><code>BLOCKCHAIN_MODE=onchain</code> sur la blockchain locale par défaut, ou <code>simulated</code> ; l&#39;application affiche « Mode démonstration » dans le second cas</td>
+<td><code>BLOCKCHAIN_MODE=onchain</code> sur la blockchain locale par défaut, ou <code>simulated</code> ; dans le second cas, aucun solde en ETH n&#39;est affiché et le retrait des gains est masqué</td>
 </tr>
 <tr>
 <td>HTTP non chiffré</td>
@@ -162,7 +161,7 @@ npm start</code></pre></div>
 </tr>
 </thead>
 <tbody><tr>
-<td>« Impossible de vous connecter au serveur » dès la connexion</td>
+<td>« Connexion impossible. Vérifiez votre connexion et réessayez. »</td>
 <td>API injoignable depuis le téléphone</td>
 <td>Vérifier l&#39;adresse de l&#39;API dans <code>mobile-app/.env</code>, puis ouvrir <code>/health/live</code> depuis le navigateur du téléphone</td>
 </tr>
@@ -187,9 +186,14 @@ npm start</code></pre></div>
 <td>Même adresse que l&#39;API, sans <code>/api</code></td>
 </tr>
 <tr>
-<td>Messages de discussion en double</td>
-<td>Écouteurs Socket.IO dupliqués (défaut connu)</td>
-<td>Voir <a href="temps-reel-notifications.html">Temps réel et notifications</a></td>
+<td>Bouton Google désactivé</td>
+<td>Identifiant client absent dans <code>mobile-app/.env</code>, ou <code>GOOGLE_CLIENT_IDS</code> vide côté backend (503)</td>
+<td>Renseigner les deux, puis <code>npx expo start -c</code></td>
+</tr>
+<tr>
+<td>« Vérifiez votre âge pour jouer. » à l&#39;achat</td>
+<td>Compte dont l&#39;âge n&#39;est pas validé</td>
+<td>Envoyer la pièce d&#39;identité, puis la valider dans l&#39;espace Mairie du web, ou utiliser un compte du seed</td>
 </tr>
 <tr>
 <td>Erreur 429 ou file d&#39;attente</td>

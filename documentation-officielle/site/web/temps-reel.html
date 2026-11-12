@@ -6,7 +6,7 @@
 <title>Temps réel | Documentation BlockLucky</title>
 <meta name="description" content="Le frontend web reçoit quatre types d&#39;événements du serveur Socket.IO du backend : la fréquentation de la salle de tirage, les messages de discussion, l&#39;annonce">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -144,7 +144,7 @@
 <tr>
 <td><code>draw:winner</code></td>
 <td><code>{ roundId, contractRoundId, winnerWallet, prizePool, vrfProofHash, timestamp }</code></td>
-<td><code>setWinnerAnnouncement</code> (arrête la roue), puis invalidation des tags <code>Lottery</code>, <code>Wallet</code> et <code>Admin</code></td>
+<td><code>setRouletteSpinning(true)</code> et <code>setWinnerAnnouncement</code>, invalidation des tags <code>Lottery</code>, <code>Wallet</code> et <code>Admin</code>, puis arrêt de la roue 5 secondes plus tard (<code>WINNER_SPIN_MS</code>) ; la roue est arrêtée si la page est quittée avant</td>
 </tr>
 <tr>
 <td><code>points:awarded</code></td>
@@ -194,7 +194,8 @@
   end
   I-&gt;&gt;S: draw:winner
   S--&gt;&gt;N: draw:winner
-  N-&gt;&gt;N: setWinnerAnnouncement, invalidation Lottery Wallet Admin
+  N-&gt;&gt;N: roue lancée, setWinnerAnnouncement, invalidation Lottery Wallet Admin
+  N-&gt;&gt;N: arrêt de la roue après 5 s
   N-&gt;&gt;A: GET /lottery/status et GET /lottery/wallet
   N-&gt;&gt;N: WinnerClaimCard si le compte a gagné</pre></div>
 <p>En mode onchain, <code>draw:winner</code> et <code>points:awarded</code> sont émis par l&#39;indexeur d&#39;événements du contrat (<a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a>). En mode simulé, <code>draw:winner</code> est émis directement par le service de loterie après le tirage simulé.</p>

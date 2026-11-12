@@ -6,7 +6,7 @@
 <title>Builds et publication | Documentation BlockLucky</title>
 <meta name="description" content="L&#39;application mobile n&#39;a jamais été publiée sur l&#39;App Store ni sur Google Play. Le dépôt contient la configuration Expo (app.json) et des profils EAS Build (eas">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 
@@ -80,18 +80,28 @@
 </tr>
 <tr>
 <td><code>splash</code></td>
-<td><code>splash.png</code>, <code>contain</code>, fond <code>#1A0B2E</code></td>
-<td>Écran de lancement</td>
+<td><code>splash.png</code>, <code>contain</code>, fond <code>#F6F7FA</code></td>
+<td>Écran de lancement, sur le fond clair de la maquette</td>
+</tr>
+<tr>
+<td><code>scheme</code></td>
+<td><code>blocklucky</code></td>
+<td>Schéma d&#39;URL de l&#39;application, utilisé par le retour de la connexion Google ; aucun lien profond n&#39;est routé vers un écran (voir <a href="navigation-ecrans.html#ce-que-la-navigation-ne-fait-pas">Navigation et écrans</a>)</td>
 </tr>
 <tr>
 <td><code>ios.bundleIdentifier</code></td>
 <td><code>fr.etherbay.blocklucky</code></td>
-<td>Identifiant iOS</td>
+<td>Identifiant iOS, à déclarer dans <code>APPLE_CLIENT_IDS</code> du backend pour Sign in with Apple</td>
 </tr>
 <tr>
 <td><code>ios.supportsTablet</code></td>
 <td><code>true</code></td>
 <td>Installable sur iPad</td>
+</tr>
+<tr>
+<td><code>ios.usesAppleSignIn</code></td>
+<td><code>true</code></td>
+<td>Ajoute la capacité Sign in with Apple au binaire iOS</td>
 </tr>
 <tr>
 <td><code>ios.config.usesNonExemptEncryption</code></td>
@@ -105,8 +115,8 @@
 </tr>
 <tr>
 <td><code>android.adaptiveIcon</code></td>
-<td><code>adaptive-icon.png</code>, fond <code>#1A0B2E</code></td>
-<td>Icône adaptative</td>
+<td><code>adaptive-icon.png</code>, fond <code>#FFDA38</code></td>
+<td>Icône adaptative sur le jaune de la charte</td>
 </tr>
 <tr>
 <td><code>android.allowBackup</code></td>
@@ -116,12 +126,29 @@
 <tr>
 <td><code>web</code></td>
 <td><code>favicon.png</code>, bundler <code>metro</code></td>
-<td>Cible web d&#39;Expo, non fonctionnelle faute de <code>react-native-web</code></td>
+<td>Cible web d&#39;Expo ; <code>react-native-web</code> et <code>react-dom</code> sont installés, la cible n&#39;est pas vérifiée par la CI</td>
 </tr>
 <tr>
 <td><code>plugins</code></td>
-<td><code>expo-secure-store</code>, <code>expo-font</code>, <code>expo-status-bar</code></td>
+<td><code>expo-secure-store</code>, <code>expo-font</code>, <code>expo-status-bar</code>, <code>expo-web-browser</code>, <code>expo-apple-authentication</code>, <code>expo-image-picker</code></td>
 <td>Modules configurés au prebuild</td>
+</tr>
+</tbody></table></div>
+<p>Le plugin <code>expo-image-picker</code> fixe les deux textes affichés par le système quand l&#39;application demande l&#39;accès :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Autorisation</th>
+<th>Texte</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Photos (<code>photosPermission</code>)</td>
+<td>« BlockLucky accède à vos photos pour envoyer le recto et le verso de votre pièce d&#39;identité à la Mairie. »</td>
+</tr>
+<tr>
+<td>Appareil photo (<code>cameraPermission</code>)</td>
+<td>« BlockLucky utilise l&#39;appareil photo pour photographier votre pièce d&#39;identité afin de vérifier votre âge. »</td>
 </tr>
 </tbody></table></div>
 <p>Plusieurs clés habituelles d&#39;un projet publié manquent :</p>
@@ -143,10 +170,6 @@
 <tr>
 <td><code>ios.buildNumber</code>, <code>android.versionCode</code></td>
 <td>Normal ici : <code>appVersionSource: &quot;remote&quot;</code> confie ces numéros à EAS</td>
-</tr>
-<tr>
-<td><code>scheme</code></td>
-<td>Pas de liens profonds (voir <a href="navigation-ecrans.html#ce-que-la-navigation-ne-fait-pas">Navigation et écrans</a>)</td>
 </tr>
 <tr>
 <td>Plugin <code>expo-notifications</code></td>
@@ -188,17 +211,17 @@
 </ul>
 </div>
 <h2 id="variables-d-environnement-au-build"><a class="anchor" href="#variables-d-environnement-au-build" aria-hidden="true" tabindex="-1">#</a>Variables d&#39;environnement au build</h2>
-<p><code>EXPO_PUBLIC_API_URL</code> et <code>EXPO_PUBLIC_WS_URL</code> sont lues au moment de la construction du bundle. Sans elles, l&#39;application compilée pointe vers <code>http://localhost:2053</code>, c&#39;est-à-dire vers le téléphone lui-même.</p>
+<p><code>EXPO_PUBLIC_API_URL</code> et <code>EXPO_PUBLIC_WS_URL</code> sont lues au moment de la construction du bundle. Sans elles, l&#39;application compilée pointe vers <code>http://localhost:2053</code>, c&#39;est-à-dire vers le téléphone lui-même. La connexion Google demande en plus <code>EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID</code> et <code>EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID</code> : sans elles, le bouton Google du binaire reste désactivé.</p>
 <p><code>eas.json</code> ne déclare aucune section <code>env</code>, et le fichier <code>.env</code> est exclu de Git par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/.gitignore" class="external" target="_blank" rel="noopener noreferrer"><code>.gitignore</code></a>. Avant un build EAS, il faut donc fournir les URL de l&#39;environnement visé, soit dans une section <code>env</code> de chaque profil, soit dans les variables d&#39;environnement du projet EAS. Pour une version publique, ces URL doivent être en HTTPS : les applications iOS et Android récentes refusent par défaut le HTTP non chiffré hors développement, et <code>app.json</code> ne déclare aucune exception.</p>
 <h2 id="procedure-pour-un-premier-build"><a class="anchor" href="#procedure-pour-un-premier-build" aria-hidden="true" tabindex="-1">#</a>Procédure pour un premier build</h2>
 <p>Ces étapes n&#39;ont pas été exécutées dans le projet. Elles utilisent EAS CLI, qui n&#39;est pas une dépendance du dépôt.</p>
 <ol>
 <li>Créer ou choisir un compte Expo pour la Ville, puis lier le projet (<code>eas init</code>), ce qui ajoute <code>extra.eas.projectId</code> dans <code>app.json</code>.</li>
 <li>Installer <code>expo-dev-client</code> si le profil <code>development</code> doit être utilisé, ou retirer <code>developmentClient</code> du profil.</li>
-<li>Renseigner les URL de l&#39;API dans <code>eas.json</code> ou dans les variables du projet EAS.</li>
-<li>Remplacer les images de <code>assets/images</code> (icône, icône adaptative, splash) et la couleur <code>#1A0B2E</code> par celles de la charte.</li>
+<li>Renseigner les URL de l&#39;API et les identifiants client Google dans <code>eas.json</code> ou dans les variables du projet EAS, et déclarer ces identifiants et le bundle iOS dans <code>GOOGLE_CLIENT_IDS</code> et <code>APPLE_CLIENT_IDS</code> du backend.</li>
+<li>Remplacer les images de <code>assets/images</code> (icône, icône adaptative, splash) par des visuels conformes à la maquette ; les couleurs de fond de <code>app.json</code> le sont déjà.</li>
 <li>Lancer un build de recette, par exemple <code>eas build --profile preview --platform android</code>, et l&#39;installer sur un téléphone.</li>
-<li>Pour iOS, fournir un compte Apple Developer : EAS génère alors les certificats et profils de provisionnement.</li>
+<li>Pour iOS, fournir un compte Apple Developer et activer Sign in with Apple pour l&#39;identifiant <code>fr.etherbay.blocklucky</code> : EAS génère alors les certificats et profils de provisionnement.</li>
 <li>Pour les stores, compléter <code>submit.production</code>, puis <code>eas submit --profile production</code>.</li>
 </ol>
 <p>Avant toute publication, les défauts de l&#39;application doivent être corrigés, en particulier la restauration de session (voir <a href="authentification.html">Authentification et stockage sécurisé</a>). La liste de contrôle générale est dans <a href="../contribuer/mise-en-production.html">Avant une mise en production</a>.</p>
@@ -217,11 +240,19 @@
 </tr>
 <tr>
 <td>Majorité</td>
-<td>Vérification déclarative à la connexion ; la classification d&#39;âge des stores devra être cohérente</td>
+<td>Vérification sur pièce d&#39;identité par la Mairie avant tout achat ; la classification d&#39;âge des stores devra être cohérente</td>
 </tr>
 <tr>
 <td>Données personnelles</td>
-<td>Fiche de confidentialité à remplir (email, adresse de portefeuille, tranche d&#39;âge, identifiant de compte) ; voir <a href="../juridique/rgpd.html">RGPD</a></td>
+<td>Fiche de confidentialité à remplir (email, adresse de portefeuille, identifiant de compte, photos de la pièce d&#39;identité supprimées après décision, identifiant Google ou Apple) ; voir <a href="../juridique/rgpd.html">RGPD</a></td>
+</tr>
+<tr>
+<td>Connexion tierce</td>
+<td>Google et Apple sont proposés tous les deux sur iOS ; les règles de l&#39;App Store sur les connexions tierces sont à vérifier avant la soumission</td>
+</tr>
+<tr>
+<td>Autorisations</td>
+<td>Appareil photo et photos, avec les textes du plugin <code>expo-image-picker</code></td>
 </tr>
 <tr>
 <td>Chiffrement</td>
@@ -243,7 +274,7 @@
 </thead>
 <tbody><tr>
 <td><code>components/CountdownTimer.test.tsx</code></td>
-<td><code>formatRemainingTime</code> : découpage et bornage à zéro</td>
+<td><code>formatRemainingTime</code> de <code>date.util</code> : découpage et bornage à zéro ; le composant <code>CountdownTimer</code> lui-même a été supprimé</td>
 </tr>
 <tr>
 <td><code>screens/BuyTicketScreen.test.tsx</code></td>

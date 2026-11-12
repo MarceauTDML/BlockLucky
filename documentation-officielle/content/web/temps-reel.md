@@ -60,7 +60,7 @@ Aucune autre page n'ouvre de connexion. Le client reste ouvert après avoir quit
 | `disconnect` | aucune | `setSocketConnected(false)` |
 | `draw:waiting-room` | `{ active, onlineUsers }` | `setWaitingRoomOnlineCount(onlineUsers)` |
 | `chat:message` | `{ id, senderWallet, message, emoji?, timestamp }` | `addLiveChatMessage`, ignoré si l'`id` existe déjà ; 100 messages gardés |
-| `draw:winner` | `{ roundId, contractRoundId, winnerWallet, prizePool, vrfProofHash, timestamp }` | `setWinnerAnnouncement` (arrête la roue), puis invalidation des tags `Lottery`, `Wallet` et `Admin` |
+| `draw:winner` | `{ roundId, contractRoundId, winnerWallet, prizePool, vrfProofHash, timestamp }` | `setRouletteSpinning(true)` et `setWinnerAnnouncement`, invalidation des tags `Lottery`, `Wallet` et `Admin`, puis arrêt de la roue 5 secondes plus tard (`WINNER_SPIN_MS`) ; la roue est arrêtée si la page est quittée avant |
 | `points:awarded` | `{ userId, amount, reason }` | Feuille « Points crédités » si `userId` est celui du compte connecté |
 
 ### Événements émis
@@ -92,7 +92,8 @@ sequenceDiagram
   end
   I->>S: draw:winner
   S-->>N: draw:winner
-  N->>N: setWinnerAnnouncement, invalidation Lottery Wallet Admin
+  N->>N: roue lancée, setWinnerAnnouncement, invalidation Lottery Wallet Admin
+  N->>N: arrêt de la roue après 5 s
   N->>A: GET /lottery/status et GET /lottery/wallet
   N->>N: WinnerClaimCard si le compte a gagné
 ```

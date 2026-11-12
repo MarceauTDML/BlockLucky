@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Inscription et portefeuille | Documentation BlockLucky</title>
-<meta name="description" content="Un citoyen crée son compte en deux requêtes : il saisit son email et reçoit un code à 6 chiffres, puis il saisit ce code. À la validation, le backend crée le co">
+<meta name="description" content="Un citoyen crée son compte en deux requêtes : il envoie son email et reçoit un code à 6 chiffres, puis il saisit ce code. À la validation, le backend crée le co">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../assets/css/doc.css">
 <script src="../../assets/js/theme.js"></script>
 <script src="../../assets/vendor/mermaid.min.js" defer></script>
@@ -37,8 +37,29 @@
     <div class="breadcrumb"><span>3. Architecture</span><span>Flux métier</span></div>
     <article class="markdown">
 <h1>Inscription et portefeuille</h1>
-<p>Un citoyen crée son compte en deux requêtes : il saisit son email et reçoit un code à 6 chiffres, puis il saisit ce code. À la validation, le backend crée le compte, génère un portefeuille Ethereum chiffré, crédite les EtherPoints de bienvenue et lance la dotation d&#39;ethers fictifs. Le même parcours sert à la connexion d&#39;un citoyen existant.</p>
-<p>Ce flux décrit le comportement par défaut : <code>LOGIN_EMAIL_CODE_REQUIRED=true</code>, obligatoire en production.</p>
+<p>Un citoyen crée son compte en deux requêtes : il envoie son email et reçoit un code à 6 chiffres, puis il saisit ce code. À la validation, le backend crée le compte, génère un portefeuille Ethereum chiffré, crédite les EtherPoints de bienvenue et lance la dotation d&#39;ethers fictifs. Le compte n&#39;est pas encore autorisé à jouer : il doit ensuite faire vérifier son âge par la Mairie.</p>
+<p>La première requête dépend du client :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Client</th>
+<th>Première requête</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Application mobile</td>
+<td><code>POST /auth/signup</code></td>
+<td>email, mot de passe, acceptation des conditions, parrainage facultatif</td>
+</tr>
+<tr>
+<td>Frontend web</td>
+<td><code>POST /auth/login</code></td>
+<td>email, adresse de portefeuille factice, déclaration de majorité, tranche d&#39;âge, parrainage facultatif</td>
+</tr>
+</tbody></table></div>
+<p>La seconde est toujours <code>POST /auth/2fa/verify</code>. Une inscription par Google ou Apple se fait en une seule requête, décrite plus bas. Le parcours par <code>/auth/login</code> sert aussi à la connexion d&#39;un citoyen existant ; le mobile connecte un compte existant par <code>/auth/signin</code>.</p>
+<p>Ce flux décrit le comportement par défaut : <code>LOGIN_EMAIL_CODE_REQUIRED=true</code>, obligatoire en production. <code>/auth/signup</code> envoie un code quelle que soit cette valeur.</p>
 <h2 id="diagramme-de-sequence"><a class="anchor" href="#diagramme-de-sequence" aria-hidden="true" tabindex="-1">#</a>Diagramme de séquence</h2>
 <div class="diagram"><pre class="mermaid">sequenceDiagram
   autonumber
@@ -52,13 +73,13 @@
   participant WS as WalletService
   participant N as Noeud RPC
 
-  C-&gt;&gt;API: POST /auth/login avec email, walletAddress, isAdultConfirmed
-  API-&gt;&gt;S: socialLogin(input)
-  S-&gt;&gt;DB: findByWallet puis findByEmail
+  C-&gt;&gt;API: POST /auth/signup ou POST /auth/login
+  API-&gt;&gt;S: signup(input) ou socialLogin(input)
+  S-&gt;&gt;DB: findByEmail, et findByWallet pour /login
   DB--&gt;&gt;S: aucun compte
   S-&gt;&gt;R: issue SIGNUP, auth:otp:subjectId, 10 min
   S-&gt;&gt;Q: enqueueEmail otp-code
-  S--&gt;&gt;C: 200 requiresTwoFactor EMAIL, userId = subjectId
+  S--&gt;&gt;C: 201 ou 200, requiresTwoFactor EMAIL, userId = subjectId
   Q--&gt;&gt;W: job send-email
   W-&gt;&gt;W: sendTemplateEmail via SMTP
   C-&gt;&gt;API: POST /auth/2fa/verify avec userId et code
@@ -67,21 +88,26 @@
   R--&gt;&gt;S: challenge SIGNUP et données d&#39;inscription
   S-&gt;&gt;WS: createCustodialWallet
   WS--&gt;&gt;S: adresse et clé chiffrée AES-256-GCM
-  S-&gt;&gt;DB: createUser avec walletEncryptedKey
+  S-&gt;&gt;DB: createUser avec walletEncryptedKey et passwordHash éventuel
   S-)WS: grantWelcomeEthers, sans attendre
   WS-&gt;&gt;R: setIfAbsent wallet:grant-lock:id, 120 s
   WS-&gt;&gt;N: operator.sendTransaction WELCOME_GRANT_WEI
-  S-&gt;&gt;DB: creditPoints 25 SOCIAL_QUEST
+  S-&gt;&gt;DB: creditPoints parrainage éventuel, puis 25 SOCIAL_QUEST
   S-&gt;&gt;Q: enqueueEmail welcome
   S-&gt;&gt;DB: recordAuthAnalytics USER_SIGNUP
   S--&gt;&gt;C: 200 token JWT et user
   N--&gt;&gt;WS: reçu de la dotation
   WS-&gt;&gt;DB: welcomeGrantTxHash</pre></div>
 <h2 id="etape-1-demande-du-code"><a class="anchor" href="#etape-1-demande-du-code" aria-hidden="true" tabindex="-1">#</a>Étape 1 : demande du code</h2>
+<h3 id="par-mot-de-passe-depuis-le-mobile"><a class="anchor" href="#par-mot-de-passe-depuis-le-mobile" aria-hidden="true" tabindex="-1">#</a>Par mot de passe, depuis le mobile</h3>
+<p><strong>Route.</strong> <code>POST /api/v1/auth/signup</code> avec <code>authRateLimiter</code> puis <code>validate(signupSchema)</code>.</p>
+<p><strong>Validation.</strong> <code>signupSchema</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.validators.ts</code></a>) exige un email, un mot de passe de 10 à 128 caractères avec au moins une lettre et un chiffre, et <code>acceptTerms</code> strictement égal à <code>true</code>. Il accepte <code>referralCode</code>, <code>utmSource</code> et <code>ageGroup</code>. Le mobile n&#39;envoie ni tranche d&#39;âge ni déclaration de majorité.</p>
+<p><strong>Service.</strong> <code>authService.signup</code> refuse en 409 une adresse déjà vérifiée ou anonymisée, hache le mot de passe par bcrypt (<code>hashValue</code>), résout le parrain, tire un identifiant temporaire par <code>newSubjectId()</code> et appelle <code>issue(subjectId, &#39;SIGNUP&#39;, signup)</code> avec l&#39;empreinte du mot de passe dans les données d&#39;inscription. Le mot de passe en clair n&#39;est jamais stocké, ni en base ni dans Redis. L&#39;email <code>otp-code</code> part avec le sujet « Vérifiez votre adresse email ». La réponse est un 201 de même forme que celle de <code>/auth/login</code>.</p>
+<h3 id="sans-mot-de-passe-depuis-le-web"><a class="anchor" href="#sans-mot-de-passe-depuis-le-web" aria-hidden="true" tabindex="-1">#</a>Sans mot de passe, depuis le web</h3>
 <p><strong>Route.</strong> <code>POST /api/v1/auth/login</code>, déclarée dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.routes.ts</code></a> avec <code>authRateLimiter</code> (30 requêtes par 10 minutes et par IP) puis <code>validate(socialLoginSchema)</code>.</p>
 <p><strong>Validation.</strong> <code>socialLoginSchema</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.validators.ts</code></a>) exige une adresse <code>walletAddress</code> au format <code>0x</code> suivi de 40 caractères hexadécimaux (convertie en minuscules), un email facultatif, <code>isAdultConfirmed</code> strictement égal à <code>true</code>, et accepte <code>provider</code>, <code>ageGroup</code>, <code>referralCode</code>, <code>utmSource</code>.</p>
 <div class="hint hint-note"><p class="hint-title">À savoir</p>
-<p>L&#39;adresse <code>walletAddress</code> envoyée par les clients n&#39;est pas un vrai portefeuille. Le web (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/lib/wallet.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/lib/wallet.ts</code></a>) et le mobile la dérivent de l&#39;email par <code>generateDeterministicWallet</code>. Le backend ne s&#39;en sert que pour retrouver un compte existant. Le portefeuille réel du citoyen est celui que le backend génère à l&#39;étape 2.</p>
+<p>L&#39;adresse <code>walletAddress</code> envoyée par le web n&#39;est pas un vrai portefeuille : <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/lib/wallet.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/lib/wallet.ts</code></a> la dérive de l&#39;email par <code>generateDeterministicWallet</code>. Le backend ne s&#39;en sert que pour retrouver un compte existant. Le portefeuille réel du citoyen est celui que le backend génère à l&#39;étape 2.</p>
 </div>
 <p><strong>Service.</strong> <code>authController.socialLogin</code> appelle <code>authService.socialLogin</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.services.ts</code></a>) :</p>
 <ol>
@@ -104,25 +130,34 @@
 <li><code>assertNotLocked(subjectId)</code> : 429 si 10 échecs ont été enregistrés dans l&#39;heure.</li>
 <li><code>hasPending(subjectId)</code> est vrai : <code>consume(subjectId, code)</code> compare le HMAC en temps constant (<code>safeEqual</code>). Un code faux incrémente le compteur d&#39;essais ; au cinquième, le défi est supprimé. Un code juste supprime le défi.</li>
 <li>En cas d&#39;échec, <code>recordFailure</code> incrémente <code>auth:otp-failures:&lt;subjectId&gt;</code> pour une heure et la réponse est 401. En cas de succès, <code>clearFailures</code>.</li>
-<li>Le défi est de type <code>SIGNUP</code> : <code>createVerifiedUser(challenge.signup)</code>.</li>
+<li>Le défi est de type <code>SIGNUP</code>. Sans empreinte de mot de passe, <code>createVerifiedUser(challenge.signup)</code>. Avec une empreinte, <code>registerVerifiedEmail</code> : création du compte si l&#39;adresse est inconnue, 409 si elle a été vérifiée entre-temps, activation si elle appartient à un compte non vérifié, par exemple créé par un ticket offert.</li>
 </ol>
 <p><strong>Création du compte.</strong> <code>createVerifiedUser</code> :</p>
 <ol>
 <li>Revérifie qu&#39;aucun compte n&#39;existe avec cette adresse ou cet email. S&#39;il en existe un, il est renvoyé tel quel, sans rien créer.</li>
 <li><code>walletService.createCustodialWallet()</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/wallet.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/wallet.service.ts</code></a>) : <code>Wallet.createRandom()</code> d&#39;ethers, adresse en minuscules, clé privée chiffrée par <code>encryptText</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/crypto.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/utils/crypto.util.ts</code></a>) en AES-256-GCM avec <code>ENCRYPTION_KEY</code>.</li>
-<li><code>authRepository.createUser</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.repo.ts</code></a>) avec l&#39;adresse générée, <code>walletEncryptedKey</code>, l&#39;email, <code>isEmailVerified: true</code> et le parrain éventuel.</li>
+<li><code>authRepository.createUser</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.repo.ts</code></a>) avec l&#39;adresse générée, <code>walletEncryptedKey</code>, l&#39;email, <code>isEmailVerified: true</code>, l&#39;empreinte du mot de passe et le parrain éventuels. <code>ageVerificationStatus</code> prend sa valeur par défaut, <code>NONE</code>.</li>
 <li><code>walletService.grantWelcomeEthers(user)</code> est lancé sans être attendu. Une erreur est seulement journalisée.</li>
-<li><code>ledgerService.creditPoints</code> : 25 EtherPoints <code>SOCIAL_QUEST</code>. Avec un parrain : 100 EtherPoints <code>REFERRAL</code> au parrain et 50 <code>REFERRAL</code> au filleul.</li>
-<li>Email <code>welcome</code> mis en file, avec l&#39;adresse du portefeuille et le code de parrainage.</li>
-<li><code>recordAuthAnalytics</code> enregistre un événement <code>USER_SIGNUP</code> dans <code>Analytics</code>.</li>
+<li>Avec un parrain, <code>ledgerService.creditPoints</code> verse 100 EtherPoints <code>REFERRAL</code> au parrain et 50 <code>REFERRAL</code> au filleul.</li>
+<li><code>welcomeNewAccount</code> crédite 25 EtherPoints <code>SOCIAL_QUEST</code>, met en file l&#39;email <code>welcome</code> avec l&#39;adresse du portefeuille et le code de parrainage, et enregistre un événement <code>USER_SIGNUP</code> dans <code>Analytics</code>.</li>
 </ol>
-<p><strong>Session.</strong> <code>issueSession</code> signe un JWT HS256 par <code>sessionService.sign</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/session.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/session.service.ts</code></a>) avec <code>userId</code>, <code>walletAddress</code>, <code>role</code>, <code>twoFactorVerified: true</code> et un <code>jti</code> aléatoire, valable <code>JWT_EXPIRES_IN</code> (12 h par défaut). La réponse contient <code>token</code>, <code>user</code> (sans aucune donnée de portefeuille sensible) et <code>isNewUser: true</code>.</p>
+<p>L&#39;activation d&#39;un compte existant non vérifié (<code>activateExistingAccount</code>) pose le mot de passe et <code>isEmailVerified</code>, crée le portefeuille s&#39;il manque, lance la dotation, puis appelle <code>welcomeNewAccount</code>. Elle ne verse pas de bonus de parrainage.</p>
+<p><strong>Session.</strong> <code>issueSession</code> signe un JWT HS256 par <code>sessionService.sign</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/session.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/session.service.ts</code></a>) avec <code>userId</code>, <code>walletAddress</code>, <code>role</code>, <code>twoFactorVerified: true</code> et un <code>jti</code> aléatoire, valable <code>JWT_EXPIRES_IN</code> (12 h par défaut). La réponse contient <code>token</code>, <code>user</code> (sans aucune donnée de portefeuille sensible, avec <code>hasPassword</code> et <code>ageVerificationStatus</code>) et <code>isNewUser: true</code>.</p>
+<h2 id="etape-3-verification-de-l-age"><a class="anchor" href="#etape-3-verification-de-l-age" aria-hidden="true" tabindex="-1">#</a>Étape 3 : vérification de l&#39;âge</h2>
+<p>Le compte créé peut consulter le tour, ses points et la boutique, mais l&#39;achat, le cadeau, l&#39;échange de récompense et le ticket à gratter lui renvoient <code>403 AGE_VERIFICATION_REQUIRED</code>. Sur le mobile, l&#39;écran de vérification d&#39;âge s&#39;ouvre dès la connexion (voir <a href="../../mobile/navigation-ecrans.html#ouverture-automatique-de-la-verification-d-age">Navigation et écrans</a>). Sur le web, la billetterie affiche un avertissement qui mène à <code>/profil/identite</code>, page aussi accessible depuis <code>/profil</code> :</p>
+<ol>
+<li>le citoyen photographie ou choisit le recto et le verso de sa pièce d&#39;identité, envoyés par <code>POST /user/identity</code> et chiffrés au repos ;</li>
+<li>son statut passe à <code>PENDING</code> ;</li>
+<li>un agent de la Mairie examine la pièce sur la page Identités de l&#39;espace Mairie et l&#39;approuve ou la refuse ; les images sont effacées dans les deux cas et le citoyen reçoit l&#39;email <code>identity-decision</code> ;</li>
+<li>après une approbation, le statut vaut <code>VERIFIED</code> et les routes de jeu s&#39;ouvrent.</li>
+</ol>
+<p>Le détail est dans <a href="../../backend/modules/utilisateur.html#verification-d-age">Utilisateur</a> et <a href="../../backend/modules/administration.html#verification-des-pieces-d-identite">Administration</a>. Côté web, la page d&#39;envoi est décrite dans <a href="../../web/portefeuille-loterie.html#verification-d-identite">Portefeuille et loterie</a>.</p>
 <h2 id="la-dotation-de-bienvenue"><a class="anchor" href="#la-dotation-de-bienvenue" aria-hidden="true" tabindex="-1">#</a>La dotation de bienvenue</h2>
 <p><code>grantWelcomeEthers</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/wallet.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/wallet.service.ts</code></a>) :</p>
 <ol>
 <li>Ne fait rien en mode <code>simulated</code>, si <code>welcomeGrantTxHash</code> est déjà renseigné ou si <code>WELCOME_GRANT_WEI</code> vaut 0.</li>
 <li>Pose le verrou <code>wallet:grant-lock:&lt;userId&gt;</code> pour 120 s par <code>redis.setIfAbsent</code>. Si le verrou existe déjà, une dotation est en cours : la fonction attend sa fin par <code>waitForPendingGrant</code>.</li>
-<li>Envoie <code>WELCOME_GRANT_WEI</code> (0,1 ETH par défaut) depuis le compte opérateur <code>chainClient.operator</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/chain.client.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/chain.client.ts</code></a>), attend le reçu, puis enregistre <code>welcomeGrantTxHash</code>.</li>
+<li>Envoie <code>WELCOME_GRANT_WEI</code> (0,5 ETH par défaut) depuis le compte opérateur <code>chainClient.operator</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/chain.client.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/chain.client.ts</code></a>), attend le reçu, puis enregistre <code>welcomeGrantTxHash</code>.</li>
 <li>En cas d&#39;échec, supprime le verrou, journalise l&#39;erreur et renvoie <code>null</code>. Le verrou n&#39;est pas supprimé après un succès : il expire seul, et <code>welcomeGrantTxHash</code> empêche toute nouvelle dotation.</li>
 </ol>
 <p><code>waitForPendingGrant</code> interroge la base toutes les 500 ms pendant 30 s au plus. Elle renvoie le hash dès qu&#39;il apparaît, ou <code>null</code> si le verrou a disparu (échec) ou si le délai est écoulé.</p>
@@ -137,6 +172,16 @@
 </tr>
 </thead>
 <tbody><tr>
+<td>Signup</td>
+<td>400</td>
+<td>Email invalide, mot de passe trop faible, <code>acceptTerms</code> absent ou faux</td>
+</tr>
+<tr>
+<td>Signup</td>
+<td>409</td>
+<td>Un compte vérifié existe déjà avec cette adresse</td>
+</tr>
+<tr>
 <td>Login</td>
 <td>400</td>
 <td>Adresse au mauvais format, email invalide, <code>isAdultConfirmed</code> absent ou faux (le refus de Zod intervient avant le 403 du service)</td>
@@ -169,7 +214,7 @@
 <tr>
 <td>Verify</td>
 <td>409</td>
-<td>Création concurrente du même email ou de la même adresse (unicité <code>P2002</code> ou <code>23505</code>)</td>
+<td>Création concurrente du même email ou de la même adresse (unicité <code>P2002</code> ou <code>23505</code>), ou adresse vérifiée entre l&#39;inscription par mot de passe et la saisie du code</td>
 </tr>
 </tbody></table></div>
 <h2 id="idempotence-et-concurrence"><a class="anchor" href="#idempotence-et-concurrence" aria-hidden="true" tabindex="-1">#</a>Idempotence et concurrence</h2>
@@ -179,8 +224,10 @@
 <li>La création du compte, les EtherPoints et les emails ne sont pas dans une même transaction. Un échec au milieu (par exemple de <code>creditPoints</code>) laisse un compte créé sans ses points de bienvenue, et la requête répond en erreur. Une nouvelle connexion avec le même email retrouve ce compte.</li>
 <li>La dotation est protégée deux fois : par le verrou Redis contre les envois concurrents, et par <code>welcomeGrantTxHash</code> contre un second envoi. Si Redis est indisponible, le verrou passe par la mémoire du process et ne protège plus contre un envoi depuis un autre process.</li>
 </ul>
+<h2 id="inscription-par-google-ou-apple"><a class="anchor" href="#inscription-par-google-ou-apple" aria-hidden="true" tabindex="-1">#</a>Inscription par Google ou Apple</h2>
+<p><code>POST /auth/oauth/google</code> ou <code>/auth/oauth/apple</code> reçoit un jeton d&#39;identité du fournisseur, le vérifie dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/oauth-verifier.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>oauth-verifier.service.ts</code></a> et retrouve le compte par l&#39;adresse email du jeton. Pour une adresse inconnue, <code>createVerifiedUser</code> crée directement le compte, sans code email, sans mot de passe et sans parrain, et la session est délivrée dans la même réponse. Ces routes répondent 503 tant que <code>GOOGLE_CLIENT_IDS</code> ou <code>APPLE_CLIENT_IDS</code> est vide. Voir <a href="../../backend/modules/auth.html#post-auth-oauth-google-et-auth-oauth-apple">Authentification</a>.</p>
 <h2 id="connexion-d-un-citoyen-existant"><a class="anchor" href="#connexion-d-un-citoyen-existant" aria-hidden="true" tabindex="-1">#</a>Connexion d&#39;un citoyen existant</h2>
-<p>Le parcours est le même, avec un défi <code>LOGIN</code> au lieu de <code>SIGNUP</code> stocké sous l&#39;identifiant du compte. À la validation, <code>verify2FA</code> marque l&#39;email vérifié si besoin, enregistre un <code>USER_LOGIN</code> et émet un nouveau jeton. Si le compte a une 2FA par application, <code>/auth/login</code> renvoie <code>twoFactorMethod: &#39;APP&#39;</code> et <code>/auth/2fa/verify</code> attend un code TOTP ou un code de secours. Voir <a href="../../securite/authentification.html">Authentification et 2FA</a>.</p>
+<p>Sur le mobile, <code>POST /auth/signin</code> compare le mot de passe et délivre la session tout de suite, sauf si la 2FA est active. Sur le web, le parcours est le même que l&#39;inscription, avec un défi <code>LOGIN</code> au lieu de <code>SIGNUP</code> stocké sous l&#39;identifiant du compte. À la validation, <code>verify2FA</code> marque l&#39;email vérifié si besoin, enregistre un <code>USER_LOGIN</code> et émet un nouveau jeton. Si le compte a une 2FA par application, <code>/auth/login</code> renvoie <code>twoFactorMethod: &#39;APP&#39;</code> et <code>/auth/2fa/verify</code> attend un code TOTP ou un code de secours. Voir <a href="../../securite/authentification.html">Authentification et 2FA</a>.</p>
 <h2 id="en-mode-simule"><a class="anchor" href="#en-mode-simule" aria-hidden="true" tabindex="-1">#</a>En mode simulé</h2>
 <p><code>grantWelcomeEthers</code> ne fait rien. Le portefeuille est créé et chiffré de la même manière, mais aucun ether n&#39;est envoyé.</p>
 
@@ -191,7 +238,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#diagramme-de-sequence">Diagramme de séquence</a></li><li class="toc-h2"><a href="#etape-1-demande-du-code">Étape 1 : demande du code</a></li><li class="toc-h2"><a href="#etape-2-validation-du-code-et-creation-du-compte">Étape 2 : validation du code et création du compte</a></li><li class="toc-h2"><a href="#la-dotation-de-bienvenue">La dotation de bienvenue</a></li><li class="toc-h2"><a href="#erreurs-possibles">Erreurs possibles</a></li><li class="toc-h2"><a href="#idempotence-et-concurrence">Idempotence et concurrence</a></li><li class="toc-h2"><a href="#connexion-d-un-citoyen-existant">Connexion d&#39;un citoyen existant</a></li><li class="toc-h2"><a href="#en-mode-simule">En mode simulé</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#diagramme-de-sequence">Diagramme de séquence</a></li><li class="toc-h2"><a href="#etape-1-demande-du-code">Étape 1 : demande du code</a></li><li class="toc-h3"><a href="#par-mot-de-passe-depuis-le-mobile">Par mot de passe, depuis le mobile</a></li><li class="toc-h3"><a href="#sans-mot-de-passe-depuis-le-web">Sans mot de passe, depuis le web</a></li><li class="toc-h2"><a href="#etape-2-validation-du-code-et-creation-du-compte">Étape 2 : validation du code et création du compte</a></li><li class="toc-h2"><a href="#etape-3-verification-de-l-age">Étape 3 : vérification de l&#39;âge</a></li><li class="toc-h2"><a href="#la-dotation-de-bienvenue">La dotation de bienvenue</a></li><li class="toc-h2"><a href="#erreurs-possibles">Erreurs possibles</a></li><li class="toc-h2"><a href="#idempotence-et-concurrence">Idempotence et concurrence</a></li><li class="toc-h2"><a href="#inscription-par-google-ou-apple">Inscription par Google ou Apple</a></li><li class="toc-h2"><a href="#connexion-d-un-citoyen-existant">Connexion d&#39;un citoyen existant</a></li><li class="toc-h2"><a href="#en-mode-simule">En mode simulé</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

@@ -6,7 +6,7 @@
 <title>Portefeuille et loterie | Documentation BlockLucky</title>
 <meta name="description" content="Cette page décrit comment le navigateur affiche le portefeuille intégré du citoyen, achète et offre des tickets, suit le tirage et retire une cagnotte. Le princ">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -237,13 +237,34 @@
 <h2 id="billetterie"><a class="anchor" href="#billetterie" aria-hidden="true" tabindex="-1">#</a>Billetterie</h2>
 <p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/billetterie/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/(citoyen)/billetterie/page.tsx</code></a> propose deux onglets (<code>SegmentedTabs</code>) : « Acheter pour moi » et « Offrir un ticket ». <code>?mode=cadeau</code> ouvre directement le second ; c&#39;est le lien du bouton « Offrir un ticket » de <code>/accueil</code>.</p>
 <h3 id="achat-pour-soi"><a class="anchor" href="#achat-pour-soi" aria-hidden="true" tabindex="-1">#</a>Achat pour soi</h3>
+<p>La page achète toujours un seul ticket (<code>purchaseTicket(1, 0)</code>) : il n&#39;y a pas de choix de quantité.</p>
 <ol>
-<li>Choix de la quantité parmi 1, 2, 5 et 10 (<code>ChoicePills</code>).</li>
-<li>Affichage du total : quantité multipliée par <code>round.ticketPriceEth</code> (repli 0,01), « + frais réseau, prélevés sur votre portefeuille BlockLucky », et du bonus de 50 points par ticket plus le certificat POAP.</li>
-<li>Rappel du plafond personnel <code>user.responsibleGaming.maxTicketsPerRound</code> s&#39;il existe, avec un lien vers <code>/profil/securite</code>.</li>
+<li>Affichage du total : prix d&#39;un ticket <code>round.ticketPriceEth</code> (repli 0,01), « + frais réseau, prélevés sur votre portefeuille BlockLucky », du bonus de 50 points plus le certificat POAP, et de la règle « Un ticket par habitant et par tirage. ».</li>
 <li>Case obligatoire : « Je comprends que j&#39;engage des ethers fictifs, sans valeur monétaire, dans un tirage pédagogique ».</li>
-<li>Bouton « Confirmer (n tickets) », désactivé tant que la case n&#39;est pas cochée, si le tour n&#39;est pas <code>OPEN</code> ou si le contrat est en pause.</li>
+<li>Bouton « Confirmer mon ticket », désactivé tant que la case n&#39;est pas cochée, si le tour n&#39;est pas <code>OPEN</code>, si le contrat est en pause ou si l&#39;âge n&#39;est pas vérifié.</li>
 </ol>
+<p>Un second achat sur le même tour reçoit <code>409 Vous avez déjà votre ticket pour ce grand tirage.</code>, affiché dans la feuille « Action impossible pour ce tour ».</p>
+<p>Si <code>user.ageVerificationStatus</code> existe et ne vaut pas <code>VERIFIED</code>, une alerte s&#39;affiche au-dessus du formulaire et les boutons d&#39;achat et de cadeau sont désactivés :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Statut</th>
+<th>Message</th>
+<th>Lien vers <code>/profil/identite</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PENDING</code></td>
+<td>« Votre pièce d&#39;identité est en cours de vérification par la Mairie. Vous pourrez jouer dès sa validation. »</td>
+<td>« Voir le suivi »</td>
+</tr>
+<tr>
+<td><code>NONE</code>, <code>REJECTED</code></td>
+<td>« Vérifiez votre âge pour participer au tirage. »</td>
+<td>« Envoyer ma pièce »</td>
+</tr>
+</tbody></table></div>
+<p>Le statut vient du hook <code>useAgeVerification</code> (voir <a href="#verification-d-identite">Vérification d&#39;identité</a>) : le statut lu par <code>GET /user/identity</code>, ou à défaut celui du profil stocké. Sans aucun des deux, rien n&#39;est bloqué côté client : le backend reste seul juge.</p>
 <p>Le reçu, à droite, passe par trois états :</p>
 <div class="table-wrap"><table>
 <thead>
@@ -258,21 +279,65 @@
 </tr>
 <tr>
 <td><code>pending</code></td>
-<td>« Demande envoyée, en attente du réseau » et nombre de tickets en cours</td>
+<td>« Demande envoyée, en attente du réseau » et « Ticket en cours de validation »</td>
 </tr>
 <tr>
 <td><code>confirmed</code></td>
 <td>Pour chaque ticket : hash raccourci, numéro de bloc, date, lien Etherscan ; points gagnés et nouveau solde ; mention « Certificat POAP en cours d&#39;émission » si <code>poapBadge.status === &#39;MINT_PENDING&#39;</code></td>
 </tr>
 </tbody></table></div>
-<p>Si l&#39;achat échoue, le reçu revient à l&#39;état vide et la feuille d&#39;erreur s&#39;affiche.</p>
+<p>Si l&#39;achat échoue, le reçu revient à l&#39;état vide et la feuille d&#39;erreur s&#39;affiche. Si le backend répond « Vérifiez votre âge pour jouer. » alors que le statut connu de la page ne l&#39;avait pas prévu, c&#39;est la feuille générique qui s&#39;affiche. Le numéro de ticket sur 5 chiffres (<code>ticketNumber</code>) renvoyé par l&#39;API n&#39;est pas affiché par le reçu.</p>
 <div class="hint hint-note"><p class="hint-title">À savoir</p>
 <p>Le texte du reçu en attente affirme qu&#39;un nouvel appui ne créera pas de doublon. Dans les faits, la protection vient du bouton en état <code>loading</code> (désactivé, <code>aria-busy</code>) et du garde <code>if (isBuying) return</code>. Le client n&#39;envoie pas d&#39;en-tête <code>Idempotency-Key</code> : deux onglets peuvent donc envoyer deux achats.</p>
 </div>
 <h3 id="cadeau"><a class="anchor" href="#cadeau" aria-hidden="true" tabindex="-1">#</a>Cadeau</h3>
-<p>Le formulaire demande l&#39;email du destinataire (<code>isValidEmail</code>) et un message personnel de 250 caractères au plus, prérempli. <code>sendGiftTicket</code> appelle <code>POST /lottery/gift</code>. En cas de succès, la page affiche « Ticket envoyé à ... Vous avez reçu +n pts » ; le bonus annoncé est de 75 points (<code>GIFT_BONUS_POINTS</code>). Le bouton est désactivé si le tour est fermé ou en pause.</p>
+<p>Le formulaire demande l&#39;email du destinataire (<code>isValidEmail</code>) et un message personnel de 250 caractères au plus, prérempli. <code>sendGiftTicket</code> appelle <code>POST /lottery/gift</code>. Un destinataire qui a déjà son ticket pour le tour est refusé en 409. En cas de succès, la page affiche « Ticket envoyé à ... Vous avez reçu +n pts » ; le bonus annoncé est de 75 points (<code>GIFT_BONUS_POINTS</code>). Le bouton est désactivé si le tour est fermé ou en pause, ou si l&#39;âge n&#39;est pas vérifié.</p>
 <h3 id="achat-rapide"><a class="anchor" href="#achat-rapide" aria-hidden="true" tabindex="-1">#</a>Achat rapide</h3>
 <p><code>/accueil</code> propose un bouton « Acheter 1 ticket » qui appelle <code>purchaseTicket(1, 0)</code> puis relance <code>getLotteryStatus</code>. Il n&#39;y a pas de case de compréhension sur ce raccourci : la mention « 1 ticket = 0,01 ETH fictif + frais réseau... aucune somme réelle engagée » figure sous le bouton.</p>
+<p>Ce bouton (variante <code>secondary</code>, en encre), le lien « Salle de tirage » et la mention sont placés à l&#39;intérieur de la carte jaune du compte à rebours, comme sur l&#39;écran d&#39;accueil du mobile. <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/lottery/CountdownTimer.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>CountdownTimer</code></a> accepte pour cela une prop facultative <code>children</code>, rendue sous l&#39;échéance. La carte affiche une pilule encre « Chainlink VRF » ou « Mode démonstration », le numéro du tirage, la cagnotte en grand et l&#39;échéance dans un encart <code>sun-soft</code>. Quand les participations sont fermées ou en pause, un message <code>role=&quot;status&quot;</code> s&#39;ajoute au-dessus du bouton, qui est désactivé.</p>
+<h2 id="verification-d-identite"><a class="anchor" href="#verification-d-identite" aria-hidden="true" tabindex="-1">#</a>Vérification d&#39;identité</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/identite/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/(citoyen)/profil/identite/page.tsx</code></a> répond à <code>/profil/identite</code>. On y arrive par le bouton « Vérification d&#39;identité » de <code>/profil</code> (libellé « Vérification d&#39;identité : âge vérifié » une fois le statut <code>VERIFIED</code>) ou par le lien de l&#39;alerte de la billetterie.</p>
+<p>Le statut vient du hook <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/hooks/useAgeVerification.ts" class="external" target="_blank" rel="noopener noreferrer"><code>useAgeVerification</code></a>, partagé avec <code>/billetterie</code> et <code>/profil</code>. Il appelle <code>useGetIdentityStatusQuery</code> (<code>GET /user/identity</code>, tag <code>Identity</code>), sauté sans session, relancé à chaque montage et quand la fenêtre reprend le focus. Si le statut reçu diffère de <code>user.ageVerificationStatus</code>, il met à jour le profil dans le slice <code>auth</code> (<code>updateUserProfile</code>) et dans le stockage (<code>bl.auth.user</code>). Il renvoie <code>identity</code>, <code>status</code> (statut reçu, ou à défaut celui du profil), <code>isLoading</code>, <code>isError</code> et <code>refetch</code>. La page affiche <code>NONE</code> si aucun statut n&#39;est connu. Le type <code>IdentityStatus</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/types/user.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>user.types.ts</code></a> porte <code>status</code>, <code>submittedAt</code>, <code>reviewedAt</code> et <code>note</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Statut</th>
+<th>Badge</th>
+<th>Affichage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NONE</code></td>
+<td>« À envoyer »</td>
+<td>formulaire d&#39;envoi</td>
+</tr>
+<tr>
+<td><code>PENDING</code></td>
+<td>« En cours de vérification »</td>
+<td>date d&#39;envoi ; pas de formulaire</td>
+</tr>
+<tr>
+<td><code>VERIFIED</code></td>
+<td>« Âge vérifié »</td>
+<td>message de confirmation et bouton « Acheter mon ticket » vers <code>/billetterie</code></td>
+</tr>
+<tr>
+<td><code>REJECTED</code></td>
+<td>« Refusée »</td>
+<td>motif saisi par la Mairie (<code>note</code>) s&#39;il existe, puis formulaire pour envoyer une nouvelle pièce</td>
+</tr>
+</tbody></table></div>
+<p>Le formulaire comporte :</p>
+<ol>
+<li>deux zones de choix de fichier, recto (« Face avec votre photo ») et verso ; chacune accepte une image JPEG ou PNG de 4 Mo au plus, affiche un aperçu et le nom du fichier, ou une erreur de format ou de taille ;</li>
+<li>une case de consentement (<code>CheckboxCard</code>) : « J&#39;accepte que la Mairie d&#39;EtherBay consulte ma pièce pour vérifier mon âge. Les images sont chiffrées puis effacées dès sa décision. » ;</li>
+<li>le bouton « Envoyer à la Mairie », désactivé tant que les deux faces et le consentement manquent.</li>
+</ol>
+<p>Les images sont lues en data URL par <code>FileReader</code> et envoyées par <code>useSubmitIdentityMutation</code> (<code>POST /user/identity</code> avec <code>{ front, back }</code>), qui invalide les tags <code>Identity</code> et <code>User</code>. En cas de succès, la page passe <code>ageVerificationStatus</code> à <code>PENDING</code> dans le slice <code>auth</code> et dans le profil stocké (<code>bl.auth.user</code>), vide le formulaire et affiche « Pièce envoyée. La Mairie la vérifie, vous serez notifié de sa décision. ». En cas d&#39;échec, elle affiche le message du backend.</p>
+<div class="hint hint-note"><p class="hint-title">À savoir</p>
+<p>Grâce à <code>useAgeVerification</code>, une décision de la Mairie est prise en compte au prochain chargement de <code>/billetterie</code>, <code>/profil</code> ou <code>/profil/identite</code>, ou quand l&#39;onglet reprend le focus, sans nouvelle connexion.</p>
+</div>
+<p>Le traitement côté serveur est décrit dans <a href="../backend/modules/utilisateur.html#verification-d-age">Utilisateur</a>.</p>
 <h2 id="tirage-en-direct"><a class="anchor" href="#tirage-en-direct" aria-hidden="true" tabindex="-1">#</a>Tirage en direct</h2>
 <p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/tirage/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/(citoyen)/tirage/page.tsx</code></a> rassemble :</p>
 <div class="table-wrap"><table>
@@ -303,7 +368,9 @@
 <td><code>chat:message</code>, <code>chat:send</code></td>
 </tr>
 </tbody></table></div>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/lottery/RouletteAnimation.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>RouletteAnimation</code></a> dessine la roue de l&#39;écran de tirage du mobile : l&#39;icône <code>wheel</code> (dix secteurs alternant jaune pâle, lavande, blanc et pêche, numérotés de 1 à 10) en taille fixe de 260 px, un pointeur encre en haut (jaune en thème sombre) et un moyeu encre marqué « VRF » (ou « Démo » si le tirage n&#39;est pas certifié). Pendant la rotation, la roue tourne avec <code>animate-bl-spin</code> et la pastille du haut passe à « Tirage... ». Le gagnant s&#39;affiche ensuite dans une pilule jaune. Les props (<code>spinning</code>, <code>winnerWallet</code>, <code>vrfRequestId</code>, <code>certified</code>, <code>drawRequested</code>) sont inchangées. Le dessin est en <code>aria-hidden</code> : seul le texte sous la roue, dans une zone <code>aria-live=&quot;polite&quot;</code>, est restitué.</p>
 <p>Le bouton « Simuler la roue de tirage » ne fait qu&#39;animer la roue pendant 3,5 secondes (<code>setRouletteSpinning</code>). Il n&#39;appelle pas l&#39;API et ne tire aucun gagnant.</p>
+<p>À l&#39;arrivée de <code>draw:winner</code>, la roue tourne pendant 5 secondes ; le gagnant et <code>WinnerClaimCard</code> restent masqués pendant la rotation, puis s&#39;affichent quand elle s&#39;arrête. Un gagnant connu seulement par le rafraîchissement du statut, sans l&#39;événement, s&#39;affiche sans rotation.</p>
 <p>Le tirage réel est lancé par le keeper du backend ou par la Mairie depuis <code>/mairie/securite</code> (<code>POST /lottery/draw</code>, rôle <code>ADMIN</code>). Le résultat arrive par l&#39;événement <code>draw:winner</code>, détaillé dans <a href="temps-reel.html">Temps réel</a>.</p>
 <h2 id="historique-et-poap"><a class="anchor" href="#historique-et-poap" aria-hidden="true" tabindex="-1">#</a>Historique et POAP</h2>
 <p><code>/historique</code> appelle <code>GET /lottery/my-tickets</code> (25 tickets par défaut) et affiche chaque ticket avec <code>TicketCard</code> et son lien vers l&#39;explorateur, ainsi que la galerie des badges POAP renvoyés dans <code>poapBadges</code>. Les badges sont décrits dans <a href="../smart-contracts/poap.html">Badge POAP</a>.</p>
@@ -315,7 +382,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#mode-onchain-et-mode-demonstration">Mode onchain et mode démonstration</a></li><li class="toc-h2"><a href="#composants">Composants</a></li><li class="toc-h3"><a href="#walletcard">WalletCard</a></li><li class="toc-h3"><a href="#demomodebadge-et-networkpill">DemoModeBadge et NetworkPill</a></li><li class="toc-h3"><a href="#winnerclaimcard">WinnerClaimCard</a></li><li class="toc-h2"><a href="#le-hook-useblockluckywallet">Le hook useBlockLuckyWallet</a></li><li class="toc-h3"><a href="#messages-d-erreur">Messages d&#39;erreur</a></li><li class="toc-h2"><a href="#billetterie">Billetterie</a></li><li class="toc-h3"><a href="#achat-pour-soi">Achat pour soi</a></li><li class="toc-h3"><a href="#cadeau">Cadeau</a></li><li class="toc-h3"><a href="#achat-rapide">Achat rapide</a></li><li class="toc-h2"><a href="#tirage-en-direct">Tirage en direct</a></li><li class="toc-h2"><a href="#historique-et-poap">Historique et POAP</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#mode-onchain-et-mode-demonstration">Mode onchain et mode démonstration</a></li><li class="toc-h2"><a href="#composants">Composants</a></li><li class="toc-h3"><a href="#walletcard">WalletCard</a></li><li class="toc-h3"><a href="#demomodebadge-et-networkpill">DemoModeBadge et NetworkPill</a></li><li class="toc-h3"><a href="#winnerclaimcard">WinnerClaimCard</a></li><li class="toc-h2"><a href="#le-hook-useblockluckywallet">Le hook useBlockLuckyWallet</a></li><li class="toc-h3"><a href="#messages-d-erreur">Messages d&#39;erreur</a></li><li class="toc-h2"><a href="#billetterie">Billetterie</a></li><li class="toc-h3"><a href="#achat-pour-soi">Achat pour soi</a></li><li class="toc-h3"><a href="#cadeau">Cadeau</a></li><li class="toc-h3"><a href="#achat-rapide">Achat rapide</a></li><li class="toc-h2"><a href="#verification-d-identite">Vérification d&#39;identité</a></li><li class="toc-h2"><a href="#tirage-en-direct">Tirage en direct</a></li><li class="toc-h2"><a href="#historique-et-poap">Historique et POAP</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

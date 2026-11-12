@@ -6,7 +6,7 @@
 <title>Accessibilité et responsive | Documentation BlockLucky</title>
 <meta name="description" content="Le frontend web vise le niveau AA du RGAA et des WCAG 2.1, exigé pour un service public communal. Aucun audit externe n&#39;a été réalisé : cette page décrit ce qui">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 
@@ -78,9 +78,10 @@
 <h2 id="clavier-et-focus"><a class="anchor" href="#clavier-et-focus" aria-hidden="true" tabindex="-1">#</a>Clavier et focus</h2>
 <ul>
 <li>Tous les contrôles sont des <code>button</code>, <code>a</code> ou champs natifs. Aucun <code>div</code> cliquable ne remplace un bouton.</li>
-<li>Le contour de focus est global : <code>:focus-visible</code> dessine 2 px en couleur <code>--secondary</code>, décalés de 2 px (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/globals.css" class="external" target="_blank" rel="noopener noreferrer"><code>globals.css</code></a>).</li>
+<li>Le contour de focus est global : <code>:focus-visible</code> dessine 2 px en couleur <code>--violet</code>, décalés de 2 px (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/globals.css" class="external" target="_blank" rel="noopener noreferrer"><code>globals.css</code></a>). Les champs de saisie le remplacent par une bordure encre et un halo jaune de 4 px.</li>
+<li>Les boutons qui ne contiennent qu&#39;une icône (cloche, déconnexion, fermeture des feuilles) portent un <code>aria-label</code> ; les icônes elles-mêmes sont en <code>aria-hidden</code>.</li>
 <li>Les feuilles modales (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/Sheet.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Sheet.tsx</code></a>) ont <code>role=&quot;dialog&quot;</code>, <code>aria-modal=&quot;true&quot;</code> et <code>aria-labelledby</code> sur leur titre. À l&#39;ouverture, le focus va au premier élément focusable ; Tab et Maj+Tab restent piégés dans la feuille ; Échap ferme si la feuille est fermable ; le défilement de la page est bloqué ; à la fermeture, le focus revient à l&#39;élément qui l&#39;avait ouverte.</li>
-<li>La carte à gratter (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/marketplace/ScratchCanvas.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ScratchCanvas.tsx</code></a>) se gratte à la souris, au doigt ou au stylet (événements <code>pointer</code>) et propose un bouton « Révéler sans gratter » pour le clavier et les lecteurs d&#39;écran. Le code masqué est annoncé « Code masqué » puis révélé dans une zone <code>aria-live</code>.</li>
+<li>La carte à gratter (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/marketplace/ScratchCanvas.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ScratchCanvas.tsx</code></a>) se gratte à la souris, au doigt ou au stylet (événements <code>pointer</code>) et propose un bouton « Révéler sans gratter » pour le clavier et les lecteurs d&#39;écran. La couche à gratter est peinte en jaune <code>--sun</code> (lu dans les styles calculés, <code>#FFDA38</code> par défaut) avec son libellé en encre <code>#1D2637</code>. Le code masqué est annoncé « Code masqué » puis révélé dans une zone <code>aria-live</code>.</li>
 <li>Le bouton d&#39;opposition à la mesure d&#39;audience expose son état par <code>aria-pressed</code>.</li>
 </ul>
 <div class="hint hint-note"><p class="hint-title">À savoir</p>
@@ -128,7 +129,7 @@
 </tr>
 <tr>
 <td>Images</td>
-<td>QR codes et visuels POAP ont un <code>alt</code> traduit ; pastilles et séparateurs décoratifs sont en <code>aria-hidden</code></td>
+<td>QR codes et visuels POAP ont un <code>alt</code> traduit ; icônes SVG, dessin de la roue, pastilles et séparateurs décoratifs sont en <code>aria-hidden</code> ; le logo est dans un lien libellé « BlockLucky, accueil »</td>
 </tr>
 <tr>
 <td>Classement</td>
@@ -161,67 +162,109 @@
 </thead>
 <tbody><tr>
 <td><code>--text</code> sur <code>--bg</code></td>
-<td>16,38</td>
-<td>16,75</td>
+<td>14,16</td>
+<td>16,54</td>
 <td>conforme</td>
 </tr>
 <tr>
 <td><code>--text-secondary</code> sur <code>--bg</code></td>
-<td>7,15</td>
-<td>7,03</td>
+<td>4,66</td>
+<td>7,90</td>
+<td>conforme, de peu en clair</td>
+</tr>
+<tr>
+<td><code>--on-sun</code> sur <code>--sun</code> (bouton principal, carte du tirage, pilule des points)</td>
+<td>11,08</td>
+<td>11,08</td>
 <td>conforme</td>
 </tr>
 <tr>
-<td><code>--primary</code> sur <code>--bg</code></td>
-<td>10,89</td>
-<td>3,74</td>
-<td>conforme en clair, insuffisant en sombre</td>
-</tr>
-<tr>
-<td><code>--on-primary</code> sur <code>--primary</code> (bouton principal)</td>
-<td>10,89</td>
-<td>4,56</td>
+<td><code>--on-primary</code> sur <code>--primary</code> (bouton secondaire, choix actif)</td>
+<td>15,17</td>
+<td>13,90</td>
 <td>conforme</td>
 </tr>
 <tr>
-<td><code>--secondary</code> sur <code>--bg</code> (surtitres, points)</td>
-<td>3,37</td>
-<td>5,06</td>
-<td>insuffisant en clair</td>
+<td><code>--on-sun-nav</code> sur <code>--sun-nav</code> (entrée de navigation active)</td>
+<td>13,53</td>
+<td>10,16</td>
+<td>conforme</td>
 </tr>
 <tr>
-<td><code>--on-primary</code> sur <code>--secondary</code> (bouton secondaire)</td>
-<td>3,37</td>
-<td>3,37</td>
-<td>insuffisant</td>
+<td>Pilule <code>sun-chip</code> (surtitres, badge d&#39;avertissement) : <code>--on-sun</code> en clair, <code>--sun</code> en sombre</td>
+<td>14,08</td>
+<td>9,07</td>
+<td>conforme</td>
+</tr>
+<tr>
+<td><code>--violet</code> sur <code>--lavender</code> (alerte d&#39;information, bouton <code>soft</code>)</td>
+<td>4,76</td>
+<td>6,73</td>
+<td>conforme</td>
+</tr>
+<tr>
+<td><code>--green</code> sur <code>--mint</code> (alerte de succès)</td>
+<td>5,21</td>
+<td>6,63</td>
+<td>conforme</td>
+</tr>
+<tr>
+<td><code>--error</code> sur <code>--peach</code> (alerte d&#39;erreur)</td>
+<td>4,50</td>
+<td>6,47</td>
+<td>conforme, au seuil en clair</td>
+</tr>
+<tr>
+<td><code>--error</code> sur <code>--surface</code> (bouton <code>danger</code>)</td>
+<td>5,42</td>
+<td>7,54</td>
+<td>conforme</td>
 </tr>
 <tr>
 <td><code>--text-muted</code> sur <code>--bg</code></td>
-<td>3,02</td>
-<td>3,56</td>
-<td>insuffisant</td>
-</tr>
-<tr>
-<td><code>--text-muted</code> sur <code>--surface</code></td>
-<td>3,26</td>
-<td>3,22</td>
-<td>insuffisant</td>
-</tr>
-<tr>
-<td><code>--warning</code> sur <code>--surface-elevated</code> (badge démonstration)</td>
-<td>4,26</td>
-<td>4,64</td>
+<td>2,88</td>
+<td>4,99</td>
 <td>insuffisant en clair</td>
 </tr>
 <tr>
-<td><code>--error</code> sur <code>--surface-elevated</code></td>
-<td>5,49</td>
-<td>3,06</td>
-<td>insuffisant en sombre</td>
+<td><code>--text-muted</code> sur <code>--surface</code></td>
+<td>3,09</td>
+<td>4,36</td>
+<td>insuffisant</td>
 </tr>
 </tbody></table></div>
+<p>Pour les éléments graphiques (seuil 3) :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Combinaison</th>
+<th>Clair</th>
+<th>Sombre</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Contour de focus <code>--violet</code> sur <code>--bg</code></td>
+<td>5,26</td>
+<td>8,41</td>
+<td>conforme</td>
+</tr>
+<tr>
+<td>Remplissage <code>--sun</code> de la jauge sur sa piste <code>--surface-elevated</code></td>
+<td>1,22</td>
+<td>10,24</td>
+<td>insuffisant en clair ; la valeur reste lisible dans la pilule du compteur</td>
+</tr>
+<tr>
+<td>Pastille <code>--coral</code> des notifications sur <code>--surface</code></td>
+<td>2,74</td>
+<td>5,76</td>
+<td>insuffisant en clair ; décorative, le nombre de non lues est dans l&#39;<code>aria-label</code> de la cloche</td>
+</tr>
+</tbody></table></div>
+<p>Le texte d&#39;un bouton désactivé (<code>--text-muted</code> sur <code>--surface-elevated</code>, 2,76 en clair) n&#39;est pas soumis au seuil, les composants inactifs en étant exemptés par les WCAG.</p>
 <div class="hint hint-warning"><p class="hint-title">Attention</p>
-<p>Le texte atténué (<code>text-fg-muted</code>) et le terracotta (<code>text-secondary</code>) sont très utilisés en taille <code>caption</code> (12 px). Ils ne respectent pas le ratio de 4,5:1 et constituent l&#39;écart d&#39;accessibilité le plus visible. Foncer <code>--text-muted</code> et <code>--secondary</code> en thème clair, et éclaircir <code>--primary</code> et <code>--error</code> en thème sombre, corrigerait l&#39;essentiel. Les valeurs doivent ensuite être reportées dans le thème mobile.</p>
+<p>Le texte atténué (<code>text-fg-muted</code>) est très utilisé en taille <code>caption</code> (12 px) pour les mentions, les horodatages et le pied de page de sécurité. Il ne respecte pas le ratio de 4,5:1 et constitue l&#39;écart d&#39;accessibilité le plus visible. Foncer <code>--text-muted</code> en thème clair (par exemple vers la valeur de <code>--text-secondary</code>) corrigerait l&#39;essentiel ; la valeur vient de la palette mobile (<code>textMuted</code>), le changement est donc à reporter dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/theme/colors.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/theme/colors.ts</code></a>.</p>
 </div>
 <h2 id="responsive"><a class="anchor" href="#responsive" aria-hidden="true" tabindex="-1">#</a>Responsive</h2>
 <p>Le site est conçu d&#39;abord pour le téléphone, puis élargi. Les points de rupture sont ceux de Tailwind par défaut.</p>
@@ -234,23 +277,27 @@
 </thead>
 <tbody><tr>
 <td>moins de 768 px</td>
-<td>En-tête compact avec le logo, barre d&#39;onglets fixe en bas (5 entrées au plus), cartes en une colonne, feuilles modales en bas de l&#39;écran avec une poignée</td>
+<td>En-tête compact avec le logo, barre d&#39;onglets fixe en bas, cartes en une colonne, feuilles modales en bas de l&#39;écran avec une poignée</td>
 </tr>
 <tr>
 <td>à partir de <code>md</code> (768 px)</td>
 <td>Marges plus larges, titres en <code>text-hero</code>, feuilles centrées, grilles à deux colonnes sur certaines pages</td>
 </tr>
 <tr>
+<td>moins de 1024 px</td>
+<td>Barre d&#39;onglets fixe en bas : jusqu&#39;à cinq entrées ; au-delà, les quatre premières et un bouton « Plus » (<code>aria-expanded</code>, <code>aria-controls=&quot;menu-plus&quot;</code>) qui ouvre un menu des entrées restantes, fermé par Échap, au clic en dehors, au clic sur un lien ou au changement de page</td>
+</tr>
+<tr>
 <td>à partir de <code>lg</code> (1024 px)</td>
-<td>Barre latérale fixe de 256 px avec toutes les entrées (y compris celles marquées <code>desktopOnly</code>), barre basse masquée, grilles multi-colonnes, discussion du tirage collante</td>
+<td>Barre latérale fixe de 272 px (une carte arrondie décollée des bords) avec toutes les entrées (y compris celles marquées <code>desktopOnly</code>), barre basse masquée, grilles multi-colonnes, discussion du tirage collante</td>
 </tr>
 </tbody></table></div>
 <p>D&#39;autres mesures concernent le mobile :</p>
 <ul>
 <li><code>viewport</code> avec <code>viewportFit: &#39;cover&#39;</code>, et marges basses <code>env(safe-area-inset-bottom)</code> pour la barre d&#39;onglets et les feuilles : rien n&#39;est masqué par la barre système des iPhone.</li>
 <li>Hauteurs en <code>dvh</code> (<code>min-h-dvh</code>) pour tenir compte de la barre d&#39;adresse mobile.</li>
-<li>Boutons de 48 px de haut (<code>min-h-12</code>) en taille <code>md</code>, au-dessus des 44 px recommandés pour une cible tactile. Les boutons <code>sm</code> font 36 px.</li>
-<li>Contenu principal limité à <code>max-w-6xl</code>, avec une marge basse de 112 px sur mobile pour ne pas passer sous la barre d&#39;onglets.</li>
+<li>Boutons de 52 px de haut (<code>min-h-[52px]</code>) en taille <code>md</code>, au-dessus des 44 px recommandés pour une cible tactile. Les boutons <code>sm</code> font 40 px, comme la cloche des notifications.</li>
+<li>Contenu principal limité à <code>max-w-6xl</code>, avec une marge basse de 144 px sur mobile pour ne pas passer sous la barre d&#39;onglets et la mention de sécurité.</li>
 <li><code>-webkit-text-size-adjust: 100%</code> empêche l&#39;agrandissement automatique du texte en mode paysage sur iOS.</li>
 <li>Champs avec <code>inputMode</code> et <code>autoComplete</code> adaptés (<code>email</code>, <code>numeric</code>, <code>one-time-code</code>) pour afficher le bon clavier.</li>
 </ul>

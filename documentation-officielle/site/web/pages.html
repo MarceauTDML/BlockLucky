@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pages et espaces | Documentation BlockLucky</title>
-<meta name="description" content="Le dossier frontend-web/src/app contient 29 fichiers page.tsx, donc 29 URL. Elles se répartissent en quatre espaces qui partagent le même design system mais pas">
+<meta name="description" content="Le dossier frontend-web/src/app contient 30 fichiers page.tsx, donc 30 URL. Elles se répartissent en quatre espaces qui partagent le même design system mais pas">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -37,7 +37,8 @@
     <div class="breadcrumb"><span>8. Frontend web</span></div>
     <article class="markdown">
 <h1>Pages et espaces</h1>
-<p>Le dossier <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/app" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app</code></a> contient 29 fichiers <code>page.tsx</code>, donc 29 URL. Elles se répartissent en quatre espaces qui partagent le même design system mais pas les mêmes droits. Cette page en donne l&#39;inventaire complet : URL, rôle, données appelées et droits requis côté client et côté backend.</p>
+<p>Le dossier <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/app" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app</code></a> contient 30 fichiers <code>page.tsx</code>, donc 30 URL. Elles se répartissent en quatre espaces qui partagent le même design system mais pas les mêmes droits. Cette page en donne l&#39;inventaire complet : URL, rôle, données appelées et droits requis côté client et côté backend.</p>
+<p>Toutes les pages, publiques comme privées, reprennent la présentation des écrans de l&#39;application mobile : cartes blanches arrondies sur fond gris clair, carte jaune pour le tirage en cours, pilules et pastilles teintées, icônes du jeu mobile. Les pages citoyennes suivent les écrans mobiles équivalents (accueil, billetterie, tirage, boutique, profil) ; les pages Mairie et partenaires en appliquent les mêmes composants, avec des tuiles d&#39;indicateurs (<code>KpiTile</code>) à icône. Le détail des couleurs et des composants est dans <a href="design-system.html">Design system</a>.</p>
 <h2 id="lire-les-tableaux"><a class="anchor" href="#lire-les-tableaux" aria-hidden="true" tabindex="-1">#</a>Lire les tableaux</h2>
 <ul>
 <li><strong>Données</strong> : hooks RTK Query (définis dans <a href="etat-api.html">État et appels API</a>) et endpoint du backend. « Aucune » signifie que la page n&#39;appelle pas l&#39;API.</li>
@@ -108,7 +109,7 @@
 </tr>
 </tbody></table></div>
 <h2 id="espace-citoyen"><a class="anchor" href="#espace-citoyen" aria-hidden="true" tabindex="-1">#</a>Espace citoyen</h2>
-<p>Treize pages sous le groupe de routes <code>(citoyen)</code>. Le layout <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/layout.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>(citoyen)/layout.tsx</code></a> appelle <code>RequireRole</code> sans liste de rôles : tout compte authentifié y entre, y compris un administrateur ou un partenaire. Toutes les routes du backend appelées ici exigent <code>authenticate</code>, sauf les lectures publiques de la loterie et du catalogue.</p>
+<p>Quatorze pages sous le groupe de routes <code>(citoyen)</code>. Le layout <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/layout.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>(citoyen)/layout.tsx</code></a> appelle <code>RequireRole</code> sans liste de rôles : tout compte authentifié y entre, y compris un administrateur ou un partenaire. Toutes les routes du backend appelées ici exigent <code>authenticate</code>, sauf les lectures publiques de la loterie et du catalogue.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -129,8 +130,8 @@
 <tr>
 <td><code>/billetterie</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/billetterie/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>billetterie/page.tsx</code></a></td>
-<td>Achat de 1, 2, 5 ou 10 tickets, ou cadeau par email (<code>?mode=cadeau</code>), reçu en attente puis confirmé</td>
-<td><code>useGetLotteryStatusQuery</code>, <code>useBlockLuckyWallet</code> (<code>POST /lottery/buy</code>, <code>POST /lottery/gift</code>), <code>WalletCard</code> (<code>GET /lottery/wallet</code>)</td>
+<td>Achat d&#39;un seul ticket, ou cadeau par email (<code>?mode=cadeau</code>), reçu en attente puis confirmé. Un second achat sur le même tour est refusé en 409. Tant que l&#39;âge n&#39;est pas vérifié, alerte avec un lien vers <code>/profil/identite</code> et boutons désactivés</td>
+<td><code>useGetLotteryStatusQuery</code>, <code>useBlockLuckyWallet</code> (<code>POST /lottery/buy</code>, <code>POST /lottery/gift</code>), <code>useAgeVerification</code> (<code>GET /user/identity</code>), <code>WalletCard</code> (<code>GET /lottery/wallet</code>)</td>
 <td>Connecté</td>
 </tr>
 <tr>
@@ -178,8 +179,8 @@
 <tr>
 <td><code>/profil</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>profil/page.tsx</code></a></td>
-<td>Passeport citoyen : portefeuille, statistiques, thème et langue, parrainage et partage, missions citoyennes, déconnexion</td>
-<td><code>WalletCard</code>, <code>useGetReferralsQuery</code>, <code>useGetQuestsQuery</code>, <code>useCompleteQuestMutation</code>, <code>useUpdatePreferencesMutation</code>, <code>usePoints</code></td>
+<td>Passeport citoyen : portefeuille, statistiques, thème et langue, liens vers la sécurité, la vérification d&#39;identité, le RGPD et l&#39;aide, parrainage et partage, missions citoyennes, déconnexion</td>
+<td><code>WalletCard</code>, <code>useGetReferralsQuery</code>, <code>useGetQuestsQuery</code>, <code>useCompleteQuestMutation</code>, <code>useUpdatePreferencesMutation</code>, <code>usePoints</code>, <code>useAgeVerification</code> (<code>GET /user/identity</code>)</td>
 <td>Connecté</td>
 </tr>
 <tr>
@@ -194,6 +195,13 @@
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/securite/2fa/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>profil/securite/2fa/page.tsx</code></a></td>
 <td>Activation de la 2FA par application (QR code, clé, codes de secours) ou par email</td>
 <td><code>setup2FA</code> (<code>POST /auth/2fa/setup</code>), <code>verifyOtpCode</code> (<code>POST /auth/2fa/verify</code>)</td>
+<td>Connecté</td>
+</tr>
+<tr>
+<td><code>/profil/identite</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/identite/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>profil/identite/page.tsx</code></a></td>
+<td>Statut de la vérification d&#39;âge (<code>NONE</code>, <code>PENDING</code>, <code>VERIFIED</code>, <code>REJECTED</code> avec le motif de la Mairie) ; si <code>NONE</code> ou <code>REJECTED</code>, envoi du recto et du verso de la pièce d&#39;identité (JPEG ou PNG, 4 Mo au plus par face) avec consentement</td>
+<td><code>useAgeVerification</code> (<code>GET /user/identity</code>), <code>useSubmitIdentityMutation</code> (<code>POST /user/identity</code>)</td>
 <td>Connecté</td>
 </tr>
 <tr>
@@ -213,7 +221,7 @@
 </tbody></table></div>
 <p>La navigation de l&#39;espace citoyen expose cinq onglets (Accueil, Tickets, Tirage, Boutique, Profil) et trois entrées réservées au bureau : Historique et POAP, Mes codes, Charte et aide.</p>
 <h2 id="dashboard-mairie"><a class="anchor" href="#dashboard-mairie" aria-hidden="true" tabindex="-1">#</a>Dashboard Mairie</h2>
-<p>Cinq pages sous <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/layout.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mairie/layout.tsx</code></a>, réservées au rôle <code>ADMIN</code> côté client. Côté backend, tout le routeur <code>/admin</code> applique <code>authenticate</code> puis <code>requireRoles(&#39;ADMIN&#39;)</code>. Ce middleware refuse aussi un administrateur qui n&#39;a pas activé la 2FA quand <code>ADMIN_MFA_REQUIRED</code> vaut <code>true</code> (valeur par défaut, imposée en production) : la page s&#39;affiche alors, mais les appels répondent 403 jusqu&#39;à l&#39;activation depuis <code>/profil/securite/2fa</code>.</p>
+<p>Six pages sous <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/layout.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mairie/layout.tsx</code></a>, réservées au rôle <code>ADMIN</code> côté client. Côté backend, tout le routeur <code>/admin</code> applique <code>authenticate</code> puis <code>requireRoles(&#39;ADMIN&#39;)</code>. Ce middleware refuse aussi un administrateur qui n&#39;a pas activé la 2FA quand <code>ADMIN_MFA_REQUIRED</code> vaut <code>true</code> (valeur par défaut, imposée en production) : la page s&#39;affiche alors, mais les appels répondent 403 jusqu&#39;à l&#39;activation depuis <code>/profil/securite/2fa</code>.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -246,6 +254,13 @@
 <td>Liste publique ; changement de statut : <code>ADMIN</code></td>
 </tr>
 <tr>
+<td><code>/mairie/identites</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/identites/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mairie/identites/page.tsx</code></a></td>
+<td>Vérification d&#39;âge : demandes filtrées par statut (en attente, vérifiées, refusées), 20 par page, des plus anciennes aux plus récentes ; panneau de détail avec dates, adresse du portefeuille, recto et verso déchiffrés tant que la demande est en attente ; approbation, ou refus avec un motif d&#39;au moins 3 caractères envoyé au citoyen</td>
+<td><code>useGetIdentityVerificationsQuery</code> (<code>GET /admin/identity-verifications</code>), <code>useGetIdentityVerificationQuery</code> (<code>GET /admin/identity-verifications/:id</code>, jamais gardé en cache), <code>useDecideIdentityVerificationMutation</code> (<code>POST /admin/identity-verifications/:id/decision</code>)</td>
+<td><code>ADMIN</code> ; un administrateur ne peut pas statuer sur sa propre pièce</td>
+</tr>
+<tr>
 <td><code>/mairie/securite</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/securite/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mairie/securite/page.tsx</code></a></td>
 <td>Disjoncteur du contrat (confirmation par le mot <code>PAUSE</code>), lancement du tirage, annulation et remboursement du tour, retrait de la part Mairie vers une adresse multisig</td>
@@ -255,7 +270,7 @@
 <tr>
 <td><code>/mairie/audit</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/audit/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mairie/audit/page.tsx</code></a></td>
-<td>Journal des actions d&#39;administration, filtre par action, export CSV généré dans le navigateur</td>
+<td>Journal des actions d&#39;administration, dont les consultations de pièces d&#39;identité et les décisions, filtre par action, export CSV généré dans le navigateur</td>
 <td><code>useGetAuditLogsQuery</code> (<code>GET /admin/audit-logs</code>)</td>
 <td><code>ADMIN</code></td>
 </tr>

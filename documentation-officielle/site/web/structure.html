@@ -6,7 +6,7 @@
 <title>Stack et structure | Documentation BlockLucky</title>
 <meta name="description" content="Le frontend web est l&#39;interface navigateur de BlockLucky. Il réunit dans une seule application Next.js quatre espaces : la page publique de la Ville, l&#39;espace c">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/vendor/mermaid.min.js" defer></script>
@@ -91,13 +91,14 @@
 </tr>
 </tbody></table></div>
 <p>Node.js 22.12 ou plus est requis (<code>engines</code>). La CI lit la version dans le fichier <code>.nvmrc</code> à la racine du dépôt.</p>
-<p>Aucune bibliothèque de composants, d&#39;icônes, de graphiques ou de formulaires n&#39;est installée. Les graphiques du dashboard sont dessinés en SVG et en CSS dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/charts/Charts.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/components/charts/Charts.tsx</code></a>. Il n&#39;y a pas non plus de bibliothèque Web3 (ni <code>ethers</code>, ni <code>wagmi</code>, ni connecteur MetaMask) : les citoyens n&#39;utilisent pas d&#39;extension de portefeuille.</p>
+<p>Aucune bibliothèque de composants, d&#39;icônes, de graphiques ou de formulaires n&#39;est installée. Les graphiques du dashboard sont dessinés en SVG et en CSS dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/charts/Charts.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/components/charts/Charts.tsx</code></a>. Les icônes sont des SVG recopiés depuis l&#39;application mobile dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/iconData.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/components/ui/iconData.ts</code></a>, et la police Inter est fournie en fichiers locaux (voir <a href="design-system.html#rayons-typographie-et-polices">Design system</a>). Il n&#39;y a pas non plus de bibliothèque Web3 (ni <code>ethers</code>, ni <code>wagmi</code>, ni connecteur MetaMask) : les citoyens n&#39;utilisent pas d&#39;extension de portefeuille.</p>
 <h2 id="arborescence"><a class="anchor" href="#arborescence" aria-hidden="true" tabindex="-1">#</a>Arborescence</h2>
 <div class="code-block"><div class="code-head"><span>Texte</span></div><pre><code class="hljs language-text">frontend-web/
 ├── __tests__/               tests Vitest (lib.test.ts, components.test.tsx)
 ├── public/.well-known/      security.txt
 ├── src/
-│   ├── app/                 routes App Router, layouts, globals.css
+│   ├── app/                 routes App Router, layouts, globals.css, icon.svg (favicon)
+│   │   ├── fonts/           Inter en 5 graisses (.ttf) et LICENSE-inter.txt
 │   │   ├── (citoyen)/       espace citoyen (groupe de routes sans segment d&#x27;URL)
 │   │   ├── mairie/          dashboard Mairie
 │   │   ├── partenaire/      espace partenaires
@@ -105,12 +106,12 @@
 │   ├── components/
 │   │   ├── auth/            OnboardingCarousel
 │   │   ├── charts/          BarList, RingMeter, KpiTile
-│   │   ├── layout/          AppShell, PublicShell, RequireRole, AccessDenied, GlobalOverlays
+│   │   ├── layout/          AppShell, PublicShell, Brand, SecurityFooter, RequireRole, AccessDenied...
 │   │   ├── lottery/         WalletCard, WinnerClaimCard, CountdownTimer, ChatBox...
 │   │   ├── marketplace/     PointsBalanceCard, RewardCard, ScratchCanvas
 │   │   ├── partner/         PartnerSelection (choix de l&#x27;établissement)
-│   │   └── ui/              Button, Input, Card, Sheet, Loader, Misc...
-│   ├── hooks/               useAuth, useBlockLuckyWallet, useSocket, usePoints...
+│   │   └── ui/              Button, Input, Card, Sheet, Loader, Icon (et iconData), Misc...
+│   ├── hooks/               useAuth, useBlockLuckyWallet, useAgeVerification, useSocket, usePoints...
 │   ├── lib/                 config, storage, analytics, socket, validators...
 │   ├── store/               store Redux, RTK Query (api/) et slices
 │   ├── theme/               ThemeProvider (thème et langue)
@@ -119,7 +120,7 @@
 ├── next.config.mjs          en-têtes de sécurité, sortie standalone
 ├── vitest.config.mts
 └── .env.example</code></pre></div>
-<p>Le dossier <code>(citoyen)</code> est un groupe de routes : son nom n&#39;apparaît pas dans l&#39;URL. La page <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/accueil/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/(citoyen)/accueil/page.tsx</code></a> répond donc à <code>/accueil</code>. Le détail des 29 pages est dans <a href="pages.html">Pages et espaces</a>.</p>
+<p>Le dossier <code>(citoyen)</code> est un groupe de routes : son nom n&#39;apparaît pas dans l&#39;URL. La page <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/accueil/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/(citoyen)/accueil/page.tsx</code></a> répond donc à <code>/accueil</code>. Le détail des 31 pages est dans <a href="pages.html">Pages et espaces</a>.</p>
 <h2 id="point-d-entree-et-providers"><a class="anchor" href="#point-d-entree-et-providers" aria-hidden="true" tabindex="-1">#</a>Point d&#39;entrée et providers</h2>
 <p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/layout.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/layout.tsx</code></a> est le layout racine. Il définit les métadonnées (titre, description, Open Graph en <code>fr_FR</code>), la couleur de thème du navigateur pour les modes clair et sombre, et injecte dans <code>&lt;head&gt;</code> un petit script inline (<code>themeInitScript</code>) qui applique le thème et la langue avant le premier rendu pour éviter un flash. Il enveloppe ensuite toute l&#39;application dans <code>Providers</code>.</p>
 <p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/providers.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/providers.tsx</code></a> monte, dans cet ordre :</p>
@@ -173,7 +174,7 @@
 <td><code>PartnerSelectionProvider</code> puis <code>AppShell</code></td>
 </tr>
 </tbody></table></div>
-<p>Chaque layout déclare sa liste d&#39;entrées de navigation (<code>NavItem</code>). <code>AppShell</code> affiche une barre latérale fixe à partir de 1024 px (<code>lg</code>) et, en dessous, une barre d&#39;onglets basse limitée aux cinq premières entrées sans <code>desktopOnly</code>. Le fonctionnement de la garde est détaillé dans <a href="authentification.html#garde-des-routes">Authentification et routes protégées</a>.</p>
+<p>Chaque layout déclare sa liste d&#39;entrées de navigation (<code>NavItem</code>). <code>AppShell</code> affiche une barre latérale fixe à partir de 1024 px (<code>lg</code>) et, en dessous, une barre d&#39;onglets basse avec les entrées sans <code>desktopOnly</code>. Au-delà de cinq entrées (<code>MAX_MOBILE_ITEMS</code>), la barre montre les quatre premières et un bouton « Plus » qui ouvre un petit menu avec les suivantes ; le menu se ferme au clic sur un lien, avec Échap, au clic en dehors ou au changement de page. L&#39;espace Mairie compte six entrées : sous 1024 px, « Sécurité » et « Audit » sont dans le menu « Plus ». L&#39;espace citoyen, qui en a cinq, n&#39;a pas de bouton « Plus ». Le fonctionnement de la garde est détaillé dans <a href="authentification.html#garde-des-routes">Authentification et routes protégées</a>.</p>
 <h2 id="organisation-du-code-applicatif"><a class="anchor" href="#organisation-du-code-applicatif" aria-hidden="true" tabindex="-1">#</a>Organisation du code applicatif</h2>
 <div class="table-wrap"><table>
 <thead>

@@ -19,25 +19,22 @@ La navigation est imbriquée :
 
 ```mermaid
 flowchart TD
-    R["RootNavigator, pile racine"] -->|"non connecté"| A["AuthStack : Onboarding, Login, Verify2FA, Setup2FA"]
-    R -->|"connecté"| M["MainTabs, onglets"]
-    R --> P["Écrans plein écran : BuyTicket, LiveDraw, TransactionHistory, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, Setup2FA"]
+    R["RootNavigator, pile racine"] -->|"non connecté"| A["AuthStack : Onboarding, SignIn, SignUp, Verify2FA, ForgotPassword, ResetPassword, Setup2FA"]
+    R -->|"connecté"| M["MainTabs, quatre onglets"]
+    R --> P["Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, Security, Setup2FA, GDPR, HelpSupport"]
     M --> T1["HomeTab"]
-    M --> T2["BuyTicketTab"]
-    M --> T3["LiveDrawTab"]
-    M --> T4["MarketplaceTab"]
-    M --> T5["SettingsTab : SettingsStack"]
-    T5 --> S["ProfileMain, Security, Setup2FA, GDPR, HelpSupport"]
+    M --> T2["TicketsTab"]
+    M --> T3["SponsorsTab"]
+    M --> T4["ProfileTab"]
 ```
 
-| Type d'écran | Où l'enregistrer | Type de navigation |
-| --- | --- | --- |
-| Onglet principal | [`MainTabs.tsx`](src:mobile-app/src/navigation/MainTabs.tsx) | `MainTabsParamList` |
-| Écran de réglages, avec la barre d'onglets visible | [`RootNavigator.tsx`](src:mobile-app/src/navigation/RootNavigator.tsx) | `RootStackParamList` |
-| Écran plein écran, accessible de partout une fois connecté | [`RootNavigator.tsx`](src:mobile-app/src/navigation/RootNavigator.tsx) | `RootStackParamList` |
-| Écran avant connexion | [`AuthStack.tsx`](src:mobile-app/src/navigation/AuthStack.tsx) | `AuthStackParamList` |
+| Type d'écran | Où l'enregistrer | Type de navigation | Hook |
+| --- | --- | --- | --- |
+| Onglet principal | [`MainTabs.tsx`](src:mobile-app/src/navigation/MainTabs.tsx), avec son icône dans `ICONS` | `MainTabsParamList` | `useRootNavigation` |
+| Écran plein écran, accessible de partout une fois connecté | [`RootNavigator.tsx`](src:mobile-app/src/navigation/RootNavigator.tsx) | `RootStackParamList` | `useRootNavigation` |
+| Écran avant connexion | [`AuthStack.tsx`](src:mobile-app/src/navigation/AuthStack.tsx) | `AuthStackParamList` | `useAuthNavigation` |
 
-L'historique des tirages est consultable depuis plusieurs endroits : il va dans la pile racine, comme `TransactionHistory`. Les écrans de la pile racine ne sont montés que si l'utilisateur est connecté (`isAuthenticated` de `useAuth`).
+Les réglages n'ont plus de pile propre : `Settings`, `Security`, `GDPR` et `HelpSupport` sont des écrans de la pile racine, sans barre d'onglets. L'historique des tirages va donc aussi dans la pile racine, comme `TransactionHistory`. Les écrans de la pile racine ne sont montés que si l'utilisateur est connecté (`isAuthenticated` de `useAuth`). Les deux hooks viennent de [`navigation/hooks.ts`](src:mobile-app/src/navigation/hooks.ts).
 
 ## 1. Typer la réponse et déclarer l'appel
 
@@ -73,8 +70,6 @@ Dans [`navigation.types.ts`](src:mobile-app/src/types/navigation.types.ts), ajou
 
 ```typescript
 export type RootStackParamList = {
-  Auth: undefined;
-  Main: undefined;
   TransactionHistory: undefined;
   RoundHistory: undefined;
 };
@@ -88,55 +83,52 @@ Fichier `src/screens/lottery/RoundHistoryScreen.tsx`, sur le modèle de [`MyCode
 
 ```typescript
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import useAppTheme from '../../hooks/useAppTheme';
-import { useGetRoundHistoryQuery } from '../../store/api/lotteryApi';
+import { StyleSheet } from 'react-native';
 import AppText from '../../components/ui/AppText';
-import BackButton from '../../components/ui/BackButton';
+import Card from '../../components/ui/Card';
 import Loader from '../../components/ui/Loader';
+import Screen from '../../components/ui/Screen';
+import ScreenHeader from '../../components/ui/ScreenHeader';
+import useAppTheme from '../../hooks/useAppTheme';
+import { useRootNavigation } from '../../navigation/hooks';
+import { useGetRoundHistoryQuery } from '../../store/api/lotteryApi';
 import { formatEth } from '../../utils/formatters.util';
 
-export const RoundHistoryScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const { colors, borderRadius, spacing, t } = useAppTheme();
-  const { data, isLoading, isError } = useGetRoundHistoryQuery();
+const RoundHistoryScreen: React.FC = () => {
+  const { colors, t } = useAppTheme();
+  const navigation = useRootNavigation();
+  const { data, isLoading, isError, isFetching, refetch } = useGetRoundHistoryQuery();
   const rounds = data?.data?.rounds ?? [];
 
   return (
-    <SafeAreaView edges={['top', 'left', 'right']} style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.xxl }}>
-        {navigation?.canGoBack?.() ? <BackButton onPress={() => navigation.goBack()} /> : null}
-        <AppText variant="title" weight="bold">
-          {t('Historique des tirages', 'Draw history')}
-        </AppText>
-        {isLoading ? <Loader /> : null}
-        {isError ? (
-          <AppText color={colors.textSecondary}>{t('Historique indisponible.', 'History unavailable.')}</AppText>
-        ) : null}
-        {rounds.map((round) => (
-          <View
-            key={round.contractRoundId}
-            style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: borderRadius.lg }]}
-          >
-            <AppText variant="subtitle" weight="semibold">
-              {t('Tour', 'Round')} #{round.contractRoundId}
-            </AppText>
-            <AppText variant="caption" color={colors.textSecondary}>
-              {t('Gagnant', 'Winner')} : {round.winner ?? '—'}
-            </AppText>
-            <AppText variant="caption" color={colors.textSecondary}>
-              {t('Cagnotte', 'Prize')} : {formatEth(round.prizeEth ?? 0)}
-            </AppText>
-          </View>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+    <Screen showSecurityFooter refreshing={isFetching && !isLoading} onRefresh={refetch}>
+      <ScreenHeader
+        title={t('Historique des tirages', 'Draw history')}
+        onBack={() => navigation.goBack()}
+      />
+      {isLoading ? <Loader /> : null}
+      {isError ? (
+        <AppText color={colors.inkMuted}>{t('Historique indisponible.', 'History unavailable.')}</AppText>
+      ) : null}
+      {rounds.map((round) => (
+        <Card key={round.contractRoundId} style={styles.card}>
+          <AppText variant="subtitle">
+            {t('Tour', 'Round')} #{round.contractRoundId}
+          </AppText>
+          <AppText variant="caption" color={colors.inkMuted}>
+            {t('Gagnant', 'Winner')} : {round.winner ?? '—'}
+          </AppText>
+          <AppText variant="caption" color={colors.inkMuted}>
+            {t('Cagnotte', 'Prize')} : {formatEth(round.prizeEth ?? 0)}
+          </AppText>
+        </Card>
+      ))}
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  card: { padding: 14, borderWidth: 1, gap: 4, marginTop: 12 },
+  card: { gap: 4, marginTop: 12 },
 });
 
 export default RoundHistoryScreen;
@@ -144,11 +136,13 @@ export default RoundHistoryScreen;
 
 | Règle | Outil |
 | --- | --- |
-| Couleurs, espacements, rayons | `colors`, `spacing`, `borderRadius` de [`useAppTheme`](src:mobile-app/src/hooks/useAppTheme.ts), qui suivent le thème clair ou sombre |
-| Textes | `AppText` (variantes `hero`, `title`, `subtitle`, `body`, `caption`, `overline`) et `t('français', 'english')` |
-| Zones sûres | `SafeAreaView` de `react-native-safe-area-context`, bords `top`, `left`, `right` : la barre d'onglets gère le bas |
+| Couleurs, espacements, rayons | `colors`, `spacing`, `borderRadius` de [`useAppTheme`](src:mobile-app/src/hooks/useAppTheme.ts), qui suivent le thème clair ou sombre ; préférer les jetons de la maquette (`ink`, `inkMuted`, `sun`, `surface`) |
+| Textes | `AppText` (variantes `display`, `hero`, `title`, `section`, `subtitle`, `body`, `small`, `caption`, `overline`, `label`) et `t('français', 'english')` |
+| Mise en page | [`Screen`](src:mobile-app/src/components/ui/Screen.tsx) : zones sûres, clavier, défilement, « tirer pour rafraîchir » et mention de sécurité |
+| En-tête et retour | [`ScreenHeader`](src:mobile-app/src/components/ui/ScreenHeader.tsx) avec `onBack` |
+| Cartes et listes | [`Card`](src:mobile-app/src/components/ui/Card.tsx), [`ListRow`](src:mobile-app/src/components/ui/ListRow.tsx) |
 | Boutons | [`AppButton`](src:mobile-app/src/components/ui/AppButton.tsx), qui gère le chargement et l'accessibilité |
-| Retour | `BackButton` affiché seulement si `navigation.canGoBack()` |
+| Icônes | [`Icon`](src:mobile-app/src/components/ui/icons/Icon.tsx) avec un nom de `iconData.ts` |
 
 ## 4. Enregistrer l'écran
 
@@ -166,17 +160,19 @@ TypeScript refuse un `name` absent de `RootStackParamList` : l'étape 2 est obli
 
 ## 5. Ouvrir l'écran
 
-Dans [`HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx), qui appartient à `SettingsStack`, ajouter un bouton :
+Dans [`HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx), écran de la pile racine, ajouter une ligne au groupe existant :
 
 ```typescript
-<AppButton
-  title={t("Voir l'historique des tirages", 'See draw history')}
-  variant="secondary"
+<ListRow
+  title={t('Historique des tirages', 'Draw history')}
+  icon="trophy"
+  iconTone="sun"
   onPress={() => navigation.navigate('RoundHistory')}
+  divider
 />
 ```
 
-`navigate` remonte les navigateurs parents jusqu'à trouver la route : depuis la pile des réglages, imbriquée dans un onglet, il atteint `RoundHistory` dans la pile racine.
+`navigation` vient de `useRootNavigation()` : la même instance ouvre un écran empilé (`navigate('RoundHistory')`) ou change d'onglet (`navigate('Main', { screen: 'TicketsTab' })`).
 
 ## 6. Vérifier
 
@@ -193,14 +189,14 @@ Ce sont les trois contrôles du job `mobile` de la CI. Le projet n'a pas de scri
 npm start
 ```
 
-Ouvrir l'application dans Expo Go, se connecter, aller dans Profil, puis Aide, puis « Voir l'historique des tirages ». Sur un téléphone physique, l'API doit être joignable : remplacer `localhost` par l'adresse IP locale du poste dans `mobile-app/.env` (voir [Tester sur un téléphone](../mobile/telephone-physique.md)).
+Ouvrir l'application dans Expo Go, se connecter avec un compte du seed, aller dans Profil, puis « Aide et support », puis « Historique des tirages ». Sur un téléphone physique, l'API doit être joignable : remplacer `localhost` par l'adresse IP locale du poste dans `mobile-app/.env` (voir [Tester sur un téléphone](../mobile/telephone-physique.md)).
 
 À vérifier sur l'appareil :
 
 | Point | Comment |
 | --- | --- |
-| Thème sombre | Basculer le thème du système |
-| Anglais | Changer la langue dans le profil |
+| Thème sombre | Activer « Mode sombre » dans Profil, puis Paramètres : l'application ne suit pas le thème du système |
+| Anglais | Changer la langue dans Profil, puis Paramètres |
 | Lecteur d'écran | VoiceOver ou TalkBack : chaque carte se lit dans l'ordre |
 | Petit écran | Le contenu défile, rien n'est coupé par l'encoche ni par la barre d'onglets |
 | Hors connexion | Mode avion : l'écran affiche le message d'erreur, sans plantage |
@@ -218,20 +214,23 @@ navigation.navigate('RoundDetail', { contractRoundId: round.contractRoundId });
 ```
 
 ```typescript
-export const RoundDetailScreen: React.FC<{ route: { params: { contractRoundId: number } }; navigation: any }> = ({
-  route,
-  navigation,
-}) => {
-  const { contractRoundId } = route.params;
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { RootStackParamList } from '../../types/navigation.types';
+
+const RoundDetailScreen: React.FC = () => {
+  const { params } = useRoute<RouteProp<RootStackParamList, 'RoundDetail'>>();
+  const { contractRoundId } = params;
   return null;
 };
 ```
+
+TypeScript vérifie le nom de la route et le type des paramètres, à l'appel de `navigate` comme dans l'écran.
 
 ## Liste de contrôle
 
 - [ ] Route typée dans `navigation.types.ts`.
 - [ ] Écran enregistré dans le bon navigateur.
 - [ ] Endpoint RTK Query avec étiquette.
-- [ ] Textes bilingues, couleurs du thème, `SafeAreaView`.
+- [ ] Textes bilingues, jetons de couleur du thème, `Screen` et `ScreenHeader`.
 - [ ] `typecheck`, `lint` et configuration Expo verts.
 - [ ] Testé sur un appareil ou un émulateur, captures jointes à la pull request.

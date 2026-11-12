@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Thème et composants | Documentation BlockLucky</title>
-<meta name="description" content="Le thème mobile est la source d&#39;origine de la charte BlockLucky : le frontend web en a recopié les couleurs, les rayons et l&#39;échelle typographique (voir Design ">
+<meta name="description" content="L&#39;interface mobile suit la maquette Figma de l&#39;application : fond gris très clair, cartes blanches très arrondies, jaune « soleil » #FFDA38 pour les mises en av">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
 <script src="../assets/js/theme.js"></script>
 
@@ -37,7 +37,8 @@
     <div class="breadcrumb"><span>9. Application mobile</span></div>
     <article class="markdown">
 <h1>Thème et composants</h1>
-<p>Le thème mobile est la source d&#39;origine de la charte BlockLucky : le frontend web en a recopié les couleurs, les rayons et l&#39;échelle typographique (voir <a href="../web/design-system.html">Design system du web</a>). Il est défini en TypeScript dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/theme" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/theme</code></a> et distribué par un contexte React. Les composants de base sont dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/ui" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/components/ui</code></a>.</p>
+<p>L&#39;interface mobile suit la maquette Figma de l&#39;application : fond gris très clair, cartes blanches très arrondies, jaune « soleil » <code>#FFDA38</code> pour les mises en avant, encre bleu nuit <code>#1D2637</code> pour le texte et les boutons sombres, et des teintes pastel (lavande, menthe, pêche) pour distinguer les familles d&#39;information. Le thème est défini en TypeScript dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/theme" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/theme</code></a> et distribué par un contexte React. Les composants de base sont dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/ui" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/components/ui</code></a>.</p>
+<p>Le frontend web a repris cette charte : ses variables CSS recopient les valeurs de <code>colors.ts</code>, il charge la même police Inter et utilise une copie du jeu d&#39;icônes (voir <a href="../web/design-system.html">Design system du web</a>). Les deux applications ne partagent aucun fichier : un changement de jeton se reporte à la main des deux côtés.</p>
 <h2 id="fichiers-du-theme"><a class="anchor" href="#fichiers-du-theme" aria-hidden="true" tabindex="-1">#</a>Fichiers du thème</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -48,7 +49,7 @@
 </thead>
 <tbody><tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/theme/colors.ts" class="external" target="_blank" rel="noopener noreferrer"><code>colors.ts</code></a></td>
-<td>Interface <code>ColorPalette</code>, palettes <code>lightColors</code> et <code>darkColors</code></td>
+<td>Interface <code>ColorPalette</code>, famille <code>sunFamily</code> commune, palettes <code>lightColors</code> et <code>darkColors</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/theme/spacing.ts" class="external" target="_blank" rel="noopener noreferrer"><code>spacing.ts</code></a></td>
@@ -56,7 +57,7 @@
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/theme/typography.ts" class="external" target="_blank" rel="noopener noreferrer"><code>typography.ts</code></a></td>
-<td>Familles, tailles et interlignes adaptés à la largeur</td>
+<td>Familles Inter, tailles et interlignes adaptés à la largeur</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/theme/ThemeProvider.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ThemeProvider.tsx</code></a></td>
@@ -68,6 +69,47 @@
 </tr>
 </tbody></table></div>
 <h2 id="couleurs"><a class="anchor" href="#couleurs" aria-hidden="true" tabindex="-1">#</a>Couleurs</h2>
+<p>Les jetons de la famille « soleil » sont identiques en thème clair et sombre :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Clé</th>
+<th>Valeur</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sun</code></td>
+<td><code>#FFDA38</code></td>
+<td>Carte du grand tirage, bouton principal, pastilles</td>
+</tr>
+<tr>
+<td><code>sunSoft</code>, <code>sunPale</code>, <code>sunLight</code>, <code>sunChip</code></td>
+<td><code>#FFF4B8</code>, <code>#FFF6CA</code>, <code>#FFE979</code>, <code>#FFF7D3</code></td>
+<td>Fonds de cartes et d&#39;étiquettes</td>
+</tr>
+<tr>
+<td><code>sunTrack</code></td>
+<td><code>#E4C64B</code></td>
+<td>Piste des jauges sur fond jaune</td>
+</tr>
+<tr>
+<td><code>onSun</code>, <code>onSunMuted</code></td>
+<td><code>#1D2637</code>, <code>#4A5263</code></td>
+<td>Texte posé sur le jaune</td>
+</tr>
+<tr>
+<td><code>onInk</code></td>
+<td><code>#FFFFFF</code></td>
+<td>Texte posé sur l&#39;encre</td>
+</tr>
+<tr>
+<td><code>shadowSun</code></td>
+<td><code>rgba(172, 141, 10, 0.12)</code></td>
+<td>Ombre des cartes jaunes</td>
+</tr>
+</tbody></table></div>
+<p>Les autres jetons changent avec le thème :</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -79,124 +121,196 @@
 </thead>
 <tbody><tr>
 <td><code>background</code></td>
-<td><code>#F7F6F2</code></td>
-<td><code>#141413</code></td>
+<td><code>#F6F7FA</code></td>
+<td><code>#0F1626</code></td>
 <td>Fond des écrans</td>
 </tr>
 <tr>
 <td><code>surface</code></td>
 <td><code>#FFFFFF</code></td>
-<td><code>#1E1E1C</code></td>
-<td>Cartes, barre d&#39;onglets, feuilles</td>
+<td><code>#1A2333</code></td>
+<td>Cartes, barre d&#39;onglets, fenêtres</td>
 </tr>
 <tr>
-<td><code>surfaceElevated</code></td>
-<td><code>#EFECE6</code></td>
-<td><code>#282826</code></td>
-<td>Onglet actif, zones en retrait, étiquettes</td>
+<td><code>surfaceMuted</code>, <code>surfaceNeutral</code></td>
+<td><code>#F5F6F9</code>, <code>#F0F2F6</code></td>
+<td><code>#222C3E</code>, <code>#283246</code></td>
+<td>Zones en retrait, champs</td>
 </tr>
 <tr>
-<td><code>primary</code></td>
-<td><code>#253D2C</code></td>
-<td><code>#4E7A5B</code></td>
-<td>Vert EtherBay : actions, montants</td>
+<td><code>ink</code></td>
+<td><code>#1D2637</code></td>
+<td><code>#F3F5F9</code></td>
+<td>Texte principal, boutons sombres</td>
 </tr>
 <tr>
-<td><code>primaryLight</code></td>
-<td><code>#3B5E46</code></td>
-<td><code>#6B9B79</code></td>
-<td>Variante claire</td>
+<td><code>inkMuted</code></td>
+<td><code>#657084</code></td>
+<td><code>#A3ACBD</code></td>
+<td>Texte atténué, icônes inactives</td>
 </tr>
 <tr>
-<td><code>secondary</code></td>
-<td><code>#C86D51</code></td>
-<td><code>#C86D51</code></td>
-<td>Terracotta : surtitres, points</td>
+<td><code>border</code>, <code>divider</code>, <code>separator</code></td>
+<td><code>#E2E5EB</code>, <code>#E8EBEF</code>, <code>#DFE3EB</code></td>
+<td><code>#2C3649</code></td>
+<td>Bordures et séparateurs</td>
 </tr>
 <tr>
-<td><code>accent</code></td>
-<td><code>#253D2C</code></td>
-<td><code>#D4D2CC</code></td>
-<td>Accent</td>
+<td><code>sunNav</code></td>
+<td><code>#FFF3B5</code></td>
+<td><code>#3A3420</code></td>
+<td>Onglet actif</td>
 </tr>
 <tr>
-<td><code>text</code>, <code>textPrimary</code></td>
-<td><code>#18181B</code></td>
-<td><code>#F5F4F0</code></td>
-<td>Texte principal (deux clés de même valeur)</td>
+<td><code>lavender</code>, <code>lavenderStrong</code>, <code>lavenderSoft</code></td>
+<td><code>#EEE9FF</code>, <code>#E8E2FF</code>, <code>#F2EEFC</code></td>
+<td><code>#2A2546</code>, <code>#312A55</code>, <code>#2A2546</code></td>
+<td>Points, ticket à gratter violet</td>
 </tr>
 <tr>
-<td><code>textSecondary</code></td>
-<td><code>#52525B</code></td>
-<td><code>#A1A09A</code></td>
-<td>Texte atténué</td>
+<td><code>violet</code></td>
+<td><code>#7357B1</code></td>
+<td><code>#B9A6F0</code></td>
+<td>Accent des EtherPoints</td>
 </tr>
 <tr>
-<td><code>textMuted</code></td>
-<td><code>#8E8E93</code></td>
-<td><code>#6E6D68</code></td>
-<td>Mentions, placeholders</td>
+<td><code>mint</code>, <code>green</code></td>
+<td><code>#E6EFEA</code>, <code>#356C58</code></td>
+<td><code>#1E3329</code>, <code>#7FC4A6</code></td>
+<td>État positif, âge vérifié</td>
 </tr>
 <tr>
-<td><code>border</code></td>
-<td><code>#E4E2DD</code></td>
-<td><code>#2E2E2B</code></td>
-<td>Bordures</td>
+<td><code>peach</code>, <code>terracotta</code></td>
+<td><code>#FFE5D8</code>, <code>#A95837</code></td>
+<td><code>#3D2A22</code>, <code>#F0A07F</code></td>
+<td>Erreurs, ticket à gratter « lucky »</td>
 </tr>
 <tr>
-<td><code>success</code></td>
-<td><code>#2E6F40</code></td>
-<td><code>#4E7A5B</code></td>
-<td>État positif</td>
+<td><code>coral</code></td>
+<td><code>#E87F69</code></td>
+<td><code>#E87F69</code></td>
+<td>Accent ponctuel</td>
 </tr>
 <tr>
-<td><code>warning</code></td>
-<td><code>#B45309</code></td>
-<td><code>#D97706</code></td>
-<td>Avertissement</td>
-</tr>
-<tr>
-<td><code>error</code></td>
-<td><code>#B91C1C</code></td>
-<td><code>#DC2626</code></td>
-<td>Erreur</td>
-</tr>
-<tr>
-<td><code>gold</code></td>
-<td><code>#C86D51</code></td>
-<td><code>#C86D51</code></td>
-<td>Alias de <code>secondary</code></td>
+<td><code>overlay</code>, <code>shadowModal</code></td>
+<td><code>rgba(15, 23, 38, 0.5)</code>, <code>rgba(17, 24, 39, 0.18)</code></td>
+<td><code>rgba(0, 0, 0, 0.6)</code>, <code>rgba(0, 0, 0, 0.45)</code></td>
+<td>Voile et ombre des fenêtres</td>
 </tr>
 </tbody></table></div>
-<p>Les valeurs sont identiques aux variables de <code>globals.css</code> du web. Les ratios de contraste, et les combinaisons sous le seuil AA, sont donc les mêmes (voir <a href="../web/accessibilite.html#contrastes">Accessibilité et responsive du web</a>).</p>
-<p>Le splash et l&#39;icône adaptative Android utilisent un fond <code>#1A0B2E</code> (violet foncé) défini dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/app.json" class="external" target="_blank" rel="noopener noreferrer"><code>app.json</code></a>, qui n&#39;appartient pas à la palette.</p>
-<h2 id="espacements-et-typographie-adaptatifs"><a class="anchor" href="#espacements-et-typographie-adaptatifs" aria-hidden="true" tabindex="-1">#</a>Espacements et typographie adaptatifs</h2>
-<p><code>spacing.ts</code> et <code>typography.ts</code> calculent un facteur d&#39;échelle à partir de la largeur de la fenêtre, avec 390 points (un iPhone récent) comme référence :</p>
+<p>Les clés de l&#39;ancienne palette (<code>primary</code>, <code>primaryLight</code>, <code>secondary</code>, <code>accent</code>, <code>text</code>, <code>textPrimary</code>, <code>textSecondary</code>, <code>textMuted</code>, <code>surfaceElevated</code>, <code>success</code>, <code>warning</code>, <code>error</code>, <code>gold</code>) restent dans <code>ColorPalette</code> comme alias des nouveaux jetons, par exemple <code>primary</code> vaut <code>ink</code> et <code>error</code> vaut <code>terracotta</code>. Elles évitent de casser le code qui les lit encore ; un nouveau composant doit utiliser les jetons ci-dessus.</p>
+<p>Le splash a un fond <code>#F6F7FA</code> (le <code>background</code> clair) et l&#39;icône adaptative Android un fond <code>#FFDA38</code>, définis dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/app.json" class="external" target="_blank" rel="noopener noreferrer"><code>app.json</code></a>.</p>
+<h2 id="typographie"><a class="anchor" href="#typographie" aria-hidden="true" tabindex="-1">#</a>Typographie</h2>
+<p><code>App.tsx</code> charge la police Inter avec <code>useFonts</code> de <code>@expo-google-fonts/inter</code> et n&#39;affiche rien tant qu&#39;elle n&#39;est pas prête. <code>typography.ts</code> associe une famille à chaque graisse :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Graisse</th>
+<th>Famille</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>regular</code></td>
+<td><code>Inter_400Regular</code></td>
+</tr>
+<tr>
+<td><code>medium</code></td>
+<td><code>Inter_500Medium</code></td>
+</tr>
+<tr>
+<td><code>semibold</code></td>
+<td><code>Inter_600SemiBold</code></td>
+</tr>
+<tr>
+<td><code>bold</code></td>
+<td><code>Inter_700Bold</code></td>
+</tr>
+<tr>
+<td>italique grasse</td>
+<td><code>Inter_700Bold_Italic</code></td>
+</tr>
+</tbody></table></div>
+<p><code>AppText</code> propose dix variantes, en points avant mise à l&#39;échelle :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variante</th>
+<th>Taille</th>
+<th>Graisse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>display</code></td>
+<td>43</td>
+<td>bold</td>
+</tr>
+<tr>
+<td><code>hero</code></td>
+<td>28</td>
+<td>bold</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>23</td>
+<td>bold</td>
+</tr>
+<tr>
+<td><code>section</code></td>
+<td>21</td>
+<td>bold</td>
+</tr>
+<tr>
+<td><code>subtitle</code></td>
+<td>16</td>
+<td>bold</td>
+</tr>
+<tr>
+<td><code>body</code></td>
+<td>13</td>
+<td>regular</td>
+</tr>
+<tr>
+<td><code>small</code></td>
+<td>12</td>
+<td>regular</td>
+</tr>
+<tr>
+<td><code>caption</code></td>
+<td>11</td>
+<td>regular</td>
+</tr>
+<tr>
+<td><code>overline</code></td>
+<td>10</td>
+<td>bold, majuscules</td>
+</tr>
+<tr>
+<td><code>label</code></td>
+<td>9</td>
+<td>bold, majuscules</td>
+</tr>
+</tbody></table></div>
+<p>Les écrans passent aussi souvent une taille explicite (<code>size</code>) et une graisse (<code>weight</code>). L&#39;interligne par défaut vaut 1,3 fois la taille.</p>
+<h2 id="espacements-et-echelle-adaptative"><a class="anchor" href="#espacements-et-echelle-adaptative" aria-hidden="true" tabindex="-1">#</a>Espacements et échelle adaptative</h2>
+<p><code>spacing.ts</code> et <code>typography.ts</code> calculent un facteur d&#39;échelle à partir de la largeur de la fenêtre, avec 402 points comme référence (la largeur des écrans de la maquette), borné entre 0,9 et 1,06 :</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Fichier</th>
-<th>Facteur</th>
-<th>Bornes</th>
-<th>Valeurs à 390 points</th>
+<th>Valeurs à 402 points</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>spacing.ts</code></td>
-<td><code>largeur / 390</code></td>
-<td>0,85 à 1,12</td>
-<td><code>xs</code> 4, <code>sm</code> 8, <code>md</code> 14, <code>lg</code> 20, <code>xl</code> 28, <code>xxl</code> 40</td>
+<td><code>xs</code> 4, <code>sm</code> 8, <code>md</code> 14, <code>lg</code> 20, <code>xl</code> 28, <code>xxl</code> 40, <code>screen</code> 20 (marge latérale), <code>screenText</code> 24</td>
 </tr>
 <tr>
 <td><code>typography.ts</code></td>
-<td><code>largeur / 390</code>, arrondi au pixel</td>
-<td>0,85 à 1,1</td>
-<td>tailles <code>xs</code> 12, <code>sm</code> 13, <code>md</code> 15, <code>lg</code> 17, <code>xl</code> 20, <code>xxl</code> 24, <code>hero</code> 30</td>
+<td>tailles <code>xs</code> 11, <code>sm</code> 12, <code>md</code> 13, <code>lg</code> 16, <code>xl</code> 21, <code>xxl</code> 23, <code>hero</code> 29 ; fonction <code>rf</code> d&#39;arrondi au pixel</td>
 </tr>
 </tbody></table></div>
-<p>Les rayons ne dépendent pas de l&#39;écran : <code>sm</code> 6, <code>md</code> 10, <code>lg</code> 14, <code>xl</code> 18, <code>full</code> 9999.</p>
+<p>Les rayons ne dépendent pas de l&#39;écran : <code>sm</code> 10, <code>md</code> 12, <code>lg</code> 16, <code>xl</code> 20, <code>xxl</code> 24, <code>hero</code> 28, <code>full</code> 9999.</p>
 <p>Le facteur est calculé une seule fois, au chargement du module, avec <code>Dimensions.get(&#39;window&#39;)</code>. Il ne suit pas une rotation, un changement de taille de fenêtre sur tablette ou un pliable. <code>ThemeProvider</code> fournit en revanche <code>screenWidth</code>, <code>screenHeight</code> et <code>isCompactScreen</code> (largeur inférieure à 360 ou hauteur inférieure à 700) à jour grâce à <code>useWindowDimensions</code>.</p>
-<p>Les trois familles <code>regular</code>, <code>medium</code> et <code>bold</code> valent <code>&#39;System&#39;</code>. Les fichiers Inter de <code>assets/fonts</code> ne sont chargés par aucun <code>useFonts</code> : l&#39;application utilise San Francisco sur iOS et Roboto sur Android.</p>
 <h2 id="themeprovider"><a class="anchor" href="#themeprovider" aria-hidden="true" tabindex="-1">#</a>ThemeProvider</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -230,10 +344,10 @@
 <ul>
 <li>ils ne sont pas mémorisés sur l&#39;appareil et reviennent à leur valeur initiale à chaque démarrage ;</li>
 <li>le thème du système n&#39;est pas lu, alors que <code>app.json</code> déclare <code>&quot;userInterfaceStyle&quot;: &quot;automatic&quot;</code> : un téléphone en mode sombre affiche quand même l&#39;application en clair ;</li>
-<li><code>ProfileScreen</code> envoie les changements au backend (<code>PUT /user/preferences</code>), mais la valeur n&#39;est jamais relue.</li>
+<li><code>SettingsScreen</code> envoie les changements au backend (<code>PUT /user/preferences</code>) et revient à l&#39;ancienne valeur si l&#39;envoi échoue, mais le thème et la langue enregistrés ne sont jamais relus.</li>
 </ul>
 <p><code>App.tsx</code> adapte la barre d&#39;état : texte clair en thème sombre, texte foncé en thème clair.</p>
-<p>La fonction <code>t(fr, en)</code> fonctionne comme sur le web (voir <a href="../web/i18n.html">Internationalisation</a>). Plusieurs textes du mobile ne passent pas par <code>t</code> : les messages d&#39;erreur de <code>useCitizenWallet</code>, ceux des feuilles globales et les raisons des feuilles de points sont en français seulement. Beaucoup de textes évitent aussi l&#39;apostrophe (« l offre », « d EtherBay ») pour ne pas échapper les guillemets simples, ce qui laisse des fautes visibles à l&#39;écran.</p>
+<p>La fonction <code>t(fr, en)</code> fonctionne comme sur le web (voir <a href="../web/i18n.html">Internationalisation</a>). Les messages d&#39;erreur de <code>useCitizenWallet</code> et ceux des fenêtres globales restent en français seulement, et les messages du backend s&#39;affichent en français quand l&#39;interface est en anglais.</p>
 <h2 id="composants-de-base"><a class="anchor" href="#composants-de-base" aria-hidden="true" tabindex="-1">#</a>Composants de base</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -247,47 +361,141 @@
 <tbody><tr>
 <td><code>AppText</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/AppText.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>AppText.tsx</code></a></td>
-<td><code>variant</code> (<code>hero</code>, <code>title</code>, <code>subtitle</code>, <code>body</code>, <code>caption</code>, <code>overline</code>), <code>weight</code> (<code>regular</code>, <code>medium</code>, <code>semibold</code>, <code>bold</code>), <code>color</code>, <code>align</code></td>
-<td>Taille et interligne du thème ; <code>overline</code> en majuscules espacées ; couleur <code>textPrimary</code> par défaut</td>
+<td><code>variant</code>, <code>size</code>, <code>weight</code>, <code>color</code>, <code>align</code>, <code>lineHeight</code></td>
+<td>Taille mise à l&#39;échelle par <code>rf</code>, famille Inter selon la graisse, couleur <code>ink</code> par défaut</td>
 </tr>
 <tr>
 <td><code>AppButton</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/AppButton.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>AppButton.tsx</code></a></td>
-<td><code>title</code>, <code>onPress</code>, <code>variant</code> (<code>primary</code>, <code>secondary</code>, <code>outline</code>, <code>danger</code>), <code>loading</code>, <code>disabled</code></td>
-<td><code>TouchableOpacity</code> de 48 de haut (44 sur petit écran) ; <code>loading</code> affiche un <code>ActivityIndicator</code> et bloque l&#39;appui ; <code>disabled</code> grise le bouton</td>
+<td><code>title</code>, <code>onPress</code>, <code>variant</code> (<code>primary</code>, <code>dark</code>, <code>outline</code>, <code>soft</code>, <code>ghost</code>), <code>size</code> (<code>lg</code> 52, <code>md</code> 40, <code>sm</code> 32), <code>leftIcon</code>, <code>rightIcon</code>, <code>loading</code>, <code>disabled</code>, <code>accessibilityHint</code></td>
+<td>Rôle <code>button</code>, libellé égal au titre, états <code>disabled</code> et <code>busy</code> annoncés ; <code>secondary</code> et <code>danger</code> restent acceptés comme alias de <code>dark</code> et <code>outline</code></td>
 </tr>
 <tr>
 <td><code>AppInput</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/AppInput.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>AppInput.tsx</code></a></td>
-<td><code>label</code>, <code>errorText</code> et toutes les props de <code>TextInput</code></td>
-<td>Libellé au-dessus, bordure rouge et message sous le champ en cas d&#39;erreur</td>
+<td><code>label</code>, <code>icon</code>, <code>errorText</code>, <code>helperText</code>, <code>secureToggle</code> et les props de <code>TextInput</code></td>
+<td>Champ arrondi avec icône ; <code>secureToggle</code> ajoute un bouton accessible pour afficher ou masquer le mot de passe</td>
+</tr>
+<tr>
+<td><code>Card</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/Card.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Card.tsx</code></a></td>
+<td><code>tone</code> (surface, sun, lavender, mint, peach…), <code>radius</code>, <code>padding</code>, <code>elevated</code>, <code>onPress</code>, <code>accessibilityLabel</code></td>
+<td>Carte de la maquette, cliquable si <code>onPress</code> est fourni</td>
+</tr>
+<tr>
+<td><code>Pill</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/Pill.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Pill.tsx</code></a></td>
+<td><code>label</code>, <code>tone</code>, <code>dot</code>, <code>uppercase</code></td>
+<td>Étiquette arrondie</td>
+</tr>
+<tr>
+<td><code>ListRow</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/ListRow.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ListRow.tsx</code></a></td>
+<td><code>title</code>, <code>subtitle</code>, <code>icon</code>, <code>iconTone</code>, <code>value</code>, <code>right</code>, <code>onPress</code>, <code>destructive</code>, <code>divider</code></td>
+<td>Ligne de liste des réglages et de l&#39;historique</td>
+</tr>
+<tr>
+<td><code>Screen</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/Screen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Screen.tsx</code></a></td>
+<td><code>scroll</code>, <code>footer</code>, <code>showSecurityFooter</code>, <code>refreshing</code>, <code>onRefresh</code>, <code>edges</code></td>
+<td><code>SafeAreaView</code>, <code>KeyboardAvoidingView</code>, défilement et « tirer pour rafraîchir », pied fixe facultatif</td>
+</tr>
+<tr>
+<td><code>ScreenHeader</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/ScreenHeader.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ScreenHeader.tsx</code></a></td>
+<td><code>title</code>, <code>subtitle</code>, <code>onBack</code>, <code>right</code></td>
+<td>En-tête d&#39;écran avec <code>BackButton</code> si <code>onBack</code> est fourni</td>
+</tr>
+<tr>
+<td><code>SectionHeader</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/SectionHeader.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SectionHeader.tsx</code></a></td>
+<td><code>title</code>, <code>subtitle</code>, <code>right</code></td>
+<td>Titre de section</td>
+</tr>
+<tr>
+<td><code>SecurityFooter</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/SecurityFooter.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SecurityFooter.tsx</code></a></td>
+<td>aucune</td>
+<td>Mention « Application sécurisée · Aucun argent réel »</td>
+</tr>
+<tr>
+<td><code>StepList</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/StepList.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>StepList.tsx</code></a></td>
+<td><code>steps</code>, <code>variant</code></td>
+<td>Étapes numérotées (parrainage, fonctionnement)</td>
+</tr>
+<tr>
+<td><code>FilterChips</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/FilterChips.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>FilterChips.tsx</code></a></td>
+<td><code>options</code>, <code>value</code>, <code>onChange</code></td>
+<td>Filtres à choix unique</td>
+</tr>
+<tr>
+<td><code>ResultDialog</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/ResultDialog.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ResultDialog.tsx</code></a></td>
+<td><code>visible</code>, <code>status</code> (<code>success</code>, <code>error</code>, <code>info</code>), <code>title</code>, <code>message</code>, <code>note</code>, <code>primaryLabel</code>, <code>secondaryLabel</code></td>
+<td>Fenêtre centrée des confirmations et erreurs, <code>accessibilityViewIsModal</code>, titre annoncé comme en-tête</td>
 </tr>
 <tr>
 <td><code>BottomSheet</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/BottomSheet.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>BottomSheet.tsx</code></a></td>
-<td><code>visible</code>, <code>title</code>, <code>onClose</code>, <code>children</code></td>
-<td><code>Modal</code> transparent animé par glissement, poignée, bouton « Fermer », marge basse égale à l&#39;encart de sécurité ; le bouton retour d&#39;Android ferme la feuille (<code>onRequestClose</code>)</td>
+<td><code>visible</code>, <code>title</code>, <code>onClose</code></td>
+<td><code>Modal</code> glissant depuis le bas ; utilisée par le choix de la photo d&#39;identité</td>
 </tr>
 <tr>
-<td><code>Loader</code></td>
-<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/Loader.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Loader.tsx</code></a></td>
-<td><code>message</code></td>
-<td><code>ActivityIndicator</code> et texte « Chargement... » par défaut</td>
+<td><code>NotificationButton</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/NotificationButton.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>NotificationButton.tsx</code></a></td>
+<td><code>onPress</code>, <code>hasUnread</code></td>
+<td>Cloche avec pastille de notifications non lues</td>
+</tr>
+<tr>
+<td><code>BrandLogo</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/BrandLogo.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>BrandLogo.tsx</code></a></td>
+<td><code>size</code></td>
+<td>Symbole et nom BlockLucky de l&#39;en-tête de l&#39;accueil</td>
 </tr>
 <tr>
 <td><code>ProgressBar</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/ProgressBar.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ProgressBar.tsx</code></a></td>
-<td>pourcentage, valeurs, paliers</td>
-<td>Jauge de participation et paliers débloqués</td>
+<td><code>percentage</code>, <code>markers</code>, <code>tone</code>, <code>height</code>, <code>accessibilityLabel</code></td>
+<td>Jauge de participation et repères des paliers</td>
+</tr>
+<tr>
+<td><code>Loader</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/Loader.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Loader.tsx</code></a></td>
+<td><code>message</code>, <code>skeletonRows</code></td>
+<td>Indicateur de chargement ou lignes squelettes</td>
 </tr>
 <tr>
 <td><code>BackButton</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/BackButton.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>BackButton.tsx</code></a></td>
-<td><code>onPress</code>, libellé</td>
-<td>Bouton texte « Retour », affiché par les écrans empilés</td>
+<td><code>onPress</code>, <code>label</code></td>
+<td>Bouton rond avec flèche</td>
 </tr>
 </tbody></table></div>
-<p>Il n&#39;y a pas d&#39;équivalent mobile de <code>Card</code>, <code>Alert</code>, <code>Badge</code>, <code>SegmentedTabs</code> ou <code>CheckboxCard</code> : chaque écran compose ces éléments avec des <code>View</code> et des styles locaux (<code>StyleSheet.create</code>) qui lisent <code>colors</code> et <code>borderRadius</code> du contexte.</p>
+<h2 id="icones"><a class="anchor" href="#icones" aria-hidden="true" tabindex="-1">#</a>Icônes</h2>
+<p>Les icônes viennent de la maquette. Les fichiers sources sont dans <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/assets/icons" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/assets/icons</code></a> ; leur contenu SVG est recopié dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/icons/iconData.ts" class="external" target="_blank" rel="noopener noreferrer"><code>iconData.ts</code></a>, qui associe un nom (<code>tabHome</code>, <code>bell</code>, <code>google</code>, <code>apple</code>, <code>idCard</code>…) à un balisage, une largeur et une hauteur. <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/icons/Icon.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Icon.tsx</code></a> l&#39;affiche avec <code>SvgXml</code> de <code>react-native-svg</code> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>name</code></td>
+<td>Clé de <code>iconData</code> (type <code>IconName</code>)</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td>Largeur ; la hauteur suit les proportions de l&#39;icône</td>
+</tr>
+<tr>
+<td><code>color</code></td>
+<td>Couleur appliquée par <code>currentColor</code>, <code>ink</code> du thème par défaut</td>
+</tr>
+</tbody></table></div>
+<p>L&#39;icône est masquée aux lecteurs d&#39;écran (<code>importantForAccessibility=&quot;no&quot;</code>) : le libellé doit être porté par le bouton qui la contient. Ajouter une icône demande de déposer le SVG dans <code>assets/icons</code>, puis d&#39;ajouter son entrée dans <code>iconData.ts</code> : le fichier SVG n&#39;est pas lu à l&#39;exécution.</p>
 <h2 id="composants-metier"><a class="anchor" href="#composants-metier" aria-hidden="true" tabindex="-1">#</a>Composants métier</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -297,36 +505,74 @@
 </tr>
 </thead>
 <tbody><tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/auth" class="external" target="_blank" rel="noopener noreferrer"><code>components/auth</code></a></td>
+<td><code>AuthHero</code>, <code>SocialAuthButtons</code>, <code>PasswordRules</code>, <code>CheckboxRow</code>, <code>OrDivider</code>, <code>TextLink</code>, <code>FormMessage</code>, <code>DevOtpHint</code>, <code>HighlightCard</code>, <code>AgeNoticeCard</code>, <code>IdentitySideCard</code>, utilitaires <code>authErrors</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/draw" class="external" target="_blank" rel="noopener noreferrer"><code>components/draw</code></a></td>
+<td><code>DrawWheel</code> (roue à 10 secteurs), <code>CurrentTicketCard</code>, <code>ResultCards</code>, <code>RoomChat</code>, <code>WaitingRoomClosed</code>, <code>CrossFade</code>, <code>RollingValue</code>, <code>PulseDots</code>, hook <code>useNow</code>, formats <code>drawFormat</code></td>
+</tr>
+<tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/lottery" class="external" target="_blank" rel="noopener noreferrer"><code>components/lottery</code></a></td>
-<td><code>ChatBox</code>, <code>CountdownTimer</code>, <code>LeaderboardList</code>, <code>POAPBadge</code> (visuel SVG distant avec repli), <code>RouletteAnimation</code>, <code>TicketCard</code>, <code>WinnerClaimCard</code></td>
+<td><code>DeadlineCard</code>, <code>MilestonesPanel</code>, <code>DrawStatusBadge</code>, <code>DialogSummary</code>, <code>ScratchOfferCard</code>, hook <code>useCountdown</code>, formats <code>lotteryFormat</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/marketplace" class="external" target="_blank" rel="noopener noreferrer"><code>components/marketplace</code></a></td>
-<td><code>PointsBalanceCard</code>, <code>RewardCard</code>, <code>ScratchCanvas</code></td>
+<td><code>ScratchCanvas</code>, <code>ScratchOfferCard</code>, <code>CodeCard</code>, <code>RewardCard</code>, <code>PointsBalanceCard</code>, utilitaires <code>apiErrors</code> et <code>scratchOffers</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/profile" class="external" target="_blank" rel="noopener noreferrer"><code>components/profile</code></a></td>
+<td><code>IdentityCard</code>, <code>ReferralCodeCard</code>, <code>SummaryTiles</code>, <code>ListGroup</code>, <code>SwitchRow</code>, <code>TabTitle</code>, utilitaire <code>ageStatus</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/web3" class="external" target="_blank" rel="noopener noreferrer"><code>components/web3</code></a></td>
-<td><code>IntegratedWalletCard</code>, <code>IntegratedWalletButton</code>, <code>ExplorerLink</code></td>
+<td><code>IntegratedWalletCard</code>, <code>IntegratedWalletButton</code>, <code>ExplorerLink</code>, plus utilisés par aucun écran</td>
 </tr>
 </tbody></table></div>
-<p><code>ScratchCanvas</code> ne dessine pas de vraie couche à gratter : chaque mouvement du doigt (<code>PanResponder</code>) ou chaque appui fait avancer la progression de 25 %, et le code est révélé à 100 %. Le texte affiché indique « Grattez ou touchez pour révéler », ce qui laisse une voie d&#39;accès sans geste de glissement.</p>
-<p>Les composants de portefeuille et de loterie sont décrits dans <a href="portefeuille-loterie.html">Portefeuille et loterie</a>.</p>
+<p><code>ScratchCanvas</code> découpe la zone à gratter en une grille de cellules. Chaque contact du doigt (<code>PanResponder</code>) efface les cellules proches, et le code est révélé quand 60 % de la surface est découverte. Pour les lecteurs d&#39;écran, la zone est annoncée comme réglable avec le pourcentage découvert, et l&#39;action d&#39;accessibilité « Tout révéler » affiche le code sans geste de glissement.</p>
+<p>Les composants du tirage et de la boutique sont décrits dans <a href="portefeuille-loterie.html">Portefeuille et loterie</a>.</p>
 <h2 id="accessibilite"><a class="anchor" href="#accessibilite" aria-hidden="true" tabindex="-1">#</a>Accessibilité</h2>
-<p>Aucun composant ni écran n&#39;utilise les props d&#39;accessibilité de React Native (<code>accessibilityLabel</code>, <code>accessibilityRole</code>, <code>accessibilityState</code>, <code>accessibilityLiveRegion</code>). Conséquences pour VoiceOver et TalkBack :</p>
-<ul>
-<li>les boutons construits avec <code>TouchableOpacity</code> sont annoncés par leur texte, mais sans rôle « bouton » explicite ni état « désactivé » ou « occupé » ;</li>
-<li>les onglets de <code>CustomTabBar</code> ne sont pas annoncés comme onglets et l&#39;onglet sélectionné n&#39;est pas signalé ;</li>
-<li>les changements d&#39;état (reçu d&#39;achat, gagnant, messages de discussion) ne sont pas annoncés ;</li>
-<li>la modale de majorité et les feuilles ne déplacent pas le focus du lecteur d&#39;écran.</li>
-</ul>
-<p>La taille du texte suit le réglage d&#39;accessibilité du système, puisque <code>allowFontScaling</code> n&#39;est jamais désactivé ; les mises en page n&#39;ont pas été vérifiées avec de très grandes tailles. Rendre l&#39;application accessible demande d&#39;ajouter ces props aux composants de base en priorité (<code>AppButton</code>, <code>AppInput</code>, <code>BottomSheet</code>, <code>CustomTabBar</code>), puis aux zones dynamiques. Les obligations sont rappelées dans <a href="../juridique/accessibilite.html">Accessibilité numérique</a>.</p>
+<p>La refonte a ajouté les props d&#39;accessibilité de React Native aux composants principaux :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Props</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>AppButton</code></td>
+<td><code>accessibilityRole=&quot;button&quot;</code>, libellé, indication, états <code>disabled</code> et <code>busy</code></td>
+</tr>
+<tr>
+<td>Barre d&#39;onglets</td>
+<td>Rôles <code>tablist</code> et <code>tab</code>, état <code>selected</code></td>
+</tr>
+<tr>
+<td><code>AppInput</code></td>
+<td>Bouton d&#39;affichage du mot de passe avec rôle et libellé</td>
+</tr>
+<tr>
+<td><code>ResultDialog</code></td>
+<td><code>accessibilityViewIsModal</code>, titre en rôle <code>header</code></td>
+</tr>
+<tr>
+<td><code>FormMessage</code>, copie du code de parrainage, résultat du tirage, bandeau de notification</td>
+<td><code>accessibilityLiveRegion=&quot;polite&quot;</code></td>
+</tr>
+<tr>
+<td><code>ScratchCanvas</code></td>
+<td>Rôle <code>adjustable</code>, progression annoncée, action « Tout révéler »</td>
+</tr>
+</tbody></table></div>
+<p>Restent à traiter : <code>AppText</code>, <code>Pill</code>, <code>StepList</code>, <code>Screen</code>, <code>Loader</code> et <code>BottomSheet</code> n&#39;ont aucune prop d&#39;accessibilité, la <code>BottomSheet</code> ne déplace pas le focus, et <code>accessibilityLiveRegion</code> n&#39;a d&#39;effet que sur Android. La roue du tirage tourne sans tenir compte du réglage « Réduire les animations » du système. La taille du texte suit le réglage d&#39;accessibilité du système, puisque <code>allowFontScaling</code> n&#39;est jamais désactivé ; les mises en page n&#39;ont pas été vérifiées avec de très grandes tailles. Les obligations sont rappelées dans <a href="../juridique/accessibilite.html">Accessibilité numérique</a>.</p>
 <h2 id="ajouter-un-composant"><a class="anchor" href="#ajouter-un-composant" aria-hidden="true" tabindex="-1">#</a>Ajouter un composant</h2>
 <ol>
-<li>Lire les couleurs et les espacements avec <code>useAppTheme()</code>, jamais en dur, pour suivre le thème sombre.</li>
-<li>Utiliser <code>AppText</code> pour tout texte, afin de garder l&#39;échelle typographique.</li>
+<li>Lire les couleurs et les espacements avec <code>useAppTheme()</code>, jamais en dur, pour suivre le thème sombre, et préférer les jetons de la maquette (<code>ink</code>, <code>sun</code>, <code>surface</code>…) aux anciens alias.</li>
+<li>Utiliser <code>AppText</code> pour tout texte, afin de garder la police Inter et l&#39;échelle typographique.</li>
 <li>Passer chaque libellé par <code>t(&#39;...&#39;, &#39;...&#39;)</code>.</li>
+<li>Utiliser <code>Icon</code> pour les pictogrammes et porter le libellé sur l&#39;élément interactif.</li>
 <li>Ajouter <code>accessibilityRole</code> et <code>accessibilityLabel</code> dès la création.</li>
-<li>Reporter tout changement de couleur dans <code>frontend-web/src/app/globals.css</code> pour garder la parité avec le web.</li>
 </ol>
 
     </article>
@@ -336,7 +582,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#fichiers-du-theme">Fichiers du thème</a></li><li class="toc-h2"><a href="#couleurs">Couleurs</a></li><li class="toc-h2"><a href="#espacements-et-typographie-adaptatifs">Espacements et typographie adaptatifs</a></li><li class="toc-h2"><a href="#themeprovider">ThemeProvider</a></li><li class="toc-h2"><a href="#composants-de-base">Composants de base</a></li><li class="toc-h2"><a href="#composants-metier">Composants métier</a></li><li class="toc-h2"><a href="#accessibilite">Accessibilité</a></li><li class="toc-h2"><a href="#ajouter-un-composant">Ajouter un composant</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#fichiers-du-theme">Fichiers du thème</a></li><li class="toc-h2"><a href="#couleurs">Couleurs</a></li><li class="toc-h2"><a href="#typographie">Typographie</a></li><li class="toc-h2"><a href="#espacements-et-echelle-adaptative">Espacements et échelle adaptative</a></li><li class="toc-h2"><a href="#themeprovider">ThemeProvider</a></li><li class="toc-h2"><a href="#composants-de-base">Composants de base</a></li><li class="toc-h2"><a href="#icones">Icônes</a></li><li class="toc-h2"><a href="#composants-metier">Composants métier</a></li><li class="toc-h2"><a href="#accessibilite">Accessibilité</a></li><li class="toc-h2"><a href="#ajouter-un-composant">Ajouter un composant</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>
