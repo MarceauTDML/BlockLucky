@@ -5,6 +5,10 @@ import {
   AnalyticsDashboardResponse,
   AuditLogEntry,
   CircuitBreakerResponse,
+  IdentityDecisionResponse,
+  IdentityVerificationDetail,
+  IdentityVerificationStatus,
+  IdentityVerificationSummary,
   ReportExportResponse,
   TreasuryWithdrawResponse,
 } from '@/types/admin.types';
@@ -49,6 +53,24 @@ export const adminApi = baseApi.injectEndpoints({
       query: (params) => ({ url: '/admin/audit-logs', params: params || { limit: 100 } }),
       providesTags: ['Audit'],
     }),
+    getIdentityVerifications: builder.query<
+      ApiResponse<{ verifications: IdentityVerificationSummary[] }>,
+      { status: IdentityVerificationStatus; page?: number; limit?: number }
+    >({
+      query: (params) => ({ url: '/admin/identity-verifications', params }),
+      providesTags: ['Identity'],
+    }),
+    getIdentityVerification: builder.query<ApiResponse<{ verification: IdentityVerificationDetail }>, string>({
+      query: (id) => `/admin/identity-verifications/${id}`,
+      keepUnusedDataFor: 0,
+    }),
+    decideIdentityVerification: builder.mutation<
+      ApiResponse<{ decision: IdentityDecisionResponse }>,
+      { id: string; approved: boolean; note?: string }
+    >({
+      query: ({ id, ...body }) => ({ url: `/admin/identity-verifications/${id}/decision`, method: 'POST', body }),
+      invalidatesTags: ['Identity', 'Audit'],
+    }),
     exportReport: builder.mutation<ApiResponse<ReportExportResponse>, { format: 'CSV' | 'PDF' }>({
       query: ({ format }) => ({ url: '/admin/reports/export', params: { format } }),
       invalidatesTags: ['Audit'],
@@ -64,4 +86,7 @@ export const {
   useSetPartnerStatusMutation,
   useGetAuditLogsQuery,
   useExportReportMutation,
+  useGetIdentityVerificationsQuery,
+  useGetIdentityVerificationQuery,
+  useDecideIdentityVerificationMutation,
 } = adminApi;

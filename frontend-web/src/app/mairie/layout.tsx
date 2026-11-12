@@ -8,11 +8,12 @@ import { useAppTheme } from '@/theme/ThemeProvider';
 export default function MairieLayout({ children }: { children: React.ReactNode }) {
   const { t } = useAppTheme();
   const nav: NavItem[] = [
-    { href: '/mairie', label: t('Pilotage', 'Overview'), match: ['/mairie/tableau-de-bord'] },
-    { href: '/mairie/analytique', label: t('Analytique', 'Analytics') },
-    { href: '/mairie/partenaires', label: t('Partenaires', 'Partners') },
-    { href: '/mairie/securite', label: t('Sécurité', 'Security') },
-    { href: '/mairie/audit', label: t('Audit', 'Audit') },
+    { href: '/mairie', label: t('Pilotage', 'Overview'), icon: 'tabHome', match: ['/mairie/tableau-de-bord'] },
+    { href: '/mairie/analytique', label: t('Analytique', 'Analytics'), icon: 'star' },
+    { href: '/mairie/partenaires', label: t('Partenaires', 'Partners'), icon: 'users' },
+    { href: '/mairie/identites', label: t('Identités', 'Identities'), icon: 'idCard' },
+    { href: '/mairie/securite', label: t('Sécurité', 'Security'), icon: 'shield' },
+    { href: '/mairie/audit', label: t('Audit', 'Audit'), icon: 'document' },
   ];
 
   return (

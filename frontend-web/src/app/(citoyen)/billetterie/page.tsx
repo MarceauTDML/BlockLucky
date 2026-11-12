@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense, useState } from 'react';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import Input, { Textarea } from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
 import { Alert, CheckboxCard, PageHeader } from '@/components/ui/Misc';
-import { ChoicePills, SegmentedTabs } from '@/components/ui/SegmentedTabs';
+import { SegmentedTabs } from '@/components/ui/SegmentedTabs';
 import DemoModeBadge from '@/components/lottery/DemoModeBadge';
 import WalletCard from '@/components/lottery/WalletCard';
-import useAuth from '@/hooks/useAuth';
+import useAgeVerification from '@/hooks/useAgeVerification';
 import useBlockLuckyWallet from '@/hooks/useBlockLuckyWallet';
 import { GIFT_BONUS_POINTS, POINTS_PER_TICKET, TICKET_PRICE_ETH } from '@/lib/config';
 import { formatDateShort } from '@/lib/date';
@@ -21,13 +22,12 @@ import { useAppTheme } from '@/theme/ThemeProvider';
 import { BuyTicketResponse } from '@/types/api.types';
 
 type Mode = 'SELF' | 'GIFT';
-const QUANTITIES = [1, 2, 5, 10] as const;
-type Receipt = { state: 'pending'; quantity: number } | { state: 'confirmed'; data: BuyTicketResponse } | null;
+type Receipt = { state: 'pending' } | { state: 'confirmed'; data: BuyTicketResponse } | null;
 
 function TicketOfficeContent() {
   const { t } = useAppTheme();
   const params = useSearchParams();
-  const { user } = useAuth();
+  const { status: ageStatus } = useAgeVerification();
   const { purchaseTicket, sendGiftTicket, isBuying, isGifting } = useBlockLuckyWallet();
   const { data: statusRes } = useGetLotteryStatusQuery();
   const round = statusRes?.data?.round;
@@ -37,7 +37,6 @@ function TicketOfficeContent() {
   const ticketPrice = round?.ticketPriceEth ?? TICKET_PRICE_ETH;
 
   const [mode, setMode] = useState<Mode>(params.get('mode') === 'cadeau' ? 'GIFT' : 'SELF');
-  const [quantity, setQuantity] = useState<(typeof QUANTITIES)[number]>(1);
   const [understood, setUnderstood] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState('');
   const [personalMessage, setPersonalMessage] = useState(
@@ -47,13 +46,13 @@ function TicketOfficeContent() {
   const [feedback, setFeedback] = useState('');
   const [errorText, setErrorText] = useState('');
 
-  const limit = user?.responsibleGaming?.maxTicketsPerRound;
+  const needsIdentity = Boolean(ageStatus && ageStatus !== 'VERIFIED');
 
   const handleBuyForSelf = async () => {
     if (isBuying || !understood) return;
     setFeedback('');
-    setReceipt({ state: 'pending', quantity });
-    const result = await purchaseTicket(quantity, 0);
+    setReceipt({ state: 'pending' });
+    const result = await purchaseTicket(1, 0);
     setReceipt(result ? { state: 'confirmed', data: result } : null);
   };
 
@@ -77,7 +76,7 @@ function TicketOfficeContent() {
     }
   };
 
-  const total = String(Number((quantity * ticketPrice).toFixed(4)));
+  const total = String(Number(ticketPrice.toFixed(4)));
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -110,52 +109,59 @@ function TicketOfficeContent() {
             </Alert>
           ) : null}
 
+          {needsIdentity ? (
+            <Alert tone="warning" className="mb-3.5">
+              {ageStatus === 'PENDING'
+                ? t(
+                    "Votre pièce d'identité est en cours de vérification par la Mairie. Vous pourrez jouer dès sa validation.",
+                    'City Hall is reviewing your identity document. You can play as soon as it is approved.'
+                  )
+                : t('Vérifiez votre âge pour participer au tirage.', 'Verify your age to enter the draw.')}{' '}
+              <Link href="/profil/identite" className="underline underline-offset-2 hover:text-fg">
+                {ageStatus === 'PENDING' ? t('Voir le suivi', 'View status') : t('Envoyer ma pièce', 'Send my document')}
+              </Link>
+            </Alert>
+          ) : null}
+
           {mode === 'SELF' ? (
-            <section className="card flex flex-col gap-3.5 p-[18px]" aria-labelledby="self-title">
-              <div>
-                <h2 id="self-title" className="text-subtitle font-semibold">
-                  {t('Participation directe', 'Direct Entry')}
-                </h2>
-                <p className="text-caption text-fg-secondary">
+            <section
+              className="flex flex-col gap-4 rounded-[28px] bg-sun p-5 text-on-sun shadow-[0_14px_32px_rgba(172,141,10,0.22)] md:p-6"
+              aria-labelledby="self-title"
+            >
+              <div className="flex items-start gap-3">
+                <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1d2637] text-sun">
+                  <Icon name="ticket" size={20} />
+                </span>
+                <div>
+                  <h2 id="self-title" className="text-heading font-bold text-on-sun">
+                    {t('Participation directe', 'Direct Entry')}
+                  </h2>
+                  <p className="text-caption font-medium text-on-sun-muted">
                   {t(
                     `${ticketPrice} ETH fictif par ticket • +${POINTS_PER_TICKET} pts de fidélité par ticket`,
                     `${ticketPrice} test ETH per ticket • +${POINTS_PER_TICKET} loyalty pts per ticket`
                   )}
-                </p>
+                  </p>
+                </div>
               </div>
 
-              <ChoicePills
-                options={QUANTITIES}
-                value={quantity}
-                onChange={setQuantity}
-                ariaLabel={t('Nombre de tickets', 'Number of tickets')}
-                render={(n) => `${n}x`}
-              />
-
-              <div className="flex flex-col gap-1 rounded-md bg-surface-elevated p-3">
-                <p className="text-caption text-fg-secondary tabular">
+              <div className="flex flex-col gap-1.5 rounded-[18px] bg-sun-soft p-4 text-on-sun">
+                <p className="text-body font-bold text-on-sun tabular">
                   {t(
                     `Total : ${total} ETH fictif + frais réseau, prélevés sur votre portefeuille BlockLucky`,
                     `Total: ${total} test ETH + network fees, taken from your BlockLucky wallet`
                   )}
                 </p>
-                <p className="text-caption font-semibold text-secondary">
+                <p className="inline-flex items-center gap-1.5 self-start rounded-full bg-white px-3 py-1 text-caption font-semibold text-[#5b46c9]">
+                  <Icon name="star" size={14} />
                   {t(
-                    `Bonus : +${quantity * POINTS_PER_TICKET} pts + Certificat POAP`,
-                    `Bonus: +${quantity * POINTS_PER_TICKET} pts + POAP Certificate`
+                    `Bonus : +${POINTS_PER_TICKET} pts + Certificat POAP`,
+                    `Bonus: +${POINTS_PER_TICKET} pts + POAP Certificate`
                   )}
                 </p>
-                {limit ? (
-                  <p className="text-caption text-fg-muted">
-                    {t(
-                      `Votre plafond personnel : ${limit} tickets par tirage.`,
-                      `Your personal cap: ${limit} tickets per draw.`
-                    )}{' '}
-                    <Link href="/profil/securite" className="underline underline-offset-2 hover:text-fg">
-                      {t('Modifier', 'Change')}
-                    </Link>
-                  </p>
-                ) : null}
+                <p className="text-caption font-medium text-on-sun-muted">
+                  {t('Un ticket par habitant et par tirage.', 'One ticket per resident and per draw.')}
+                </p>
               </div>
 
               <CheckboxCard id="understood" checked={understood} onChange={setUnderstood}>
@@ -166,26 +172,29 @@ function TicketOfficeContent() {
               </CheckboxCard>
 
               <Button
+                variant="secondary"
                 onClick={handleBuyForSelf}
                 loading={isBuying}
-                disabled={!understood || !isOpen || isPaused}
+                disabled={!understood || !isOpen || isPaused || needsIdentity}
               >
-                {t(
-                  `Confirmer (${quantity} ticket${quantity > 1 ? 's' : ''})`,
-                  `Confirm (${quantity} ticket${quantity > 1 ? 's' : ''})`
-                )}
+                {t('Confirmer mon ticket', 'Confirm my ticket')}
               </Button>
             </section>
           ) : (
-            <form className="card flex flex-col gap-3.5 p-[18px]" onSubmit={handleSendGift} noValidate>
-              <div>
-                <h2 className="text-subtitle font-semibold">{t('Offrir un ticket à un proche', 'Send a Gift Ticket')}</h2>
-                <p className="text-caption text-fg-secondary">
+            <form className="card flex flex-col gap-4 p-5 md:p-6" onSubmit={handleSendGift} noValidate>
+              <div className="flex items-start gap-3">
+                <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sun-soft text-on-sun">
+                  <Icon name="giftTicket" size={20} />
+                </span>
+                <div>
+                  <h2 className="text-heading font-bold">{t('Offrir un ticket à un proche', 'Send a Gift Ticket')}</h2>
+                  <p className="text-caption text-fg-secondary">
                   {t(
                     `Invitez un habitant majeur par email et recevez +${GIFT_BONUS_POINTS} pts de parrainage.`,
                     `Invite an adult resident by email and earn +${GIFT_BONUS_POINTS} referral pts.`
                   )}
-                </p>
+                  </p>
+                </div>
               </div>
               <div>
                 <Input
@@ -205,7 +214,7 @@ function TicketOfficeContent() {
                   hint={`${personalMessage.length}/250`}
                 />
               </div>
-              <Button type="submit" variant="secondary" loading={isGifting} disabled={!isOpen || isPaused}>
+              <Button type="submit" variant="secondary" loading={isGifting} disabled={!isOpen || isPaused || needsIdentity}>
                 {t(`Envoyer le ticket (+${GIFT_BONUS_POINTS} pts)`, `Send Gift Ticket (+${GIFT_BONUS_POINTS} pts)`)}
               </Button>
             </form>
@@ -214,28 +223,32 @@ function TicketOfficeContent() {
           {feedback ? <Alert className="mt-4">{feedback}</Alert> : null}
         </div>
 
-        {}
         <aside aria-live="polite" className="flex flex-col gap-3.5">
           <WalletCard />
-          <section className="card p-[18px]">
-            <p className="text-caption font-medium text-secondary">{t('Reçu de participation', 'Entry receipt')}</p>
+          <section className="card p-5">
+            <div className="flex items-center gap-3">
+              <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lavender text-violet">
+                <Icon name="document" size={20} />
+              </span>
+              <p className="text-subtitle font-bold">{t('Reçu de participation', 'Entry receipt')}</p>
+            </div>
             {receipt?.state === 'pending' ? (
-              <div className="mt-2 flex flex-col gap-1.5">
+              <div className="mt-3 flex flex-col gap-1.5 rounded-[16px] bg-surface-elevated p-3.5">
                 <p className="flex items-center gap-2 text-body font-bold">
                   <span className="h-2 w-2 rounded-full bg-warning animate-bl-shimmer" aria-hidden />
                   {t('Demande envoyée — en attente du réseau', 'Request sent — waiting for the network')}
                 </p>
                 <p className="text-caption text-fg-secondary">
                   {t(
-                    `${receipt.quantity} ticket(s) en cours de validation. Ne fermez pas la page : un nouvel appui ne créera pas de doublon.`,
-                    `${receipt.quantity} ticket(s) being validated. Keep this page open: pressing again will not create a duplicate.`
+                    'Ticket en cours de validation. Ne fermez pas la page : un nouvel appui ne créera pas de doublon.',
+                    'Ticket being validated. Keep this page open: pressing again will not create a duplicate.'
                   )}
                 </p>
               </div>
             ) : receipt?.state === 'confirmed' ? (
-              <div className="mt-2 flex flex-col gap-2">
-                <p className="flex items-center gap-2 text-body font-bold text-primary">
-                  <span className="h-2 w-2 rounded-full bg-success" aria-hidden />
+              <div className="mt-3 flex flex-col gap-2">
+                <p className="flex items-center gap-2 self-start rounded-full bg-mint px-3 py-1.5 text-caption font-bold text-green">
+                  <Icon name="check" size={14} />
                   {t(
                     `${receipt.data.tickets.length} ticket(s) confirmé(s) sur la blockchain`,
                     `${receipt.data.tickets.length} ticket(s) confirmed on-chain`
@@ -243,7 +256,7 @@ function TicketOfficeContent() {
                 </p>
                 <ul className="flex flex-col gap-1.5">
                   {receipt.data.tickets.map((tk) => (
-                    <li key={tk.id} className="rounded-md bg-surface-elevated p-2.5 text-caption">
+                    <li key={tk.id} className="rounded-[16px] bg-surface-elevated p-3 text-caption">
                       <p className="font-mono">{shortenHash(tk.transactionHash, 8)}</p>
                       <p className="text-fg-muted">
                         {t('Bloc', 'Block')} {tk.blockNumber} · {formatDateShort(tk.purchasedAt)}
@@ -253,7 +266,7 @@ function TicketOfficeContent() {
                           href={tk.etherscanUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-medium text-primary underline-offset-2 hover:underline"
+                          className="font-semibold text-green underline-offset-2 hover:underline"
                         >
                           {t('Vérifier sur Etherscan →', 'Verify on Etherscan →')}
                         </a>
@@ -261,7 +274,7 @@ function TicketOfficeContent() {
                     </li>
                   ))}
                 </ul>
-                <p className="text-caption text-secondary">
+                <p className="self-start rounded-full bg-lavender px-3 py-1 text-caption font-semibold text-violet">
                   +{receipt.data.pointsAwarded} pts · {t('nouveau solde', 'new balance')} {receipt.data.newPointsBalance} pts
                 </p>
                 {receipt.data.poapBadge?.status === 'MINT_PENDING' ? (
@@ -274,7 +287,7 @@ function TicketOfficeContent() {
                 ) : null}
               </div>
             ) : (
-              <p className="mt-2 text-caption text-fg-muted">
+              <p className="mt-3 rounded-[16px] bg-surface-elevated px-4 py-3 text-caption text-fg-muted">
                 {t(
                   'Votre reçu apparaîtra ici après confirmation. Chaque ticket est relié à une transaction vérifiable.',
                   'Your receipt will appear here once confirmed. Each ticket is linked to a verifiable transaction.'
@@ -283,21 +296,32 @@ function TicketOfficeContent() {
             )}
           </section>
 
-          <section className="card flex flex-col gap-1 p-4">
-            <p className="text-caption font-semibold text-primary">{t('Remboursement automatique', 'Automatic refund')}</p>
-            <p className="text-caption text-fg-secondary">
-              {t(
-                "Si le tirage est annulé, le Smart Contract rembourse automatiquement l'intégralité des participations.",
-                'If the draw is cancelled, the Smart Contract automatically refunds every entry.'
-              )}
-            </p>
+          <section className="flex items-start gap-3.5 rounded-[22px] bg-mint p-5">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-green">
+              <Icon name="shield" size={20} />
+            </span>
+            <div className="flex flex-col gap-1">
+              <p className="text-subtitle font-bold">{t('Remboursement automatique', 'Automatic refund')}</p>
+              <p className="text-caption text-fg-secondary">
+                {t(
+                  "Si le tirage est annulé, le Smart Contract rembourse automatiquement l'intégralité des participations.",
+                  'If the draw is cancelled, the Smart Contract automatically refunds every entry.'
+                )}
+              </p>
+            </div>
           </section>
 
           <Link
             href="/historique"
-            className="py-2.5 text-center text-caption font-medium text-fg-secondary hover:text-fg"
+            className="card flex items-center gap-3.5 p-4 transition-colors hover:bg-surface-elevated"
           >
-            {t('Consulter mes tickets et certificats POAP', 'View my tickets and POAP certificates')}
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sun-soft text-on-sun">
+              <Icon name="tabTickets" size={20} />
+            </span>
+            <span className="flex-1 text-body font-semibold text-fg">
+              {t('Consulter mes tickets et certificats POAP', 'View my tickets and POAP certificates')}
+            </span>
+            <Icon name="chevronRight" size={18} className="text-fg-muted" />
           </Link>
         </aside>
       </div>
