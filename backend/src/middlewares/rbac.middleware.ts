@@ -36,7 +36,8 @@ export const requireRoles = (...allowedRoles: Role[]) => {
         sendError(
           res,
           "La double authentification est obligatoire pour les comptes d'administration. Activez-la depuis votre profil.",
-          403
+          403,
+          { code: 'ADMIN_MFA_REQUIRED' }
         );
         return;
       }
