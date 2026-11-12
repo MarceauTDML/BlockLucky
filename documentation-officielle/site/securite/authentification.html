@@ -119,8 +119,20 @@
 <td>Code email, avec déclaration de majorité dans la requête</td>
 <td>Session délivrée par <code>/2fa/verify</code></td>
 </tr>
+<tr>
+<td><code>POST /api/auth/password/change</code></td>
+<td>Mobile, compte connecté</td>
+<td>Jeton de session, plus le mot de passe actuel s&#39;il en existe un</td>
+<td>Nouveau mot de passe, toutes les sessions révoquées, nouvelle session délivrée</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/email/change</code>, <code>/email/confirm</code></td>
+<td>Mobile, compte connecté</td>
+<td>Jeton de session, mot de passe actuel s&#39;il en existe un, puis code envoyé à la nouvelle adresse</td>
+<td>Adresse remplacée, sessions conservées</td>
+</tr>
 </tbody></table></div>
-<p>Quelle que soit la route, un compte vérifié dont la 2FA est active doit encore fournir son code TOTP ou son code email à <code>/2fa/verify</code> avant de recevoir un jeton (<code>completePrimaryLogin</code>). Toutes ces routes passent par <code>authRateLimiter</code> : 30 requêtes par adresse IP en 10 minutes.</p>
+<p>Quelle que soit la route de connexion, un compte vérifié dont la 2FA est active doit encore fournir son code TOTP ou son code email à <code>/2fa/verify</code> avant de recevoir un jeton (<code>completePrimaryLogin</code>). <code>/password/change</code> fait exception : l&#39;appelant a déjà une session, et le jeton de remplacement est délivré sans nouveau code. Toutes ces routes passent par <code>authRateLimiter</code> : 30 requêtes par adresse IP en 10 minutes.</p>
 <h2 id="mot-de-passe"><a class="anchor" href="#mot-de-passe" aria-hidden="true" tabindex="-1">#</a>Mot de passe</h2>
 <h3 id="politique-et-stockage"><a class="anchor" href="#politique-et-stockage" aria-hidden="true" tabindex="-1">#</a>Politique et stockage</h3>
 <div class="table-wrap"><table>
@@ -206,6 +218,58 @@
 </tr>
 </tbody></table></div>
 <p>Le code suit les paramètres décrits dans <a href="#parametres-du-code">Paramètres du code</a>. La même route permet à un compte créé sans mot de passe d&#39;en définir un ; l&#39;alerte indique alors « Mot de passe défini sur votre compte ».</p>
+<h3 id="changement-depuis-un-compte-connecte"><a class="anchor" href="#changement-depuis-un-compte-connecte" aria-hidden="true" tabindex="-1">#</a>Changement depuis un compte connecté</h3>
+<p><code>POST /api/auth/password/change</code> exige un jeton de session valide. Si le compte a un mot de passe, <code>currentPassword</code> est obligatoire et comparé par bcrypt ; un échec renvoie 401 « Mot de passe actuel incorrect. » et s&#39;ajoute au compteur d&#39;échecs du compte, celui de <code>/signin</code> (10 échecs en une heure bloquent le compte pendant une heure). Un compte créé par code email, Google ou Apple peut définir un premier mot de passe sans en fournir d&#39;ancien : la possession de la session suffit.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Comportement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Nouveau mot de passe</td>
+<td>Même <code>passwordPolicy</code> que l&#39;inscription, haché par bcrypt</td>
+</tr>
+<tr>
+<td>Sessions</td>
+<td><code>revokeAllForUser</code> : tous les jetons émis plus d&#39;une seconde avant sont refusés, y compris celui qui a servi à la requête</td>
+</tr>
+<tr>
+<td>Nouvelle session</td>
+<td>Un jeton est émis aussitôt et renvoyé avec le profil, comme après <code>/signin</code> ; le mobile le range à la place de l&#39;ancien (<code>applyRenewedSession</code>)</td>
+</tr>
+<tr>
+<td>Alerte</td>
+<td>Email <code>security-alert</code> « Mot de passe modifié » ou « Mot de passe défini sur votre compte »</td>
+</tr>
+</tbody></table></div>
+<p>Un vol de session suffit donc à définir un mot de passe sur un compte qui n&#39;en a pas, et à déconnecter le propriétaire légitime ; l&#39;alerte par email est alors le seul signal. Pour un compte qui a déjà un mot de passe, le voleur doit aussi le connaître.</p>
+<h2 id="changement-d-adresse-email"><a class="anchor" href="#changement-d-adresse-email" aria-hidden="true" tabindex="-1">#</a>Changement d&#39;adresse email</h2>
+<p>Le changement se fait en deux requêtes authentifiées :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Route</th>
+<th>Contrôles</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Demande</td>
+<td><code>POST /api/auth/email/change</code></td>
+<td>Nouvelle adresse différente de l&#39;actuelle et libre (sinon 400 ou 409) ; mot de passe actuel si le compte en a un (401 « Mot de passe incorrect. », échec compté sur le compte)</td>
+<td>Code <code>EMAIL_CHANGE</code> de 6 chiffres sous le sujet <code>email-change:&lt;userId&gt;</code>, envoyé à la <strong>nouvelle</strong> adresse ; adresse en attente dans Redis (<code>auth:email-change:&lt;userId&gt;</code>, 10 minutes)</td>
+</tr>
+<tr>
+<td>Confirmation</td>
+<td><code>POST /api/auth/email/confirm</code></td>
+<td>Code valide et adresse en attente présente (sinon 400 « Code invalide ou expiré. », échec compté sur <code>email-change:&lt;userId&gt;</code>) ; adresse toujours libre (409)</td>
+<td><code>email</code> remplacé, <code>isEmailVerified</code> à <code>true</code>, alerte <code>security-alert</code> envoyée à l&#39;<strong>ancienne</strong> adresse avec la nouvelle adresse masquée</td>
+</tr>
+</tbody></table></div>
+<p>Le code envoyé à la nouvelle adresse prouve qu&#39;elle appartient au demandeur ; l&#39;alerte à l&#39;ancienne adresse prévient le titulaire si la demande ne vient pas de lui. Les sessions ne sont pas révoquées par un changement d&#39;adresse. Pour un compte sans mot de passe, la session seule suffit à demander le changement.</p>
 <h2 id="google-et-apple"><a class="anchor" href="#google-et-apple" aria-hidden="true" tabindex="-1">#</a>Google et Apple</h2>
 <p>Le mobile obtient un jeton d&#39;identité auprès du fournisseur et l&#39;envoie au backend, qui le vérifie lui-même avant toute création de compte.</p>
 <div class="table-wrap"><table>
@@ -483,6 +547,14 @@
 <td>Réinitialisation du mot de passe</td>
 <td>« Mot de passe réinitialisé » ou « Mot de passe défini sur votre compte »</td>
 </tr>
+<tr>
+<td>Changement du mot de passe depuis un compte connecté</td>
+<td>« Mot de passe modifié » ou « Mot de passe défini sur votre compte »</td>
+</tr>
+<tr>
+<td>Changement d&#39;adresse email, envoyé à l&#39;ancienne adresse</td>
+<td>« Adresse email du compte remplacée par » suivi de la nouvelle adresse masquée</td>
+</tr>
 </tbody></table></div>
 <h2 id="limites-connues"><a class="anchor" href="#limites-connues" aria-hidden="true" tabindex="-1">#</a>Limites connues</h2>
 <div class="hint hint-warning"><p class="hint-title">Attention</p>
@@ -534,7 +606,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#vue-d-ensemble">Vue d&#39;ensemble</a></li><li class="toc-h2"><a href="#mot-de-passe">Mot de passe</a></li><li class="toc-h3"><a href="#politique-et-stockage">Politique et stockage</a></li><li class="toc-h3"><a href="#inscription">Inscription</a></li><li class="toc-h3"><a href="#connexion">Connexion</a></li><li class="toc-h3"><a href="#reinitialisation">Réinitialisation</a></li><li class="toc-h2"><a href="#google-et-apple">Google et Apple</a></li><li class="toc-h3"><a href="#rattachement-par-adresse-email">Rattachement par adresse email</a></li><li class="toc-h2"><a href="#connexion-par-code-email">Connexion par code email</a></li><li class="toc-h3"><a href="#deroule">Déroulé</a></li><li class="toc-h3"><a href="#parametres-du-code">Paramètres du code</a></li><li class="toc-h3"><a href="#inscription-par-code">Inscription par code</a></li><li class="toc-h3"><a href="#code-visible-en-developpement">Code visible en développement</a></li><li class="toc-h2"><a href="#double-authentification-totp">Double authentification TOTP</a></li><li class="toc-h3"><a href="#activation">Activation</a></li><li class="toc-h3"><a href="#verification">Vérification</a></li><li class="toc-h3"><a href="#codes-de-secours">Codes de secours</a></li><li class="toc-h2"><a href="#double-authentification-par-email">Double authentification par email</a></li><li class="toc-h2"><a href="#connexion-d-un-compte-protege-par-totp">Connexion d&#39;un compte protégé par TOTP</a></li><li class="toc-h2"><a href="#desactivation">Désactivation</a></li><li class="toc-h2"><a href="#2fa-obligatoire-pour-les-administrateurs">2FA obligatoire pour les administrateurs</a></li><li class="toc-h2"><a href="#notifications-de-securite">Notifications de sécurité</a></li><li class="toc-h2"><a href="#limites-connues">Limites connues</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#vue-d-ensemble">Vue d&#39;ensemble</a></li><li class="toc-h2"><a href="#mot-de-passe">Mot de passe</a></li><li class="toc-h3"><a href="#politique-et-stockage">Politique et stockage</a></li><li class="toc-h3"><a href="#inscription">Inscription</a></li><li class="toc-h3"><a href="#connexion">Connexion</a></li><li class="toc-h3"><a href="#reinitialisation">Réinitialisation</a></li><li class="toc-h3"><a href="#changement-depuis-un-compte-connecte">Changement depuis un compte connecté</a></li><li class="toc-h2"><a href="#changement-d-adresse-email">Changement d&#39;adresse email</a></li><li class="toc-h2"><a href="#google-et-apple">Google et Apple</a></li><li class="toc-h3"><a href="#rattachement-par-adresse-email">Rattachement par adresse email</a></li><li class="toc-h2"><a href="#connexion-par-code-email">Connexion par code email</a></li><li class="toc-h3"><a href="#deroule">Déroulé</a></li><li class="toc-h3"><a href="#parametres-du-code">Paramètres du code</a></li><li class="toc-h3"><a href="#inscription-par-code">Inscription par code</a></li><li class="toc-h3"><a href="#code-visible-en-developpement">Code visible en développement</a></li><li class="toc-h2"><a href="#double-authentification-totp">Double authentification TOTP</a></li><li class="toc-h3"><a href="#activation">Activation</a></li><li class="toc-h3"><a href="#verification">Vérification</a></li><li class="toc-h3"><a href="#codes-de-secours">Codes de secours</a></li><li class="toc-h2"><a href="#double-authentification-par-email">Double authentification par email</a></li><li class="toc-h2"><a href="#connexion-d-un-compte-protege-par-totp">Connexion d&#39;un compte protégé par TOTP</a></li><li class="toc-h2"><a href="#desactivation">Désactivation</a></li><li class="toc-h2"><a href="#2fa-obligatoire-pour-les-administrateurs">2FA obligatoire pour les administrateurs</a></li><li class="toc-h2"><a href="#notifications-de-securite">Notifications de sécurité</a></li><li class="toc-h2"><a href="#limites-connues">Limites connues</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

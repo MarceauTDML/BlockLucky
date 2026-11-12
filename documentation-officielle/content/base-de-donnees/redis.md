@@ -39,11 +39,12 @@ Les données dont la durée est critique portent leur propre échéance : le dé
 
 | Clé | Valeur | Durée de vie | Écrite par |
 |---|---|---|---|
-| `auth:otp:<sujet>` | JSON du défi : empreinte du code, usage (`LOGIN`, `SIGNUP`, `SETUP`, `PASSWORD_RESET`), tentatives, échéance, éventuelle inscription en attente avec l'empreinte bcrypt du mot de passe. Le sujet est l'identifiant du compte, un identifiant provisoire d'inscription ou `password-reset:<userId>` | 600 s (avec gigue) ; réécrite avec la durée restante après une erreur | [`backend/src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) |
+| `auth:otp:<sujet>` | JSON du défi : empreinte du code, usage (`LOGIN`, `SIGNUP`, `SETUP`, `PASSWORD_RESET`, `EMAIL_CHANGE`), tentatives, échéance, éventuelle inscription en attente avec l'empreinte bcrypt du mot de passe. Le sujet est l'identifiant du compte, un identifiant provisoire d'inscription, `password-reset:<userId>` ou `email-change:<userId>` | 600 s (avec gigue) ; réécrite avec la durée restante après une erreur | [`backend/src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) |
 | `auth:otp-failures:<sujet>` | Nombre d'erreurs de code ou de mot de passe. Pour une adresse sans compte, le sujet est `signin:<HMAC>` ou `password-reset:<HMAC>` de l'adresse | 3 600 s (avec gigue) | idem |
+| `auth:email-change:<userId>` | Nouvelle adresse email en attente de confirmation | 600 s (avec gigue) | `requestEmailChange` de [`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts), effacée à la confirmation |
 | `auth:totp-used:<userId>:<compteur>` | `1` : fenêtre TOTP déjà consommée, contre le rejeu | 120 s, `setIfAbsent` | idem |
 | `auth:revoked:<jti>` | `1` : jeton de session révoqué | Durée restante du jeton × 1,2 + 30 s | [`backend/src/services/session.service.ts`](src:backend/src/services/session.service.ts) |
-| `auth:revoked-before:<userId>` | Horodatage en millisecondes : tout jeton émis avant est révoqué (déconnexion de tous les appareils) | 30 jours (avec gigue) | idem |
+| `auth:revoked-before:<userId>` | Horodatage en millisecondes : tout jeton émis avant est révoqué (déconnexion de tous les appareils, changement de mot de passe) | 30 jours (avec gigue) | idem |
 
 ### Requêtes et webhooks
 
@@ -69,7 +70,7 @@ Ces clés n'ont pas de durée de vie et n'ont **pas d'équivalent en base**. Ell
 | Clé | Valeur | Écrite par | Lue par |
 |---|---|---|---|
 | `user:ticket_limit:<userId>` | Limite de tickets par tour choisie par le citoyen (jeu responsable) ; 50 si absente | `PUT /user/responsible-limit` | Achat et cadeau, profil |
-| `user:prefs:<userId>` | JSON des préférences | `updatePreferences` | `getProfile`, `updatePreferences` |
+| `user:prefs:<userId>` | JSON des préférences : thème, langue, `pushNotificationsEnabled` et `notifications` (quatre catégories) | `updatePreferences` | `readPreferences`, appelé par `getProfile`, `updatePreferences` et `getPushNotificationsHistory` |
 | `user:quests:<userId>` | JSON de la liste des quêtes sociales réalisées | `completeSocialQuest` | `getSocialQuests`, `completeSocialQuest` |
 | `partner:codes:<rewardId>` | JSON du lot de codes promo importés pour une offre, consommé à chaque échange | `POST /partners/codes/upload` | Échange de récompense |
 | `partner:offer_expiry:<offreId>` | Date d'expiration d'une offre | Création d'offre | Jamais relue |
@@ -84,6 +85,7 @@ Ces clés n'ont pas de durée de vie et n'ont **pas d'équivalent en base**. Ell
 | `<REDIS_KEY_PREFIX>:<NODE_ENV>:ratelimit:global:<ip>` | Ajouté explicitement | Compteur du limiteur global, fenêtre de 15 min, 300 requêtes (10 000 en test) |
 | `<REDIS_KEY_PREFIX>:<NODE_ENV>:ratelimit:auth:<ip>` | Ajouté explicitement | Compteur du limiteur d'authentification, fenêtre de 10 min, 30 requêtes |
 | `<REDIS_KEY_PREFIX>:<NODE_ENV>:ratelimit:identity:<ip>` | Ajouté explicitement | Compteur des envois de pièce d'identité, fenêtre d'une heure, 10 requêtes |
+| `<REDIS_KEY_PREFIX>:<NODE_ENV>:ratelimit:support:user:<userId>` | Ajouté explicitement | Compteur des messages au support, fenêtre d'une heure, 5 requêtes par compte (`ip:<ip>` sans utilisateur) |
 | Canal `<REDIS_KEY_PREFIX>:<NODE_ENV>:socket-events` | Ajouté explicitement | Pub/sub du [relais temps réel](../integration-blockchain/relais-temps-reel.md) ; aucune donnée stockée |
 | `bull:<file>:*` | Préfixe propre à BullMQ | Files de jobs (voir plus bas) |
 

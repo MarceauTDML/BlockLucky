@@ -1,17 +1,17 @@
 # Modules métier
 
-Le dossier `backend/src/api` contient neuf modules. Chacun est un routeur Express monté par [`backend/src/app.ts`](src:backend/src/app.ts) sous `/api/v1/<module>` et, pour compatibilité, sous `/api/<module>`. Le module système fait exception : ses routes sont montées à la racine du serveur. Les pages de cette section décrivent chaque route avec ses règles métier, sa validation, ses autorisations, ses erreurs et ses effets de bord. La liste brute des 64 routes est générée sur la page [Référence de l'API](../reference-api.md).
+Le dossier `backend/src/api` contient neuf modules. Chacun est un routeur Express monté par [`backend/src/app.ts`](src:backend/src/app.ts) sous `/api/v1/<module>` et, pour compatibilité, sous `/api/<module>`. Le module système fait exception : ses routes sont montées à la racine du serveur. Les pages de cette section décrivent chaque route avec ses règles métier, sa validation, ses autorisations, ses erreurs et ses effets de bord. La liste brute des 69 routes est générée sur la page [Référence de l'API](../reference-api.md).
 
 ## Vue d'ensemble
 
 | Module | Préfixe | Routes | Responsabilité | Page |
 |---|---|---|---|---|
 | `system` | racine | 5 (+ `/metrics`) | Sondes de santé, configuration des clients | [Webhooks et système](webhooks-systeme.md) |
-| `auth` | `/api/v1/auth` | 12 | Connexion par mot de passe, Google, Apple ou code email, réinitialisation du mot de passe, création de compte et de portefeuille, 2FA, déconnexion | [Authentification](auth.md) |
+| `auth` | `/api/v1/auth` | 15 | Connexion par mot de passe, Google, Apple ou code email, réinitialisation et changement du mot de passe, changement d'adresse email, création de compte et de portefeuille, 2FA, déconnexion | [Authentification](auth.md) |
 | `lottery` | `/api/v1/lottery` | 11 | État et phase du tour, achat et cadeau du ticket unique, tirage, annulation, portefeuille, POAP | [Loterie](loterie.md) |
 | `marketplace` | `/api/v1/marketplace` | 7 | Catalogue, solde d'EtherPoints, échange de récompenses, ticket à gratter, validation en magasin | [Boutique et récompenses](boutique.md) |
 | `partners` | `/api/v1/partners` | 5 | Entreprises partenaires, offres, lots de codes promo, statistiques | [Partenaires](partenaires.md) |
-| `user` | `/api/v1/user` | 12 | Profil, vérification d'âge, parrainage, quêtes, jeu responsable, préférences, RGPD | [Utilisateur et RGPD](utilisateur.md) |
+| `user` | `/api/v1/user` | 14 | Profil (prénom et nom), vérification d'âge, parrainage, quêtes, jeu responsable, préférences, message au support, RGPD | [Utilisateur et RGPD](utilisateur.md) |
 | `analytics` | `/api/v1/analytics` | 2 | Collecte d'événements, tableau de bord démographique | [Analytique](analytique.md) |
 | `admin` | `/api/v1/admin` | 9 | Tableau de bord Mairie, disjoncteur, trésorerie, partenaires, pièces d'identité, rapports, audit | [Administration Mairie](administration.md) |
 | `webhooks` | `/api/v1/webhooks` | 1 | Indexation simulée signée HMAC | [Webhooks et système](webhooks-systeme.md) |
@@ -64,8 +64,8 @@ Résumé des accès par rôle. Les règles fines (propriété d'une entreprise p
 
 | Routes | Anonyme | USER | PARTNER | ADMIN |
 |---|---|---|---|---|
-| Système, `GET /auth/onboarding`, `POST /auth/login`, `/signup`, `/signin`, `/password/*`, `/oauth/*`, `/2fa/verify` | oui | oui | oui | oui |
-| `POST /auth/2fa/setup`, `/2fa/disable`, `/logout` | non | oui | oui | oui |
+| Système, `GET /auth/onboarding`, `POST /auth/login`, `/signup`, `/signin`, `/password/forgot`, `/password/reset`, `/oauth/*`, `/2fa/verify` | oui | oui | oui | oui |
+| `POST /auth/2fa/setup`, `/2fa/disable`, `/logout`, `/password/change`, `/email/change`, `/email/confirm` | non | oui | oui | oui |
 | `GET /lottery/status`, `/transparency-charter`, `/leaderboard`, `/poap/:file` | oui | oui | oui | oui |
 | `POST /lottery/claim-prize`, `GET /my-tickets`, `/wallet` | non | oui | oui | oui |
 | `POST /lottery/buy`, `/gift` | non | âge vérifié | âge vérifié | âge vérifié |

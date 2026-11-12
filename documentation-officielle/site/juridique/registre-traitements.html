@@ -84,7 +84,7 @@
 </tr>
 <tr>
 <td>Données</td>
-<td>Email ; empreinte bcrypt du mot de passe, s&#39;il en existe un ; adresse du portefeuille intégré et clé privée chiffrée (AES-256-GCM) ; hash de la dotation de bienvenue ; tranche d&#39;âge (connexion web) ; rôle ; tickets, hash de transaction et adresse payeuse ; code de parrainage et parrain ; préférences (thème, langue, notifications) ; limite de jeu responsable</td>
+<td>Email ; prénom et nom, facultatifs (écran Données personnelles du mobile) ; empreinte bcrypt du mot de passe, s&#39;il en existe un ; adresse du portefeuille intégré et clé privée chiffrée (AES-256-GCM) ; hash de la dotation de bienvenue ; tranche d&#39;âge (connexion web) ; rôle ; tickets, hash de transaction et adresse payeuse ; code de parrainage et parrain ; préférences (thème, langue, notifications et leurs catégories) ; limite de jeu responsable ; messages envoyés au support (transmis par email à <code>SUPPORT_EMAIL</code>, non conservés en base)</td>
 </tr>
 <tr>
 <td>Code</td>
@@ -100,7 +100,7 @@
 </tr>
 <tr>
 <td>Conservation</td>
-<td>Durée de la participation ; anonymisation sur demande (<code>/api/user/gdpr/delete-request</code>) qui supprime l&#39;email, la clé chiffrée et remplace l&#39;adresse dans la fiche du compte. Purge automatique des comptes inactifs <strong>à mettre en place</strong></td>
+<td>Durée de la participation ; anonymisation sur demande (<code>/api/user/gdpr/delete-request</code>) qui supprime l&#39;email, le prénom, le nom, la clé chiffrée et remplace l&#39;adresse dans la fiche du compte. Purge automatique des comptes inactifs <strong>à mettre en place</strong></td>
 </tr>
 <tr>
 <td>Transferts hors UE</td>

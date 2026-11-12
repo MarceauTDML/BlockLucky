@@ -66,14 +66,16 @@ RTK Query ne rafraîchit pas les données au retour de l'application au premier 
 
 ### authApi
 
-[`mobile-app/src/store/api/authApi.ts`](src:mobile-app/src/store/api/authApi.ts) déclare 23 endpoints :
+[`mobile-app/src/store/api/authApi.ts`](src:mobile-app/src/store/api/authApi.ts) déclare 28 endpoints :
 
 | Groupe | Endpoints | Routes |
 |---|---|---|
 | Connexion et compte | `signIn`, `signUp`, `googleSignIn`, `appleSignIn`, `forgotPassword`, `resetPassword` | `POST /auth/signin`, `/auth/signup`, `/auth/oauth/google`, `/auth/oauth/apple`, `/auth/password/forgot`, `/auth/password/reset` |
+| Email et mot de passe du compte connecté | `requestEmailChange`, `confirmEmailChange`, `changePassword` | `POST /auth/email/change`, `/auth/email/confirm`, `/auth/password/change` |
 | Double authentification | `setup2FA`, `verify2FA`, `disable2FA`, `logout` | `POST /auth/2fa/setup`, `/auth/2fa/verify`, `/auth/2fa/disable`, `/auth/logout` |
 | Vérification d'âge | `getIdentityStatus`, `submitIdentity` | `GET /user/identity`, `POST /user/identity` |
 | Profil et parrainage | `getProfile`, `getReferrals`, `getQuests`, `completeQuest`, `setResponsibleLimit`, `updatePreferences`, `getNotifications` | Routes `/user/*` |
+| Paramètres | `updateProfileNames`, `sendSupportMessage` | `PATCH /user/profile`, `POST /user/support` |
 | RGPD | `exportGdprData`, `requestGdprDeletion`, `confirmGdprDeletion` | `GET /user/gdpr/export`, `POST /user/gdpr/delete-request`, `POST /user/gdpr/confirm-delete` |
 | Introduction | `getOnboarding` | `GET /auth/onboarding` |
 
@@ -83,6 +85,9 @@ L'endpoint `socialLogin` (`POST /auth/login`), que le web utilise toujours, a é
 |---|---|
 | `logout` | Argument `{ allDevices }` seul ; le jeton part par `prepareHeaders` |
 | `getOnboarding`, `setResponsibleLimit` | Déclarés mais jamais appelés : l'introduction est codée en dur et aucun écran ne propose plus le plafond de jeu responsable |
+| `updatePreferences` | Accepte `theme`, `language`, `pushNotificationsEnabled` et `notifications` (objet partiel `drawReminders`, `results`, `rewards`, `referrals`) ; renvoie les préférences complètes |
+| `changePassword` | Renvoie une nouvelle session comme `signIn` ; l'écran la passe à `applyRenewedSession` de `useAuth`, qui enregistre le nouveau jeton |
+| `updateProfileNames`, `confirmEmailChange` | La réponse est reportée dans le slice et le stockage sécurisé par `patchUser` de `useAuth` |
 | `exportGdprData` | Déclaré en mutation alors que la route est un `GET` : l'appel n'a lieu qu'à l'appui sur le bouton et le résultat n'est pas mis en cache |
 
 ### lotteryApi

@@ -66,10 +66,11 @@ L'horodatage de révocation globale vaut l'instant de la révocation moins une s
 | `POST /api/auth/logout` avec `{ "allDevices": true }` | Toutes les sessions du compte | `sessionService.revokeAllForUser` |
 | Activation de la 2FA (application ou email) | Toutes les sessions | `verify2FA` dans [`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts) |
 | Réinitialisation ou définition du mot de passe (`/password/reset`) | Toutes les sessions | `resetPassword`, même fichier |
+| Changement ou définition du mot de passe depuis un compte connecté (`/password/change`) | Toutes les sessions, puis une nouvelle session est délivrée à l'appareil qui a fait la demande | `changePassword`, même fichier |
 | Confirmation d'une suppression RGPD | Toutes les sessions | `confirmGdprAccountDeletion` dans [`backend/src/api/user/user.services.ts`](src:backend/src/api/user/user.services.ts) |
 | Changement de rôle ou suppression du compte en base | Accès aux routes protégées par `requireRoles` | Comparaison du rôle du jeton au rôle en base |
 
-La désactivation de la 2FA ne révoque pas les sessions existantes.
+La désactivation de la 2FA et le changement d'adresse email (`/email/confirm`) ne révoquent pas les sessions existantes.
 
 ## Déconnexion
 
@@ -81,7 +82,7 @@ Content-Type: application/json
 { "allDevices": true }
 ```
 
-La réponse contient `{ "loggedOut": true, "allDevices": true }` et l'en-tête `Clear-Site-Data: "cache", "cookies", "storage"`, qui demande au navigateur d'effacer les données du site. Le web appelle cette route depuis `useAuth` ([`frontend-web/src/hooks/useAuth.ts`](src:frontend-web/src/hooks/useAuth.ts)) avant de vider son état ; le mobile fait de même dans [`mobile-app/src/hooks/useAuth.ts`](src:mobile-app/src/hooks/useAuth.ts). Le bouton « Déconnecter tous mes appareils » du profil web et le bouton « Déconnecter tous les appareils » de l'écran Sécurité du mobile envoient `allDevices: true`.
+La réponse contient `{ "loggedOut": true, "allDevices": true }` et l'en-tête `Clear-Site-Data: "cache", "cookies", "storage"`, qui demande au navigateur d'effacer les données du site. Le web appelle cette route depuis `useAuth` ([`frontend-web/src/hooks/useAuth.ts`](src:frontend-web/src/hooks/useAuth.ts)) avant de vider son état ; le mobile fait de même dans [`mobile-app/src/hooks/useAuth.ts`](src:mobile-app/src/hooks/useAuth.ts). Le bouton « Déconnecter tous mes appareils » du profil web envoie `allDevices: true`. Le mobile n'a plus de bouton équivalent depuis la refonte des paramètres : `signOutEverywhere` reste dans `useAuth` sans être appelé, et un changement de mot de passe est le moyen de déconnecter les autres appareils.
 
 Côté web, une réponse 401 alors qu'un jeton était présent déclenche la déconnexion locale ([`frontend-web/src/store/api/baseApi.ts`](src:frontend-web/src/store/api/baseApi.ts)). Le mobile n'a pas cette garde : une session révoquée y reste affichée jusqu'à la déconnexion manuelle.
 

@@ -178,13 +178,14 @@
 ├── src/
 │   ├── App.tsx              point d&#x27;entrée, chargement de la police Inter
 │   ├── navigation/          RootNavigator, AuthStack, MainTabs, hooks typés
-│   ├── screens/             27 écrans : auth, lottery, marketplace, settings, sponsors
+│   ├── screens/             31 écrans : auth, lottery, marketplace, settings, sponsors
 │   ├── components/
 │   │   ├── auth/            formulaires d&#x27;authentification, boutons Google et Apple
 │   │   ├── draw/            roue, salle d&#x27;attente, discussion, résultats
 │   │   ├── lottery/         carte d&#x27;échéance, paliers, offres à gratter, formats
 │   │   ├── marketplace/     zone à gratter, cartes d&#x27;offres et de codes
 │   │   ├── profile/         identité, parrainage, résumé, listes de réglages
+│   │   ├── settings/        cartes de l&#x27;accueil des paramètres, nom affiché, enregistrement des préférences
 │   │   ├── ui/              composants de base et icônes SVG
 │   │   └── web3/            IntegratedWalletCard, IntegratedWalletButton, ExplorerLink (inutilisés)
 │   ├── hooks/               useAuth, useCitizenWallet, useSocket, usePoints, usePushNotifications, useAppTheme
@@ -253,7 +254,7 @@
 </tbody></table></div>
 <p>Les imports sont relatifs (<code>../../hooks/useAuth</code>) : il n&#39;y a pas d&#39;alias <code>@/</code> comme sur le web.</p>
 <h2 id="configuration"><a class="anchor" href="#configuration" aria-hidden="true" tabindex="-1">#</a>Configuration</h2>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/.env.example" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/.env.example</code></a> liste quatre variables. Expo intègre au bundle toute variable préfixée <code>EXPO_PUBLIC_</code> au moment du démarrage de Metro ou du build.</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/.env.example" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/.env.example</code></a> liste huit variables. Expo intègre au bundle toute variable préfixée <code>EXPO_PUBLIC_</code> au moment du démarrage de Metro ou du build.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -282,8 +283,13 @@
 <td><code>blocklucky-etherbay-client</code></td>
 <td>aucun fichier : vestige d&#39;une intégration Web3Auth abandonnée</td>
 </tr>
+<tr>
+<td><code>EXPO_PUBLIC_HELP_CENTER_URL</code></td>
+<td>vide</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/HelpSupportScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>HelpSupportScreen.tsx</code></a> : adresse du futur centre d&#39;aide ; vide, la carte affiche « Bientôt »</td>
+</tr>
 </tbody></table></div>
-<p>Trois autres variables sont lues par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/auth/SocialAuthButtons.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SocialAuthButtons.tsx</code></a> sans figurer dans <code>.env.example</code> :</p>
+<p>Trois autres variables, listées vides, sont lues par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/auth/SocialAuthButtons.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SocialAuthButtons.tsx</code></a> :</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>

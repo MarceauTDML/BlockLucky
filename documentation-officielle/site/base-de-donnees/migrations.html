@@ -74,6 +74,11 @@
 <td>12/11/2026 09:00</td>
 <td>Comptes avec mot de passe et vérification d&#39;âge : <code>lock_timeout</code> de 5 s ; énumération <code>AgeVerificationStatus</code> ; colonnes <code>passwordHash</code>, <code>ageVerificationStatus</code> (<code>NONE</code> par défaut), <code>ageVerifiedAt</code> et <code>ageVerificationNote</code> sur <code>User</code> ; table <code>IdentityDocument</code> (images chiffrées en <code>BYTEA</code>, index unique sur <code>userId</code>, index sur <code>(status, submittedAt)</code> et <code>reviewerId</code>, clés étrangères en cascade vers le compte et <code>SET NULL</code> vers l&#39;agent qui a statué). Ajout pur, sans réécriture des lignes existantes.</td>
 </tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/migrations/20261112150000_user_names/migration.sql" class="external" target="_blank" rel="noopener noreferrer"><code>20261112150000_user_names</code></a></td>
+<td>12/11/2026 15:00</td>
+<td>Prénom et nom du compte : <code>lock_timeout</code> de 5 s ; colonnes facultatives <code>firstName</code> et <code>lastName</code> (<code>TEXT</code>, <code>NULL</code> par défaut) sur <code>User</code>, renseignées depuis l&#39;espace Paramètres de l&#39;application. Ajout pur, sans réécriture des lignes existantes.</td>
+</tr>
 </tbody></table></div>
 <p>Le détail de ce que chaque migration crée (index, contraintes) est sur la page <a href="index-contraintes.html">Index et contraintes</a>.</p>
 <h2 id="procedure"><a class="anchor" href="#procedure" aria-hidden="true" tabindex="-1">#</a>Procédure</h2>
@@ -161,13 +166,14 @@
 <p>Un renommage demande ainsi trois déploiements au minimum. Opérations sûres en une seule migration : ajout de table, ajout de colonne nullable ou avec défaut, ajout d&#39;index, ajout de contrainte que les données existantes respectent.</p>
 <p>Application aux migrations existantes :</p>
 <ul>
+<li><code>20261112150000_user_names</code> n&#39;ajoute que les colonnes nullables <code>User.firstName</code> et <code>User.lastName</code> : l&#39;ancien code les ignore, et PostgreSQL ajoute une colonne sans défaut sans réécrire la table ;</li>
 <li><code>20261110004931</code> et <code>20261111150000</code> n&#39;ajoutent que des colonnes nullables (ou à défaut constant), une table et des index : compatibles avec la version précédente ;</li>
 <li><code>20261111150000</code> supprime aussi l&#39;index unique <code>Ticket_transactionHash_key</code>. C&#39;est une contraction, faite dans la même migration que l&#39;expansion. Elle est sans risque ici : l&#39;ancien code vérifie l&#39;existence d&#39;un ticket par <code>findFirst</code> sur le hachage avant d&#39;écrire, et l&#39;index simple créé juste avant garde cette recherche rapide ;</li>
 <li><code>20261109213843</code> change le type des colonnes de date de <code>TIMESTAMP(3)</code> vers <code>TIMESTAMPTZ(3)</code>. Le code lit les deux types de la même façon ; le changement réécrit en revanche les tables concernées (voir plus bas).</li>
 </ul>
 <h2 id="verrous"><a class="anchor" href="#verrous" aria-hidden="true" tabindex="-1">#</a>Verrous</h2>
 <h3 id="lock-timeout"><a class="anchor" href="#lock-timeout" aria-hidden="true" tabindex="-1">#</a>lock_timeout</h3>
-<p>Les trois migrations postérieures à <code>init</code> commencent par :</p>
+<p>Toutes les migrations postérieures à <code>init</code> commencent par :</p>
 <div class="code-block"><div class="code-head"><span>SQL</span></div><pre><code class="hljs language-sql"><span class="hljs-keyword">SET</span> lock_timeout <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;5s&#x27;</span>;</code></pre></div>
 <p>Une instruction <code>ALTER TABLE</code> demande un verrou exclusif sur la table. Si une longue transaction de l&#39;application tient déjà un verrou sur cette table, l&#39;<code>ALTER TABLE</code> attend, et toutes les requêtes suivantes sur la table attendent derrière lui : l&#39;application se fige. Avec <code>lock_timeout</code>, la migration abandonne au bout de 5 s au lieu de bloquer, et peut être relancée à un moment plus calme. L&#39;application elle-même se connecte avec <code>lock_timeout</code> à 5 s (voir <a href="performance-sauvegardes.html#delais-par-connexion">Performance et sauvegardes</a>).</p>
 <h3 id="contraintes-ajoutees-sans-bloquer"><a class="anchor" href="#contraintes-ajoutees-sans-bloquer" aria-hidden="true" tabindex="-1">#</a>Contraintes ajoutées sans bloquer</h3>

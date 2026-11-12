@@ -344,7 +344,7 @@
 <ul>
 <li>ils ne sont pas mémorisés sur l&#39;appareil et reviennent à leur valeur initiale à chaque démarrage ;</li>
 <li>le thème du système n&#39;est pas lu, alors que <code>app.json</code> déclare <code>&quot;userInterfaceStyle&quot;: &quot;automatic&quot;</code> : un téléphone en mode sombre affiche quand même l&#39;application en clair ;</li>
-<li><code>SettingsScreen</code> envoie les changements au backend (<code>PUT /user/preferences</code>) et revient à l&#39;ancienne valeur si l&#39;envoi échoue, mais le thème et la langue enregistrés ne sont jamais relus.</li>
+<li>l&#39;écran Affichage (<code>DisplaySettingsScreen</code>) envoie les changements au backend (<code>PUT /user/preferences</code>, par <code>usePreferenceSaver</code>) et revient à l&#39;ancienne valeur si l&#39;envoi échoue, mais le thème et la langue enregistrés ne sont jamais relus. Il ne propose que Clair et Sombre : la valeur <code>SYSTEM</code> acceptée par le backend n&#39;est pas offerte.</li>
 </ul>
 <p><code>App.tsx</code> adapte la barre d&#39;état : texte clair en thème sombre, texte foncé en thème clair.</p>
 <p>La fonction <code>t(fr, en)</code> fonctionne comme sur le web (voir <a href="../web/i18n.html">Internationalisation</a>). Les messages d&#39;erreur de <code>useCitizenWallet</code> et ceux des fenêtres globales restent en français seulement, et les messages du backend s&#39;affichent en français quand l&#39;interface est en anglais.</p>
@@ -449,6 +449,12 @@
 <td>Cloche avec pastille de notifications non lues</td>
 </tr>
 <tr>
+<td><code>HeaderActions</code></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/HeaderActions.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>HeaderActions.tsx</code></a></td>
+<td>aucune</td>
+<td>Cloche (vers <code>Notifications</code>) et roue dentée (vers <code>Settings</code>) des en-têtes de l&#39;accueil, de « Mes tickets » et de <code>TabTitle</code></td>
+</tr>
+<tr>
 <td><code>BrandLogo</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/BrandLogo.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>BrandLogo.tsx</code></a></td>
 <td><code>size</code></td>
@@ -523,6 +529,10 @@
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/profile" class="external" target="_blank" rel="noopener noreferrer"><code>components/profile</code></a></td>
 <td><code>IdentityCard</code>, <code>ReferralCodeCard</code>, <code>SummaryTiles</code>, <code>ListGroup</code>, <code>SwitchRow</code>, <code>TabTitle</code>, utilitaire <code>ageStatus</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/settings" class="external" target="_blank" rel="noopener noreferrer"><code>components/settings</code></a></td>
+<td><code>SettingsLinkCard</code> (carte de section de l&#39;accueil des paramètres), utilitaires <code>displayName</code> (<code>fullName</code>, <code>nameInitials</code>), hook <code>usePreferenceSaver</code> (enregistrement d&#39;une préférence avec retour arrière en cas d&#39;échec)</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/web3" class="external" target="_blank" rel="noopener noreferrer"><code>components/web3</code></a></td>

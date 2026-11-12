@@ -8,6 +8,39 @@ import { decodeIdentityImage } from '../../utils/identity-image.util';
 import sessionService from '../../services/session.service';
 import { AppError } from '../../utils/response.util';
 
+export type NotificationCategory = 'drawReminders' | 'results' | 'rewards' | 'referrals';
+
+export type NotificationPreferences = Record<NotificationCategory, boolean>;
+
+export interface UserPreferences {
+  theme: string;
+  language: string;
+  pushNotificationsEnabled: boolean;
+  notifications: NotificationPreferences;
+  [key: string]: unknown;
+}
+
+export interface PreferencesUpdate {
+  theme?: string | undefined;
+  language?: string | undefined;
+  pushNotificationsEnabled?: boolean | undefined;
+  notifications?: Partial<Record<NotificationCategory, boolean | undefined>> | undefined;
+}
+
+const DEFAULT_NOTIFICATIONS: NotificationPreferences = {
+  drawReminders: true,
+  results: true,
+  rewards: true,
+  referrals: true,
+};
+
+const preferencesKey = (userId: string) => `user:prefs:${userId}`;
+
+const definedEntries = <T extends object>(value: T | undefined) =>
+  Object.fromEntries(Object.entries(value ?? {}).filter(([, v]) => v !== undefined)) as {
+    [K in keyof T]?: Exclude<T[K], undefined>;
+  };
+
 const QUESTS_CATALOG = [
   {
     id: 'FOLLOW_TWITTER_ETHERBAY',
@@ -38,10 +71,7 @@ export class UserService {
       throw new AppError('Profil utilisateur introuvable ou supprimé', 404);
     }
 
-    const prefsStr = await redis.get(`user:prefs:${userId}`);
-    const preferences = prefsStr
-      ? JSON.parse(prefsStr)
-      : { theme: 'DARK', language: 'FR', pushNotificationsEnabled: true };
+    const preferences = await this.readPreferences(userId);
 
     const limitStr = await redis.get(`user:ticket_limit:${userId}`);
     const maxTicketsPerRound = limitStr ? Number(limitStr) : 50;
@@ -50,6 +80,8 @@ export class UserService {
       id: user.id,
       walletAddress: user.walletAddress,
       email: user.email,
+      firstName: user.firstName ?? null,
+      lastName: user.lastName ?? null,
       role: user.role,
       pointsBalance: user.pointsBalance,
       referralCode: user.referralCode,
@@ -69,6 +101,64 @@ export class UserService {
       preferences,
       createdAt: user.createdAt,
     };
+  }
+
+  public async updateProfile(
+    userId: string,
+    input: { firstName?: string | undefined; lastName?: string | undefined }
+  ) {
+    const account = await userRepository.findAccount(userId);
+    if (!account || account.deletedAt) {
+      throw new AppError('Profil utilisateur introuvable ou supprimé', 404);
+    }
+
+    const data: { firstName?: string | null; lastName?: string | null } = {};
+    if (input.firstName !== undefined) data.firstName = input.firstName === '' ? null : input.firstName;
+    if (input.lastName !== undefined) data.lastName = input.lastName === '' ? null : input.lastName;
+
+    if (Object.keys(data).length === 0) {
+      return { firstName: account.firstName ?? null, lastName: account.lastName ?? null };
+    }
+
+    const updated = await userRepository.updateNames(userId, data);
+    return { firstName: updated.firstName ?? null, lastName: updated.lastName ?? null };
+  }
+
+  public async readPreferences(userId: string): Promise<UserPreferences> {
+    const stored = await redis.get(preferencesKey(userId));
+    const parsed = stored ? (JSON.parse(stored) as Partial<UserPreferences>) : {};
+    return {
+      theme: 'DARK',
+      language: 'FR',
+      pushNotificationsEnabled: true,
+      ...parsed,
+      notifications: { ...DEFAULT_NOTIFICATIONS, ...definedEntries(parsed.notifications) },
+    };
+  }
+
+  public async sendSupportRequest(userId: string, input: { subject: string; message: string }) {
+    const account = await userRepository.findAccount(userId);
+    if (!account || account.deletedAt) {
+      throw new AppError('Utilisateur introuvable', 404);
+    }
+
+    await enqueueEmail({
+      to: env.SUPPORT_EMAIL,
+      subject: `[Support BlockLucky] ${input.subject.replace(/[\r\n]+/g, ' ')}`,
+      templateName: 'support-request',
+      variables: {
+        USER_ID: account.id,
+        EMAIL: account.email ?? 'non renseigné',
+        FIRST_NAME: account.firstName ?? 'non renseigné',
+        LAST_NAME: account.lastName ?? 'non renseigné',
+        SUBJECT: input.subject,
+        MESSAGE: input.message,
+        DATE: new Date().toISOString().replace('T', ' ').slice(0, 16),
+      },
+      replyTo: account.email ?? undefined,
+    });
+
+    return { sent: true };
   }
 
   public async submitIdentity(userId: string, input: { front: string; back: string }) {
@@ -176,24 +266,32 @@ export class UserService {
     };
   }
 
-  public async updatePreferences(
-    userId: string,
-    prefs: { theme?: string; language?: string; pushNotificationsEnabled?: boolean }
-  ) {
-    const currentStr = await redis.get(`user:prefs:${userId}`);
-    const current = currentStr
-      ? JSON.parse(currentStr)
-      : { theme: 'DARK', language: 'FR', pushNotificationsEnabled: true };
+  public async updatePreferences(userId: string, prefs: PreferencesUpdate) {
+    const current = await this.readPreferences(userId);
+    const { notifications, ...rest } = prefs;
 
-    const updated = { ...current, ...prefs };
-    await redis.set(`user:prefs:${userId}`, JSON.stringify(updated));
+    const updated: UserPreferences = {
+      ...current,
+      ...definedEntries(rest),
+      notifications: { ...current.notifications, ...definedEntries(notifications) },
+    };
+    await redis.set(preferencesKey(userId), JSON.stringify(updated));
     return updated;
   }
 
   public async getPushNotificationsHistory(userId: string) {
-    return [
+    const { notifications } = await this.readPreferences(userId);
+    const history: Array<{
+      id: string;
+      category: NotificationCategory;
+      title: string;
+      body: string;
+      read: boolean;
+      createdAt: string;
+    }> = [
       {
         id: 'notif-1',
+        category: 'rewards',
         title: "Nouveau commerçant partenaire à EtherBay !",
         body: 'La Boulangerie du Port offre -15% contre 100 EtherPoints.',
         read: false,
@@ -201,6 +299,7 @@ export class UserService {
       },
       {
         id: 'notif-2',
+        category: 'drawReminders',
         title: 'Objectif 10 000 participants en approche',
         body: 'Le prochain palier communautaire débloque un bonus de cagnotte.',
         read: true,
@@ -208,12 +307,14 @@ export class UserService {
       },
       {
         id: `notif-user-${userId.slice(0, 6)}`,
+        category: 'rewards',
         title: 'Bienvenue sur BlockLucky EtherBay',
         body: 'Vos +25 EtherPoints de bienvenue ont été crédités sur votre compte.',
         read: true,
         createdAt: new Date(Date.now() - 172800 * 1000).toISOString(),
       },
     ];
+    return history.filter((item) => notifications[item.category]);
   }
 
   public async exportGdprData(userId: string) {
@@ -230,6 +331,8 @@ export class UserService {
         id: data.id,
         walletAddress: data.walletAddress,
         email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
         role: data.role,
         pointsBalance: data.pointsBalance,
         referralCode: data.referralCode,

@@ -1,4 +1,4 @@
-import rateLimit, { Options } from 'express-rate-limit';
+import rateLimit, { Options, ipKeyGenerator } from 'express-rate-limit';
 import { RedisStore, RedisReply } from 'rate-limit-redis';
 import { env } from '../config/env.config';
 import redis from '../config/redis.config';
@@ -54,5 +54,17 @@ export const identityUploadRateLimiter = rateLimit({
   message: {
     success: false,
     message: "Trop d'envois de pièce d'identité, veuillez réessayer dans une heure.",
+  },
+});
+
+export const supportRateLimiter = rateLimit({
+  ...commonOptions,
+  windowMs: 60 * 60 * 1000,
+  limit: env.NODE_ENV === 'test' ? 10000 : 5,
+  ...withStore('support'),
+  keyGenerator: (req) => (req.user?.userId ? `user:${req.user.userId}` : `ip:${ipKeyGenerator(req.ip ?? '')}`),
+  message: {
+    success: false,
+    message: 'Trop de messages envoyés au support, veuillez réessayer dans une heure.',
   },
 });

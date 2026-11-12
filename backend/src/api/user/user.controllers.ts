@@ -14,6 +14,28 @@ export class UserController {
     }
   }
 
+  public async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new AppError('Authentification requise', 401);
+      const profile = await userService.updateProfile(userId, req.body);
+      sendSuccess(res, { profile }, 'Profil mis à jour');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async sendSupportRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new AppError('Authentification requise', 401);
+      const result = await userService.sendSupportRequest(userId, req.body);
+      sendSuccess(res, result, 'Votre message a été transmis au support');
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async submitIdentity(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?.userId;
@@ -88,7 +110,7 @@ export class UserController {
       const userId = req.user?.userId;
       if (!userId) throw new AppError('Authentification requise', 401);
       const preferences = await userService.updatePreferences(userId, req.body);
-      sendSuccess(res, { preferences }, 'Préférences de thème et langue mises à jour');
+      sendSuccess(res, { preferences }, 'Préférences de thème, langue et notifications mises à jour');
     } catch (error) {
       next(error);
     }

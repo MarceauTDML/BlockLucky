@@ -36,7 +36,7 @@ sequenceDiagram
 
 ## Étape 1 : demande
 
-**Interface.** La page [`frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx`](src:frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx) et l'écran [`mobile-app/src/screens/settings/GDPRScreen.tsx`](src:mobile-app/src/screens/settings/GDPRScreen.tsx) appellent `/user/gdpr/delete-request` puis proposent de coller le jeton. Hors production, la page web préremplit le jeton renvoyé par l'API.
+**Interface.** La page [`frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx`](src:frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx) et l'écran Données personnelles du mobile ([`mobile-app/src/screens/settings/PersonalDataScreen.tsx`](src:mobile-app/src/screens/settings/PersonalDataScreen.tsx)) appellent `/user/gdpr/delete-request` puis proposent de coller le jeton. Hors production, la page web préremplit le jeton renvoyé par l'API.
 
 **Route.** `POST /api/v1/user/gdpr/delete-request` dans [`backend/src/api/user/user.routes.ts`](src:backend/src/api/user/user.routes.ts), protégée par `authenticate` seulement : pas de schéma de corps, pas d'idempotence.
 
@@ -70,7 +70,7 @@ sequenceDiagram
 | `User.walletAddress` | Remplacée par `0xdeleted_gdpr_` suivi des 8 premiers caractères de l'identifiant |
 | `User.walletEncryptedKey`, `welcomeGrantTxHash` | `null` : la clé privée du portefeuille intégré est détruite |
 | `twoFactorSecret`, `twoFactorMethod`, `twoFactorBackupCodes`, `isTwoFactorEnabled` | Effacés ou désactivés |
-| `User.passwordHash`, `ageVerificationNote` | `null` |
+| `User.passwordHash`, `firstName`, `lastName`, `ageVerificationNote` | `null` |
 | `IdentityDocument` du compte | Supprimé, avec les images si la Mairie n'avait pas encore statué |
 | `ageVerificationStatus`, `ageVerifiedAt` | Conservés |
 | `User.deletedAt` | Date de la suppression ; `getProfile` répond alors 404 et `requireRoles` refuse le compte |

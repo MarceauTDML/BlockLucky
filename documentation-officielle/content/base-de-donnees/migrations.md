@@ -63,6 +63,7 @@ Un renommage demande ainsi trois déploiements au minimum. Opérations sûres en
 
 Application aux migrations existantes :
 
+- `20261112150000_user_names` n'ajoute que les colonnes nullables `User.firstName` et `User.lastName` : l'ancien code les ignore, et PostgreSQL ajoute une colonne sans défaut sans réécrire la table ;
 - `20261110004931` et `20261111150000` n'ajoutent que des colonnes nullables (ou à défaut constant), une table et des index : compatibles avec la version précédente ;
 - `20261111150000` supprime aussi l'index unique `Ticket_transactionHash_key`. C'est une contraction, faite dans la même migration que l'expansion. Elle est sans risque ici : l'ancien code vérifie l'existence d'un ticket par `findFirst` sur le hachage avant d'écrire, et l'index simple créé juste avant garde cette recherche rapide ;
 - `20261109213843` change le type des colonnes de date de `TIMESTAMP(3)` vers `TIMESTAMPTZ(3)`. Le code lit les deux types de la même façon ; le changement réécrit en revanche les tables concernées (voir plus bas).
@@ -71,7 +72,7 @@ Application aux migrations existantes :
 
 ### lock_timeout
 
-Les trois migrations postérieures à `init` commencent par :
+Toutes les migrations postérieures à `init` commencent par :
 
 ```sql
 SET lock_timeout = '5s';

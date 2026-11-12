@@ -16,7 +16,7 @@ import AppText from '../../components/ui/AppText';
 import Card from '../../components/ui/Card';
 import FilterChips from '../../components/ui/FilterChips';
 import Loader from '../../components/ui/Loader';
-import NotificationButton from '../../components/ui/NotificationButton';
+import HeaderActions from '../../components/ui/HeaderActions';
 import Screen from '../../components/ui/Screen';
 import SectionHeader from '../../components/ui/SectionHeader';
 import Icon, { IconName } from '../../components/ui/icons/Icon';
@@ -165,10 +165,7 @@ const MyTicketsScreen: React.FC = () => {
             </AppText>
           ) : null}
         </View>
-        <NotificationButton
-          hasUnread={unreadCount > 0}
-          onPress={() => navigation.navigate('Notifications')}
-        />
+        <HeaderActions />
       </View>
 
       <View style={styles.filters}>

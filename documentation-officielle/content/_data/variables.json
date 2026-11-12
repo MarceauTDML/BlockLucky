@@ -19,6 +19,7 @@
   "SMTP_USER": { "categorie": "Email", "description": "Identifiant SMTP. Vide : connexion sans authentification." },
   "SMTP_PASS": { "categorie": "Email", "description": "Mot de passe SMTP, utilisé seulement si `SMTP_USER` est renseigné." },
   "SMTP_FROM": { "categorie": "Email", "description": "Expéditeur affiché des emails." },
+  "SUPPORT_EMAIL": { "categorie": "Email", "description": "Adresse qui reçoit les messages du formulaire de support (`POST /user/support`). L'email porte l'identifiant, l'adresse, le prénom et le nom du citoyen, et son adresse en réponse directe quand elle est connue." },
   "BLOCKCHAIN_MODE": { "categorie": "Blockchain", "description": "`onchain` : achats, tirages et pause passent par le smart contract. `simulated` : hachages aléatoires, aucun nœud requis, réservé au développement et aux tests." },
   "RPC_URL": { "categorie": "Blockchain", "description": "Nœud JSON-RPC principal (nœud Hardhat local par défaut)." },
   "FALLBACK_RPC_URL": { "categorie": "Blockchain", "description": "Nœud JSON-RPC de secours, utilisé après une bascule du client RPC." },

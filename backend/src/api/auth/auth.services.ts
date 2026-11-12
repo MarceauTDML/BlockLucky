@@ -5,6 +5,7 @@ import ledgerService from '../../services/ledger.service';
 import sessionService, { VerifiedToken } from '../../services/session.service';
 import otpChallengeService, { PendingSignup } from '../../services/otp-challenge.service';
 import { enqueueEmail } from '../../queues/emails.queue';
+import redis from '../../config/redis.config';
 import walletService from '../../blockchain/wallet.service';
 import { VerifiedOAuthIdentity } from '../../services/oauth-verifier.service';
 import logger from '../../utils/logger.util';
@@ -15,6 +16,7 @@ import {
   hashValue,
   hmacSha256,
   isEncrypted,
+  maskEmail,
   normalizeBackupCode,
   safeEqual,
   sha256,
@@ -27,9 +29,16 @@ const INVALID_CODE_MESSAGE = 'Code de vérification invalide ou expiré';
 const INVALID_CREDENTIALS_MESSAGE = 'Email ou mot de passe incorrect.';
 const INVALID_RESET_CODE_MESSAGE = 'Code invalide ou expiré.';
 const ACCOUNT_EXISTS_MESSAGE = 'Un compte existe déjà avec cette adresse email.';
+const EMAIL_TAKEN_MESSAGE = 'Cette adresse email est déjà utilisée par un autre compte.';
+const WRONG_PASSWORD_MESSAGE = 'Mot de passe incorrect.';
+const WRONG_CURRENT_PASSWORD_MESSAGE = 'Mot de passe actuel incorrect.';
+const USER_NOT_FOUND_MESSAGE = 'Utilisateur introuvable';
+const EMAIL_CHANGE_TTL_SECONDS = 10 * 60;
 const WELCOME_POINTS = 25;
 
 const passwordResetSubject = (userId: string) => `password-reset:${userId}`;
+const emailChangeSubject = (userId: string) => `email-change:${userId}`;
+const emailChangeKey = (userId: string) => `auth:email-change:${userId}`;
 const anonymousSubject = (scope: string, email: string) => `${scope}:${hmacSha256(`${scope}:${email}`)}`;
 
 let timingDummyHash: Promise<string> | null = null;
@@ -265,6 +274,97 @@ export class AuthService {
       account.passwordHash ? 'Mot de passe réinitialisé' : 'Mot de passe défini sur votre compte'
     );
     return { reset: true };
+  }
+
+  private async findActiveUser(userId: string) {
+    const user = await authRepository.findById(userId);
+    if (!user || user.deletedAt) throw new AppError(USER_NOT_FOUND_MESSAGE, 404);
+    return user;
+  }
+
+  private async assertEmailAvailable(email: string, userId: string) {
+    const owner = await authRepository.findByEmail(email);
+    if (owner && owner.id !== userId) throw new AppError(EMAIL_TAKEN_MESSAGE, 409);
+  }
+
+  public async requestEmailChange(userId: string, input: { newEmail: string; password?: string | undefined }) {
+    const user = await this.findActiveUser(userId);
+    const newEmail = input.newEmail.trim().toLowerCase();
+    if (user.email === newEmail) {
+      throw new AppError("La nouvelle adresse email est identique à l'adresse actuelle.", 400);
+    }
+    await this.assertEmailAvailable(newEmail, user.id);
+
+    if (user.passwordHash) {
+      await otpChallengeService.assertNotLocked(user.id);
+      const valid = input.password ? await verifyPassword(input.password, user.passwordHash) : false;
+      if (!valid) {
+        await otpChallengeService.recordFailure(user.id);
+        throw new AppError(WRONG_PASSWORD_MESSAGE, 401);
+      }
+    }
+
+    const subject = emailChangeSubject(user.id);
+    await otpChallengeService.assertNotLocked(subject);
+    const code = await otpChallengeService.issue(subject, 'EMAIL_CHANGE');
+    await redis.set(emailChangeKey(user.id), newEmail, EMAIL_CHANGE_TTL_SECONDS);
+    await this.sendCodeEmail(newEmail, code, 'Confirmez votre nouvelle adresse email - BlockLucky');
+
+    return {
+      message: `Un code à 6 chiffres a été envoyé à ${newEmail}`,
+      ...devPreview(code),
+    };
+  }
+
+  public async confirmEmailChange(userId: string, code: string) {
+    const user = await this.findActiveUser(userId);
+    const subject = emailChangeSubject(user.id);
+
+    await otpChallengeService.assertNotLocked(subject);
+    const challenge = await otpChallengeService.consume(subject, code);
+    const pendingEmail = await redis.get(emailChangeKey(user.id));
+    if (!challenge || challenge.purpose !== 'EMAIL_CHANGE' || !pendingEmail) {
+      await otpChallengeService.recordFailure(subject);
+      throw new AppError(INVALID_RESET_CODE_MESSAGE, 400);
+    }
+    await otpChallengeService.clearFailures(subject);
+    await redis.del(emailChangeKey(user.id));
+
+    await this.assertEmailAvailable(pendingEmail, user.id);
+    const updated = await authRepository.updateEmail(user.id, pendingEmail);
+    await this.notify(user.email, `Adresse email du compte remplacée par ${maskEmail(updated.email)}`);
+
+    return { profile: { email: updated.email } };
+  }
+
+  public async changePassword(
+    userId: string,
+    input: { currentPassword?: string | undefined; newPassword: string }
+  ) {
+    const user = await this.findActiveUser(userId);
+
+    if (user.passwordHash) {
+      await otpChallengeService.assertNotLocked(user.id);
+      const valid = input.currentPassword
+        ? await verifyPassword(input.currentPassword, user.passwordHash)
+        : false;
+      if (!valid) {
+        await otpChallengeService.recordFailure(user.id);
+        throw new AppError(WRONG_CURRENT_PASSWORD_MESSAGE, 401);
+      }
+      await otpChallengeService.clearFailures(user.id);
+    }
+
+    const passwordHash = await hashValue(input.newPassword);
+    const updated = await authRepository.updatePasswordHash(user.id, passwordHash);
+    await sessionService.revokeAllForUser(user.id);
+    await this.notify(
+      user.email,
+      user.passwordHash ? 'Mot de passe modifié' : 'Mot de passe défini sur votre compte'
+    );
+
+    const session = await this.issueSession(updated);
+    return { requiresTwoFactor: false, isNewUser: false, ...session };
   }
 
   public async oauthLogin(identity: VerifiedOAuthIdentity) {

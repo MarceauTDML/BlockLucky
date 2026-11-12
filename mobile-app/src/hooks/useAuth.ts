@@ -155,6 +155,27 @@ export const useAuth = () => {
     [dispatch, verify2FATrigger],
   );
 
+  const patchUser = useCallback(
+    async (patch: Partial<UserProfile>) => {
+      const current = authState.user;
+      if (!current) return;
+      dispatch(updateUserProfile(patch));
+      await secureStorage.setUserJson(JSON.stringify({ ...current, ...patch }));
+    },
+    [authState.user, dispatch],
+  );
+
+  const applyRenewedSession = useCallback(
+    async (result: AuthSessionResponse) => {
+      if (!result.token) return;
+      const user = { ...(authState.user ?? {}), ...(result.user ?? {}) } as UserProfile;
+      await secureStorage.setToken(result.token);
+      await secureStorage.setUserJson(JSON.stringify(user));
+      dispatch(setCredentials({ token: result.token, user }));
+    },
+    [authState.user, dispatch],
+  );
+
   const endSession = useCallback(
     async (allDevices: boolean) => {
       try {
@@ -197,6 +218,8 @@ export const useAuth = () => {
     requestPasswordReset,
     resetPassword,
     setAgeVerificationStatus,
+    patchUser,
+    applyRenewedSession,
     verifyOtpCode,
     setup2FA: setup2FATrigger,
     disable2FA: disable2FATrigger,

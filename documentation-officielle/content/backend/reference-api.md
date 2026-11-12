@@ -73,10 +73,11 @@ Le corps de la requête ne fait pas partie de la clé : la même clé avec un au
 | Limiteur | Portée | Limite |
 |---|---|---|
 | `globalRateLimiter` | toutes les routes après la maintenance, sauf sondes, `/api/config` et `/metrics` | 300 requêtes par 15 minutes et par IP |
-| `authRateLimiter` | `/auth/login`, `/signup`, `/signin`, `/password/forgot`, `/password/reset`, `/oauth/google`, `/oauth/apple`, `/2fa/verify`, `/2fa/disable` | 30 requêtes par 10 minutes et par IP pour l'ensemble de ces routes, en plus de la limite globale |
+| `authRateLimiter` | `/auth/login`, `/signup`, `/signin`, `/password/forgot`, `/password/reset`, `/password/change`, `/email/change`, `/email/confirm`, `/oauth/google`, `/oauth/apple`, `/2fa/verify`, `/2fa/disable` | 30 requêtes par 10 minutes et par IP pour l'ensemble de ces routes, en plus de la limite globale |
 | `identityUploadRateLimiter` | `POST /user/identity` | 10 requêtes par heure et par IP, en plus de la limite globale |
+| `supportRateLimiter` | `POST /user/support` | 5 messages par heure et par compte (par IP à défaut), en plus de la limite globale |
 
-Les réponses portent les en-têtes `RateLimit` et `RateLimit-Policy` (format draft-7 de l'IETF), exposés aux navigateurs par CORS. Au-delà de la limite, la réponse est un `429` au format habituel, par exemple `{ "success": false, "message": "Trop de requêtes depuis cette adresse IP, veuillez réessayer plus tard." }`. Les compteurs sont dans Redis (`ratelimit:global:`, `ratelimit:auth:` et `ratelimit:identity:`) ; si Redis répond en erreur, la requête passe (`passOnStoreError`). Derrière un proxy, `TRUST_PROXY` doit être réglé, sinon tous les clients partagent l'IP du proxy.
+Les réponses portent les en-têtes `RateLimit` et `RateLimit-Policy` (format draft-7 de l'IETF), exposés aux navigateurs par CORS. Au-delà de la limite, la réponse est un `429` au format habituel, par exemple `{ "success": false, "message": "Trop de requêtes depuis cette adresse IP, veuillez réessayer plus tard." }`. Les compteurs sont dans Redis (`ratelimit:global:`, `ratelimit:auth:`, `ratelimit:identity:` et `ratelimit:support:`) ; si Redis répond en erreur, la requête passe (`passOnStoreError`). Derrière un proxy, `TRUST_PROXY` doit être réglé, sinon tous les clients partagent l'IP du proxy.
 
 ## Corps et formats
 

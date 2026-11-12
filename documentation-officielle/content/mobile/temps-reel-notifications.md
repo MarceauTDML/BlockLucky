@@ -119,9 +119,9 @@ sequenceDiagram
 | `unreadCount`, `markAllAsSeen` | Notifications non lues ; `markAllAsSeen` mémorise les identifiants vus dans une variable du module |
 | `osPushBanner`, `triggerSimulatedOsPush(title, body)` | Bandeau en haut de l'écran, masqué après 4,5 secondes ; plus appelé |
 
-L'accueil et « Mes tickets » affichent `NotificationButton`, une cloche avec une pastille quand `unreadCount` est positif ; l'appui ouvre [`NotificationsScreen.tsx`](src:mobile-app/src/screens/settings/NotificationsScreen.tsx). Cet écran liste les notifications, permet de tirer pour rafraîchir et marque tout comme vu à sa fermeture. L'état « vu » n'est ni envoyé au backend ni enregistré sur l'appareil : il est perdu au redémarrage de l'application.
+L'accueil, « Mes tickets » et le titre des onglets Profil et Parrains affichent `HeaderActions` : la cloche `NotificationButton`, avec une pastille quand `unreadCount` est positif, à côté de la roue des paramètres. L'appui sur la cloche ouvre [`NotificationsScreen.tsx`](src:mobile-app/src/screens/settings/NotificationsScreen.tsx). Cet écran liste les notifications, permet de tirer pour rafraîchir et marque tout comme vu à sa fermeture. L'état « vu » n'est ni envoyé au backend ni enregistré sur l'appareil : il est perdu au redémarrage de l'application.
 
-Le backend renvoie aujourd'hui une liste fixe de trois notifications, générée par `UserService.getPushNotificationsHistory` dans [`backend/src/api/user/user.services.ts`](src:backend/src/api/user/user.services.ts). La liste est rechargée par le geste de rafraîchissement de l'accueil et de l'écran Notifications.
+Le backend renvoie aujourd'hui une liste fixe de trois notifications, générée par `UserService.getPushNotificationsHistory` dans [`backend/src/api/user/user.services.ts`](src:backend/src/api/user/user.services.ts). Chaque notification porte une catégorie (`drawReminders`, `results`, `rewards` ou `referrals`) ; celles dont la catégorie est coupée dans Paramètres, puis Notifications ([`NotificationSettingsScreen.tsx`](src:mobile-app/src/screens/settings/NotificationSettingsScreen.tsx)) sont retirées de la réponse. L'interrupteur général `pushNotificationsEnabled` est enregistré mais ne filtre pas la liste. La liste est rechargée par le geste de rafraîchissement de l'accueil et de l'écran Notifications.
 
 ## Brancher de vraies notifications push
 
@@ -130,6 +130,6 @@ Les étapes, non réalisées dans le projet, seraient :
 1. ajouter le plugin `expo-notifications` dans `app.json`, puis demander l'autorisation à l'utilisateur après la connexion ;
 2. obtenir un jeton Expo Push (ce qui suppose un projet EAS, voir [Builds et publication](builds-publication.md)) et l'envoyer au backend par une nouvelle route ;
 3. stocker ce jeton côté serveur et l'utiliser depuis un worker pour les événements utiles (ouverture de la salle d'attente, résultat, cadeau reçu, décision sur la vérification d'âge) ;
-4. respecter la préférence `pushNotificationsEnabled` et l'opposition de l'utilisateur.
+4. respecter la préférence `pushNotificationsEnabled`, les catégories de `preferences.notifications` et l'opposition de l'utilisateur.
 
 Pour un nouvel événement temps réel, suivre [Ajouter un événement temps réel](../guides/ajouter-evenement-socket.md).

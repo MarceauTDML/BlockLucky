@@ -49,6 +49,39 @@ export class AuthController {
     }
   }
 
+  public async requestEmailChange(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new AppError('Non authentifié', 401);
+      const result = await authService.requestEmailChange(userId, req.body);
+      sendSuccess(res, result, 'Code de confirmation envoyé à la nouvelle adresse', 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async confirmEmailChange(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new AppError('Non authentifié', 401);
+      const result = await authService.confirmEmailChange(userId, req.body.code);
+      sendSuccess(res, result, 'Adresse email mise à jour', 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new AppError('Non authentifié', 401);
+      const result = await authService.changePassword(userId, req.body);
+      sendSuccess(res, result, 'Mot de passe mis à jour, vos autres sessions ont été déconnectées', 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async googleSignIn(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const identity = await oauthVerifierService.verifyGoogle(req.body.idToken);

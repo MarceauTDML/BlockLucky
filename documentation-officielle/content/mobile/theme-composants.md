@@ -105,7 +105,7 @@ Le mode et la langue sont de simples `useState` initialisés à `LIGHT` et `FR` 
 
 - ils ne sont pas mémorisés sur l'appareil et reviennent à leur valeur initiale à chaque démarrage ;
 - le thème du système n'est pas lu, alors que `app.json` déclare `"userInterfaceStyle": "automatic"` : un téléphone en mode sombre affiche quand même l'application en clair ;
-- `SettingsScreen` envoie les changements au backend (`PUT /user/preferences`) et revient à l'ancienne valeur si l'envoi échoue, mais le thème et la langue enregistrés ne sont jamais relus.
+- l'écran Affichage (`DisplaySettingsScreen`) envoie les changements au backend (`PUT /user/preferences`, par `usePreferenceSaver`) et revient à l'ancienne valeur si l'envoi échoue, mais le thème et la langue enregistrés ne sont jamais relus. Il ne propose que Clair et Sombre : la valeur `SYSTEM` acceptée par le backend n'est pas offerte.
 
 `App.tsx` adapte la barre d'état : texte clair en thème sombre, texte foncé en thème clair.
 
@@ -130,6 +130,7 @@ La fonction `t(fr, en)` fonctionne comme sur le web (voir [Internationalisation]
 | `ResultDialog` | [`ResultDialog.tsx`](src:mobile-app/src/components/ui/ResultDialog.tsx) | `visible`, `status` (`success`, `error`, `info`), `title`, `message`, `note`, `primaryLabel`, `secondaryLabel` | Fenêtre centrée des confirmations et erreurs, `accessibilityViewIsModal`, titre annoncé comme en-tête |
 | `BottomSheet` | [`BottomSheet.tsx`](src:mobile-app/src/components/ui/BottomSheet.tsx) | `visible`, `title`, `onClose` | `Modal` glissant depuis le bas ; utilisée par le choix de la photo d'identité |
 | `NotificationButton` | [`NotificationButton.tsx`](src:mobile-app/src/components/ui/NotificationButton.tsx) | `onPress`, `hasUnread` | Cloche avec pastille de notifications non lues |
+| `HeaderActions` | [`HeaderActions.tsx`](src:mobile-app/src/components/ui/HeaderActions.tsx) | aucune | Cloche (vers `Notifications`) et roue dentée (vers `Settings`) des en-têtes de l'accueil, de « Mes tickets » et de `TabTitle` |
 | `BrandLogo` | [`BrandLogo.tsx`](src:mobile-app/src/components/ui/BrandLogo.tsx) | `size` | Symbole et nom BlockLucky de l'en-tête de l'accueil |
 | `ProgressBar` | [`ProgressBar.tsx`](src:mobile-app/src/components/ui/ProgressBar.tsx) | `percentage`, `markers`, `tone`, `height`, `accessibilityLabel` | Jauge de participation et repères des paliers |
 | `Loader` | [`Loader.tsx`](src:mobile-app/src/components/ui/Loader.tsx) | `message`, `skeletonRows` | Indicateur de chargement ou lignes squelettes |
@@ -156,6 +157,7 @@ L'icône est masquée aux lecteurs d'écran (`importantForAccessibility="no"`) :
 | [`components/lottery`](src:mobile-app/src/components/lottery) | `DeadlineCard`, `MilestonesPanel`, `DrawStatusBadge`, `DialogSummary`, `ScratchOfferCard`, hook `useCountdown`, formats `lotteryFormat` |
 | [`components/marketplace`](src:mobile-app/src/components/marketplace) | `ScratchCanvas`, `ScratchOfferCard`, `CodeCard`, `RewardCard`, `PointsBalanceCard`, utilitaires `apiErrors` et `scratchOffers` |
 | [`components/profile`](src:mobile-app/src/components/profile) | `IdentityCard`, `ReferralCodeCard`, `SummaryTiles`, `ListGroup`, `SwitchRow`, `TabTitle`, utilitaire `ageStatus` |
+| [`components/settings`](src:mobile-app/src/components/settings) | `SettingsLinkCard` (carte de section de l'accueil des paramètres), utilitaires `displayName` (`fullName`, `nameInitials`), hook `usePreferenceSaver` (enregistrement d'une préférence avec retour arrière en cas d'échec) |
 | [`components/web3`](src:mobile-app/src/components/web3) | `IntegratedWalletCard`, `IntegratedWalletButton`, `ExplorerLink`, plus utilisés par aucun écran |
 
 `ScratchCanvas` découpe la zone à gratter en une grille de cellules. Chaque contact du doigt (`PanResponder`) efface les cellules proches, et le code est révélé quand 60 % de la surface est découverte. Pour les lecteurs d'écran, la zone est annoncée comme réglable avec le pourcentage découvert, et l'action d'accessibilité « Tout révéler » affiche le code sans geste de glissement.

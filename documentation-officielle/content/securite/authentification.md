@@ -24,8 +24,10 @@ Fichiers principaux :
 | `POST /api/auth/password/forgot`, `/password/reset` | Mobile | Code email à 6 chiffres | Nouveau mot de passe, toutes les sessions révoquées |
 | `POST /api/auth/oauth/google`, `/oauth/apple` | Mobile | Jeton d'identité signé par le fournisseur | Session immédiate, compte créé au besoin |
 | `POST /api/auth/login` | Web | Code email, avec déclaration de majorité dans la requête | Session délivrée par `/2fa/verify` |
+| `POST /api/auth/password/change` | Mobile, compte connecté | Jeton de session, plus le mot de passe actuel s'il en existe un | Nouveau mot de passe, toutes les sessions révoquées, nouvelle session délivrée |
+| `POST /api/auth/email/change`, `/email/confirm` | Mobile, compte connecté | Jeton de session, mot de passe actuel s'il en existe un, puis code envoyé à la nouvelle adresse | Adresse remplacée, sessions conservées |
 
-Quelle que soit la route, un compte vérifié dont la 2FA est active doit encore fournir son code TOTP ou son code email à `/2fa/verify` avant de recevoir un jeton (`completePrimaryLogin`). Toutes ces routes passent par `authRateLimiter` : 30 requêtes par adresse IP en 10 minutes.
+Quelle que soit la route de connexion, un compte vérifié dont la 2FA est active doit encore fournir son code TOTP ou son code email à `/2fa/verify` avant de recevoir un jeton (`completePrimaryLogin`). `/password/change` fait exception : l'appelant a déjà une session, et le jeton de remplacement est délivré sans nouveau code. Toutes ces routes passent par `authRateLimiter` : 30 requêtes par adresse IP en 10 minutes.
 
 ## Mot de passe
 
@@ -68,6 +70,30 @@ Pour un compte existant, le compteur d'échecs est celui des codes email : des �
 | Effet | Nouveau `passwordHash`, `isEmailVerified` à `true`, révocation de toutes les sessions du compte (`revokeAllForUser`), email `security-alert` |
 
 Le code suit les paramètres décrits dans [Paramètres du code](#parametres-du-code). La même route permet à un compte créé sans mot de passe d'en définir un ; l'alerte indique alors « Mot de passe défini sur votre compte ».
+
+### Changement depuis un compte connecté
+
+`POST /api/auth/password/change` exige un jeton de session valide. Si le compte a un mot de passe, `currentPassword` est obligatoire et comparé par bcrypt ; un échec renvoie 401 « Mot de passe actuel incorrect. » et s'ajoute au compteur d'échecs du compte, celui de `/signin` (10 échecs en une heure bloquent le compte pendant une heure). Un compte créé par code email, Google ou Apple peut définir un premier mot de passe sans en fournir d'ancien : la possession de la session suffit.
+
+| Étape | Comportement |
+|---|---|
+| Nouveau mot de passe | Même `passwordPolicy` que l'inscription, haché par bcrypt |
+| Sessions | `revokeAllForUser` : tous les jetons émis plus d'une seconde avant sont refusés, y compris celui qui a servi à la requête |
+| Nouvelle session | Un jeton est émis aussitôt et renvoyé avec le profil, comme après `/signin` ; le mobile le range à la place de l'ancien (`applyRenewedSession`) |
+| Alerte | Email `security-alert` « Mot de passe modifié » ou « Mot de passe défini sur votre compte » |
+
+Un vol de session suffit donc à définir un mot de passe sur un compte qui n'en a pas, et à déconnecter le propriétaire légitime ; l'alerte par email est alors le seul signal. Pour un compte qui a déjà un mot de passe, le voleur doit aussi le connaître.
+
+## Changement d'adresse email
+
+Le changement se fait en deux requêtes authentifiées :
+
+| Étape | Route | Contrôles | Effet |
+|---|---|---|---|
+| Demande | `POST /api/auth/email/change` | Nouvelle adresse différente de l'actuelle et libre (sinon 400 ou 409) ; mot de passe actuel si le compte en a un (401 « Mot de passe incorrect. », échec compté sur le compte) | Code `EMAIL_CHANGE` de 6 chiffres sous le sujet `email-change:<userId>`, envoyé à la **nouvelle** adresse ; adresse en attente dans Redis (`auth:email-change:<userId>`, 10 minutes) |
+| Confirmation | `POST /api/auth/email/confirm` | Code valide et adresse en attente présente (sinon 400 « Code invalide ou expiré. », échec compté sur `email-change:<userId>`) ; adresse toujours libre (409) | `email` remplacé, `isEmailVerified` à `true`, alerte `security-alert` envoyée à l'**ancienne** adresse avec la nouvelle adresse masquée |
+
+Le code envoyé à la nouvelle adresse prouve qu'elle appartient au demandeur ; l'alerte à l'ancienne adresse prévient le titulaire si la demande ne vient pas de lui. Les sessions ne sont pas révoquées par un changement d'adresse. Pour un compte sans mot de passe, la session seule suffit à demander le changement.
 
 ## Google et Apple
 
@@ -227,6 +253,8 @@ Le modèle [`backend/src/templates/emails/security-alert.html`](src:backend/src/
 | Désactivation de la 2FA | « Double authentification désactivée » |
 | Utilisation d'un code de secours | Nombre de codes restants |
 | Réinitialisation du mot de passe | « Mot de passe réinitialisé » ou « Mot de passe défini sur votre compte » |
+| Changement du mot de passe depuis un compte connecté | « Mot de passe modifié » ou « Mot de passe défini sur votre compte » |
+| Changement d'adresse email, envoyé à l'ancienne adresse | « Adresse email du compte remplacée par » suivi de la nouvelle adresse masquée |
 
 ## Limites connues
 

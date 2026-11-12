@@ -2,7 +2,7 @@ import { Router } from 'express';
 import userController from './user.controllers';
 import { authenticate } from '../../middlewares/auth.middleware';
 import { validate } from '../../middlewares/validate.middleware';
-import { identityUploadRateLimiter } from '../../middlewares/rateLimiter.middleware';
+import { identityUploadRateLimiter, supportRateLimiter } from '../../middlewares/rateLimiter.middleware';
 import { identityUploadJsonParser } from '../../middlewares/body-parser.middleware';
 import {
   submitIdentitySchema,
@@ -10,6 +10,8 @@ import {
   setResponsibleGamingLimitSchema,
   completeSocialQuestSchema,
   confirmGdprDeletionSchema,
+  updateProfileSchema,
+  supportRequestSchema,
 } from './user.validators';
 
 const router = Router();
@@ -23,6 +25,35 @@ const router = Router();
  */
 router.get('/profile', authenticate, (req, res, next) =>
   userController.getProfile(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/user/profile:
+ *   patch:
+ *     tags: [User]
+ *     summary: Modifier son prénom et son nom (50 caractères au plus, lettres, espaces, traits d'union et apostrophes ; une chaîne vide efface le champ)
+ */
+router.patch(
+  '/profile',
+  authenticate,
+  validate(updateProfileSchema),
+  (req, res, next) => userController.updateProfile(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/user/support:
+ *   post:
+ *     tags: [User]
+ *     summary: Envoyer un message au support de la Ville d'EtherBay (5 messages par heure au plus)
+ */
+router.post(
+  '/support',
+  authenticate,
+  supportRateLimiter,
+  validate(supportRequestSchema),
+  (req, res, next) => userController.sendSupportRequest(req, res, next)
 );
 
 /**
@@ -105,7 +136,7 @@ router.put(
  * /api/user/preferences:
  *   put:
  *     tags: [User]
- *     summary: Modifier le thème (clair, sombre ou système), la langue (FR/EN) et les notifications
+ *     summary: Modifier le thème (clair, sombre ou système), la langue (FR/EN), l'interrupteur général des notifications et leurs catégories (rappels de tirage, résultats, récompenses, parrainage)
  */
 router.put(
   '/preferences',
@@ -119,7 +150,7 @@ router.put(
  * /api/user/notifications:
  *   get:
  *     tags: [User]
- *     summary: Consulter le centre de notifications (contenu de démonstration, aucun envoi push)
+ *     summary: Consulter le centre de notifications (contenu de démonstration, aucun envoi push), sans les catégories désactivées dans les préférences
  */
 router.get('/notifications', authenticate, (req, res, next) =>
   userController.getNotifications(req, res, next)

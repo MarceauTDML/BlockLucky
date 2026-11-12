@@ -1,142 +1,196 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 
-import ListGroup from '../../components/profile/ListGroup';
+import { getErrorMessage } from '../../components/auth/authErrors';
+import AppButton from '../../components/ui/AppButton';
+import AppInput from '../../components/ui/AppInput';
 import AppText from '../../components/ui/AppText';
 import Card from '../../components/ui/Card';
-import ListRow from '../../components/ui/ListRow';
-import Loader from '../../components/ui/Loader';
 import Pill from '../../components/ui/Pill';
+import ResultDialog from '../../components/ui/ResultDialog';
 import Screen from '../../components/ui/Screen';
 import ScreenHeader from '../../components/ui/ScreenHeader';
 import SectionHeader from '../../components/ui/SectionHeader';
+import Icon from '../../components/ui/icons/Icon';
 import useAppTheme from '../../hooks/useAppTheme';
 import { useRootNavigation } from '../../navigation/hooks';
-import { useGetTransparencyCharterQuery } from '../../store/api/lotteryApi';
+import { useSendSupportMessageMutation } from '../../store/api/authApi';
 
-const SUPPORT_EMAIL = 'dsi@etherbay.fr';
+const HELP_CENTER_URL = process.env.EXPO_PUBLIC_HELP_CENTER_URL || '';
+const SUBJECT_MAX = 120;
+const MESSAGE_MAX = 2000;
 
 export const HelpSupportScreen: React.FC = () => {
-  const { colors, language, t } = useAppTheme();
+  const { colors, t } = useAppTheme();
   const navigation = useRootNavigation();
-  const { data, isLoading } = useGetTransparencyCharterQuery();
-  const charter = data?.data;
+  const [sendMessage, { isLoading }] = useSendSupportMessageMutation();
 
-  const fallbackSections = [
-    {
-      heading: t('Registre public', 'Public ledger'),
-      body: t(
-        'Chaque participation et chaque tirage sont inscrits sur la blockchain. Personne ne peut modifier le résultat.',
-        'Every entry and draw is recorded on the blockchain. Nobody can alter the outcome.',
-      ),
-    },
-    {
-      heading: t('Tirage vérifiable', 'Verifiable draw'),
-      body: t(
-        'Le gagnant est désigné par un tirage aléatoire dont la preuve peut être vérifiée par tous.',
-        'The winner is picked by a random draw whose proof anyone can verify.',
-      ),
-    },
-    {
-      heading: t('Remboursement automatique', 'Automatic refund'),
-      body: t(
-        'Si le tirage est annulé, les ETH fictifs engagés sont rendus automatiquement.',
-        'If the draw is cancelled, the play ETH spent is refunded automatically.',
-      ),
-    },
-  ];
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [errors, setErrors] = useState<{ subject?: string; message?: string; form?: string }>({});
+  const [sent, setSent] = useState(false);
 
-  const sections =
-    language === 'FR' && charter?.sections?.length ? charter.sections : fallbackSections;
-  const tones = ['lavender', 'mint', 'peach'] as const;
+  const handleSend = async () => {
+    const found: typeof errors = {};
+    if (subject.trim().length < 3) {
+      found.subject = t('3 caractères minimum.', 'At least 3 characters.');
+    }
+    if (message.trim().length < 10) {
+      found.message = t('10 caractères minimum.', 'At least 10 characters.');
+    }
+    setErrors(found);
+    if (found.subject || found.message) return;
+    try {
+      await sendMessage({ subject: subject.trim(), message: message.trim() }).unwrap();
+      setSubject('');
+      setMessage('');
+      setSent(true);
+    } catch (error) {
+      setErrors({
+        form: getErrorMessage(
+          error,
+          t('Le message n’a pas pu être envoyé.', 'The message could not be sent.'),
+        ),
+      });
+    }
+  };
 
-  const openMail = () => {
-    Linking.openURL(`mailto:${SUPPORT_EMAIL}`).catch(() => {});
+  const openHelpCenter = () => {
+    if (HELP_CENTER_URL) Linking.openURL(HELP_CENTER_URL).catch(() => {});
   };
 
   return (
     <Screen showSecurityFooter>
       <ScreenHeader
-        title={t('Aide et support', 'Help and support')}
-        subtitle={t('Règles, transparence et contact', 'Rules, transparency and contact')}
+        title={t('Aide & Support', 'Help & Support')}
+        subtitle={t('Une question ? La Mairie vous répond.', 'A question? The city hall answers.')}
         onBack={() => navigation.goBack()}
       />
 
-      <ListGroup>
-        <ListRow
-          title={t('Comment se passe le tirage ?', 'How does the draw work?')}
-          subtitle={t('Règles, salle d’attente, révélation', 'Rules, waiting room, reveal')}
-          icon="wheel"
-          iconTone="sun"
-          onPress={() => navigation.navigate('HowItWorks')}
-          divider
-        />
-        <ListRow
-          title={t('Contacter la Mairie', 'Contact the city hall')}
-          subtitle={SUPPORT_EMAIL}
-          icon="envelope"
-          iconTone="lavender"
-          onPress={openMail}
-          divider
-        />
-        <ListRow
-          title={t('Mes notifications', 'My notifications')}
-          icon="bell"
-          iconTone="mint"
-          onPress={() => navigation.navigate('Notifications')}
-        />
-      </ListGroup>
-
       <SectionHeader
-        title={
-          language === 'FR' && charter?.title
-            ? charter.title
-            : t('Charte de transparence', 'Transparency charter')
-        }
-        right={
-          charter?.version ? (
-            <Pill label={`v${charter.version}`} tone="surface" uppercase={false} />
-          ) : undefined
-        }
-      />
-
-      {isLoading ? (
-        <Loader message={t('Chargement de la charte...', 'Loading the charter...')} />
-      ) : (
-        <View style={styles.sections}>
-          {sections.map((section, index) => (
-            <Card key={section.heading} tone={tones[index % tones.length]}>
-              <AppText size={14} weight="bold">
-                {section.heading}
-              </AppText>
-              <AppText size={12} color={colors.ink} style={styles.body}>
-                {section.body}
-              </AppText>
-            </Card>
-          ))}
-        </View>
-      )}
-
-      <AppText size={11} color={colors.inkMuted} align="center" style={styles.footnote}>
-        {t(
-          'BlockLucky est un jeu citoyen gratuit de la Ville d’EtherBay. Aucun argent réel n’est engagé.',
-          'BlockLucky is a free civic game by the City of EtherBay. No real money is involved.',
+        title={t('Écrire à un administrateur', 'Write to an administrator')}
+        subtitle={t(
+          'La réponse arrive sur l’adresse e-mail de votre compte.',
+          'The answer is sent to your account e-mail address.',
         )}
-      </AppText>
+        style={styles.firstSection}
+      />
+      <Card>
+        <AppInput
+          label={t('Objet', 'Subject')}
+          value={subject}
+          onChangeText={setSubject}
+          errorText={errors.subject}
+          tone="muted"
+          maxLength={SUBJECT_MAX}
+          placeholder={t('Ex. : problème avec mon ticket', 'E.g. issue with my ticket')}
+        />
+        <AppInput
+          label={t('Message', 'Message')}
+          value={message}
+          onChangeText={setMessage}
+          errorText={errors.message}
+          tone="muted"
+          multiline
+          maxLength={MESSAGE_MAX}
+          placeholder={t('Décrivez votre demande', 'Describe your request')}
+          style={styles.messageField}
+        />
+        <AppText size={10} color={colors.inkMuted} align="right" style={styles.counter}>
+          {`${message.length}/${MESSAGE_MAX}`}
+        </AppText>
+        {errors.form ? (
+          <AppText
+            size={12}
+            color={colors.terracotta}
+            style={styles.formError}
+            accessibilityRole="alert"
+          >
+            {errors.form}
+          </AppText>
+        ) : null}
+        <AppButton
+          title={t('Envoyer le message', 'Send the message')}
+          variant="dark"
+          size="md"
+          rightIcon="arrowSend"
+          align="space-between"
+          loading={isLoading}
+          onPress={handleSend}
+        />
+      </Card>
+
+      <SectionHeader title={t('Centre d’aide', 'Help Center')} />
+      <Card
+        onPress={HELP_CENTER_URL ? openHelpCenter : undefined}
+        accessibilityLabel={t('Centre d’aide', 'Help Center')}
+      >
+        <View style={styles.helpRow}>
+          <View style={[styles.iconBox, { backgroundColor: colors.lavender }]}>
+            <Icon name="help" size={20} color={colors.violet} />
+          </View>
+          <View style={styles.flex}>
+            <AppText size={15} weight="bold">
+              {t('Centre d’aide BlockLucky', 'BlockLucky Help Center')}
+            </AppText>
+            <AppText size={11} color={colors.inkMuted}>
+              {t('Guides, questions fréquentes et tutoriels', 'Guides, FAQ and tutorials')}
+            </AppText>
+          </View>
+          {HELP_CENTER_URL ? (
+            <Icon name="arrowRight" size={22} color={colors.ink} />
+          ) : (
+            <Pill label={t('Bientôt', 'Soon')} tone="sunSoft" uppercase={false} />
+          )}
+        </View>
+      </Card>
+
+      <ResultDialog
+        visible={sent}
+        status="success"
+        title={t('Message envoyé', 'Message sent')}
+        message={t(
+          'Un administrateur de la Mairie vous répondra par e-mail.',
+          'A city hall administrator will reply by e-mail.',
+        )}
+        primaryLabel={t('Fermer', 'Close')}
+        onPrimary={() => setSent(false)}
+      />
     </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  sections: {
-    gap: 12,
-  },
-  body: {
+  firstSection: {
     marginTop: 6,
-    lineHeight: 18,
   },
-  footnote: {
-    marginTop: 20,
+  messageField: {
+    minHeight: 120,
+    textAlignVertical: 'top',
+    paddingTop: 12,
+  },
+  counter: {
+    marginTop: -8,
+    marginBottom: 12,
+  },
+  formError: {
+    marginBottom: 12,
+  },
+  helpRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  iconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flex: {
+    flex: 1,
+    gap: 2,
   },
 });
 

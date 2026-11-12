@@ -6,7 +6,7 @@ Le backend sort de la requête HTTP les traitements lents ou à risque : envoi d
 
 | Traitement | Type | Producteur | Consommateur | Concurrence |
 |---|---|---|---|---|
-| `emails-queue` | file BullMQ | `enqueueEmail` (auth, boutique, RGPD) | [`backend/src/workers/email.worker.ts`](src:backend/src/workers/email.worker.ts) | `WORKER_CONCURRENCY` (5) |
+| `emails-queue` | file BullMQ | `enqueueEmail` (auth, boutique, RGPD, support) | [`backend/src/workers/email.worker.ts`](src:backend/src/workers/email.worker.ts) | `WORKER_CONCURRENCY` (5) |
 | `ledger-queue` | file BullMQ | `enqueueLedgerTransaction`, jamais appelée | [`backend/src/workers/ledger.worker.ts`](src:backend/src/workers/ledger.worker.ts) | 1 |
 | `chain-actions` | file BullMQ | `enqueueChainAction` (indexeur) | `startChainActionsWorker` de [`backend/src/blockchain/chain-actions.ts`](src:backend/src/blockchain/chain-actions.ts) | 1 |
 | Indexeur | boucle `setInterval` | aucun | `lotteryIndexer.syncOnce` | 1, garde `syncing` |
@@ -41,6 +41,8 @@ await enqueueEmail({
 ```
 
 Le producteur ajoute un job `send-email` et renvoie `{ queued: true, jobId }`. Si la file n'existe pas ou si l'ajout échoue, l'email est envoyé immédiatement dans la requête et la fonction renvoie `{ queued: false }`. Le worker vérifie que `to` et `templateName` sont présents (sinon `UnrecoverableError`) puis appelle `emailService.sendTemplateEmail`.
+
+Le job accepte un champ facultatif `replyTo`, transmis à Nodemailer comme adresse de réponse. Seul le message au support (`POST /user/support`) le renseigne, avec l'email du citoyen.
 
 > [!WARNING]
 > `sendTemplateEmail` ne lève pas d'erreur quand le serveur SMTP refuse le message : elle journalise un avertissement et renvoie `false`. Le job est alors marqué terminé, sans nouvelle tentative. Les 5 tentatives ne couvrent en pratique que les erreurs inattendues. Un code de connexion peut donc être perdu sans trace autre qu'une ligne `warn` contenant « Mode simulation d'envoi d.email ».

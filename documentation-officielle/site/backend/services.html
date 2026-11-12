@@ -116,7 +116,7 @@
 <td>vrai si le jeton a été émis il y a moins de 15 minutes</td>
 </tr>
 </tbody></table></div>
-<p><code>revokeAllForUser</code> est appelé à l&#39;activation d&#39;une 2FA, à la déconnexion de tous les appareils et à la confirmation d&#39;une suppression RGPD. La marge d&#39;une seconde garantit que le jeton émis juste après, dans la même requête, reste valable. Si un compte reste inactif plus de 30 jours, la clé expire, mais tous les jetons antérieurs ont expiré depuis longtemps.</p>
+<p><code>revokeAllForUser</code> est appelé à l&#39;activation d&#39;une 2FA, à la déconnexion de tous les appareils, à la réinitialisation ou au changement du mot de passe et à la confirmation d&#39;une suppression RGPD. La marge d&#39;une seconde garantit que le jeton émis juste après, dans la même requête, reste valable. Si un compte reste inactif plus de 30 jours, la clé expire, mais tous les jetons antérieurs ont expiré depuis longtemps.</p>
 <h2 id="otpchallengeservice"><a class="anchor" href="#otpchallengeservice" aria-hidden="true" tabindex="-1">#</a>otpChallengeService</h2>
 <p>Gère les codes à 6 chiffres envoyés par email, le compteur d&#39;échecs par compte et l&#39;anti-rejeu des codes TOTP. Tout est stocké dans Redis.</p>
 <div class="table-wrap"><table>
@@ -260,7 +260,7 @@
 <tbody><tr>
 <td><code>otp-code</code></td>
 <td><code>CODE</code>, <code>EXPIRES_MINUTES</code></td>
-<td>connexion, inscription, activation de la 2FA par email, réinitialisation du mot de passe</td>
+<td>connexion, inscription, activation de la 2FA par email, réinitialisation du mot de passe, confirmation d&#39;une nouvelle adresse email</td>
 </tr>
 <tr>
 <td><code>welcome</code></td>
@@ -270,7 +270,7 @@
 <tr>
 <td><code>security-alert</code></td>
 <td><code>EVENT</code>, <code>DATE</code></td>
-<td>activation ou désactivation de la 2FA, utilisation d&#39;un code de secours, mot de passe réinitialisé ou défini</td>
+<td>activation ou désactivation de la 2FA, utilisation d&#39;un code de secours, mot de passe réinitialisé, défini ou modifié, adresse email remplacée (envoyée à l&#39;ancienne adresse)</td>
 </tr>
 <tr>
 <td><code>reward-claim</code></td>
@@ -287,8 +287,13 @@
 <td><code>CONFIRM_URL</code>, <code>TOKEN</code></td>
 <td>demande de suppression RGPD</td>
 </tr>
+<tr>
+<td><code>support-request</code></td>
+<td><code>USER_ID</code>, <code>EMAIL</code>, <code>FIRST_NAME</code>, <code>LAST_NAME</code>, <code>SUBJECT</code>, <code>MESSAGE</code>, <code>DATE</code></td>
+<td>message au support, envoyé à <code>SUPPORT_EMAIL</code> avec l&#39;email du citoyen en adresse de réponse</td>
+</tr>
 </tbody></table></div>
-<p>Les gabarits sont dans <code>backend/src/templates/emails/</code>. Chaque <code>{{VARIABLE}}</code> est remplacée par sa valeur échappée pour HTML. Si le fichier est introuvable, le corps se réduit aux variables en JSON. <code>npm run compile</code> copie le dossier dans <code>dist/src/templates</code>.</p>
+<p>Les gabarits sont dans <code>backend/src/templates/emails/</code>. Chaque <code>{{VARIABLE}}</code> est remplacée par sa valeur échappée pour HTML. Si le fichier est introuvable, le corps se réduit aux variables en JSON. Un quatrième argument facultatif, <code>{ replyTo }</code>, ajoute une adresse de réponse au message. <code>npm run compile</code> copie le dossier dans <code>dist/src/templates</code>.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>

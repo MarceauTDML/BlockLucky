@@ -76,8 +76,12 @@
 <td>Envoi de la pièce d&#39;identité</td>
 </tr>
 <tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/ChangeEmailScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/settings/ChangeEmailScreen.tsx</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/ChangePasswordScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ChangePasswordScreen.tsx</code></a></td>
+<td>Changement d&#39;adresse email et de mot de passe depuis les paramètres</td>
+</tr>
+<tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useAuth.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/hooks/useAuth.ts</code></a></td>
-<td>Connexion, inscription, vérification, déconnexion</td>
+<td>Connexion, inscription, vérification, mise à jour du profil local, session renouvelée, déconnexion</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/services/secureStorage.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/services/secureStorage.ts</code></a></td>
@@ -281,7 +285,17 @@
 </tr>
 </tbody></table></div>
 <p>La confirmation appelle <code>verifyOtpCode(user.id, code)</code>. Le backend active la 2FA, révoque les autres sessions et renvoie un nouveau jeton, que l&#39;application enregistre.</p>
-<p><code>SecurityScreen</code> affiche l&#39;état de la 2FA, mène à <code>Setup2FA</code> et permet de la désactiver avec un code. Le champ peut rester vide si la session a moins de 15 minutes, seule situation où le backend accepte une désactivation sans code.</p>
+<p><code>SecurityScreen</code> affiche d&#39;abord deux lignes « Connexion » : l&#39;adresse email, qui mène à <code>ChangeEmail</code>, et le mot de passe, qui mène à <code>ChangePassword</code>. Il affiche ensuite l&#39;état de la 2FA, mène à <code>Setup2FA</code> pour l&#39;activer ou la reconfigurer et permet de la désactiver avec un code. Le champ peut rester vide si la session a moins de 15 minutes, seule situation où le backend accepte une désactivation sans code.</p>
+<h2 id="email-et-mot-de-passe-du-compte"><a class="anchor" href="#email-et-mot-de-passe-du-compte" aria-hidden="true" tabindex="-1">#</a>Email et mot de passe du compte</h2>
+<p>Ces deux écrans de la pile racine sont ouverts depuis Paramètres, puis Sécurité.</p>
+<p><strong>Changer d&#39;adresse email.</strong> <code>ChangeEmailScreen</code> se déroule en deux étapes :</p>
+<ol>
+<li>le citoyen saisit la nouvelle adresse et, si le compte a un mot de passe (<code>hasPassword</code>), son mot de passe actuel ; l&#39;écran refuse une adresse mal formée ou identique à l&#39;actuelle, puis appelle <code>requestEmailChange</code> (<code>POST /auth/email/change</code>) ;</li>
+<li>il saisit le code à 6 chiffres reçu sur la nouvelle adresse (en développement, <code>DevOtpHint</code> propose <code>devOtpPreview</code>) ; <code>confirmEmailChange</code> (<code>POST /auth/email/confirm</code>) renvoie l&#39;adresse enregistrée, que <code>patchUser</code> reporte dans le slice <code>auth</code> et dans le stockage sécurisé.</li>
+</ol>
+<p>Un bouton permet de revenir à la première étape pour corriger l&#39;adresse. L&#39;ancienne adresse reçoit une alerte de sécurité ; la session en cours reste valable.</p>
+<p><strong>Créer ou changer le mot de passe.</strong> <code>ChangePasswordScreen</code> demande le mot de passe actuel seulement si le compte en a un ; un compte créé avec Google ou Apple peut ainsi définir un premier mot de passe. Le nouveau mot de passe suit les règles affichées par <code>PasswordRules</code> et doit être saisi deux fois. <code>changePassword</code> (<code>POST /auth/password/change</code>) révoque toutes les sessions du compte et renvoie une nouvelle session, comme une connexion. <code>applyRenewedSession</code> de <code>useAuth</code> enregistre le nouveau jeton et le profil (avec <code>hasPassword</code> à vrai) dans SecureStore puis dispatche <code>setCredentials</code> : l&#39;appareil reste connecté, les autres sont déconnectés.</p>
+<p><code>patchUser(patch)</code> fusionne un profil partiel dans le slice (<code>updateUserProfile</code>) et dans <code>blocklucky_user_profile</code>. Il sert aussi à l&#39;écran Données personnelles après l&#39;enregistrement du prénom et du nom.</p>
 <h2 id="stockage-securise"><a class="anchor" href="#stockage-securise" aria-hidden="true" tabindex="-1">#</a>Stockage sécurisé</h2>
 <p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/services/secureStorage.ts" class="external" target="_blank" rel="noopener noreferrer"><code>secureStorage.ts</code></a> gère deux entrées :</p>
 <div class="table-wrap"><table>
@@ -338,7 +352,7 @@
 </ul>
 <p>Pour restaurer la session, il faudrait, au montage de <code>App</code>, lire le jeton et le profil, dispatcher <code>setCredentials</code>, puis valider le jeton par <code>GET /user/profile</code>.</p>
 <h2 id="expiration-et-erreurs-401"><a class="anchor" href="#expiration-et-erreurs-401" aria-hidden="true" tabindex="-1">#</a>Expiration et erreurs 401</h2>
-<p>Le <code>baseApi</code> mobile n&#39;a pas de garde 401 : un jeton expiré ou révoqué n&#39;entraîne pas de déconnexion. Les écrans connectés affichent alors des erreurs ou des données vides jusqu&#39;à ce que l&#39;utilisateur se déconnecte lui-même. C&#39;est aussi le cas après une réinitialisation du mot de passe depuis un autre appareil, qui révoque toutes les sessions. Le web, lui, efface la session à la première réponse 401 (voir <a href="../web/etat-api.html#le-client-de-base">État et appels API du web</a>).</p>
+<p>Le <code>baseApi</code> mobile n&#39;a pas de garde 401 : un jeton expiré ou révoqué n&#39;entraîne pas de déconnexion. Les écrans connectés affichent alors des erreurs ou des données vides jusqu&#39;à ce que l&#39;utilisateur se déconnecte lui-même. C&#39;est aussi le cas après une réinitialisation ou un changement du mot de passe depuis un autre appareil, qui révoque toutes les sessions. Le web, lui, efface la session à la première réponse 401 (voir <a href="../web/etat-api.html#le-client-de-base">État et appels API du web</a>).</p>
 <h2 id="deconnexion"><a class="anchor" href="#deconnexion" aria-hidden="true" tabindex="-1">#</a>Déconnexion</h2>
 <p><code>useAuth</code> expose <code>signOut</code> et <code>signOutEverywhere</code>, qui appellent <code>endSession(allDevices)</code> :</p>
 <ol>
@@ -363,7 +377,7 @@
 <td><code>signOut</code></td>
 </tr>
 <tr>
-<td>« Déconnecter tous les appareils » dans la sécurité, après confirmation</td>
+<td>Aucun écran depuis le retrait du bloc « Compte et appareils » de la sécurité</td>
 <td><code>signOutEverywhere</code></td>
 </tr>
 </tbody></table></div>
@@ -420,7 +434,12 @@
 <tr>
 <td>Déconnecter tous les appareils</td>
 <td>Bouton dans la sécurité</td>
-<td>Bouton dans la sécurité</td>
+<td>Aucun bouton ; un changement de mot de passe déconnecte les autres appareils</td>
+</tr>
+<tr>
+<td>Changer d&#39;adresse email ou de mot de passe</td>
+<td>Non</td>
+<td>Oui, dans Paramètres, puis Sécurité</td>
 </tr>
 <tr>
 <td>Fermeture du socket à la déconnexion</td>
@@ -437,7 +456,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#parcours-de-connexion">Parcours de connexion</a></li><li class="toc-h2"><a href="#creation-de-compte">Création de compte</a></li><li class="toc-h2"><a href="#verification-du-code">Vérification du code</a></li><li class="toc-h2"><a href="#mot-de-passe-oublie">Mot de passe oublié</a></li><li class="toc-h2"><a href="#google-et-apple">Google et Apple</a></li><li class="toc-h2"><a href="#verification-d-age">Vérification d&#39;âge</a></li><li class="toc-h2"><a href="#2fa">2FA</a></li><li class="toc-h2"><a href="#stockage-securise">Stockage sécurisé</a></li><li class="toc-h2"><a href="#session-au-demarrage">Session au démarrage</a></li><li class="toc-h2"><a href="#expiration-et-erreurs-401">Expiration et erreurs 401</a></li><li class="toc-h2"><a href="#deconnexion">Déconnexion</a></li><li class="toc-h2"><a href="#comparaison-avec-le-web">Comparaison avec le web</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#parcours-de-connexion">Parcours de connexion</a></li><li class="toc-h2"><a href="#creation-de-compte">Création de compte</a></li><li class="toc-h2"><a href="#verification-du-code">Vérification du code</a></li><li class="toc-h2"><a href="#mot-de-passe-oublie">Mot de passe oublié</a></li><li class="toc-h2"><a href="#google-et-apple">Google et Apple</a></li><li class="toc-h2"><a href="#verification-d-age">Vérification d&#39;âge</a></li><li class="toc-h2"><a href="#2fa">2FA</a></li><li class="toc-h2"><a href="#email-et-mot-de-passe-du-compte">Email et mot de passe du compte</a></li><li class="toc-h2"><a href="#stockage-securise">Stockage sécurisé</a></li><li class="toc-h2"><a href="#session-au-demarrage">Session au démarrage</a></li><li class="toc-h2"><a href="#expiration-et-erreurs-401">Expiration et erreurs 401</a></li><li class="toc-h2"><a href="#deconnexion">Déconnexion</a></li><li class="toc-h2"><a href="#comparaison-avec-le-web">Comparaison avec le web</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

@@ -1,6 +1,6 @@
 # Ajouter un écran mobile
 
-L'application mobile ([`mobile-app/`](src:mobile-app/)) est une application Expo SDK 58 en React Native, avec React Navigation 7 et RTK Query. Ce guide ajoute un écran « Historique des tirages » qui consomme la route `GET /api/v1/lottery/rounds` créée dans [Ajouter un endpoint](ajouter-endpoint.md), et l'ouvre depuis l'écran « Aide et charte ».
+L'application mobile ([`mobile-app/`](src:mobile-app/)) est une application Expo SDK 58 en React Native, avec React Navigation 7 et RTK Query. Ce guide ajoute un écran « Historique des tirages » qui consomme la route `GET /api/v1/lottery/rounds` créée dans [Ajouter un endpoint](ajouter-endpoint.md), et l'ouvre depuis l'écran « Comment ça marche ».
 
 ## Fichiers à toucher
 
@@ -11,7 +11,7 @@ L'application mobile ([`mobile-app/`](src:mobile-app/)) est une application Expo
 | [`mobile-app/src/types/navigation.types.ts`](src:mobile-app/src/types/navigation.types.ts) | Nom et paramètres de la route |
 | `mobile-app/src/screens/lottery/RoundHistoryScreen.tsx` | L'écran |
 | [`mobile-app/src/navigation/RootNavigator.tsx`](src:mobile-app/src/navigation/RootNavigator.tsx) | Enregistrement de l'écran |
-| [`mobile-app/src/screens/settings/HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx) | Bouton d'accès |
+| [`mobile-app/src/screens/lottery/HowItWorksScreen.tsx`](src:mobile-app/src/screens/lottery/HowItWorksScreen.tsx) | Bouton d'accès |
 
 ## Choisir le navigateur
 
@@ -21,7 +21,7 @@ La navigation est imbriquée :
 flowchart TD
     R["RootNavigator, pile racine"] -->|"non connecté"| A["AuthStack : Onboarding, SignIn, SignUp, Verify2FA, ForgotPassword, ResetPassword, Setup2FA"]
     R -->|"connecté"| M["MainTabs, quatre onglets"]
-    R --> P["Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, Security, Setup2FA, GDPR, HelpSupport"]
+    R --> P["Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, DisplaySettings, NotificationSettings, PersonalData, Security, ChangeEmail, ChangePassword, Setup2FA, HelpSupport"]
     M --> T1["HomeTab"]
     M --> T2["TicketsTab"]
     M --> T3["SponsorsTab"]
@@ -34,7 +34,7 @@ flowchart TD
 | Écran plein écran, accessible de partout une fois connecté | [`RootNavigator.tsx`](src:mobile-app/src/navigation/RootNavigator.tsx) | `RootStackParamList` | `useRootNavigation` |
 | Écran avant connexion | [`AuthStack.tsx`](src:mobile-app/src/navigation/AuthStack.tsx) | `AuthStackParamList` | `useAuthNavigation` |
 
-Les réglages n'ont plus de pile propre : `Settings`, `Security`, `GDPR` et `HelpSupport` sont des écrans de la pile racine, sans barre d'onglets. L'historique des tirages va donc aussi dans la pile racine, comme `TransactionHistory`. Les écrans de la pile racine ne sont montés que si l'utilisateur est connecté (`isAuthenticated` de `useAuth`). Les deux hooks viennent de [`navigation/hooks.ts`](src:mobile-app/src/navigation/hooks.ts).
+Les réglages n'ont pas de pile propre : `Settings` et ses écrans (`DisplaySettings`, `NotificationSettings`, `PersonalData`, `Security`, `ChangeEmail`, `ChangePassword`, `HelpSupport`) sont des écrans de la pile racine, sans barre d'onglets ; on y entre par la roue dentée de l'en-tête (`HeaderActions`). L'historique des tirages va donc aussi dans la pile racine, comme `TransactionHistory`. Les écrans de la pile racine ne sont montés que si l'utilisateur est connecté (`isAuthenticated` de `useAuth`). Les deux hooks viennent de [`navigation/hooks.ts`](src:mobile-app/src/navigation/hooks.ts).
 
 ## 1. Typer la réponse et déclarer l'appel
 
@@ -160,7 +160,7 @@ TypeScript refuse un `name` absent de `RootStackParamList` : l'étape 2 est obli
 
 ## 5. Ouvrir l'écran
 
-Dans [`HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx), écran de la pile racine, ajouter une ligne au groupe existant :
+Dans [`HowItWorksScreen.tsx`](src:mobile-app/src/screens/lottery/HowItWorksScreen.tsx), écran de la pile racine ouvert depuis la carte « Comment se passe le tirage ? » de l'accueil, ajouter une ligne dans la carte de la charte, à côté de « Voir le Smart Contract » :
 
 ```typescript
 <ListRow
@@ -189,14 +189,14 @@ Ce sont les trois contrôles du job `mobile` de la CI. Le projet n'a pas de scri
 npm start
 ```
 
-Ouvrir l'application dans Expo Go, se connecter avec un compte du seed, aller dans Profil, puis « Aide et support », puis « Historique des tirages ». Sur un téléphone physique, l'API doit être joignable : remplacer `localhost` par l'adresse IP locale du poste dans `mobile-app/.env` (voir [Tester sur un téléphone](../mobile/telephone-physique.md)).
+Ouvrir l'application dans Expo Go, se connecter avec un compte du seed, toucher la carte « Comment se passe le tirage ? » de l'accueil, puis « Historique des tirages ». Sur un téléphone physique, l'API doit être joignable : remplacer `localhost` par l'adresse IP locale du poste dans `mobile-app/.env` (voir [Tester sur un téléphone](../mobile/telephone-physique.md)).
 
 À vérifier sur l'appareil :
 
 | Point | Comment |
 | --- | --- |
-| Thème sombre | Activer « Mode sombre » dans Profil, puis Paramètres : l'application ne suit pas le thème du système |
-| Anglais | Changer la langue dans Profil, puis Paramètres |
+| Thème sombre | Choisir « Sombre » dans Paramètres (roue dentée de l'en-tête), puis Affichage : l'application ne suit pas le thème du système |
+| Anglais | Choisir « English » dans Paramètres, puis Affichage |
 | Lecteur d'écran | VoiceOver ou TalkBack : chaque carte se lit dans l'ordre |
 | Petit écran | Le contenu défile, rien n'est coupé par l'encoche ni par la barre d'onglets |
 | Hors connexion | Mode avion : l'écran affiche le message d'erreur, sans plantage |

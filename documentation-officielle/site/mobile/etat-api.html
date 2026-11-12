@@ -170,7 +170,7 @@
 <p>RTK Query ne rafraîchit pas les données au retour de l&#39;application au premier plan, faute d&#39;appel à <code>setupListeners</code>. Les intervalles de rafraîchissement s&#39;arrêtent quand l&#39;écran est démonté.</p>
 <h2 id="endpoints-par-fichier"><a class="anchor" href="#endpoints-par-fichier" aria-hidden="true" tabindex="-1">#</a>Endpoints par fichier</h2>
 <h3 id="authapi"><a class="anchor" href="#authapi" aria-hidden="true" tabindex="-1">#</a>authApi</h3>
-<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/api/authApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/api/authApi.ts</code></a> déclare 23 endpoints :</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/store/api/authApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/store/api/authApi.ts</code></a> déclare 28 endpoints :</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -183,6 +183,11 @@
 <td>Connexion et compte</td>
 <td><code>signIn</code>, <code>signUp</code>, <code>googleSignIn</code>, <code>appleSignIn</code>, <code>forgotPassword</code>, <code>resetPassword</code></td>
 <td><code>POST /auth/signin</code>, <code>/auth/signup</code>, <code>/auth/oauth/google</code>, <code>/auth/oauth/apple</code>, <code>/auth/password/forgot</code>, <code>/auth/password/reset</code></td>
+</tr>
+<tr>
+<td>Email et mot de passe du compte connecté</td>
+<td><code>requestEmailChange</code>, <code>confirmEmailChange</code>, <code>changePassword</code></td>
+<td><code>POST /auth/email/change</code>, <code>/auth/email/confirm</code>, <code>/auth/password/change</code></td>
 </tr>
 <tr>
 <td>Double authentification</td>
@@ -198,6 +203,11 @@
 <td>Profil et parrainage</td>
 <td><code>getProfile</code>, <code>getReferrals</code>, <code>getQuests</code>, <code>completeQuest</code>, <code>setResponsibleLimit</code>, <code>updatePreferences</code>, <code>getNotifications</code></td>
 <td>Routes <code>/user/*</code></td>
+</tr>
+<tr>
+<td>Paramètres</td>
+<td><code>updateProfileNames</code>, <code>sendSupportMessage</code></td>
+<td><code>PATCH /user/profile</code>, <code>POST /user/support</code></td>
 </tr>
 <tr>
 <td>RGPD</td>
@@ -225,6 +235,18 @@
 <tr>
 <td><code>getOnboarding</code>, <code>setResponsibleLimit</code></td>
 <td>Déclarés mais jamais appelés : l&#39;introduction est codée en dur et aucun écran ne propose plus le plafond de jeu responsable</td>
+</tr>
+<tr>
+<td><code>updatePreferences</code></td>
+<td>Accepte <code>theme</code>, <code>language</code>, <code>pushNotificationsEnabled</code> et <code>notifications</code> (objet partiel <code>drawReminders</code>, <code>results</code>, <code>rewards</code>, <code>referrals</code>) ; renvoie les préférences complètes</td>
+</tr>
+<tr>
+<td><code>changePassword</code></td>
+<td>Renvoie une nouvelle session comme <code>signIn</code> ; l&#39;écran la passe à <code>applyRenewedSession</code> de <code>useAuth</code>, qui enregistre le nouveau jeton</td>
+</tr>
+<tr>
+<td><code>updateProfileNames</code>, <code>confirmEmailChange</code></td>
+<td>La réponse est reportée dans le slice et le stockage sécurisé par <code>patchUser</code> de <code>useAuth</code></td>
 </tr>
 <tr>
 <td><code>exportGdprData</code></td>

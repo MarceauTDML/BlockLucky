@@ -2,14 +2,12 @@ import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import IdentityCard from '../../components/profile/IdentityCard';
-import ListGroup from '../../components/profile/ListGroup';
 import SummaryTiles, { SummaryTile } from '../../components/profile/SummaryTiles';
 import TabTitle from '../../components/profile/TabTitle';
 import { readAgeStatus } from '../../components/profile/ageStatus';
 import AppButton from '../../components/ui/AppButton';
 import AppText from '../../components/ui/AppText';
 import Card, { CardTone } from '../../components/ui/Card';
-import ListRow from '../../components/ui/ListRow';
 import ResultDialog from '../../components/ui/ResultDialog';
 import Screen from '../../components/ui/Screen';
 import SectionHeader from '../../components/ui/SectionHeader';
@@ -20,7 +18,6 @@ import usePoints from '../../hooks/usePoints';
 import { useRootNavigation } from '../../navigation/hooks';
 import { useGetProfileQuery } from '../../store/api/authApi';
 import { useGetWalletQuery } from '../../store/api/lotteryApi';
-import { RootStackParamList } from '../../types/navigation.types';
 
 type ShortcutRoute = 'MyCodes' | 'RewardsCatalog' | 'TransactionHistory';
 
@@ -105,38 +102,6 @@ export const ProfileScreen: React.FC = () => {
     },
   ];
 
-  const navigationRows: {
-    route: keyof Pick<RootStackParamList, 'Settings' | 'Security' | 'GDPR' | 'HelpSupport'>;
-    title: string;
-    subtitle: string;
-    icon: IconName;
-  }[] = [
-    {
-      route: 'Settings',
-      title: t('Paramètres', 'Settings'),
-      subtitle: t('Thème, langue, notifications', 'Theme, language, notifications'),
-      icon: 'settings',
-    },
-    {
-      route: 'Security',
-      title: t('Sécurité', 'Security'),
-      subtitle: t('Double authentification, appareils', 'Two-factor, devices'),
-      icon: 'shield',
-    },
-    {
-      route: 'GDPR',
-      title: t('Données personnelles', 'Personal data'),
-      subtitle: t('Export et suppression du compte', 'Export and account deletion'),
-      icon: 'lock',
-    },
-    {
-      route: 'HelpSupport',
-      title: t('Aide et support', 'Help and support'),
-      subtitle: t('Charte de transparence, contact', 'Transparency charter, contact'),
-      icon: 'help',
-    },
-  ];
-
   return (
     <Screen
       refreshing={isFetchingProfile}
@@ -187,20 +152,6 @@ export const ProfileScreen: React.FC = () => {
           </Card>
         ))}
       </View>
-
-      <SectionHeader title={t('Mon compte', 'My account')} />
-      <ListGroup>
-        {navigationRows.map((row, index) => (
-          <ListRow
-            key={row.route}
-            title={row.title}
-            subtitle={row.subtitle}
-            icon={row.icon}
-            divider={index < navigationRows.length - 1}
-            onPress={() => navigation.navigate(row.route)}
-          />
-        ))}
-      </ListGroup>
 
       <AppButton
         title={t('Se déconnecter', 'Sign out')}

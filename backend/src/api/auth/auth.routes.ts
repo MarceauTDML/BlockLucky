@@ -15,6 +15,9 @@ import {
   resetPasswordSchema,
   googleOAuthSchema,
   appleOAuthSchema,
+  emailChangeRequestSchema,
+  emailChangeConfirmSchema,
+  changePasswordSchema,
 } from './auth.validators';
 
 const router = Router();
@@ -73,6 +76,51 @@ router.post(
   authRateLimiter,
   validate(resetPasswordSchema),
   (req, res, next) => authController.resetPassword(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/auth/password/change:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Modifier son mot de passe (mot de passe actuel exigé s'il en existe un, sinon définition d'un premier mot de passe), révoquer toutes les sessions et recevoir une nouvelle session
+ */
+router.post(
+  '/password/change',
+  authRateLimiter,
+  authenticate,
+  validate(changePasswordSchema),
+  (req, res, next) => authController.changePassword(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/auth/email/change:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Demander le changement d'adresse email (mot de passe exigé s'il en existe un) et recevoir un code à 6 chiffres sur la nouvelle adresse
+ */
+router.post(
+  '/email/change',
+  authRateLimiter,
+  authenticate,
+  validate(emailChangeRequestSchema),
+  (req, res, next) => authController.requestEmailChange(req, res, next)
+);
+
+/**
+ * @openapi
+ * /api/auth/email/confirm:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Confirmer la nouvelle adresse email avec le code reçu, puis prévenir l'ancienne adresse
+ */
+router.post(
+  '/email/confirm',
+  authRateLimiter,
+  authenticate,
+  validate(emailChangeConfirmSchema),
+  (req, res, next) => authController.confirmEmailChange(req, res, next)
 );
 
 /**

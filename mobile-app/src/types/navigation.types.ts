@@ -48,8 +48,12 @@ export type RootStackParamList = {
   MyCodes: undefined;
   VerifyAge: undefined;
   Settings: undefined;
+  DisplaySettings: undefined;
+  NotificationSettings: undefined;
+  PersonalData: undefined;
   Security: undefined;
+  ChangeEmail: undefined;
+  ChangePassword: undefined;
   Setup2FA: undefined;
-  GDPR: undefined;
   HelpSupport: undefined;
 };

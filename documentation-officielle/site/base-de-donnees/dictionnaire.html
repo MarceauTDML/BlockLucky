@@ -159,6 +159,22 @@
 <td>Empreinte bcrypt (coût 12) du mot de passe. <code>NULL</code> pour un compte sans mot de passe (connexion par code email, Google ou Apple) et après effacement RGPD.</td>
 </tr>
 <tr>
+<td><code>firstName</code></td>
+<td>String</td>
+<td>non</td>
+<td>-</td>
+<td>-</td>
+<td>Prénom saisi par le citoyen dans l&#39;espace Paramètres : 50 caractères au plus, lettres (accents compris), espaces, traits d&#39;union et apostrophes. <code>NULL</code> tant qu&#39;il n&#39;est pas renseigné, après effacement par une chaîne vide et après effacement RGPD.</td>
+</tr>
+<tr>
+<td><code>lastName</code></td>
+<td>String</td>
+<td>non</td>
+<td>-</td>
+<td>-</td>
+<td>Nom de famille saisi par le citoyen dans l&#39;espace Paramètres, avec les mêmes règles que <code>firstName</code>. <code>NULL</code> tant qu&#39;il n&#39;est pas renseigné, après effacement par une chaîne vide et après effacement RGPD.</td>
+</tr>
+<tr>
 <td><code>role</code></td>
 <td>énumération Role</td>
 <td>oui</td>

@@ -57,6 +57,7 @@ const envSchema = z
     SMTP_USER: z.string().default(''),
     SMTP_PASS: z.string().default(''),
     SMTP_FROM: z.string().default('EtherBay Lottery <noreply@etherbay.fr>'),
+    SUPPORT_EMAIL: z.string().email().default('support@etherbay.fr'),
     BLOCKCHAIN_MODE: z.enum(['onchain', 'simulated']).default('onchain'),
     RPC_URL: z.string().url().default('http://127.0.0.1:8545'),
     FALLBACK_RPC_URL: z.string().url().default('https://ethereum-sepolia-rpc.publicnode.com'),

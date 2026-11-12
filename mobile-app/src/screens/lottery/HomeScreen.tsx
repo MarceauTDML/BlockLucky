@@ -23,7 +23,7 @@ import AppText from '../../components/ui/AppText';
 import BrandLogo from '../../components/ui/BrandLogo';
 import Card from '../../components/ui/Card';
 import Loader from '../../components/ui/Loader';
-import NotificationButton from '../../components/ui/NotificationButton';
+import HeaderActions from '../../components/ui/HeaderActions';
 import Pill from '../../components/ui/Pill';
 import Screen from '../../components/ui/Screen';
 import SectionHeader from '../../components/ui/SectionHeader';
@@ -175,10 +175,7 @@ export const HomeScreen: React.FC = () => {
     <Screen refreshing={refreshing} onRefresh={onRefresh}>
       <View style={styles.header}>
         <BrandLogo />
-        <NotificationButton
-          hasUnread={unreadCount > 0}
-          onPress={() => navigation.navigate('Notifications')}
-        />
+        <HeaderActions />
       </View>
       <View style={styles.cityRow}>
         <Icon name="location" size={17} color={colors.inkMuted} />

@@ -208,6 +208,22 @@
 <td>oui</td>
 </tr>
 <tr>
+<td><code>POST /api/auth/password/change</code></td>
+<td><code>authRateLimiter</code>, <code>authenticate</code>, mot de passe actuel s&#39;il en existe un</td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/auth/email/change</code>, <code>/email/confirm</code></td>
+<td><code>authRateLimiter</code>, <code>authenticate</code>, mot de passe actuel s&#39;il en existe un, puis code envoyé à la nouvelle adresse</td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
 <td><code>POST /api/auth/oauth/google</code>, <code>/oauth/apple</code></td>
 <td><code>authRateLimiter</code> ; 503 si le fournisseur n&#39;est pas configuré</td>
 <td>oui</td>
@@ -479,8 +495,16 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>GET /api/user/profile</code></td>
+<td><code>GET /api/user/profile</code>, <code>PATCH /api/user/profile</code></td>
 <td><code>authenticate</code></td>
+<td>non</td>
+<td>propre</td>
+<td>propre</td>
+<td>propre</td>
+</tr>
+<tr>
+<td><code>POST /api/user/support</code></td>
+<td><code>authenticate</code>, <code>supportRateLimiter</code> (5 messages par compte et par heure)</td>
 <td>non</td>
 <td>propre</td>
 <td>propre</td>

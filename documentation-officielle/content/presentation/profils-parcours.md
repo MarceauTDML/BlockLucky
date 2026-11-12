@@ -103,8 +103,9 @@ Le livrable liste six états à tester. Le code les traite ainsi :
 | Suivre le tirage en direct | `/tirage` | `WaitingRoomScreen`, `LiveDrawScreen` | Salle d'attente avec compte à rebours jusqu'à la révélation, chat, roue animée, annonce du gagnant |
 | Échanger des EtherPoints | `/boutique`, `/boutique/[rewardId]`, `/boutique/carte`, `/boutique/mes-codes` | `RewardsCatalogScreen`, `RewardDetailScreen`, `ScratchCardScreen`, `MyCodesScreen` | Carte à gratter virtuelle, code promo et QR code à présenter en caisse ; sur mobile, ticket à gratter acheté 50 ou 100 EtherPoints qui tire une offre au hasard |
 | Retirer ses gains | `/accueil` | `LiveDrawScreen` | La cagnotte est versée automatiquement ; un bouton permet de la réclamer si besoin |
-| Gérer sa sécurité | `/profil/securite`, `/profil/securite/2fa` | `SecurityScreen`, `Setup2FAScreen` | 2FA par application TOTP ou par email, sessions ; plafond de jeu responsable sur le web seulement |
-| Exercer ses droits RGPD | `/profil/rgpd` | `GDPRScreen` | Export JSON, demande de suppression confirmée par email |
+| Gérer sa sécurité | `/profil/securite`, `/profil/securite/2fa` | `SecurityScreen`, `ChangeEmailScreen`, `ChangePasswordScreen`, `Setup2FAScreen` | 2FA par application TOTP ou par email ; sur le web, déconnexion de tous les appareils et plafond de jeu responsable ; sur le mobile, changement d'adresse email et de mot de passe |
+| Exercer ses droits RGPD | `/profil/rgpd` | `PersonalDataScreen` | Export JSON, demande de suppression confirmée par email ; sur le mobile, rectification du prénom et du nom |
+| Contacter la Mairie | - | `HelpSupportScreen` | Formulaire transmis par email à un administrateur, qui répond directement au citoyen |
 
 ## Le parcours du commerçant partenaire
 

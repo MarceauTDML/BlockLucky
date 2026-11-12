@@ -11,7 +11,12 @@ export type EmailTemplateName =
   | 'reward-claim'
   | 'welcome'
   | 'security-alert'
-  | 'identity-decision';
+  | 'identity-decision'
+  | 'support-request';
+
+export interface EmailSendOptions {
+  replyTo?: string | undefined;
+}
 
 const escapeHtml = (value: string): string =>
   value.replace(/[&<>"']/g, (char) =>
@@ -37,7 +42,8 @@ export class EmailService {
     to: string,
     subject: string,
     templateName: EmailTemplateName,
-    variables: Record<string, string>
+    variables: Record<string, string>,
+    options: EmailSendOptions = {}
   ): Promise<boolean> {
     const html = this.loadTemplate(templateName, variables);
     if (env.NODE_ENV === 'test') {
@@ -49,6 +55,7 @@ export class EmailService {
         to,
         subject,
         html,
+        ...(options.replyTo ? { replyTo: options.replyTo } : {}),
       });
       logger.info(`Email [${templateName}] envoyé à ${maskEmail(to)}`);
       return true;

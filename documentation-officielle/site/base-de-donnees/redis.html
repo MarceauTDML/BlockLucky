@@ -100,7 +100,7 @@
 </thead>
 <tbody><tr>
 <td><code>auth:otp:&lt;sujet&gt;</code></td>
-<td>JSON du défi : empreinte du code, usage (<code>LOGIN</code>, <code>SIGNUP</code>, <code>SETUP</code>, <code>PASSWORD_RESET</code>), tentatives, échéance, éventuelle inscription en attente avec l&#39;empreinte bcrypt du mot de passe. Le sujet est l&#39;identifiant du compte, un identifiant provisoire d&#39;inscription ou <code>password-reset:&lt;userId&gt;</code></td>
+<td>JSON du défi : empreinte du code, usage (<code>LOGIN</code>, <code>SIGNUP</code>, <code>SETUP</code>, <code>PASSWORD_RESET</code>, <code>EMAIL_CHANGE</code>), tentatives, échéance, éventuelle inscription en attente avec l&#39;empreinte bcrypt du mot de passe. Le sujet est l&#39;identifiant du compte, un identifiant provisoire d&#39;inscription, <code>password-reset:&lt;userId&gt;</code> ou <code>email-change:&lt;userId&gt;</code></td>
 <td>600 s (avec gigue) ; réécrite avec la durée restante après une erreur</td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/otp-challenge.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/otp-challenge.service.ts</code></a></td>
 </tr>
@@ -109,6 +109,12 @@
 <td>Nombre d&#39;erreurs de code ou de mot de passe. Pour une adresse sans compte, le sujet est <code>signin:&lt;HMAC&gt;</code> ou <code>password-reset:&lt;HMAC&gt;</code> de l&#39;adresse</td>
 <td>3 600 s (avec gigue)</td>
 <td>idem</td>
+</tr>
+<tr>
+<td><code>auth:email-change:&lt;userId&gt;</code></td>
+<td>Nouvelle adresse email en attente de confirmation</td>
+<td>600 s (avec gigue)</td>
+<td><code>requestEmailChange</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.services.ts</code></a>, effacée à la confirmation</td>
 </tr>
 <tr>
 <td><code>auth:totp-used:&lt;userId&gt;:&lt;compteur&gt;</code></td>
@@ -124,7 +130,7 @@
 </tr>
 <tr>
 <td><code>auth:revoked-before:&lt;userId&gt;</code></td>
-<td>Horodatage en millisecondes : tout jeton émis avant est révoqué (déconnexion de tous les appareils)</td>
+<td>Horodatage en millisecondes : tout jeton émis avant est révoqué (déconnexion de tous les appareils, changement de mot de passe)</td>
 <td>30 jours (avec gigue)</td>
 <td>idem</td>
 </tr>
@@ -212,9 +218,9 @@
 </tr>
 <tr>
 <td><code>user:prefs:&lt;userId&gt;</code></td>
-<td>JSON des préférences</td>
+<td>JSON des préférences : thème, langue, <code>pushNotificationsEnabled</code> et <code>notifications</code> (quatre catégories)</td>
 <td><code>updatePreferences</code></td>
-<td><code>getProfile</code>, <code>updatePreferences</code></td>
+<td><code>readPreferences</code>, appelé par <code>getProfile</code>, <code>updatePreferences</code> et <code>getPushNotificationsHistory</code></td>
 </tr>
 <tr>
 <td><code>user:quests:&lt;userId&gt;</code></td>
@@ -261,6 +267,11 @@
 <td><code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:ratelimit:identity:&lt;ip&gt;</code></td>
 <td>Ajouté explicitement</td>
 <td>Compteur des envois de pièce d&#39;identité, fenêtre d&#39;une heure, 10 requêtes</td>
+</tr>
+<tr>
+<td><code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:ratelimit:support:user:&lt;userId&gt;</code></td>
+<td>Ajouté explicitement</td>
+<td>Compteur des messages au support, fenêtre d&#39;une heure, 5 requêtes par compte (<code>ip:&lt;ip&gt;</code> sans utilisateur)</td>
 </tr>
 <tr>
 <td>Canal <code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:socket-events</code></td>

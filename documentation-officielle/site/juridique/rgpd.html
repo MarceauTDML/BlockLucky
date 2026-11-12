@@ -75,7 +75,7 @@
 </thead>
 <tbody><tr>
 <td>Identification</td>
-<td>Email, identifiant de compte, empreinte du mot de passe</td>
+<td>Email, identifiant de compte, empreinte du mot de passe, prénom et nom facultatifs</td>
 <td>Table <code>User</code></td>
 </tr>
 <tr>
@@ -115,7 +115,7 @@
 </tr>
 <tr>
 <td>Préférences</td>
-<td>Thème, langue, notifications, limite de jeu responsable, quêtes accomplies</td>
+<td>Thème, langue, interrupteur général et catégories de notifications, limite de jeu responsable, quêtes accomplies</td>
 <td>Redis (<code>user:prefs:*</code>, <code>user:ticket_limit:*</code>, <code>user:quests:*</code>)</td>
 </tr>
 <tr>
@@ -124,7 +124,7 @@
 <td>Table <code>Analytics</code></td>
 </tr>
 </tbody></table></div>
-<p>Aucune donnée bancaire n&#39;est collectée. Le nom, la date de naissance, le numéro du document et, le cas échéant, l&#39;adresse ne sont pas saisis, mais ils figurent sur les photos de la pièce d&#39;identité jusqu&#39;à la décision de la Mairie : ce sont alors des données d&#39;identité civile, à protéger en conséquence. Le nom transmis par Apple à la première connexion est ignoré. Le modèle complet est décrit dans <a href="../base-de-donnees/modele.html">Modèle de données</a>.</p>
+<p>Aucune donnée bancaire n&#39;est collectée. Le prénom et le nom ne sont saisis que si le citoyen les renseigne dans l&#39;écran Données personnelles du mobile ; ils servent à l&#39;affichage des paramètres et aux messages envoyés au support. La date de naissance, le numéro du document et, le cas échéant, l&#39;adresse ne sont pas saisis, mais ils figurent sur les photos de la pièce d&#39;identité jusqu&#39;à la décision de la Mairie : ce sont alors des données d&#39;identité civile, à protéger en conséquence. Le nom transmis par Apple à la première connexion est ignoré. Le modèle complet est décrit dans <a href="../base-de-donnees/modele.html">Modèle de données</a>.</p>
 <h2 id="bases-legales"><a class="anchor" href="#bases-legales" aria-hidden="true" tabindex="-1">#</a>Bases légales</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -169,6 +169,11 @@
 <td>Exécution du contrat et intérêt légitime</td>
 <td>Codes, alertes, bienvenue, confirmation RGPD, codes promo</td>
 </tr>
+<tr>
+<td>Messages au support</td>
+<td>Exécution du contrat, à confirmer</td>
+<td>Objet, message, identifiant, email, prénom et nom transmis à l&#39;adresse <code>SUPPORT_EMAIL</code> ; aucune copie en base</td>
+</tr>
 </tbody></table></div>
 <p>Le choix de l&#39;exécution du contrat pour un service public communal, plutôt que la mission d&#39;intérêt public, est à confirmer par le DPO (voir <a href="points-a-valider.html">Points à valider</a>).</p>
 <h2 id="durees-de-conservation"><a class="anchor" href="#durees-de-conservation" aria-hidden="true" tabindex="-1">#</a>Durées de conservation</h2>
@@ -181,7 +186,7 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>Code de connexion, d&#39;inscription ou de réinitialisation</td>
+<td>Code de connexion, d&#39;inscription, de réinitialisation ou de changement d&#39;email</td>
 <td>10 minutes</td>
 <td>Fait : TTL Redis</td>
 </tr>
@@ -246,7 +251,7 @@
 </div>
 <h2 id="droits-des-personnes"><a class="anchor" href="#droits-des-personnes" aria-hidden="true" tabindex="-1">#</a>Droits des personnes</h2>
 <h3 id="acces-et-portabilite"><a class="anchor" href="#acces-et-portabilite" aria-hidden="true" tabindex="-1">#</a>Accès et portabilité</h3>
-<p><code>GET /api/user/gdpr/export</code> (authentifié) renvoie un document JSON construit par <code>exportGdprData</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a>. Le web le propose depuis Profil, puis Données personnelles (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx</code></a>) ; le mobile depuis l&#39;écran <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/GDPRScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/settings/GDPRScreen.tsx</code></a>.</p>
+<p><code>GET /api/user/gdpr/export</code> (authentifié) renvoie un document JSON construit par <code>exportGdprData</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a>. Le web le propose depuis Profil, puis Données personnelles (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx</code></a>) ; le mobile depuis Paramètres, puis Données personnelles, bouton « Télécharger mes données » (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/PersonalDataScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/settings/PersonalDataScreen.tsx</code></a>).</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -260,7 +265,7 @@
 </tr>
 <tr>
 <td><code>personalData</code></td>
-<td>Identifiant, adresse du portefeuille, email, rôle, solde de points, code de parrainage, état de la 2FA, statut et date de la vérification d&#39;âge, dates de création et de mise à jour</td>
+<td>Identifiant, adresse du portefeuille, email, prénom, nom, rôle, solde de points, code de parrainage, état de la 2FA, statut et date de la vérification d&#39;âge, dates de création et de mise à jour</td>
 </tr>
 <tr>
 <td><code>ticketsHistory</code></td>
@@ -323,6 +328,10 @@
 <td><code>null</code></td>
 </tr>
 <tr>
+<td><code>firstName</code>, <code>lastName</code></td>
+<td><code>null</code></td>
+</tr>
+<tr>
 <td><code>ageVerificationNote</code></td>
 <td><code>null</code> ; le statut et la date de vérification sont conservés</td>
 </tr>
@@ -378,7 +387,27 @@
 <p>Le lien envoyé par email pointe vers <code>${FRONTEND_URL}/gdpr/confirm-delete?token=...</code>, mais le frontend web ne contient aucune page à ce chemin : le lien aboutit à une page 404. La confirmation fonctionne en collant le jeton, également présent dans l&#39;email, dans la page Profil, puis Données personnelles. Par ailleurs, placer un jeton dans une URL l&#39;expose dans l&#39;historique du navigateur et les journaux des proxys.</p>
 </div>
 <h3 id="rectification"><a class="anchor" href="#rectification" aria-hidden="true" tabindex="-1">#</a>Rectification</h3>
-<p>Le citoyen peut modifier son thème, sa langue, ses notifications et sa limite de jeu. Aucune route ne permet de changer l&#39;adresse email ; la rectification passe par une demande au DPO, avec une réponse sous un mois.</p>
+<p>Le citoyen peut modifier son thème, sa langue, ses notifications et sa limite de jeu. Sur le mobile, il peut aussi rectifier lui-même :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Donnée</th>
+<th>Écran</th>
+<th>Route</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Prénom et nom (50 caractères au plus ; un champ vide efface la valeur)</td>
+<td>Paramètres, puis Données personnelles</td>
+<td><code>PATCH /api/user/profile</code></td>
+</tr>
+<tr>
+<td>Adresse email, confirmée par un code envoyé à la nouvelle adresse ; l&#39;ancienne reçoit une alerte</td>
+<td>Paramètres, puis Sécurité</td>
+<td><code>POST /api/auth/email/change</code>, <code>POST /api/auth/email/confirm</code></td>
+</tr>
+</tbody></table></div>
+<p>Le web ne propose aucun de ces deux écrans. Les autres rectifications passent par une demande au DPO, avec une réponse sous un mois.</p>
 <h3 id="opposition-a-la-mesure-d-audience"><a class="anchor" href="#opposition-a-la-mesure-d-audience" aria-hidden="true" tabindex="-1">#</a>Opposition à la mesure d&#39;audience</h3>
 <p>Sur le web, le bouton de la page Confidentialité enregistre <code>bl.tracking.optout</code> dans le <code>localStorage</code>. <code>trackEvent</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/lib/analytics.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/lib/analytics.ts</code></a> n&#39;envoie alors plus d&#39;événement. Le choix est propre à l&#39;appareil et au navigateur. Il ne couvre pas les événements <code>USER_LOGIN</code> et <code>USER_SIGNUP</code>, enregistrés par le serveur à chaque connexion et inscription. L&#39;application mobile n&#39;envoie pas d&#39;événement de parcours. Voir <a href="../web/analytique-consentement.html">Analytique et consentement</a>.</p>
 <h3 id="delai-de-reponse"><a class="anchor" href="#delai-de-reponse" aria-hidden="true" tabindex="-1">#</a>Délai de réponse</h3>

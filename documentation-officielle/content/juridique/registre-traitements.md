@@ -16,11 +16,11 @@ Ce registre, prévu par l'article 30 du RGPD, décrit les traitements de donnée
 | Finalité | Inscription, connexion, participation à la Grande Loterie citoyenne, historique des tickets, versement des gains et remboursements |
 | Base légale | Exécution du contrat (conditions de participation) |
 | Personnes concernées | Citoyens majeurs, dont l'âge est vérifié par pièce d'identité avant tout achat (voir fiche 2 bis) ; bénéficiaires d'un ticket offert (voir fiche 2) |
-| Données | Email ; empreinte bcrypt du mot de passe, s'il en existe un ; adresse du portefeuille intégré et clé privée chiffrée (AES-256-GCM) ; hash de la dotation de bienvenue ; tranche d'âge (connexion web) ; rôle ; tickets, hash de transaction et adresse payeuse ; code de parrainage et parrain ; préférences (thème, langue, notifications) ; limite de jeu responsable |
+| Données | Email ; prénom et nom, facultatifs (écran Données personnelles du mobile) ; empreinte bcrypt du mot de passe, s'il en existe un ; adresse du portefeuille intégré et clé privée chiffrée (AES-256-GCM) ; hash de la dotation de bienvenue ; tranche d'âge (connexion web) ; rôle ; tickets, hash de transaction et adresse payeuse ; code de parrainage et parrain ; préférences (thème, langue, notifications et leurs catégories) ; limite de jeu responsable ; messages envoyés au support (transmis par email à `SUPPORT_EMAIL`, non conservés en base) |
 | Code | [`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts), [`backend/src/api/lottery/lottery.services.ts`](src:backend/src/api/lottery/lottery.services.ts), [`backend/src/blockchain/wallet.service.ts`](src:backend/src/blockchain/wallet.service.ts) |
 | Destinataires | Services municipaux habilités (rôle ADMIN) ; sous-traitants techniques listés plus bas ; Google ou Apple, pour un citoyen qui choisit de se connecter avec eux (le fournisseur sait alors que son utilisateur se connecte à BlockLucky) |
 | Données publiques | Adresse du portefeuille et transactions, inscrites sur la blockchain publique (voir [Blockchain et données personnelles](blockchain-donnees.md)) |
-| Conservation | Durée de la participation ; anonymisation sur demande (`/api/user/gdpr/delete-request`) qui supprime l'email, la clé chiffrée et remplace l'adresse dans la fiche du compte. Purge automatique des comptes inactifs **à mettre en place** |
+| Conservation | Durée de la participation ; anonymisation sur demande (`/api/user/gdpr/delete-request`) qui supprime l'email, le prénom, le nom, la clé chiffrée et remplace l'adresse dans la fiche du compte. Purge automatique des comptes inactifs **à mettre en place** |
 | Transferts hors UE | Aucun pour les données de la base ; la blockchain publique est répliquée mondialement |
 
 ## 2. Cadeau de ticket

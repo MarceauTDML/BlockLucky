@@ -63,7 +63,7 @@
 <div class="diagram"><pre class="mermaid">flowchart TD
   ROOT[&quot;RootNavigator : pile racine&quot;] --&gt;|&quot;isAuthenticated faux&quot;| AUTH[&quot;AuthStack&quot;]
   ROOT --&gt;|&quot;isAuthenticated vrai&quot;| MAIN[&quot;Main : MainTabs&quot;]
-  ROOT --&gt; PUSH[&quot;Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, Security, Setup2FA, GDPR, HelpSupport&quot;]
+  ROOT --&gt; PUSH[&quot;Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, DisplaySettings, NotificationSettings, PersonalData, Security, ChangeEmail, ChangePassword, Setup2FA, HelpSupport&quot;]
   AUTH --&gt; A1[&quot;Onboarding&quot;]
   AUTH --&gt; A2[&quot;SignIn, SignUp&quot;]
   AUTH --&gt; A3[&quot;Verify2FA&quot;]
@@ -88,7 +88,7 @@
 </tr>
 <tr>
 <td>Connecté</td>
-<td><code>Main</code> (les onglets), puis les 17 écrans empilés de l&#39;arbre ci-dessus</td>
+<td><code>Main</code> (les onglets), puis les 21 écrans empilés de l&#39;arbre ci-dessus</td>
 </tr>
 </tbody></table></div>
 <p>Ce rendu conditionnel est le mécanisme de garde : quand <code>setCredentials</code> passe <code>isAuthenticated</code> à vrai, React Navigation démonte l&#39;<code>AuthStack</code> et affiche les onglets ; <code>logout</code> fait l&#39;inverse. Aucune navigation explicite n&#39;est nécessaire après la connexion.</p>
@@ -174,7 +174,7 @@
 </tbody></table></div>
 <p>La barre <code>TabBar</code> remplace celle de React Navigation : fond <code>surface</code> aux coins supérieurs arrondis (24), ombre portée, icône SVG au-dessus du libellé, onglet actif sur fond <code>sunNav</code> avec icône et texte <code>onSun</code> en gras. Sous les onglets, <code>SecurityFooter</code> rappelle « Application sécurisée · Aucun argent réel ». La marge basse suit l&#39;encart de sécurité de l&#39;appareil.</p>
 <p>La rangée porte <code>accessibilityRole=&quot;tablist&quot;</code> et chaque onglet <code>accessibilityRole=&quot;tab&quot;</code>, <code>accessibilityState={{ selected }}</code> et son libellé : les lecteurs d&#39;écran annoncent l&#39;onglet sélectionné. <code>TabBar</code> émet l&#39;événement <code>tabPress</code> avant de naviguer, comme la barre standard, mais ne gère pas l&#39;appui long.</p>
-<h2 id="les-27-ecrans"><a class="anchor" href="#les-27-ecrans" aria-hidden="true" tabindex="-1">#</a>Les 27 écrans</h2>
+<h2 id="les-31-ecrans"><a class="anchor" href="#les-31-ecrans" aria-hidden="true" tabindex="-1">#</a>Les 31 écrans</h2>
 <h3 id="avant-connexion"><a class="anchor" href="#avant-connexion" aria-hidden="true" tabindex="-1">#</a>Avant connexion</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -239,12 +239,12 @@
 </thead>
 <tbody><tr>
 <td>Accueil</td>
-<td>Logo et bouton des notifications, carte du grand tirage (cagnotte, phase, échéance, participants, paliers), achat ou accès à la salle, cadeau, tickets à gratter, points et offres, mission suivante, partage du code de parrainage ; tirer pour rafraîchir</td>
+<td>Logo, cloche des notifications et roue des paramètres, carte du grand tirage (cagnotte, phase, échéance, participants, paliers), achat ou accès à la salle, cadeau, tickets à gratter, points et offres, mission suivante, partage du code de parrainage ; tirer pour rafraîchir</td>
 <td><code>GET /lottery/status</code> toutes les 30 s, <code>GET /lottery/wallet</code>, <code>GET /lottery/my-tickets</code>, <code>GET /user/referrals</code>, <code>GET /user/quests</code>, <code>GET /marketplace/catalog</code>, <code>usePoints</code>, <code>usePushNotifications</code></td>
 </tr>
 <tr>
 <td>Mes tickets</td>
-<td>Ticket du tirage en cours, filtres, résultats des tirages passés, codes obtenus par grattage, accès à l&#39;historique</td>
+<td>Cloche et roue des paramètres, ticket du tirage en cours, filtres, résultats des tirages passés, codes obtenus par grattage, accès à l&#39;historique</td>
 <td><code>GET /lottery/status</code> toutes les 30 s, <code>GET /lottery/my-tickets</code>, <code>GET /marketplace/my-codes</code></td>
 </tr>
 <tr>
@@ -254,7 +254,7 @@
 </tr>
 <tr>
 <td>Profil</td>
-<td>Carte d&#39;identité du compte avec statut d&#39;âge, résumé (ETH fictifs, EtherPoints, tickets joués), raccourcis (codes, boutique, historique), liens vers les réglages, déconnexion confirmée</td>
+<td>Carte d&#39;identité du compte avec statut d&#39;âge, résumé (ETH fictifs, EtherPoints, tickets joués), raccourcis (codes, boutique, historique), déconnexion confirmée ; les réglages s&#39;ouvrent par la roue de l&#39;en-tête</td>
 <td><code>GET /user/profile</code>, <code>GET /lottery/wallet</code>, <code>signOut</code></td>
 </tr>
 </tbody></table></div>
@@ -343,14 +343,44 @@
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/SettingsScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SettingsScreen.tsx</code></a></td>
 <td><code>Settings</code></td>
-<td>Mode sombre, langue, notifications push</td>
-<td><code>GET /user/profile</code>, <code>PUT /user/preferences</code></td>
+<td>Accueil des paramètres : carte d&#39;identité (initiales, prénom et nom, email) puis cinq cartes de section</td>
+<td><code>GET /user/profile</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/DisplaySettingsScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>DisplaySettingsScreen.tsx</code></a></td>
+<td><code>DisplaySettings</code></td>
+<td>Mode clair ou sombre, langue français ou anglais</td>
+<td><code>PUT /user/preferences</code> (<code>theme</code>, <code>language</code>)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/NotificationSettingsScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>NotificationSettingsScreen.tsx</code></a></td>
+<td><code>NotificationSettings</code></td>
+<td>Interrupteur général et quatre catégories de notifications</td>
+<td><code>GET /user/profile</code>, <code>PUT /user/preferences</code> (<code>pushNotificationsEnabled</code>, <code>notifications</code>)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/PersonalDataScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>PersonalDataScreen.tsx</code></a></td>
+<td><code>PersonalData</code></td>
+<td>Prénom et nom, export JSON partagé par la feuille système, demande puis confirmation d&#39;anonymisation</td>
+<td><code>PATCH /user/profile</code>, <code>GET /user/gdpr/export</code>, <code>POST /user/gdpr/delete-request</code>, <code>POST /user/gdpr/confirm-delete</code>, puis <code>signOut</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/SecurityScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SecurityScreen.tsx</code></a></td>
 <td><code>Security</code></td>
-<td>État, activation et désactivation de la 2FA, portefeuille intégré, déconnexion de tous les appareils</td>
-<td><code>GET /user/profile</code>, <code>POST /auth/2fa/disable</code>, <code>signOutEverywhere</code></td>
+<td>Adresse email et mot de passe (liens vers les deux écrans suivants), état, activation et désactivation de la 2FA</td>
+<td><code>GET /user/profile</code>, <code>POST /auth/2fa/disable</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/ChangeEmailScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ChangeEmailScreen.tsx</code></a></td>
+<td><code>ChangeEmail</code></td>
+<td>Nouvelle adresse et mot de passe actuel, puis code à 6 chiffres reçu sur la nouvelle adresse</td>
+<td><code>POST /auth/email/change</code>, <code>POST /auth/email/confirm</code>, puis <code>patchUser</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/ChangePasswordScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>ChangePasswordScreen.tsx</code></a></td>
+<td><code>ChangePassword</code></td>
+<td>Création d&#39;un premier mot de passe ou modification avec le mot de passe actuel</td>
+<td><code>POST /auth/password/change</code>, puis <code>applyRenewedSession</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/auth/Setup2FAScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>Setup2FAScreen.tsx</code></a></td>
@@ -359,19 +389,54 @@
 <td><code>POST /auth/2fa/setup</code>, <code>POST /auth/2fa/verify</code></td>
 </tr>
 <tr>
-<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/GDPRScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>GDPRScreen.tsx</code></a></td>
-<td><code>GDPR</code></td>
-<td>Export JSON partagé par la feuille système, demande puis confirmation d&#39;anonymisation</td>
-<td><code>GET /user/gdpr/export</code>, <code>POST /user/gdpr/delete-request</code>, <code>POST /user/gdpr/confirm-delete</code>, puis <code>signOut</code></td>
-</tr>
-<tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/HelpSupportScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>HelpSupportScreen.tsx</code></a></td>
 <td><code>HelpSupport</code></td>
-<td>Liens vers le fonctionnement du tirage, le contact de la Mairie par email et les notifications, puis charte de transparence</td>
-<td><code>GET /lottery/transparency-charter</code></td>
+<td>Formulaire pour écrire à un administrateur (objet, message), carte du centre d&#39;aide</td>
+<td><code>POST /user/support</code> ; lien <code>EXPO_PUBLIC_HELP_CENTER_URL</code></td>
 </tr>
 </tbody></table></div>
 <p>Toutes les routes appelées depuis les écrans connectés exigent un jeton, sauf <code>GET /lottery/status</code>, <code>/leaderboard</code>, <code>/transparency-charter</code>, <code>GET /marketplace/catalog</code> et <code>/rewards/:id</code>, qui sont publiques. Le rôle n&#39;est pas vérifié côté mobile : l&#39;application ne propose aucun écran réservé à <code>ADMIN</code> ou <code>PARTNER</code>. Un compte Mairie ou partenaire qui se connecte voit l&#39;interface citoyenne.</p>
+<h2 id="boutons-d-en-tete-et-parametres"><a class="anchor" href="#boutons-d-en-tete-et-parametres" aria-hidden="true" tabindex="-1">#</a>Boutons d&#39;en-tête et paramètres</h2>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/HeaderActions.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>HeaderActions.tsx</code></a> regroupe deux boutons ronds : la cloche <code>NotificationButton</code>, avec sa pastille quand <code>unreadCount</code> est positif, qui ouvre <code>Notifications</code>, et une roue dentée (icône <code>settings</code>, libellé d&#39;accessibilité « Paramètres ») qui ouvre <code>Settings</code>. Le composant est placé dans l&#39;en-tête de l&#39;accueil (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/HomeScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>HomeScreen.tsx</code></a>), de « Mes tickets » (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/MyTicketsScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>MyTicketsScreen.tsx</code></a>) et dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/profile/TabTitle.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>TabTitle.tsx</code></a>, le titre des onglets Profil et Parrains. L&#39;onglet Profil n&#39;a plus de liste « Mon compte » : la roue est le seul accès aux réglages.</p>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/SettingsScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SettingsScreen.tsx</code></a>, repris d&#39;une maquette Figma, sert d&#39;accueil des paramètres. Une carte jaune affiche un avatar avec les initiales, le prénom et le nom (ou « Citoyen d&#39;EtherBay » s&#39;ils sont vides) et l&#39;email ; les initiales et le nom complet viennent de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/settings/displayName.ts" class="external" target="_blank" rel="noopener noreferrer"><code>displayName.ts</code></a>, qui retombe sur les initiales de l&#39;email. Suivent cinq cartes <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/settings/SettingsLinkCard.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SettingsLinkCard</code></a>, dans cet ordre :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Carte</th>
+<th>Route</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Affichage</td>
+<td><code>DisplaySettings</code></td>
+<td>Puces Clair ou Sombre, puces Français ou English</td>
+</tr>
+<tr>
+<td>Notifications</td>
+<td><code>NotificationSettings</code></td>
+<td>Interrupteur « Autoriser les notifications », puis les catégories rappels du tirage (<code>drawReminders</code>), résultats (<code>results</code>), offres et récompenses (<code>rewards</code>), parrainage (<code>referrals</code>)</td>
+</tr>
+<tr>
+<td>Données personnelles</td>
+<td><code>PersonalData</code></td>
+<td>Formulaire prénom et nom, téléchargement des données (export RGPD), suppression du compte</td>
+</tr>
+<tr>
+<td>Sécurité</td>
+<td><code>Security</code></td>
+<td>Ligne email vers <code>ChangeEmail</code>, ligne mot de passe vers <code>ChangePassword</code> (« en créer un » si le compte n&#39;en a pas), puis la 2FA : activation, reconfiguration, désactivation</td>
+</tr>
+<tr>
+<td>Aide &amp; Support</td>
+<td><code>HelpSupport</code></td>
+<td>Formulaire pour écrire à un administrateur, carte du centre d&#39;aide</td>
+</tr>
+</tbody></table></div>
+<p>La maquette prévoyait une entrée Langue séparée : elle n&#39;a pas été reprise, la langue se règle dans Affichage.</p>
+<p>Les réglages d&#39;affichage et de notifications sont enregistrés à chaque changement par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/settings/usePreferenceSaver.ts" class="external" target="_blank" rel="noopener noreferrer"><code>usePreferenceSaver.ts</code></a>, qui appelle <code>PUT /user/preferences</code>, remet l&#39;ancienne valeur et affiche un message si l&#39;envoi échoue. Quand l&#39;interrupteur général est coupé, les catégories sont grisées et affichées désactivées, mais leurs valeurs enregistrées sont conservées.</p>
+<p>La carte du centre d&#39;aide ouvre l&#39;adresse de <code>EXPO_PUBLIC_HELP_CENTER_URL</code>. Tant que la variable est vide, la carte affiche la pastille « Bientôt » et ne fait rien : le site du centre d&#39;aide reste à créer.</p>
+<p>Le bloc « Compte et appareils » de l&#39;écran Sécurité (portefeuille intégré, déconnexion de tous les appareils) a été retiré. <code>signOutEverywhere</code> existe toujours dans <code>useAuth</code>, mais aucun écran ne l&#39;appelle.</p>
 <h2 id="parcours-principaux"><a class="anchor" href="#parcours-principaux" aria-hidden="true" tabindex="-1">#</a>Parcours principaux</h2>
 <div class="diagram"><pre class="mermaid">flowchart LR
   ON[&quot;Onboarding&quot;] --&gt; SI[&quot;SignIn&quot;]
@@ -406,7 +471,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#arbre-de-navigation">Arbre de navigation</a></li><li class="toc-h3"><a href="#rootnavigator">RootNavigator</a></li><li class="toc-h3"><a href="#authstack">AuthStack</a></li><li class="toc-h3"><a href="#maintabs">MainTabs</a></li><li class="toc-h2"><a href="#les-27-ecrans">Les 27 écrans</a></li><li class="toc-h3"><a href="#avant-connexion">Avant connexion</a></li><li class="toc-h3"><a href="#onglets">Onglets</a></li><li class="toc-h3"><a href="#ecrans-empiles">Écrans empilés</a></li><li class="toc-h2"><a href="#parcours-principaux">Parcours principaux</a></li><li class="toc-h2"><a href="#ce-que-la-navigation-ne-fait-pas">Ce que la navigation ne fait pas</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#arbre-de-navigation">Arbre de navigation</a></li><li class="toc-h3"><a href="#rootnavigator">RootNavigator</a></li><li class="toc-h3"><a href="#authstack">AuthStack</a></li><li class="toc-h3"><a href="#maintabs">MainTabs</a></li><li class="toc-h2"><a href="#les-31-ecrans">Les 31 écrans</a></li><li class="toc-h3"><a href="#avant-connexion">Avant connexion</a></li><li class="toc-h3"><a href="#onglets">Onglets</a></li><li class="toc-h3"><a href="#ecrans-empiles">Écrans empilés</a></li><li class="toc-h2"><a href="#boutons-d-en-tete-et-parametres">Boutons d&#39;en-tête et paramètres</a></li><li class="toc-h2"><a href="#parcours-principaux">Parcours principaux</a></li><li class="toc-h2"><a href="#ce-que-la-navigation-ne-fait-pas">Ce que la navigation ne fait pas</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

@@ -8,18 +8,19 @@ Le module `auth` ouvre les sessions des citoyens, des partenaires et des adminis
 | Google ou Apple | `/oauth/google`, `/oauth/apple` | Application mobile, si les identifiants client sont configurés |
 | Code à 6 chiffres reçu par email, sans mot de passe | `/login` | Frontend web |
 | Second facteur : code TOTP d'application ou code email | `/2fa/verify` | Web et mobile, pour les comptes qui l'ont activé |
+| Compte connecté : changement d'adresse email ou de mot de passe | `/email/change`, `/email/confirm`, `/password/change` | Application mobile (Paramètres, puis Sécurité) |
 
-Le module crée aussi le compte et le portefeuille Ethereum intégré lors de la première connexion vérifiée, et gère la double authentification et la déconnexion. Il ne vérifie pas l'âge : la majorité est contrôlée à l'achat grâce à la pièce d'identité validée par la Mairie (voir [Utilisateur](utilisateur.md#verification-d-age)).
+Le module crée aussi le compte et le portefeuille Ethereum intégré lors de la première connexion vérifiée, et gère la double authentification, le changement d'adresse email et de mot de passe d'un compte connecté, et la déconnexion. Il ne vérifie pas l'âge : la majorité est contrôlée à l'achat grâce à la pièce d'identité validée par la Mairie (voir [Utilisateur](utilisateur.md#verification-d-age)).
 
 | Fichier | Contenu |
 |---|---|
-| [`backend/src/api/auth/auth.routes.ts`](src:backend/src/api/auth/auth.routes.ts) | 12 routes et leurs middlewares |
+| [`backend/src/api/auth/auth.routes.ts`](src:backend/src/api/auth/auth.routes.ts) | 15 routes et leurs middlewares |
 | [`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts) | Schémas Zod |
 | [`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts) | Connexion, inscription, mot de passe, OAuth, 2FA, déconnexion |
 | [`backend/src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) | Vérification des jetons d'identité Google et Apple |
 | [`backend/src/api/auth/auth.repo.ts`](src:backend/src/api/auth/auth.repo.ts) | Lecture et écriture de `User`, événements `Analytics` |
 | [`backend/src/services/session.service.ts`](src:backend/src/services/session.service.ts) | Signature, vérification et révocation des JWT |
-| [`backend/src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) | Codes email (connexion, inscription, activation, réinitialisation), compteur d'échecs, anti-rejeu TOTP |
+| [`backend/src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) | Codes email (connexion, inscription, activation, réinitialisation, changement d'email), compteur d'échecs, anti-rejeu TOTP |
 | [`backend/src/utils/crypto.util.ts`](src:backend/src/utils/crypto.util.ts) | `hashValue` et `compareHash` (bcrypt), HMAC, chiffrement |
 | [`backend/src/services/totp.service.ts`](src:backend/src/services/totp.service.ts) | Secrets TOTP, QR code, codes de secours |
 
@@ -33,6 +34,9 @@ Le parcours vu du citoyen est décrit dans [Inscription et portefeuille](../../a
 | `POST /api/v1/auth/signin` | public | `authRateLimiter`, `validate(signinSchema)` | Connexion par email et mot de passe |
 | `POST /api/v1/auth/password/forgot` | public | `authRateLimiter`, `validate(forgotPasswordSchema)` | Envoi d'un code de réinitialisation |
 | `POST /api/v1/auth/password/reset` | public | `authRateLimiter`, `validate(resetPasswordSchema)` | Nouveau mot de passe avec le code reçu |
+| `POST /api/v1/auth/password/change` | connecté | `authRateLimiter`, `authenticate`, `validate(changePasswordSchema)` | Création ou modification du mot de passe, nouvelle session |
+| `POST /api/v1/auth/email/change` | connecté | `authRateLimiter`, `authenticate`, `validate(emailChangeRequestSchema)` | Envoi d'un code à la nouvelle adresse |
+| `POST /api/v1/auth/email/confirm` | connecté | `authRateLimiter`, `authenticate`, `validate(emailChangeConfirmSchema)` | Confirmation de la nouvelle adresse |
 | `POST /api/v1/auth/oauth/google` | public | `authRateLimiter`, `validate(googleOAuthSchema)` | Connexion ou inscription avec un jeton Google |
 | `POST /api/v1/auth/oauth/apple` | public | `authRateLimiter`, `validate(appleOAuthSchema)` | Connexion ou inscription avec un jeton Apple |
 | `GET /api/v1/auth/onboarding` | public | aucun | Écrans d'accueil statiques |
@@ -128,6 +132,50 @@ Un compte sans mot de passe, inscrit par `/login`, Google ou Apple, peut suivre 
 1. Le blocage après 10 échecs porte sur `password-reset:<userId>`, ou sur le HMAC de l'adresse si le compte n'existe pas.
 2. Un code faux, expiré, épuisé ou d'une autre finalité renvoie `400 Code invalide ou expiré.`
 3. En cas de succès : nouvelle empreinte, `isEmailVerified` à `true`, révocation de toutes les sessions du compte (`auth:revoked-before:<userId>`) et alerte `security-alert` (« Mot de passe réinitialisé », ou « Mot de passe défini sur votre compte » pour un compte qui n'en avait pas). La réponse vaut `{ "reset": true }` ; il faut ensuite se reconnecter.
+
+## POST /auth/password/change
+
+Création ou modification du mot de passe du compte connecté. Le parcours mobile est décrit dans [Authentification et stockage sécurisé](../../mobile/authentification.md#email-et-mot-de-passe-du-compte).
+
+| Champ | Type | Règles |
+|---|---|---|
+| `currentPassword` | chaîne | facultatif, 1 à 128 caractères ; exigé si le compte a déjà un mot de passe |
+| `newPassword` | chaîne | même politique que `/signup` |
+
+1. Un compte absent ou supprimé renvoie `404 Utilisateur introuvable`.
+2. Si le compte a un mot de passe : blocage après 10 échecs sur le sujet `<userId>` (le même que `/signin`), puis comparaison bcrypt. Un mot de passe actuel absent ou faux renvoie `401 Mot de passe actuel incorrect.` et compte un échec ; un succès remet le compteur à zéro.
+3. Un compte sans mot de passe (inscrit par `/login`, Google ou Apple) en définit un sans fournir `currentPassword`.
+4. Nouvelle empreinte bcrypt, révocation de toutes les sessions du compte (`auth:revoked-before:<userId>`) et alerte `security-alert` à l'adresse du compte (« Mot de passe modifié », ou « Mot de passe défini sur votre compte »).
+5. Une nouvelle session est délivrée aussitôt, avec la même forme que `/signin` : `{ "requiresTwoFactor": false, "isNewUser": false, "token": "...", "user": {...} }`, message `Mot de passe mis à jour, vos autres sessions ont été déconnectées`. Le jeton est émis avec `twoFactorVerified: true`, sans nouveau code 2FA : l'appelant a déjà une session valide. L'appareil qui a fait la demande remplace son jeton ; tous les autres sont déconnectés.
+
+## POST /auth/email/change
+
+Première étape du changement d'adresse email du compte connecté.
+
+| Champ | Type | Règles |
+|---|---|---|
+| `newEmail` | chaîne | email valide, 254 caractères au plus, passé en minuscules |
+| `password` | chaîne | facultatif, 1 à 128 caractères ; exigé si le compte a un mot de passe |
+
+1. Une adresse identique à l'actuelle renvoie `400 La nouvelle adresse email est identique à l'adresse actuelle.`
+2. Une adresse déjà portée par un autre compte renvoie `409 Cette adresse email est déjà utilisée par un autre compte.`
+3. Si le compte a un mot de passe : blocage après 10 échecs sur `<userId>`, puis comparaison bcrypt. Un mot de passe absent ou faux renvoie `401 Mot de passe incorrect.` et compte un échec.
+4. Un code `EMAIL_CHANGE` est émis sur le sujet `email-change:<userId>` (10 minutes, 5 essais), la nouvelle adresse est gardée dans Redis sous `auth:email-change:<userId>` pendant 10 minutes, et le code part à la nouvelle adresse par l'email `otp-code` (sujet `Confirmez votre nouvelle adresse email - BlockLucky`).
+
+La réponse vaut `{ "message": "Un code à 6 chiffres a été envoyé à <adresse>" }`, avec `devOtpPreview` en développement. L'adresse du compte ne change pas à cette étape.
+
+## POST /auth/email/confirm
+
+| Champ | Type | Règles |
+|---|---|---|
+| `code` | chaîne | exactement 6 chiffres |
+
+1. Blocage après 10 échecs sur `email-change:<userId>`.
+2. Un code faux, expiré, épuisé, d'une autre finalité, ou une adresse en attente absente de Redis, renvoie `400 Code invalide ou expiré.` et compte un échec.
+3. En cas de succès, le compteur et la clé Redis sont effacés, la disponibilité de l'adresse est vérifiée une seconde fois (409 si un autre compte l'a prise entre-temps), puis `email` est remplacé et `isEmailVerified` passe à `true`.
+4. L'ancienne adresse reçoit l'alerte `security-alert` « Adresse email du compte remplacée par » suivie de la nouvelle adresse masquée.
+
+La réponse vaut `{ "profile": { "email": "nouvelle@etherbay.fr" } }`, message `Adresse email mise à jour`. Les sessions ne sont pas révoquées.
 
 ## POST /auth/oauth/google et /auth/oauth/apple
 
@@ -362,17 +410,21 @@ Renvoie `{ "slides": [...] }` : quatre écrans codés en dur dans `getOnboarding
 | Statut | Message | Origine |
 |---|---|---|
 | 400 | `Erreur de validation des données` | Schéma Zod, dont `isAdultConfirmed` ou `acceptTerms` différent de `true` et mot de passe trop faible |
-| 400 | `Code invalide ou expiré.` | `/password/reset` |
+| 400 | `Code invalide ou expiré.` | `/password/reset`, `/email/confirm` |
+| 400 | `La nouvelle adresse email est identique à l'adresse actuelle.` | `/email/change` |
 | 400 | `Une adresse email est requise pour recevoir le code de connexion` | `/login` sans email connu |
 | 400 | `Une adresse email est requise pour créer un compte` | `/login` sans code email ni email |
 | 400 | `Identifiant utilisateur requis pour vérifier le code 2FA` | `/2fa/verify` sans jeton ni `userId` |
 | 401 | `Code de vérification invalide ou expiré` | Code faux, expiré, épuisé ou sujet inconnu |
 | 401 | `Email ou mot de passe incorrect.` | `/signin` |
+| 401 | `Mot de passe incorrect.` | `/email/change` |
+| 401 | `Mot de passe actuel incorrect.` | `/password/change` |
 | 401 | `Jeton Google invalide ou expiré.`, `Jeton Apple invalide ou expiré.`, email non vérifié | Routes OAuth |
 | 401 | `Pour désactiver la double authentification, ...` | Preuve manquante sur `/2fa/disable` |
-| 404 | `Utilisateur introuvable` | `/2fa/setup` ou `/2fa/disable` sur un compte supprimé de la base |
+| 404 | `Utilisateur introuvable` | `/2fa/setup`, `/2fa/disable`, `/password/change`, `/email/change` ou `/email/confirm` sur un compte supprimé |
 | 409 | `La double authentification est déjà active. ...` | `/2fa/setup` |
 | 409 | `Un compte existe déjà avec cette adresse email.` | `/signup`, ou la vérification de son code |
+| 409 | `Cette adresse email est déjà utilisée par un autre compte.` | `/email/change`, `/email/confirm` |
 | 429 | `Trop de codes erronés. ...` | 10 échecs pour le même sujet, codes et mots de passe confondus |
 | 429 | `Trop de tentatives de connexion/2FA, ...` | `authRateLimiter` |
 | 503 | `Connexion Google non configurée.`, `Connexion Apple non configurée.` | `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` vide |

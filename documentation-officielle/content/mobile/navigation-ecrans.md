@@ -17,7 +17,7 @@ Les écrans ne reçoivent plus de prop `navigation: any` : un nom de route ou un
 flowchart TD
   ROOT["RootNavigator : pile racine"] -->|"isAuthenticated faux"| AUTH["AuthStack"]
   ROOT -->|"isAuthenticated vrai"| MAIN["Main : MainTabs"]
-  ROOT --> PUSH["Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, Security, Setup2FA, GDPR, HelpSupport"]
+  ROOT --> PUSH["Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, DisplaySettings, NotificationSettings, PersonalData, Security, ChangeEmail, ChangePassword, Setup2FA, HelpSupport"]
   AUTH --> A1["Onboarding"]
   AUTH --> A2["SignIn, SignUp"]
   AUTH --> A3["Verify2FA"]
@@ -36,7 +36,7 @@ flowchart TD
 | État | Écrans enregistrés |
 |---|---|
 | Non connecté | `Auth` (tout l'`AuthStack`) |
-| Connecté | `Main` (les onglets), puis les 17 écrans empilés de l'arbre ci-dessus |
+| Connecté | `Main` (les onglets), puis les 21 écrans empilés de l'arbre ci-dessus |
 
 Ce rendu conditionnel est le mécanisme de garde : quand `setCredentials` passe `isAuthenticated` à vrai, React Navigation démonte l'`AuthStack` et affiche les onglets ; `logout` fait l'inverse. Aucune navigation explicite n'est nécessaire après la connexion.
 
@@ -81,7 +81,7 @@ La barre `TabBar` remplace celle de React Navigation : fond `surface` aux coins 
 
 La rangée porte `accessibilityRole="tablist"` et chaque onglet `accessibilityRole="tab"`, `accessibilityState={{ selected }}` et son libellé : les lecteurs d'écran annoncent l'onglet sélectionné. `TabBar` émet l'événement `tabPress` avant de naviguer, comme la barre standard, mais ne gère pas l'appui long.
 
-## Les 27 écrans
+## Les 31 écrans
 
 ### Avant connexion
 
@@ -99,10 +99,10 @@ La rangée porte `accessibilityRole="tablist"` et chaque onglet `accessibilityRo
 
 | Écran | Rôle | Données et actions |
 |---|---|---|
-| Accueil | Logo et bouton des notifications, carte du grand tirage (cagnotte, phase, échéance, participants, paliers), achat ou accès à la salle, cadeau, tickets à gratter, points et offres, mission suivante, partage du code de parrainage ; tirer pour rafraîchir | `GET /lottery/status` toutes les 30 s, `GET /lottery/wallet`, `GET /lottery/my-tickets`, `GET /user/referrals`, `GET /user/quests`, `GET /marketplace/catalog`, `usePoints`, `usePushNotifications` |
-| Mes tickets | Ticket du tirage en cours, filtres, résultats des tirages passés, codes obtenus par grattage, accès à l'historique | `GET /lottery/status` toutes les 30 s, `GET /lottery/my-tickets`, `GET /marketplace/my-codes` |
+| Accueil | Logo, cloche des notifications et roue des paramètres, carte du grand tirage (cagnotte, phase, échéance, participants, paliers), achat ou accès à la salle, cadeau, tickets à gratter, points et offres, mission suivante, partage du code de parrainage ; tirer pour rafraîchir | `GET /lottery/status` toutes les 30 s, `GET /lottery/wallet`, `GET /lottery/my-tickets`, `GET /user/referrals`, `GET /user/quests`, `GET /marketplace/catalog`, `usePoints`, `usePushNotifications` |
+| Mes tickets | Cloche et roue des paramètres, ticket du tirage en cours, filtres, résultats des tirages passés, codes obtenus par grattage, accès à l'historique | `GET /lottery/status` toutes les 30 s, `GET /lottery/my-tickets`, `GET /marketplace/my-codes` |
 | Parrains | Code de parrainage (copie et partage), étapes du parrainage, classement des citoyens par EtherPoints, missions à valider | `GET /user/referrals`, `GET /lottery/leaderboard`, `GET /user/quests`, `POST /user/quests/complete` |
-| Profil | Carte d'identité du compte avec statut d'âge, résumé (ETH fictifs, EtherPoints, tickets joués), raccourcis (codes, boutique, historique), liens vers les réglages, déconnexion confirmée | `GET /user/profile`, `GET /lottery/wallet`, `signOut` |
+| Profil | Carte d'identité du compte avec statut d'âge, résumé (ETH fictifs, EtherPoints, tickets joués), raccourcis (codes, boutique, historique), déconnexion confirmée ; les réglages s'ouvrent par la roue de l'en-tête | `GET /user/profile`, `GET /lottery/wallet`, `signOut` |
 
 ### Écrans empilés
 
@@ -120,13 +120,39 @@ La rangée porte `accessibilityRole="tablist"` et chaque onglet `accessibilityRo
 | [`ScratchCardScreen.tsx`](src:mobile-app/src/screens/marketplace/ScratchCardScreen.tsx) | `ScratchCard` (`claim` ou `offer`) | Choix et achat d'un ticket à gratter, ou révélation d'un code déjà obtenu | `POST /marketplace/scratch`, puis `replace('MyCodes')` |
 | [`MyCodesScreen.tsx`](src:mobile-app/src/screens/marketplace/MyCodesScreen.tsx) | `MyCodes` | Codes obtenus, actifs ou utilisés | `GET /marketplace/my-codes` |
 | [`VerifyAgeScreen.tsx`](src:mobile-app/src/screens/settings/VerifyAgeScreen.tsx) | `VerifyAge` | Photo du recto et du verso de la pièce d'identité, statut de la vérification | `GET /user/identity`, `POST /user/identity` |
-| [`SettingsScreen.tsx`](src:mobile-app/src/screens/settings/SettingsScreen.tsx) | `Settings` | Mode sombre, langue, notifications push | `GET /user/profile`, `PUT /user/preferences` |
-| [`SecurityScreen.tsx`](src:mobile-app/src/screens/settings/SecurityScreen.tsx) | `Security` | État, activation et désactivation de la 2FA, portefeuille intégré, déconnexion de tous les appareils | `GET /user/profile`, `POST /auth/2fa/disable`, `signOutEverywhere` |
+| [`SettingsScreen.tsx`](src:mobile-app/src/screens/settings/SettingsScreen.tsx) | `Settings` | Accueil des paramètres : carte d'identité (initiales, prénom et nom, email) puis cinq cartes de section | `GET /user/profile` |
+| [`DisplaySettingsScreen.tsx`](src:mobile-app/src/screens/settings/DisplaySettingsScreen.tsx) | `DisplaySettings` | Mode clair ou sombre, langue français ou anglais | `PUT /user/preferences` (`theme`, `language`) |
+| [`NotificationSettingsScreen.tsx`](src:mobile-app/src/screens/settings/NotificationSettingsScreen.tsx) | `NotificationSettings` | Interrupteur général et quatre catégories de notifications | `GET /user/profile`, `PUT /user/preferences` (`pushNotificationsEnabled`, `notifications`) |
+| [`PersonalDataScreen.tsx`](src:mobile-app/src/screens/settings/PersonalDataScreen.tsx) | `PersonalData` | Prénom et nom, export JSON partagé par la feuille système, demande puis confirmation d'anonymisation | `PATCH /user/profile`, `GET /user/gdpr/export`, `POST /user/gdpr/delete-request`, `POST /user/gdpr/confirm-delete`, puis `signOut` |
+| [`SecurityScreen.tsx`](src:mobile-app/src/screens/settings/SecurityScreen.tsx) | `Security` | Adresse email et mot de passe (liens vers les deux écrans suivants), état, activation et désactivation de la 2FA | `GET /user/profile`, `POST /auth/2fa/disable` |
+| [`ChangeEmailScreen.tsx`](src:mobile-app/src/screens/settings/ChangeEmailScreen.tsx) | `ChangeEmail` | Nouvelle adresse et mot de passe actuel, puis code à 6 chiffres reçu sur la nouvelle adresse | `POST /auth/email/change`, `POST /auth/email/confirm`, puis `patchUser` |
+| [`ChangePasswordScreen.tsx`](src:mobile-app/src/screens/settings/ChangePasswordScreen.tsx) | `ChangePassword` | Création d'un premier mot de passe ou modification avec le mot de passe actuel | `POST /auth/password/change`, puis `applyRenewedSession` |
 | [`Setup2FAScreen.tsx`](src:mobile-app/src/screens/auth/Setup2FAScreen.tsx) | `Setup2FA` | Comme dans l'`AuthStack` | `POST /auth/2fa/setup`, `POST /auth/2fa/verify` |
-| [`GDPRScreen.tsx`](src:mobile-app/src/screens/settings/GDPRScreen.tsx) | `GDPR` | Export JSON partagé par la feuille système, demande puis confirmation d'anonymisation | `GET /user/gdpr/export`, `POST /user/gdpr/delete-request`, `POST /user/gdpr/confirm-delete`, puis `signOut` |
-| [`HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx) | `HelpSupport` | Liens vers le fonctionnement du tirage, le contact de la Mairie par email et les notifications, puis charte de transparence | `GET /lottery/transparency-charter` |
+| [`HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx) | `HelpSupport` | Formulaire pour écrire à un administrateur (objet, message), carte du centre d'aide | `POST /user/support` ; lien `EXPO_PUBLIC_HELP_CENTER_URL` |
 
 Toutes les routes appelées depuis les écrans connectés exigent un jeton, sauf `GET /lottery/status`, `/leaderboard`, `/transparency-charter`, `GET /marketplace/catalog` et `/rewards/:id`, qui sont publiques. Le rôle n'est pas vérifié côté mobile : l'application ne propose aucun écran réservé à `ADMIN` ou `PARTNER`. Un compte Mairie ou partenaire qui se connecte voit l'interface citoyenne.
+
+## Boutons d'en-tête et paramètres
+
+[`HeaderActions.tsx`](src:mobile-app/src/components/ui/HeaderActions.tsx) regroupe deux boutons ronds : la cloche `NotificationButton`, avec sa pastille quand `unreadCount` est positif, qui ouvre `Notifications`, et une roue dentée (icône `settings`, libellé d'accessibilité « Paramètres ») qui ouvre `Settings`. Le composant est placé dans l'en-tête de l'accueil ([`HomeScreen.tsx`](src:mobile-app/src/screens/lottery/HomeScreen.tsx)), de « Mes tickets » ([`MyTicketsScreen.tsx`](src:mobile-app/src/screens/lottery/MyTicketsScreen.tsx)) et dans [`TabTitle.tsx`](src:mobile-app/src/components/profile/TabTitle.tsx), le titre des onglets Profil et Parrains. L'onglet Profil n'a plus de liste « Mon compte » : la roue est le seul accès aux réglages.
+
+[`SettingsScreen.tsx`](src:mobile-app/src/screens/settings/SettingsScreen.tsx), repris d'une maquette Figma, sert d'accueil des paramètres. Une carte jaune affiche un avatar avec les initiales, le prénom et le nom (ou « Citoyen d'EtherBay » s'ils sont vides) et l'email ; les initiales et le nom complet viennent de [`displayName.ts`](src:mobile-app/src/components/settings/displayName.ts), qui retombe sur les initiales de l'email. Suivent cinq cartes [`SettingsLinkCard`](src:mobile-app/src/components/settings/SettingsLinkCard.tsx), dans cet ordre :
+
+| Carte | Route | Contenu |
+|---|---|---|
+| Affichage | `DisplaySettings` | Puces Clair ou Sombre, puces Français ou English |
+| Notifications | `NotificationSettings` | Interrupteur « Autoriser les notifications », puis les catégories rappels du tirage (`drawReminders`), résultats (`results`), offres et récompenses (`rewards`), parrainage (`referrals`) |
+| Données personnelles | `PersonalData` | Formulaire prénom et nom, téléchargement des données (export RGPD), suppression du compte |
+| Sécurité | `Security` | Ligne email vers `ChangeEmail`, ligne mot de passe vers `ChangePassword` (« en créer un » si le compte n'en a pas), puis la 2FA : activation, reconfiguration, désactivation |
+| Aide & Support | `HelpSupport` | Formulaire pour écrire à un administrateur, carte du centre d'aide |
+
+La maquette prévoyait une entrée Langue séparée : elle n'a pas été reprise, la langue se règle dans Affichage.
+
+Les réglages d'affichage et de notifications sont enregistrés à chaque changement par [`usePreferenceSaver.ts`](src:mobile-app/src/components/settings/usePreferenceSaver.ts), qui appelle `PUT /user/preferences`, remet l'ancienne valeur et affiche un message si l'envoi échoue. Quand l'interrupteur général est coupé, les catégories sont grisées et affichées désactivées, mais leurs valeurs enregistrées sont conservées.
+
+La carte du centre d'aide ouvre l'adresse de `EXPO_PUBLIC_HELP_CENTER_URL`. Tant que la variable est vide, la carte affiche la pastille « Bientôt » et ne fait rien : le site du centre d'aide reste à créer.
+
+Le bloc « Compte et appareils » de l'écran Sécurité (portefeuille intégré, déconnexion de tous les appareils) a été retiré. `signOutEverywhere` existe toujours dans `useAuth`, mais aucun écran ne l'appelle.
 
 ## Parcours principaux
 

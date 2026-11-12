@@ -66,8 +66,13 @@
 <td><code>/2fa/verify</code></td>
 <td>Web et mobile, pour les comptes qui l&#39;ont activé</td>
 </tr>
+<tr>
+<td>Compte connecté : changement d&#39;adresse email ou de mot de passe</td>
+<td><code>/email/change</code>, <code>/email/confirm</code>, <code>/password/change</code></td>
+<td>Application mobile (Paramètres, puis Sécurité)</td>
+</tr>
 </tbody></table></div>
-<p>Le module crée aussi le compte et le portefeuille Ethereum intégré lors de la première connexion vérifiée, et gère la double authentification et la déconnexion. Il ne vérifie pas l&#39;âge : la majorité est contrôlée à l&#39;achat grâce à la pièce d&#39;identité validée par la Mairie (voir <a href="utilisateur.html#verification-d-age">Utilisateur</a>).</p>
+<p>Le module crée aussi le compte et le portefeuille Ethereum intégré lors de la première connexion vérifiée, et gère la double authentification, le changement d&#39;adresse email et de mot de passe d&#39;un compte connecté, et la déconnexion. Il ne vérifie pas l&#39;âge : la majorité est contrôlée à l&#39;achat grâce à la pièce d&#39;identité validée par la Mairie (voir <a href="utilisateur.html#verification-d-age">Utilisateur</a>).</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -77,7 +82,7 @@
 </thead>
 <tbody><tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.routes.ts</code></a></td>
-<td>12 routes et leurs middlewares</td>
+<td>15 routes et leurs middlewares</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.validators.ts</code></a></td>
@@ -101,7 +106,7 @@
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/otp-challenge.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/otp-challenge.service.ts</code></a></td>
-<td>Codes email (connexion, inscription, activation, réinitialisation), compteur d&#39;échecs, anti-rejeu TOTP</td>
+<td>Codes email (connexion, inscription, activation, réinitialisation, changement d&#39;email), compteur d&#39;échecs, anti-rejeu TOTP</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/crypto.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/utils/crypto.util.ts</code></a></td>
@@ -146,6 +151,24 @@
 <td>public</td>
 <td><code>authRateLimiter</code>, <code>validate(resetPasswordSchema)</code></td>
 <td>Nouveau mot de passe avec le code reçu</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/auth/password/change</code></td>
+<td>connecté</td>
+<td><code>authRateLimiter</code>, <code>authenticate</code>, <code>validate(changePasswordSchema)</code></td>
+<td>Création ou modification du mot de passe, nouvelle session</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/auth/email/change</code></td>
+<td>connecté</td>
+<td><code>authRateLimiter</code>, <code>authenticate</code>, <code>validate(emailChangeRequestSchema)</code></td>
+<td>Envoi d&#39;un code à la nouvelle adresse</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/auth/email/confirm</code></td>
+<td>connecté</td>
+<td><code>authRateLimiter</code>, <code>authenticate</code>, <code>validate(emailChangeConfirmSchema)</code></td>
+<td>Confirmation de la nouvelle adresse</td>
 </tr>
 <tr>
 <td><code>POST /api/v1/auth/oauth/google</code></td>
@@ -376,6 +399,84 @@
 <li>Un code faux, expiré, épuisé ou d&#39;une autre finalité renvoie <code>400 Code invalide ou expiré.</code></li>
 <li>En cas de succès : nouvelle empreinte, <code>isEmailVerified</code> à <code>true</code>, révocation de toutes les sessions du compte (<code>auth:revoked-before:&lt;userId&gt;</code>) et alerte <code>security-alert</code> (« Mot de passe réinitialisé », ou « Mot de passe défini sur votre compte » pour un compte qui n&#39;en avait pas). La réponse vaut <code>{ &quot;reset&quot;: true }</code> ; il faut ensuite se reconnecter.</li>
 </ol>
+<h2 id="post-auth-password-change"><a class="anchor" href="#post-auth-password-change" aria-hidden="true" tabindex="-1">#</a>POST /auth/password/change</h2>
+<p>Création ou modification du mot de passe du compte connecté. Le parcours mobile est décrit dans <a href="../../mobile/authentification.html#email-et-mot-de-passe-du-compte">Authentification et stockage sécurisé</a>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>currentPassword</code></td>
+<td>chaîne</td>
+<td>facultatif, 1 à 128 caractères ; exigé si le compte a déjà un mot de passe</td>
+</tr>
+<tr>
+<td><code>newPassword</code></td>
+<td>chaîne</td>
+<td>même politique que <code>/signup</code></td>
+</tr>
+</tbody></table></div>
+<ol>
+<li>Un compte absent ou supprimé renvoie <code>404 Utilisateur introuvable</code>.</li>
+<li>Si le compte a un mot de passe : blocage après 10 échecs sur le sujet <code>&lt;userId&gt;</code> (le même que <code>/signin</code>), puis comparaison bcrypt. Un mot de passe actuel absent ou faux renvoie <code>401 Mot de passe actuel incorrect.</code> et compte un échec ; un succès remet le compteur à zéro.</li>
+<li>Un compte sans mot de passe (inscrit par <code>/login</code>, Google ou Apple) en définit un sans fournir <code>currentPassword</code>.</li>
+<li>Nouvelle empreinte bcrypt, révocation de toutes les sessions du compte (<code>auth:revoked-before:&lt;userId&gt;</code>) et alerte <code>security-alert</code> à l&#39;adresse du compte (« Mot de passe modifié », ou « Mot de passe défini sur votre compte »).</li>
+<li>Une nouvelle session est délivrée aussitôt, avec la même forme que <code>/signin</code> : <code>{ &quot;requiresTwoFactor&quot;: false, &quot;isNewUser&quot;: false, &quot;token&quot;: &quot;...&quot;, &quot;user&quot;: {...} }</code>, message <code>Mot de passe mis à jour, vos autres sessions ont été déconnectées</code>. Le jeton est émis avec <code>twoFactorVerified: true</code>, sans nouveau code 2FA : l&#39;appelant a déjà une session valide. L&#39;appareil qui a fait la demande remplace son jeton ; tous les autres sont déconnectés.</li>
+</ol>
+<h2 id="post-auth-email-change"><a class="anchor" href="#post-auth-email-change" aria-hidden="true" tabindex="-1">#</a>POST /auth/email/change</h2>
+<p>Première étape du changement d&#39;adresse email du compte connecté.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>newEmail</code></td>
+<td>chaîne</td>
+<td>email valide, 254 caractères au plus, passé en minuscules</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td>chaîne</td>
+<td>facultatif, 1 à 128 caractères ; exigé si le compte a un mot de passe</td>
+</tr>
+</tbody></table></div>
+<ol>
+<li>Une adresse identique à l&#39;actuelle renvoie <code>400 La nouvelle adresse email est identique à l&#39;adresse actuelle.</code></li>
+<li>Une adresse déjà portée par un autre compte renvoie <code>409 Cette adresse email est déjà utilisée par un autre compte.</code></li>
+<li>Si le compte a un mot de passe : blocage après 10 échecs sur <code>&lt;userId&gt;</code>, puis comparaison bcrypt. Un mot de passe absent ou faux renvoie <code>401 Mot de passe incorrect.</code> et compte un échec.</li>
+<li>Un code <code>EMAIL_CHANGE</code> est émis sur le sujet <code>email-change:&lt;userId&gt;</code> (10 minutes, 5 essais), la nouvelle adresse est gardée dans Redis sous <code>auth:email-change:&lt;userId&gt;</code> pendant 10 minutes, et le code part à la nouvelle adresse par l&#39;email <code>otp-code</code> (sujet <code>Confirmez votre nouvelle adresse email - BlockLucky</code>).</li>
+</ol>
+<p>La réponse vaut <code>{ &quot;message&quot;: &quot;Un code à 6 chiffres a été envoyé à &lt;adresse&gt;&quot; }</code>, avec <code>devOtpPreview</code> en développement. L&#39;adresse du compte ne change pas à cette étape.</p>
+<h2 id="post-auth-email-confirm"><a class="anchor" href="#post-auth-email-confirm" aria-hidden="true" tabindex="-1">#</a>POST /auth/email/confirm</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>code</code></td>
+<td>chaîne</td>
+<td>exactement 6 chiffres</td>
+</tr>
+</tbody></table></div>
+<ol>
+<li>Blocage après 10 échecs sur <code>email-change:&lt;userId&gt;</code>.</li>
+<li>Un code faux, expiré, épuisé, d&#39;une autre finalité, ou une adresse en attente absente de Redis, renvoie <code>400 Code invalide ou expiré.</code> et compte un échec.</li>
+<li>En cas de succès, le compteur et la clé Redis sont effacés, la disponibilité de l&#39;adresse est vérifiée une seconde fois (409 si un autre compte l&#39;a prise entre-temps), puis <code>email</code> est remplacé et <code>isEmailVerified</code> passe à <code>true</code>.</li>
+<li>L&#39;ancienne adresse reçoit l&#39;alerte <code>security-alert</code> « Adresse email du compte remplacée par » suivie de la nouvelle adresse masquée.</li>
+</ol>
+<p>La réponse vaut <code>{ &quot;profile&quot;: { &quot;email&quot;: &quot;nouvelle@etherbay.fr&quot; } }</code>, message <code>Adresse email mise à jour</code>. Les sessions ne sont pas révoquées.</p>
 <h2 id="post-auth-oauth-google-et-auth-oauth-apple"><a class="anchor" href="#post-auth-oauth-google-et-auth-oauth-apple" aria-hidden="true" tabindex="-1">#</a>POST /auth/oauth/google et /auth/oauth/apple</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -719,7 +820,12 @@
 <tr>
 <td>400</td>
 <td><code>Code invalide ou expiré.</code></td>
-<td><code>/password/reset</code></td>
+<td><code>/password/reset</code>, <code>/email/confirm</code></td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>La nouvelle adresse email est identique à l&#39;adresse actuelle.</code></td>
+<td><code>/email/change</code></td>
 </tr>
 <tr>
 <td>400</td>
@@ -748,6 +854,16 @@
 </tr>
 <tr>
 <td>401</td>
+<td><code>Mot de passe incorrect.</code></td>
+<td><code>/email/change</code></td>
+</tr>
+<tr>
+<td>401</td>
+<td><code>Mot de passe actuel incorrect.</code></td>
+<td><code>/password/change</code></td>
+</tr>
+<tr>
+<td>401</td>
 <td><code>Jeton Google invalide ou expiré.</code>, <code>Jeton Apple invalide ou expiré.</code>, email non vérifié</td>
 <td>Routes OAuth</td>
 </tr>
@@ -759,7 +875,7 @@
 <tr>
 <td>404</td>
 <td><code>Utilisateur introuvable</code></td>
-<td><code>/2fa/setup</code> ou <code>/2fa/disable</code> sur un compte supprimé de la base</td>
+<td><code>/2fa/setup</code>, <code>/2fa/disable</code>, <code>/password/change</code>, <code>/email/change</code> ou <code>/email/confirm</code> sur un compte supprimé</td>
 </tr>
 <tr>
 <td>409</td>
@@ -770,6 +886,11 @@
 <td>409</td>
 <td><code>Un compte existe déjà avec cette adresse email.</code></td>
 <td><code>/signup</code>, ou la vérification de son code</td>
+</tr>
+<tr>
+<td>409</td>
+<td><code>Cette adresse email est déjà utilisée par un autre compte.</code></td>
+<td><code>/email/change</code>, <code>/email/confirm</code></td>
 </tr>
 <tr>
 <td>429</td>
@@ -810,7 +931,7 @@ curl -s -X POST http://localhost:2053/api/v1/auth/2fa/verify \
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#jeton-de-session">Jeton de session</a></li><li class="toc-h2"><a href="#post-auth-signup">POST /auth/signup</a></li><li class="toc-h3"><a href="#corps">Corps</a></li><li class="toc-h3"><a href="#regles">Règles</a></li><li class="toc-h2"><a href="#post-auth-signin">POST /auth/signin</a></li><li class="toc-h2"><a href="#post-auth-password-forgot">POST /auth/password/forgot</a></li><li class="toc-h2"><a href="#post-auth-password-reset">POST /auth/password/reset</a></li><li class="toc-h2"><a href="#post-auth-oauth-google-et-auth-oauth-apple">POST /auth/oauth/google et /auth/oauth/apple</a></li><li class="toc-h2"><a href="#post-auth-login">POST /auth/login</a></li><li class="toc-h3"><a href="#corps-2">Corps</a></li><li class="toc-h3"><a href="#regles-2">Règles</a></li><li class="toc-h3"><a href="#reponses">Réponses</a></li><li class="toc-h3"><a href="#effets-de-bord">Effets de bord</a></li><li class="toc-h2"><a href="#post-auth-2fa-verify">POST /auth/2fa/verify</a></li><li class="toc-h3"><a href="#corps-3">Corps</a></li><li class="toc-h3"><a href="#regles-3">Règles</a></li><li class="toc-h3"><a href="#reponse">Réponse</a></li><li class="toc-h3"><a href="#creation-du-compte">Création du compte</a></li><li class="toc-h2"><a href="#post-auth-2fa-setup">POST /auth/2fa/setup</a></li><li class="toc-h2"><a href="#post-auth-2fa-disable">POST /auth/2fa/disable</a></li><li class="toc-h2"><a href="#post-auth-logout">POST /auth/logout</a></li><li class="toc-h2"><a href="#get-auth-onboarding">GET /auth/onboarding</a></li><li class="toc-h2"><a href="#erreurs-du-module">Erreurs du module</a></li><li class="toc-h2"><a href="#exemples">Exemples</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#jeton-de-session">Jeton de session</a></li><li class="toc-h2"><a href="#post-auth-signup">POST /auth/signup</a></li><li class="toc-h3"><a href="#corps">Corps</a></li><li class="toc-h3"><a href="#regles">Règles</a></li><li class="toc-h2"><a href="#post-auth-signin">POST /auth/signin</a></li><li class="toc-h2"><a href="#post-auth-password-forgot">POST /auth/password/forgot</a></li><li class="toc-h2"><a href="#post-auth-password-reset">POST /auth/password/reset</a></li><li class="toc-h2"><a href="#post-auth-password-change">POST /auth/password/change</a></li><li class="toc-h2"><a href="#post-auth-email-change">POST /auth/email/change</a></li><li class="toc-h2"><a href="#post-auth-email-confirm">POST /auth/email/confirm</a></li><li class="toc-h2"><a href="#post-auth-oauth-google-et-auth-oauth-apple">POST /auth/oauth/google et /auth/oauth/apple</a></li><li class="toc-h2"><a href="#post-auth-login">POST /auth/login</a></li><li class="toc-h3"><a href="#corps-2">Corps</a></li><li class="toc-h3"><a href="#regles-2">Règles</a></li><li class="toc-h3"><a href="#reponses">Réponses</a></li><li class="toc-h3"><a href="#effets-de-bord">Effets de bord</a></li><li class="toc-h2"><a href="#post-auth-2fa-verify">POST /auth/2fa/verify</a></li><li class="toc-h3"><a href="#corps-3">Corps</a></li><li class="toc-h3"><a href="#regles-3">Règles</a></li><li class="toc-h3"><a href="#reponse">Réponse</a></li><li class="toc-h3"><a href="#creation-du-compte">Création du compte</a></li><li class="toc-h2"><a href="#post-auth-2fa-setup">POST /auth/2fa/setup</a></li><li class="toc-h2"><a href="#post-auth-2fa-disable">POST /auth/2fa/disable</a></li><li class="toc-h2"><a href="#post-auth-logout">POST /auth/logout</a></li><li class="toc-h2"><a href="#get-auth-onboarding">GET /auth/onboarding</a></li><li class="toc-h2"><a href="#erreurs-du-module">Erreurs du module</a></li><li class="toc-h2"><a href="#exemples">Exemples</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

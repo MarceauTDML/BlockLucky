@@ -120,6 +120,7 @@ npm start
 | `EXPO_PUBLIC_WS_URL` | `http://localhost:2053` | Serveur Socket.IO |
 | `EXPO_PUBLIC_SENTRY_DSN` | vide | Sans effet réel ([Réel, simulé ou à venir](../presentation/reel-ou-simule.md)) |
 | `EXPO_PUBLIC_WEB3AUTH_CLIENT_ID` | `blocklucky-etherbay-client` | Non lue par le code, à retirer |
+| `EXPO_PUBLIC_HELP_CENTER_URL` | vide | Adresse du centre d'aide ouvert depuis Aide & Support ; vide, la carte affiche « Bientôt » |
 
 > [!IMPORTANT]
 > Sur un téléphone physique, `localhost` désigne le téléphone lui-même. Remplacer `localhost` par l'adresse IP du poste sur le réseau local dans `mobile-app/.env`, par exemple `http://192.168.1.20:2053/api`, puis relancer Expo avec `npx expo start -c` pour vider le cache. Le détail est dans [Tester sur un téléphone](../mobile/telephone-physique.md).

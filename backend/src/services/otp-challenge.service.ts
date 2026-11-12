@@ -3,7 +3,7 @@ import redis from '../config/redis.config';
 import { generateOtpCode, hmacSha256, safeEqual } from '../utils/crypto.util';
 import { AppError } from '../utils/response.util';
 
-export type ChallengePurpose = 'LOGIN' | 'SIGNUP' | 'SETUP' | 'PASSWORD_RESET';
+export type ChallengePurpose = 'LOGIN' | 'SIGNUP' | 'SETUP' | 'PASSWORD_RESET' | 'EMAIL_CHANGE';
 
 export interface PendingSignup {
   walletAddress?: string | undefined;

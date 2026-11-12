@@ -16,7 +16,7 @@ Ces informations figurent aussi dans la politique de confidentialité du web ([`
 
 | Catégorie | Données | Stockage |
 |---|---|---|
-| Identification | Email, identifiant de compte, empreinte du mot de passe | Table `User` |
+| Identification | Email, identifiant de compte, empreinte du mot de passe, prénom et nom facultatifs | Table `User` |
 | Vérification d'âge | Photos du recto et du verso de la pièce d'identité, statut, dates d'envoi et de décision, motif d'un refus, agent qui a statué | Tables `IdentityDocument` (images chiffrées) et `User` |
 | Portefeuille | Adresse, clé privée chiffrée, hash de la dotation de bienvenue | Table `User` |
 | Participation | Tickets, hash de transaction, adresse payeuse, tours | Tables `Ticket`, `LotteryRound` |
@@ -24,10 +24,10 @@ Ces informations figurent aussi dans la politique de confidentialité du web ([`
 | Parrainage | Code de parrainage, parrain | Table `User` |
 | Sécurité | Secret TOTP chiffré, empreintes des codes de secours, codes temporaires, compteurs, révocations | Table `User`, Redis |
 | Déclaratif | Confirmation de majorité et tranche d'âge (`18-25`, `26-35`, `36-50`, `50+`), demandées par la connexion web seulement | Métadonnées de l'événement analytique `USER_SIGNUP` |
-| Préférences | Thème, langue, notifications, limite de jeu responsable, quêtes accomplies | Redis (`user:prefs:*`, `user:ticket_limit:*`, `user:quests:*`) |
+| Préférences | Thème, langue, interrupteur général et catégories de notifications, limite de jeu responsable, quêtes accomplies | Redis (`user:prefs:*`, `user:ticket_limit:*`, `user:quests:*`) |
 | Mesure d'audience | Type d'événement, source UTM, plateforme, page, identifiant du compte s'il est connecté | Table `Analytics` |
 
-Aucune donnée bancaire n'est collectée. Le nom, la date de naissance, le numéro du document et, le cas échéant, l'adresse ne sont pas saisis, mais ils figurent sur les photos de la pièce d'identité jusqu'à la décision de la Mairie : ce sont alors des données d'identité civile, à protéger en conséquence. Le nom transmis par Apple à la première connexion est ignoré. Le modèle complet est décrit dans [Modèle de données](../base-de-donnees/modele.md).
+Aucune donnée bancaire n'est collectée. Le prénom et le nom ne sont saisis que si le citoyen les renseigne dans l'écran Données personnelles du mobile ; ils servent à l'affichage des paramètres et aux messages envoyés au support. La date de naissance, le numéro du document et, le cas échéant, l'adresse ne sont pas saisis, mais ils figurent sur les photos de la pièce d'identité jusqu'à la décision de la Mairie : ce sont alors des données d'identité civile, à protéger en conséquence. Le nom transmis par Apple à la première connexion est ignoré. Le modèle complet est décrit dans [Modèle de données](../base-de-donnees/modele.md).
 
 ## Bases légales
 
@@ -40,6 +40,7 @@ Aucune donnée bancaire n'est collectée. Le nom, la date de naissance, le numé
 | Mesure d'audience | Intérêt légitime, avec opposition | Le droit d'opposition n'est offert que sur le web et ne couvre pas les événements enregistrés par le serveur |
 | Journal d'administration | Obligation légale et intérêt légitime | |
 | Emails transactionnels | Exécution du contrat et intérêt légitime | Codes, alertes, bienvenue, confirmation RGPD, codes promo |
+| Messages au support | Exécution du contrat, à confirmer | Objet, message, identifiant, email, prénom et nom transmis à l'adresse `SUPPORT_EMAIL` ; aucune copie en base |
 
 Le choix de l'exécution du contrat pour un service public communal, plutôt que la mission d'intérêt public, est à confirmer par le DPO (voir [Points à valider](points-a-valider.md)).
 
@@ -47,7 +48,7 @@ Le choix de l'exécution du contrat pour un service public communal, plutôt que
 
 | Donnée | Durée annoncée | Ce que fait le code |
 |---|---|---|
-| Code de connexion, d'inscription ou de réinitialisation | 10 minutes | Fait : TTL Redis |
+| Code de connexion, d'inscription, de réinitialisation ou de changement d'email | 10 minutes | Fait : TTL Redis |
 | Photos de la pièce d'identité | Jusqu'à la décision de la Mairie | Fait : effacées dans la transaction de la décision ; **aucune limite** pour une demande jamais traitée |
 | Décision sur l'âge (statut, date, motif d'un refus) | Durée du compte | Conservée sur `User` et dans le journal d'administration (`IDENTITY_VERIFICATION_DECISION`, avec le motif) |
 | Compteur d'échecs | 1 heure | Fait : TTL Redis |
@@ -67,12 +68,12 @@ Le choix de l'exécution du contrat pour un service public communal, plutôt que
 
 ### Accès et portabilité
 
-`GET /api/user/gdpr/export` (authentifié) renvoie un document JSON construit par `exportGdprData` de [`backend/src/api/user/user.services.ts`](src:backend/src/api/user/user.services.ts). Le web le propose depuis Profil, puis Données personnelles ([`frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx`](src:frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx)) ; le mobile depuis l'écran [`mobile-app/src/screens/settings/GDPRScreen.tsx`](src:mobile-app/src/screens/settings/GDPRScreen.tsx).
+`GET /api/user/gdpr/export` (authentifié) renvoie un document JSON construit par `exportGdprData` de [`backend/src/api/user/user.services.ts`](src:backend/src/api/user/user.services.ts). Le web le propose depuis Profil, puis Données personnelles ([`frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx`](src:frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx)) ; le mobile depuis Paramètres, puis Données personnelles, bouton « Télécharger mes données » ([`mobile-app/src/screens/settings/PersonalDataScreen.tsx`](src:mobile-app/src/screens/settings/PersonalDataScreen.tsx)).
 
 | Clé de l'export | Contenu |
 |---|---|
 | `exportedAt`, `controller` | Date et responsable de traitement |
-| `personalData` | Identifiant, adresse du portefeuille, email, rôle, solde de points, code de parrainage, état de la 2FA, statut et date de la vérification d'âge, dates de création et de mise à jour |
+| `personalData` | Identifiant, adresse du portefeuille, email, prénom, nom, rôle, solde de points, code de parrainage, état de la 2FA, statut et date de la vérification d'âge, dates de création et de mise à jour |
 | `ticketsHistory` | Tickets avec leur tour |
 | `pointsLedger` | Journal complet des points |
 | `claimedRewards` | Récompenses, offre et commerçant |
@@ -108,6 +109,7 @@ L'anonymisation, faite par `anonymizeUserAccount` de [`backend/src/api/user/user
 | `welcomeGrantTxHash` | `null` |
 | `email` | `null` |
 | `passwordHash` | `null` |
+| `firstName`, `lastName` | `null` |
 | `ageVerificationNote` | `null` ; le statut et la date de vérification sont conservés |
 | `twoFactorSecret`, `twoFactorMethod`, `twoFactorBackupCodes`, `isTwoFactorEnabled` | Effacés |
 | `deletedAt` | Date de la suppression |
@@ -133,7 +135,14 @@ Une fois l'email supprimé, ces données restantes ne permettent plus d'identifi
 
 ### Rectification
 
-Le citoyen peut modifier son thème, sa langue, ses notifications et sa limite de jeu. Aucune route ne permet de changer l'adresse email ; la rectification passe par une demande au DPO, avec une réponse sous un mois.
+Le citoyen peut modifier son thème, sa langue, ses notifications et sa limite de jeu. Sur le mobile, il peut aussi rectifier lui-même :
+
+| Donnée | Écran | Route |
+|---|---|---|
+| Prénom et nom (50 caractères au plus ; un champ vide efface la valeur) | Paramètres, puis Données personnelles | `PATCH /api/user/profile` |
+| Adresse email, confirmée par un code envoyé à la nouvelle adresse ; l'ancienne reçoit une alerte | Paramètres, puis Sécurité | `POST /api/auth/email/change`, `POST /api/auth/email/confirm` |
+
+Le web ne propose aucun de ces deux écrans. Les autres rectifications passent par une demande au DPO, avec une réponse sous un mois.
 
 ### Opposition à la mesure d'audience
 

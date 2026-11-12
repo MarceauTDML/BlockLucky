@@ -85,6 +85,20 @@ export class AuthRepository {
     });
   }
 
+  public async updatePasswordHash(userId: string, passwordHash: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash },
+    });
+  }
+
+  public async updateEmail(userId: string, email: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { email: email.toLowerCase(), isEmailVerified: true },
+    });
+  }
+
   public async createToken(userId: string, token: string, type: TokenType, expiresInMinutes = 15) {
     const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
     return prisma.token.create({
