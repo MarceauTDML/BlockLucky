@@ -6,6 +6,15 @@ export type ThemeMode = 'DARK' | 'LIGHT';
 
 export type LanguageCode = 'FR' | 'EN';
 
+export type AgeVerificationStatus = 'NONE' | 'PENDING' | 'VERIFIED' | 'REJECTED';
+
+export interface IdentityStatus {
+  status: AgeVerificationStatus;
+  submittedAt: string | null;
+  reviewedAt: string | null;
+  note: string | null;
+}
+
 export interface UserPreferences {
   theme: ThemeMode;
   language: LanguageCode;
@@ -27,6 +36,7 @@ export interface UserProfile {
   referralCode: string;
   referralLink?: string;
   isTwoFactorEnabled: boolean;
+  ageVerificationStatus?: AgeVerificationStatus;
   twoFactorMethod?: TwoFactorMethod | null;
   stats?: UserStats;
   responsibleGaming?: {

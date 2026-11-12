@@ -12,6 +12,7 @@ import {
   PushNotificationItem,
   GdprExportResponse,
 } from '@/types/api.types';
+import { AgeVerificationStatus, IdentityStatus } from '@/types/user.types';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -60,6 +61,17 @@ export const authApi = baseApi.injectEndpoints({
     getProfile: builder.query<ApiResponse<{ profile: UserProfile }>, void>({
       query: () => '/user/profile',
       providesTags: ['User'],
+    }),
+    getIdentityStatus: builder.query<ApiResponse<IdentityStatus>, void>({
+      query: () => '/user/identity',
+      providesTags: ['Identity'],
+    }),
+    submitIdentity: builder.mutation<
+      ApiResponse<{ status: AgeVerificationStatus; submittedAt: string }>,
+      { front: string; back: string }
+    >({
+      query: (body) => ({ url: '/user/identity', method: 'POST', body }),
+      invalidatesTags: ['Identity', 'User'],
     }),
     getReferrals: builder.query<ApiResponse<ReferralInfo>, void>({
       query: () => '/user/referrals',
@@ -142,6 +154,8 @@ export const {
   useDisable2FAMutation,
   useLogoutMutation,
   useGetProfileQuery,
+  useGetIdentityStatusQuery,
+  useSubmitIdentityMutation,
   useGetReferralsQuery,
   useGetQuestsQuery,
   useCompleteQuestMutation,

@@ -110,3 +110,31 @@ export interface RefundResponse {
   refundedAmountEth: number;
   message: string;
 }
+
+export type IdentityVerificationStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
+
+export interface IdentityVerificationSummary {
+  id: string;
+  userId: string;
+  email: string | null;
+  submittedAt: string;
+  status: IdentityVerificationStatus;
+}
+
+export interface IdentityVerificationDetail extends IdentityVerificationSummary {
+  walletAddress: string;
+  accountCreatedAt: string;
+  reviewedAt: string | null;
+  reviewerId: string | null;
+  note: string | null;
+  front: string | null;
+  back: string | null;
+}
+
+export interface IdentityDecisionResponse {
+  id: string;
+  userId: string;
+  status: IdentityVerificationStatus;
+  reviewedAt: string;
+  note: string | null;
+}
