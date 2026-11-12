@@ -133,6 +133,8 @@ export const prismaMock: any = {
         welcomeGrantTxHash: data.welcomeGrantTxHash ?? null,
         email: data.email ?? null,
         passwordHash: data.passwordHash ?? null,
+        firstName: data.firstName ?? null,
+        lastName: data.lastName ?? null,
         role: data.role ?? 'USER',
         isTwoFactorEnabled: data.isTwoFactorEnabled ?? false,
         twoFactorMethod: data.twoFactorMethod ?? null,

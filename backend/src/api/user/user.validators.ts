@@ -5,6 +5,46 @@ export const updatePreferencesSchema = z.object({
     theme: z.enum(['LIGHT', 'DARK', 'SYSTEM']).optional(),
     language: z.enum(['FR', 'EN']).optional(),
     pushNotificationsEnabled: z.boolean().optional(),
+    notifications: z
+      .object({
+        drawReminders: z.boolean().optional(),
+        results: z.boolean().optional(),
+        rewards: z.boolean().optional(),
+        referrals: z.boolean().optional(),
+      })
+      .optional(),
+  }),
+});
+
+const personName = (label: string) =>
+  z
+    .string({ error: `${label} invalide` })
+    .trim()
+    .max(50, `${label} ne doit pas dépasser 50 caractères`)
+    .regex(
+      /^$|^(?=.*\p{L})[\p{L}\p{M} '’-]+$/u,
+      `${label} ne peut contenir que des lettres, des espaces, des traits d'union et des apostrophes`
+    );
+
+export const updateProfileSchema = z.object({
+  body: z.object({
+    firstName: personName('Le prénom').optional(),
+    lastName: personName('Le nom').optional(),
+  }),
+});
+
+export const supportRequestSchema = z.object({
+  body: z.object({
+    subject: z
+      .string({ error: 'Objet requis' })
+      .trim()
+      .min(3, "L'objet doit contenir au moins 3 caractères")
+      .max(120, "L'objet ne doit pas dépasser 120 caractères"),
+    message: z
+      .string({ error: 'Message requis' })
+      .trim()
+      .min(10, 'Le message doit contenir au moins 10 caractères')
+      .max(2000, 'Le message ne doit pas dépasser 2000 caractères'),
   }),
 });
 

@@ -77,7 +77,7 @@
 <td><code>authRateLimiter</code></td>
 <td>10 minutes</td>
 <td>30</td>
-<td><code>POST /api/auth/signup</code>, <code>/signin</code>, <code>/password/forgot</code>, <code>/password/reset</code>, <code>/oauth/google</code>, <code>/oauth/apple</code>, <code>/login</code>, <code>/2fa/verify</code>, <code>/2fa/disable</code></td>
+<td><code>POST /api/auth/signup</code>, <code>/signin</code>, <code>/password/forgot</code>, <code>/password/reset</code>, <code>/password/change</code>, <code>/email/change</code>, <code>/email/confirm</code>, <code>/oauth/google</code>, <code>/oauth/apple</code>, <code>/login</code>, <code>/2fa/verify</code>, <code>/2fa/disable</code></td>
 </tr>
 <tr>
 <td><code>identityUploadRateLimiter</code></td>
@@ -85,8 +85,14 @@
 <td>10</td>
 <td><code>POST /api/user/identity</code></td>
 </tr>
+<tr>
+<td><code>supportRateLimiter</code></td>
+<td>1 heure</td>
+<td>5, comptées par compte (<code>user:&lt;id&gt;</code>) et non par adresse IP, sauf requête sans utilisateur</td>
+<td><code>POST /api/user/support</code></td>
+</tr>
 </tbody></table></div>
-<p>En environnement <code>test</code>, les trois limites passent à 10 000 pour ne pas gêner les suites de tests.</p>
+<p>En environnement <code>test</code>, les quatre limites passent à 10 000 pour ne pas gêner les suites de tests.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -107,7 +113,7 @@
 </tr>
 <tr>
 <td>Préfixe Redis</td>
-<td><code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:ratelimit:&lt;global, auth ou identity&gt;:</code></td>
+<td><code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:ratelimit:&lt;global, auth, identity ou support&gt;:</code></td>
 <td>Compteurs partagés entre toutes les instances de l&#39;API</td>
 </tr>
 <tr>
@@ -116,7 +122,7 @@
 <td>L&#39;API reste disponible pendant une panne de Redis</td>
 </tr>
 </tbody></table></div>
-<p>Le limiteur des pièces d&#39;identité est placé avant <code>authenticate</code> et avant l&#39;analyse du corps de 12 Mo : un client qui dépasse son quota est refusé sans que le serveur lise le corps. Le compteur d&#39;échecs de code et de mot de passe par compte, décrit dans <a href="authentification.html#parametres-du-code">Authentification</a>, complète la limite par IP : il ne dépend pas de l&#39;adresse de l&#39;attaquant.</p>
+<p>Le limiteur des pièces d&#39;identité est placé avant <code>authenticate</code> et avant l&#39;analyse du corps de 12 Mo : un client qui dépasse son quota est refusé sans que le serveur lise le corps. À l&#39;inverse, <code>supportRateLimiter</code> est placé après <code>authenticate</code>, pour compter les messages par compte : plusieurs citoyens derrière la même adresse IP ne se partagent pas le quota. Le compteur d&#39;échecs de code et de mot de passe par compte, décrit dans <a href="authentification.html#parametres-du-code">Authentification</a>, complète la limite par IP : il ne dépend pas de l&#39;adresse de l&#39;attaquant.</p>
 <div class="hint hint-note"><p class="hint-title">À savoir</p>
 <p>Le choix <code>passOnStoreError: true</code> privilégie la disponibilité. Pendant une panne de Redis, la seule limite restante sur les codes est le blocage par compte, lui-même tenu dans le repli mémoire propre à chaque processus. Voir l&#39;<a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">ADR 0002</a>.</p>
 </div>

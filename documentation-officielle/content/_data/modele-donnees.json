@@ -9,6 +9,8 @@
         "welcomeGrantTxHash": "Hachage de la transaction de dotation de bienvenue en ethers fictifs. `NULL` tant que la dotation n'est pas versée ; sert de garde contre une seconde dotation.",
         "email": "Adresse email en minuscules, identifiant de connexion. `NULL` pour un compte créé par l'indexeur ou effacé.",
         "passwordHash": "Empreinte bcrypt (coût 12) du mot de passe. `NULL` pour un compte sans mot de passe (connexion par code email, Google ou Apple) et après effacement RGPD.",
+        "firstName": "Prénom saisi par le citoyen dans l'espace Paramètres : 50 caractères au plus, lettres (accents compris), espaces, traits d'union et apostrophes. `NULL` tant qu'il n'est pas renseigné, après effacement par une chaîne vide et après effacement RGPD.",
+        "lastName": "Nom de famille saisi par le citoyen dans l'espace Paramètres, avec les mêmes règles que `firstName`. `NULL` tant qu'il n'est pas renseigné, après effacement par une chaîne vide et après effacement RGPD.",
         "role": "Rôle d'autorisation : citoyen, commerçant partenaire ou administrateur de la Mairie.",
         "isTwoFactorEnabled": "Vrai quand la double authentification est activée et vérifiée.",
         "twoFactorMethod": "Méthode de double authentification choisie : application TOTP ou code par email.",

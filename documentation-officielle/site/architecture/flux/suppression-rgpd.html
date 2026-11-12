@@ -67,7 +67,7 @@
   SS-&gt;&gt;R: auth:revoked-before:userId, 30 jours
   US--&gt;&gt;C: 200 deleted, anonymized, deletedAt</pre></div>
 <h2 id="etape-1-demande"><a class="anchor" href="#etape-1-demande" aria-hidden="true" tabindex="-1">#</a>Étape 1 : demande</h2>
-<p><strong>Interface.</strong> La page <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx</code></a> et l&#39;écran <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/GDPRScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/settings/GDPRScreen.tsx</code></a> appellent <code>/user/gdpr/delete-request</code> puis proposent de coller le jeton. Hors production, la page web préremplit le jeton renvoyé par l&#39;API.</p>
+<p><strong>Interface.</strong> La page <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/(citoyen)/profil/rgpd/page.tsx</code></a> et l&#39;écran Données personnelles du mobile (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/PersonalDataScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/settings/PersonalDataScreen.tsx</code></a>) appellent <code>/user/gdpr/delete-request</code> puis proposent de coller le jeton. Hors production, la page web préremplit le jeton renvoyé par l&#39;API.</p>
 <p><strong>Route.</strong> <code>POST /api/v1/user/gdpr/delete-request</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.routes.ts</code></a>, protégée par <code>authenticate</code> seulement : pas de schéma de corps, pas d&#39;idempotence.</p>
 <p><strong>Service.</strong> <code>userService.requestGdprAccountDeletion</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a>) :</p>
 <ol>
@@ -114,7 +114,7 @@
 <td>Effacés ou désactivés</td>
 </tr>
 <tr>
-<td><code>User.passwordHash</code>, <code>ageVerificationNote</code></td>
+<td><code>User.passwordHash</code>, <code>firstName</code>, <code>lastName</code>, <code>ageVerificationNote</code></td>
 <td><code>null</code></td>
 </tr>
 <tr>

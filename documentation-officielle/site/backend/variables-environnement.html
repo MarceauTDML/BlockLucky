@@ -195,7 +195,7 @@
 </div>
 <p><code>POST /admin/treasury/withdraw</code> appelle <code>setTreasury</code> sur le contrat quand l&#39;adresse demandée diffère de la trésorerie actuelle. Cette fonction exige le rôle d&#39;administrateur du contrat : si le compte opérateur n&#39;est pas aussi administrateur, seul un retrait vers la trésorerie déjà configurée fonctionne.</p>
 <h2 id="reference"><a class="anchor" href="#reference" aria-hidden="true" tabindex="-1">#</a>Référence</h2>
-<p>Le schéma de configuration compte <strong>59 variables</strong>, lues et validées au démarrage par <code>backend/src/config/env.config.ts</code>. Une valeur invalide arrête le processus avec la liste des erreurs.</p>
+<p>Le schéma de configuration compte <strong>60 variables</strong>, lues et validées au démarrage par <code>backend/src/config/env.config.ts</code>. Une valeur invalide arrête le processus avec la liste des erreurs.</p>
 <h3 id="serveur-http"><a class="anchor" href="#serveur-http" aria-hidden="true" tabindex="-1">#</a>Serveur HTTP</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -490,6 +490,13 @@
 <td><code>EtherBay Lottery &lt;noreply@etherbay.fr&gt;</code></td>
 <td>-</td>
 <td>Expéditeur affiché des emails.</td>
+</tr>
+<tr>
+<td><code>SUPPORT_EMAIL</code></td>
+<td>chaîne</td>
+<td><code>support@etherbay.fr</code></td>
+<td>-</td>
+<td>Adresse qui reçoit les messages du formulaire de support (<code>POST /user/support</code>). L&#39;email porte l&#39;identifiant, l&#39;adresse, le prénom et le nom du citoyen, et son adresse en réponse directe quand elle est connue.</td>
 </tr>
 </tbody></table></div>
 <h3 id="blockchain"><a class="anchor" href="#blockchain" aria-hidden="true" tabindex="-1">#</a>Blockchain</h3>

@@ -100,6 +100,30 @@ export const resetPasswordSchema = z.object({
   }),
 });
 
+export const emailChangeRequestSchema = z.object({
+  body: z.object({
+    newEmail: email,
+    password: z.string().min(1, 'Mot de passe requis').max(128, 'Mot de passe incorrect.').optional(),
+  }),
+});
+
+export const emailChangeConfirmSchema = z.object({
+  body: z.object({
+    code: emailCode,
+  }),
+});
+
+export const changePasswordSchema = z.object({
+  body: z.object({
+    currentPassword: z
+      .string()
+      .min(1, 'Mot de passe actuel requis')
+      .max(128, 'Mot de passe actuel incorrect.')
+      .optional(),
+    newPassword: passwordPolicy,
+  }),
+});
+
 export const googleOAuthSchema = z.object({
   body: z.object({
     idToken: z.string().trim().min(20, 'Jeton Google requis').max(8192),

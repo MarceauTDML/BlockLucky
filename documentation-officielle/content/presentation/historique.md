@@ -82,7 +82,8 @@ La migration `20261112090000_password_accounts_identity_verification` marque l'�
 3. un seul ticket par participant et par grand tirage, numéros de ticket à cinq chiffres, phases du tour et délai de révélation géré par le keeper ;
 4. ticket à gratter acheté en EtherPoints et nouveaux paliers de la jauge ;
 5. refonte complète de l'application mobile sur la maquette Figma : police Inter, nouveaux jetons de couleur, quatre onglets et douze nouveaux écrans ;
-6. alignement du frontend web sur cette charte : mêmes couleurs, police et icônes, pages restylées sur les écrans mobiles.
+6. alignement du frontend web sur cette charte : mêmes couleurs, police et icônes, pages restylées sur les écrans mobiles ;
+7. espace Paramètres du mobile ouvert par une roue dentée dans l'en-tête (affichage, notifications par catégorie, prénom et nom, changement d'email et de mot de passe, message au support), avec la migration `20261112150000_user_names`.
 
 ## Ce que l'historique explique
 

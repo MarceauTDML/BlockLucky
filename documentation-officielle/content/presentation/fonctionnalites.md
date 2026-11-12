@@ -48,7 +48,9 @@ Voir [Contrat BlockLucky](../smart-contracts/blocklucky.md) et [Badge POAP](../s
 | Double authentification TOTP avec codes de secours | `/profil/securite/2fa` | `Setup2FAScreen` | `POST /api/v1/auth/2fa/setup` | Réel |
 | Double authentification par email | `/profil/securite/2fa` | `Setup2FAScreen` | même route, méthode `EMAIL` | Réel |
 | Désactivation de la 2FA (code ou connexion récente) | `/profil/securite` | `SecurityScreen` | `POST /api/v1/auth/2fa/disable` | Réel |
-| Déconnexion de l'appareil, ou de tous les appareils | `/profil/securite` | `ProfileScreen`, `SecurityScreen` | `POST /api/v1/auth/logout` | Réel |
+| Déconnexion de l'appareil, ou de tous les appareils | `/profil/securite` | `ProfileScreen` (cet appareil seulement) | `POST /api/v1/auth/logout` | Réel |
+| Changement d'adresse email confirmé par un code envoyé à la nouvelle adresse | - | `SecurityScreen`, `ChangeEmailScreen` | `POST /api/v1/auth/email/change`, `POST /api/v1/auth/email/confirm` | Réel |
+| Création ou changement du mot de passe, avec déconnexion des autres appareils | - | `SecurityScreen`, `ChangePasswordScreen` | `POST /api/v1/auth/password/change` | Réel |
 | Alertes de sécurité par email | - | - | Template `security-alert` | Réel |
 | Verrouillage après codes ou mots de passe erronés | - | - | 5 essais par code, 10 échecs par heure et par compte | Réel |
 
@@ -61,7 +63,7 @@ Détails : [Authentification](../backend/modules/auth.md), [Authentification et 
 | Création d'un portefeuille Ethereum par citoyen, clé chiffrée AES-256-GCM | automatique | automatique | [`backend/src/blockchain/wallet.service.ts`](src:backend/src/blockchain/wallet.service.ts) | Réel |
 | Dotation de bienvenue en ethers fictifs (0,5 ETH par défaut, une fois) | automatique | automatique | `WELCOME_GRANT_WEI` | Réel |
 | Adresse, solde et lien vers l'explorateur | `/accueil` | `HomeScreen`, `ProfileScreen` | `GET /api/v1/lottery/wallet` | Réel ; aucun solde en mode simulé |
-| Effacement de la clé à la suppression RGPD | `/profil/rgpd` | `GDPRScreen` | [`backend/src/api/user/user.repo.ts`](src:backend/src/api/user/user.repo.ts) | Réel |
+| Effacement de la clé à la suppression RGPD | `/profil/rgpd` | `PersonalDataScreen` | [`backend/src/api/user/user.repo.ts`](src:backend/src/api/user/user.repo.ts) | Réel |
 
 ## Loterie
 
@@ -79,7 +81,7 @@ Détails : [Authentification](../backend/modules/auth.md), [Authentification et 
 | Versement automatique de la cagnotte et des remboursements | - | - | [`backend/src/blockchain/chain-actions.ts`](src:backend/src/blockchain/chain-actions.ts) | Réel |
 | Réclamation manuelle de la cagnotte | `/accueil`, `/tirage` | `LiveDrawScreen` | `POST /api/v1/lottery/claim-prize` | Réel |
 | Classement anonymisé des ambassadeurs | `/accueil` | `SponsorsScreen` | `GET /api/v1/lottery/leaderboard` | Réel |
-| Charte de transparence | `/transparence`, `/profil/aide` | `HowItWorksScreen`, `HelpSupportScreen` | `GET /api/v1/lottery/transparency-charter` | Réel |
+| Charte de transparence | `/transparence`, `/profil/aide` | `HowItWorksScreen` | `GET /api/v1/lottery/transparency-charter` | Réel |
 | Métadonnées et visuel des badges POAP | - | - | `GET /api/v1/lottery/poap/:file` | Réel |
 
 ## Tirage en direct
@@ -143,12 +145,15 @@ Détails : [Administration Mairie](../backend/modules/administration.md).
 | Fonctionnalité | Web | Mobile | Route | État |
 |---|---|---|---|---|
 | Profil et statistiques | `/profil` | `ProfileScreen` | `GET /api/v1/user/profile` | Réel |
-| Thème clair ou sombre, français ou anglais | partout | `SettingsScreen` | `PUT /api/v1/user/preferences` | Réel |
+| Accueil des paramètres, ouvert par la roue dentée de l'en-tête | - | `SettingsScreen` | `GET /api/v1/user/profile` | Réel |
+| Thème clair ou sombre, français ou anglais | partout | `DisplaySettingsScreen` | `PUT /api/v1/user/preferences` | Réel |
+| Choix des notifications par catégorie | - | `NotificationSettingsScreen` | `PUT /api/v1/user/preferences` | Partiel : filtre le centre de notifications, aucun envoi push |
+| Prénom et nom | - | `PersonalDataScreen` | `PATCH /api/v1/user/profile` | Réel |
 | Centre de notifications | cloche | `NotificationsScreen` | `GET /api/v1/user/notifications` | Fictif : trois notifications codées en dur |
-| Export des données personnelles en JSON | `/profil/rgpd` | `GDPRScreen` | `GET /api/v1/user/gdpr/export` | Réel |
-| Suppression du compte confirmée par email | `/profil/rgpd` | `GDPRScreen` | `POST /api/v1/user/gdpr/delete-request`, `POST /api/v1/user/gdpr/confirm-delete` | Réel |
+| Export des données personnelles en JSON | `/profil/rgpd` | `PersonalDataScreen` | `GET /api/v1/user/gdpr/export` | Réel |
+| Suppression du compte confirmée par email | `/profil/rgpd` | `PersonalDataScreen` | `POST /api/v1/user/gdpr/delete-request`, `POST /api/v1/user/gdpr/confirm-delete` | Réel |
 | Refus de la mesure d'audience | `/confidentialite` | - | stockage local | Réel |
-| Aide et support | `/profil/aide` | `HelpSupportScreen` | - | Réel |
+| Aide et support | `/profil/aide` | `HelpSupportScreen` | `POST /api/v1/user/support` (mobile) | Réel ; centre d'aide « Bientôt » tant que `EXPO_PUBLIC_HELP_CENTER_URL` est vide |
 
 ## Plateforme et exploitation
 

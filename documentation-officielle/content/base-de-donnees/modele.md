@@ -28,6 +28,8 @@ erDiagram
         string welcomeGrantTxHash "nullable"
         string email UK "nullable"
         string passwordHash "bcrypt, nullable"
+        string firstName "prénom, nullable"
+        string lastName "nom, nullable"
         Role role
         boolean isTwoFactorEnabled
         TwoFactorMethod twoFactorMethod "nullable"

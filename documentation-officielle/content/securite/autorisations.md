@@ -50,6 +50,8 @@ Légende : **oui** accès accordé, **non** refusé (401 sans jeton, 403 avec un
 | `GET /api/auth/onboarding` | Aucun | oui | oui | oui | oui |
 | `POST /api/auth/signup`, `/signin` | `authRateLimiter` | oui | oui | oui | oui |
 | `POST /api/auth/password/forgot`, `/password/reset` | `authRateLimiter` | oui | oui | oui | oui |
+| `POST /api/auth/password/change` | `authRateLimiter`, `authenticate`, mot de passe actuel s'il en existe un | non | propre | propre | propre |
+| `POST /api/auth/email/change`, `/email/confirm` | `authRateLimiter`, `authenticate`, mot de passe actuel s'il en existe un, puis code envoyé à la nouvelle adresse | non | propre | propre | propre |
 | `POST /api/auth/oauth/google`, `/oauth/apple` | `authRateLimiter` ; 503 si le fournisseur n'est pas configuré | oui | oui | oui | oui |
 | `POST /api/auth/login` | `authRateLimiter` | oui | oui | oui | oui |
 | `POST /api/auth/2fa/verify` | `authRateLimiter`, `optionalAuthenticate` | oui | oui | oui | oui |
@@ -94,7 +96,8 @@ Légende : **oui** accès accordé, **non** refusé (401 sans jeton, 403 avec un
 
 | Route | Contrôle | Anonyme | USER | PARTNER | ADMIN |
 |---|---|---|---|---|---|
-| `GET /api/user/profile` | `authenticate` | non | propre | propre | propre |
+| `GET /api/user/profile`, `PATCH /api/user/profile` | `authenticate` | non | propre | propre | propre |
+| `POST /api/user/support` | `authenticate`, `supportRateLimiter` (5 messages par compte et par heure) | non | propre | propre | propre |
 | `POST /api/user/identity` | `identityUploadRateLimiter` (10 envois par adresse IP et par heure), `authenticate`, corps de 12 Mo au plus | non | propre | propre | propre |
 | `GET /api/user/identity` | `authenticate` | non | propre | propre | propre |
 | `GET /api/user/referrals` | `authenticate` | non | propre | propre | propre |

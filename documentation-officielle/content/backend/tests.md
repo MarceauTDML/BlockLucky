@@ -102,6 +102,7 @@ Une nouvelle requête Prisma dans le code doit être ajoutée à la doublure, si
 | `api/marketplace.test.ts` | 5 | catalogue, échange, QR code dans « Mes codes » ; ticket à gratter : débit et récompense en stock, refus sans points et sans débit, 404 sans récompense, offre inconnue et âge exigé |
 | `api/partners.test.ts` | 1 | création d'entreprise et d'offre, import CSV, statistiques |
 | `api/user.test.ts` | 1 | quêtes, limite de jeu responsable, export RGPD, suppression confirmée |
+| `api/settings.test.ts` | 17 | prénom et nom : enregistrement, effacement par chaîne vide, refus des valeurs invalides, présence dans l'export RGPD ; catégories de notifications par défaut, fusion partielle, préférences anciennes complétées, refus d'une valeur non booléenne, notifications masquées ; changement d'email par code, mot de passe exigé, adresse déjà prise, compte sans mot de passe et mauvais code, confirmation sans demande ; premier mot de passe, mot de passe actuel exigé, révocation des anciennes sessions et nouvelle session ; message au support avec adresse de réponse, validation de l'objet et du message, session exigée |
 | `api/admin.test.ts` | 2 | refus 403 pour un USER ; tableau de bord, disjoncteur, trésorerie, export CSV, audit pour un ADMIN |
 | `api/system.test.ts` | 8 | sondes de vivacité et de disponibilité, `X-Request-Id`, `/api/config`, préfixe `/api/v1`, `/metrics`, JSON mal formé, CORS |
 | `integration/blockchain-indexer.test.ts` | 4 | indexation idempotente par webhook signé, rejeu ignoré, signature absente ou périmée, corps invalide |

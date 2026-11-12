@@ -25,6 +25,21 @@ export class UserRepository {
     });
   }
 
+  public async findAccount(userId: string) {
+    return prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, firstName: true, lastName: true, deletedAt: true },
+    });
+  }
+
+  public async updateNames(userId: string, data: { firstName?: string | null; lastName?: string | null }) {
+    return prisma.user.update({
+      where: { id: userId },
+      data,
+      select: { firstName: true, lastName: true },
+    });
+  }
+
   public async getUserGdprExportData(userId: string) {
     return prisma.user.findUnique({
       where: { id: userId },
@@ -120,6 +135,8 @@ export class UserRepository {
           welcomeGrantTxHash: null,
           email: null,
           passwordHash: null,
+          firstName: null,
+          lastName: null,
           ageVerificationNote: null,
           twoFactorSecret: null,
           twoFactorMethod: null,

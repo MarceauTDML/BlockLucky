@@ -15,7 +15,8 @@ Fichiers principaux :
 | [`mobile-app/src/screens/auth/Setup2FAScreen.tsx`](src:mobile-app/src/screens/auth/Setup2FAScreen.tsx) | Activation de la 2FA |
 | [`mobile-app/src/components/auth/SocialAuthButtons.tsx`](src:mobile-app/src/components/auth/SocialAuthButtons.tsx) | Boutons Google et Apple |
 | [`mobile-app/src/screens/settings/VerifyAgeScreen.tsx`](src:mobile-app/src/screens/settings/VerifyAgeScreen.tsx) | Envoi de la pièce d'identité |
-| [`mobile-app/src/hooks/useAuth.ts`](src:mobile-app/src/hooks/useAuth.ts) | Connexion, inscription, vérification, déconnexion |
+| [`mobile-app/src/screens/settings/ChangeEmailScreen.tsx`](src:mobile-app/src/screens/settings/ChangeEmailScreen.tsx), [`ChangePasswordScreen.tsx`](src:mobile-app/src/screens/settings/ChangePasswordScreen.tsx) | Changement d'adresse email et de mot de passe depuis les paramètres |
+| [`mobile-app/src/hooks/useAuth.ts`](src:mobile-app/src/hooks/useAuth.ts) | Connexion, inscription, vérification, mise à jour du profil local, session renouvelée, déconnexion |
 | [`mobile-app/src/services/secureStorage.ts`](src:mobile-app/src/services/secureStorage.ts) | Accès au stockage sécurisé |
 | [`mobile-app/src/store/slices/authSlice.ts`](src:mobile-app/src/store/slices/authSlice.ts) | État `auth` |
 
@@ -150,7 +151,22 @@ Après la connexion, `RootNavigator` ouvre `VerifyAge` automatiquement si le sta
 
 La confirmation appelle `verifyOtpCode(user.id, code)`. Le backend active la 2FA, révoque les autres sessions et renvoie un nouveau jeton, que l'application enregistre.
 
-`SecurityScreen` affiche l'état de la 2FA, mène à `Setup2FA` et permet de la désactiver avec un code. Le champ peut rester vide si la session a moins de 15 minutes, seule situation où le backend accepte une désactivation sans code.
+`SecurityScreen` affiche d'abord deux lignes « Connexion » : l'adresse email, qui mène à `ChangeEmail`, et le mot de passe, qui mène à `ChangePassword`. Il affiche ensuite l'état de la 2FA, mène à `Setup2FA` pour l'activer ou la reconfigurer et permet de la désactiver avec un code. Le champ peut rester vide si la session a moins de 15 minutes, seule situation où le backend accepte une désactivation sans code.
+
+## Email et mot de passe du compte
+
+Ces deux écrans de la pile racine sont ouverts depuis Paramètres, puis Sécurité.
+
+**Changer d'adresse email.** `ChangeEmailScreen` se déroule en deux étapes :
+
+1. le citoyen saisit la nouvelle adresse et, si le compte a un mot de passe (`hasPassword`), son mot de passe actuel ; l'écran refuse une adresse mal formée ou identique à l'actuelle, puis appelle `requestEmailChange` (`POST /auth/email/change`) ;
+2. il saisit le code à 6 chiffres reçu sur la nouvelle adresse (en développement, `DevOtpHint` propose `devOtpPreview`) ; `confirmEmailChange` (`POST /auth/email/confirm`) renvoie l'adresse enregistrée, que `patchUser` reporte dans le slice `auth` et dans le stockage sécurisé.
+
+Un bouton permet de revenir à la première étape pour corriger l'adresse. L'ancienne adresse reçoit une alerte de sécurité ; la session en cours reste valable.
+
+**Créer ou changer le mot de passe.** `ChangePasswordScreen` demande le mot de passe actuel seulement si le compte en a un ; un compte créé avec Google ou Apple peut ainsi définir un premier mot de passe. Le nouveau mot de passe suit les règles affichées par `PasswordRules` et doit être saisi deux fois. `changePassword` (`POST /auth/password/change`) révoque toutes les sessions du compte et renvoie une nouvelle session, comme une connexion. `applyRenewedSession` de `useAuth` enregistre le nouveau jeton et le profil (avec `hasPassword` à vrai) dans SecureStore puis dispatche `setCredentials` : l'appareil reste connecté, les autres sont déconnectés.
+
+`patchUser(patch)` fusionne un profil partiel dans le slice (`updateUserProfile`) et dans `blocklucky_user_profile`. Il sert aussi à l'écran Données personnelles après l'enregistrement du prénom et du nom.
 
 ## Stockage sécurisé
 
@@ -188,7 +204,7 @@ Pour restaurer la session, il faudrait, au montage de `App`, lire le jeton et le
 
 ## Expiration et erreurs 401
 
-Le `baseApi` mobile n'a pas de garde 401 : un jeton expiré ou révoqué n'entraîne pas de déconnexion. Les écrans connectés affichent alors des erreurs ou des données vides jusqu'à ce que l'utilisateur se déconnecte lui-même. C'est aussi le cas après une réinitialisation du mot de passe depuis un autre appareil, qui révoque toutes les sessions. Le web, lui, efface la session à la première réponse 401 (voir [État et appels API du web](../web/etat-api.md#le-client-de-base)).
+Le `baseApi` mobile n'a pas de garde 401 : un jeton expiré ou révoqué n'entraîne pas de déconnexion. Les écrans connectés affichent alors des erreurs ou des données vides jusqu'à ce que l'utilisateur se déconnecte lui-même. C'est aussi le cas après une réinitialisation ou un changement du mot de passe depuis un autre appareil, qui révoque toutes les sessions. Le web, lui, efface la session à la première réponse 401 (voir [État et appels API du web](../web/etat-api.md#le-client-de-base)).
 
 ## Déconnexion
 
@@ -203,7 +219,7 @@ Le `baseApi` mobile n'a pas de garde 401 : un jeton expiré ou révoqué n'entra
 |---|---|
 | Bouton « Se déconnecter » du profil, après confirmation | `signOut` |
 | Confirmation de l'anonymisation RGPD | `signOut` |
-| « Déconnecter tous les appareils » dans la sécurité, après confirmation | `signOutEverywhere` |
+| Aucun écran depuis le retrait du bloc « Compte et appareils » de la sécurité | `signOutEverywhere` |
 
 La connexion Socket.IO n'est pas fermée à la déconnexion, contrairement au web : elle reste ouverte avec l'ancien jeton jusqu'à la fermeture de l'application. Côté serveur, la session est révoquée, donc une reconnexion de ce socket serait refusée.
 
@@ -219,7 +235,8 @@ La connexion Socket.IO n'est pas fermée à la déconnexion, contrairement au we
 | QR code TOTP | Affiché | Affiché |
 | Code de secours à la vérification | Non | Oui, pour la méthode `APP` |
 | Envoi de la pièce d'identité | Non | Oui |
-| Déconnecter tous les appareils | Bouton dans la sécurité | Bouton dans la sécurité |
+| Déconnecter tous les appareils | Bouton dans la sécurité | Aucun bouton ; un changement de mot de passe déconnecte les autres appareils |
+| Changer d'adresse email ou de mot de passe | Non | Oui, dans Paramètres, puis Sécurité |
 | Fermeture du socket à la déconnexion | Oui | Non |
 
 Les risques propres à chaque support sont analysés dans [Navigateur et mobile](../securite/navigateur-mobile.md).

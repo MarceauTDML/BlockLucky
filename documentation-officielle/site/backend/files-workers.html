@@ -52,7 +52,7 @@
 <tbody><tr>
 <td><code>emails-queue</code></td>
 <td>file BullMQ</td>
-<td><code>enqueueEmail</code> (auth, boutique, RGPD)</td>
+<td><code>enqueueEmail</code> (auth, boutique, RGPD, support)</td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/workers/email.worker.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/workers/email.worker.ts</code></a></td>
 <td><code>WORKER_CONCURRENCY</code> (5)</td>
 </tr>
@@ -127,6 +127,7 @@
   <span class="hljs-attr">variables</span>: { <span class="hljs-attr">CODE</span>: code, <span class="hljs-attr">EXPIRES_MINUTES</span>: <span class="hljs-string">&#x27;10&#x27;</span> },
 });</code></pre></div>
 <p>Le producteur ajoute un job <code>send-email</code> et renvoie <code>{ queued: true, jobId }</code>. Si la file n&#39;existe pas ou si l&#39;ajout échoue, l&#39;email est envoyé immédiatement dans la requête et la fonction renvoie <code>{ queued: false }</code>. Le worker vérifie que <code>to</code> et <code>templateName</code> sont présents (sinon <code>UnrecoverableError</code>) puis appelle <code>emailService.sendTemplateEmail</code>.</p>
+<p>Le job accepte un champ facultatif <code>replyTo</code>, transmis à Nodemailer comme adresse de réponse. Seul le message au support (<code>POST /user/support</code>) le renseigne, avec l&#39;email du citoyen.</p>
 <div class="hint hint-warning"><p class="hint-title">Attention</p>
 <code>sendTemplateEmail</code> ne lève pas d&#39;erreur quand le serveur SMTP refuse le message : elle journalise un avertissement et renvoie <code>false</code>. Le job est alors marqué terminé, sans nouvelle tentative. Les 5 tentatives ne couvrent en pratique que les erreurs inattendues. Un code de connexion peut donc être perdu sans trace autre qu&#39;une ligne <code>warn</code> contenant « Mode simulation d&#39;envoi d.email ».</p>
 </div>

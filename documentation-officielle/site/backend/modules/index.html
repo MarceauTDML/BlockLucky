@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>7. Backend</span></div>
     <article class="markdown">
 <h1>Modules métier</h1>
-<p>Le dossier <code>backend/src/api</code> contient neuf modules. Chacun est un routeur Express monté par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a> sous <code>/api/v1/&lt;module&gt;</code> et, pour compatibilité, sous <code>/api/&lt;module&gt;</code>. Le module système fait exception : ses routes sont montées à la racine du serveur. Les pages de cette section décrivent chaque route avec ses règles métier, sa validation, ses autorisations, ses erreurs et ses effets de bord. La liste brute des 64 routes est générée sur la page <a href="../reference-api.html">Référence de l&#39;API</a>.</p>
+<p>Le dossier <code>backend/src/api</code> contient neuf modules. Chacun est un routeur Express monté par <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a> sous <code>/api/v1/&lt;module&gt;</code> et, pour compatibilité, sous <code>/api/&lt;module&gt;</code>. Le module système fait exception : ses routes sont montées à la racine du serveur. Les pages de cette section décrivent chaque route avec ses règles métier, sa validation, ses autorisations, ses erreurs et ses effets de bord. La liste brute des 69 routes est générée sur la page <a href="../reference-api.html">Référence de l&#39;API</a>.</p>
 <h2 id="vue-d-ensemble"><a class="anchor" href="#vue-d-ensemble" aria-hidden="true" tabindex="-1">#</a>Vue d&#39;ensemble</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -59,8 +59,8 @@
 <tr>
 <td><code>auth</code></td>
 <td><code>/api/v1/auth</code></td>
-<td>12</td>
-<td>Connexion par mot de passe, Google, Apple ou code email, réinitialisation du mot de passe, création de compte et de portefeuille, 2FA, déconnexion</td>
+<td>15</td>
+<td>Connexion par mot de passe, Google, Apple ou code email, réinitialisation et changement du mot de passe, changement d&#39;adresse email, création de compte et de portefeuille, 2FA, déconnexion</td>
 <td><a href="auth.html">Authentification</a></td>
 </tr>
 <tr>
@@ -87,8 +87,8 @@
 <tr>
 <td><code>user</code></td>
 <td><code>/api/v1/user</code></td>
-<td>12</td>
-<td>Profil, vérification d&#39;âge, parrainage, quêtes, jeu responsable, préférences, RGPD</td>
+<td>14</td>
+<td>Profil (prénom et nom), vérification d&#39;âge, parrainage, quêtes, jeu responsable, préférences, message au support, RGPD</td>
 <td><a href="utilisateur.html">Utilisateur et RGPD</a></td>
 </tr>
 <tr>
@@ -186,14 +186,14 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>Système, <code>GET /auth/onboarding</code>, <code>POST /auth/login</code>, <code>/signup</code>, <code>/signin</code>, <code>/password/*</code>, <code>/oauth/*</code>, <code>/2fa/verify</code></td>
+<td>Système, <code>GET /auth/onboarding</code>, <code>POST /auth/login</code>, <code>/signup</code>, <code>/signin</code>, <code>/password/forgot</code>, <code>/password/reset</code>, <code>/oauth/*</code>, <code>/2fa/verify</code></td>
 <td>oui</td>
 <td>oui</td>
 <td>oui</td>
 <td>oui</td>
 </tr>
 <tr>
-<td><code>POST /auth/2fa/setup</code>, <code>/2fa/disable</code>, <code>/logout</code></td>
+<td><code>POST /auth/2fa/setup</code>, <code>/2fa/disable</code>, <code>/logout</code>, <code>/password/change</code>, <code>/email/change</code>, <code>/email/confirm</code></td>
 <td>non</td>
 <td>oui</td>
 <td>oui</td>

@@ -14,11 +14,11 @@ export const startEmailWorker = (): Worker<EmailJobData> | null => {
     const worker = new Worker<EmailJobData>(
       'emails-queue',
       async (job: Job<EmailJobData>) => {
-        const { to, subject, templateName, variables } = job.data;
+        const { to, subject, templateName, variables, replyTo } = job.data;
         if (!to || !templateName) {
           throw new UnrecoverableError('Job email incomplet (destinataire ou template manquant)');
         }
-        await emailService.sendTemplateEmail(to, subject, templateName, variables);
+        await emailService.sendTemplateEmail(to, subject, templateName, variables, { replyTo });
       },
       { connection: rawRedis as any, concurrency: env.WORKER_CONCURRENCY }
     );

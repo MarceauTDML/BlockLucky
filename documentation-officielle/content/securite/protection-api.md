@@ -31,19 +31,20 @@ Deux conséquences de cet ordre :
 | Limiteur | Fenêtre | Requêtes par adresse IP | Portée |
 |---|---|---|---|
 | `globalRateLimiter` | 15 minutes | 300 | Toute l'API sous `/api` |
-| `authRateLimiter` | 10 minutes | 30 | `POST /api/auth/signup`, `/signin`, `/password/forgot`, `/password/reset`, `/oauth/google`, `/oauth/apple`, `/login`, `/2fa/verify`, `/2fa/disable` |
+| `authRateLimiter` | 10 minutes | 30 | `POST /api/auth/signup`, `/signin`, `/password/forgot`, `/password/reset`, `/password/change`, `/email/change`, `/email/confirm`, `/oauth/google`, `/oauth/apple`, `/login`, `/2fa/verify`, `/2fa/disable` |
 | `identityUploadRateLimiter` | 1 heure | 10 | `POST /api/user/identity` |
+| `supportRateLimiter` | 1 heure | 5, comptées par compte (`user:<id>`) et non par adresse IP, sauf requête sans utilisateur | `POST /api/user/support` |
 
-En environnement `test`, les trois limites passent à 10 000 pour ne pas gêner les suites de tests.
+En environnement `test`, les quatre limites passent à 10 000 pour ne pas gêner les suites de tests.
 
 | Paramètre | Valeur | Effet |
 |---|---|---|
 | `standardHeaders: 'draft-7'` | En-têtes `RateLimit` et `RateLimit-Policy` | Le client connaît son quota restant |
 | `legacyHeaders: false` | Pas de `X-RateLimit-*` | |
-| Préfixe Redis | `<REDIS_KEY_PREFIX>:<NODE_ENV>:ratelimit:<global, auth ou identity>:` | Compteurs partagés entre toutes les instances de l'API |
+| Préfixe Redis | `<REDIS_KEY_PREFIX>:<NODE_ENV>:ratelimit:<global, auth, identity ou support>:` | Compteurs partagés entre toutes les instances de l'API |
 | `passOnStoreError: true` | Si Redis échoue, la requête passe | L'API reste disponible pendant une panne de Redis |
 
-Le limiteur des pièces d'identité est placé avant `authenticate` et avant l'analyse du corps de 12 Mo : un client qui dépasse son quota est refusé sans que le serveur lise le corps. Le compteur d'échecs de code et de mot de passe par compte, décrit dans [Authentification](authentification.md#parametres-du-code), complète la limite par IP : il ne dépend pas de l'adresse de l'attaquant.
+Le limiteur des pièces d'identité est placé avant `authenticate` et avant l'analyse du corps de 12 Mo : un client qui dépasse son quota est refusé sans que le serveur lise le corps. À l'inverse, `supportRateLimiter` est placé après `authenticate`, pour compter les messages par compte : plusieurs citoyens derrière la même adresse IP ne se partagent pas le quota. Le compteur d'échecs de code et de mot de passe par compte, décrit dans [Authentification](authentification.md#parametres-du-code), complète la limite par IP : il ne dépend pas de l'adresse de l'attaquant.
 
 > [!NOTE]
 > Le choix `passOnStoreError: true` privilégie la disponibilité. Pendant une panne de Redis, la seule limite restante sur les codes est le blocage par compte, lui-même tenu dans le repli mémoire propre à chaque processus. Voir l'[ADR 0002](../architecture/adr/0002-redis-files-et-repli-memoire.md).

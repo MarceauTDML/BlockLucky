@@ -223,8 +223,22 @@
 <tr>
 <td>Déconnexion de l&#39;appareil, ou de tous les appareils</td>
 <td><code>/profil/securite</code></td>
-<td><code>ProfileScreen</code>, <code>SecurityScreen</code></td>
+<td><code>ProfileScreen</code> (cet appareil seulement)</td>
 <td><code>POST /api/v1/auth/logout</code></td>
+<td>Réel</td>
+</tr>
+<tr>
+<td>Changement d&#39;adresse email confirmé par un code envoyé à la nouvelle adresse</td>
+<td>-</td>
+<td><code>SecurityScreen</code>, <code>ChangeEmailScreen</code></td>
+<td><code>POST /api/v1/auth/email/change</code>, <code>POST /api/v1/auth/email/confirm</code></td>
+<td>Réel</td>
+</tr>
+<tr>
+<td>Création ou changement du mot de passe, avec déconnexion des autres appareils</td>
+<td>-</td>
+<td><code>SecurityScreen</code>, <code>ChangePasswordScreen</code></td>
+<td><code>POST /api/v1/auth/password/change</code></td>
 <td>Réel</td>
 </tr>
 <tr>
@@ -278,7 +292,7 @@
 <tr>
 <td>Effacement de la clé à la suppression RGPD</td>
 <td><code>/profil/rgpd</code></td>
-<td><code>GDPRScreen</code></td>
+<td><code>PersonalDataScreen</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.repo.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.repo.ts</code></a></td>
 <td>Réel</td>
 </tr>
@@ -381,7 +395,7 @@
 <tr>
 <td>Charte de transparence</td>
 <td><code>/transparence</code>, <code>/profil/aide</code></td>
-<td><code>HowItWorksScreen</code>, <code>HelpSupportScreen</code></td>
+<td><code>HowItWorksScreen</code></td>
 <td><code>GET /api/v1/lottery/transparency-charter</code></td>
 <td>Réel</td>
 </tr>
@@ -642,10 +656,31 @@
 <td>Réel</td>
 </tr>
 <tr>
+<td>Accueil des paramètres, ouvert par la roue dentée de l&#39;en-tête</td>
+<td>-</td>
+<td><code>SettingsScreen</code></td>
+<td><code>GET /api/v1/user/profile</code></td>
+<td>Réel</td>
+</tr>
+<tr>
 <td>Thème clair ou sombre, français ou anglais</td>
 <td>partout</td>
-<td><code>SettingsScreen</code></td>
+<td><code>DisplaySettingsScreen</code></td>
 <td><code>PUT /api/v1/user/preferences</code></td>
+<td>Réel</td>
+</tr>
+<tr>
+<td>Choix des notifications par catégorie</td>
+<td>-</td>
+<td><code>NotificationSettingsScreen</code></td>
+<td><code>PUT /api/v1/user/preferences</code></td>
+<td>Partiel : filtre le centre de notifications, aucun envoi push</td>
+</tr>
+<tr>
+<td>Prénom et nom</td>
+<td>-</td>
+<td><code>PersonalDataScreen</code></td>
+<td><code>PATCH /api/v1/user/profile</code></td>
 <td>Réel</td>
 </tr>
 <tr>
@@ -658,14 +693,14 @@
 <tr>
 <td>Export des données personnelles en JSON</td>
 <td><code>/profil/rgpd</code></td>
-<td><code>GDPRScreen</code></td>
+<td><code>PersonalDataScreen</code></td>
 <td><code>GET /api/v1/user/gdpr/export</code></td>
 <td>Réel</td>
 </tr>
 <tr>
 <td>Suppression du compte confirmée par email</td>
 <td><code>/profil/rgpd</code></td>
-<td><code>GDPRScreen</code></td>
+<td><code>PersonalDataScreen</code></td>
 <td><code>POST /api/v1/user/gdpr/delete-request</code>, <code>POST /api/v1/user/gdpr/confirm-delete</code></td>
 <td>Réel</td>
 </tr>
@@ -680,8 +715,8 @@
 <td>Aide et support</td>
 <td><code>/profil/aide</code></td>
 <td><code>HelpSupportScreen</code></td>
-<td>-</td>
-<td>Réel</td>
+<td><code>POST /api/v1/user/support</code> (mobile)</td>
+<td>Réel ; centre d&#39;aide « Bientôt » tant que <code>EXPO_PUBLIC_HELP_CENTER_URL</code> est vide</td>
 </tr>
 </tbody></table></div>
 <h2 id="plateforme-et-exploitation"><a class="anchor" href="#plateforme-et-exploitation" aria-hidden="true" tabindex="-1">#</a>Plateforme et exploitation</h2>

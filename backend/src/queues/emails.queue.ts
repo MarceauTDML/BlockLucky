@@ -9,6 +9,7 @@ export interface EmailJobData {
   subject: string;
   templateName: EmailTemplateName;
   variables: Record<string, string>;
+  replyTo?: string | undefined;
 }
 
 let bullEmailsQueue: Queue<EmailJobData> | null = null;
@@ -33,7 +34,9 @@ export const enqueueEmail = async (data: EmailJobData): Promise<{ queued: boolea
     } catch {}
   }
   logger.debug(`Exécution directe de l'envoi d'email [${data.templateName}] à ${data.to}`);
-  await emailService.sendTemplateEmail(data.to, data.subject, data.templateName, data.variables);
+  await emailService.sendTemplateEmail(data.to, data.subject, data.templateName, data.variables, {
+    replyTo: data.replyTo,
+  });
   return { queued: false };
 };
 

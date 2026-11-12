@@ -210,9 +210,9 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>authRateLimiter</code>, <code>identityUploadRateLimiter</code></td>
+<td><code>authRateLimiter</code>, <code>identityUploadRateLimiter</code>, <code>supportRateLimiter</code></td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/rateLimiter.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/rateLimiter.middleware.ts</code></a></td>
-<td>30 requêtes par 10 minutes et par IP sur les routes de connexion, d&#39;inscription, de mot de passe, OAuth et 2FA ; 10 envois par heure et par IP sur <code>POST /user/identity</code>.</td>
+<td>30 requêtes par 10 minutes et par IP sur les routes de connexion, d&#39;inscription, de mot de passe, de changement d&#39;email, OAuth et 2FA ; 10 envois par heure et par IP sur <code>POST /user/identity</code> ; 5 messages par heure et par compte sur <code>POST /user/support</code>, seul limiteur placé après <code>authenticate</code>.</td>
 </tr>
 <tr>
 <td><code>authenticate</code></td>

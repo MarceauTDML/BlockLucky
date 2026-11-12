@@ -16,7 +16,12 @@ import {
   PushNotificationItem,
   GdprExportResponse,
 } from '../../types/api.types';
-import { AgeVerificationStatus, IdentityVerificationState } from '../../types/user.types';
+import {
+  AgeVerificationStatus,
+  IdentityVerificationState,
+  NotificationPreferences,
+  UserPreferences,
+} from '../../types/user.types';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -151,10 +156,13 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ['User'],
     }),
     updatePreferences: builder.mutation<
-      ApiResponse<{
-        preferences: { theme: string; language: string; pushNotificationsEnabled: boolean };
-      }>,
-      { theme?: 'DARK' | 'LIGHT'; language?: 'FR' | 'EN'; pushNotificationsEnabled?: boolean }
+      ApiResponse<{ preferences: UserPreferences }>,
+      {
+        theme?: 'DARK' | 'LIGHT';
+        language?: 'FR' | 'EN';
+        pushNotificationsEnabled?: boolean;
+        notifications?: Partial<NotificationPreferences>;
+      }
     >({
       query: (body) => ({
         url: '/user/preferences',
@@ -162,6 +170,59 @@ export const authApi = baseApi.injectEndpoints({
         body,
       }),
       invalidatesTags: ['User'],
+    }),
+    updateProfileNames: builder.mutation<
+      ApiResponse<{ profile: { firstName: string | null; lastName: string | null } }>,
+      { firstName?: string; lastName?: string }
+    >({
+      query: (body) => ({
+        url: '/user/profile',
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+    requestEmailChange: builder.mutation<
+      ApiResponse<{ message: string; devOtpPreview?: string }>,
+      { newEmail: string; password?: string }
+    >({
+      query: (body) => ({
+        url: '/auth/email/change',
+        method: 'POST',
+        body,
+      }),
+    }),
+    confirmEmailChange: builder.mutation<
+      ApiResponse<{ profile: { email: string } }>,
+      { code: string }
+    >({
+      query: (body) => ({
+        url: '/auth/email/confirm',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+    changePassword: builder.mutation<
+      ApiResponse<AuthSessionResponse>,
+      { currentPassword?: string; newPassword: string }
+    >({
+      query: (body) => ({
+        url: '/auth/password/change',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+    sendSupportMessage: builder.mutation<
+      ApiResponse<{ sent: boolean }>,
+      { subject: string; message: string }
+    >({
+      query: (body) => ({
+        url: '/user/support',
+        method: 'POST',
+        body,
+      }),
     }),
     getNotifications: builder.query<ApiResponse<{ notifications: PushNotificationItem[] }>, void>({
       query: () => '/user/notifications',
@@ -220,6 +281,11 @@ export const {
   useCompleteQuestMutation,
   useSetResponsibleLimitMutation,
   useUpdatePreferencesMutation,
+  useUpdateProfileNamesMutation,
+  useRequestEmailChangeMutation,
+  useConfirmEmailChangeMutation,
+  useChangePasswordMutation,
+  useSendSupportMessageMutation,
   useGetNotificationsQuery,
   useExportGdprDataMutation,
   useRequestGdprDeletionMutation,

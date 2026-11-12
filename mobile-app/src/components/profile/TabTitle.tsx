@@ -2,10 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import useAppTheme from '../../hooks/useAppTheme';
-import usePushNotifications from '../../hooks/usePushNotifications';
-import { useRootNavigation } from '../../navigation/hooks';
 import AppText from '../ui/AppText';
-import NotificationButton from '../ui/NotificationButton';
+import HeaderActions from '../ui/HeaderActions';
 
 export interface TabTitleProps {
   title: string;
@@ -14,8 +12,6 @@ export interface TabTitleProps {
 
 export const TabTitle: React.FC<TabTitleProps> = ({ title, subtitle }) => {
   const { colors } = useAppTheme();
-  const navigation = useRootNavigation();
-  const { unreadCount } = usePushNotifications();
 
   return (
     <View style={styles.row}>
@@ -29,10 +25,7 @@ export const TabTitle: React.FC<TabTitleProps> = ({ title, subtitle }) => {
           </AppText>
         ) : null}
       </View>
-      <NotificationButton
-        hasUnread={unreadCount > 0}
-        onPress={() => navigation.navigate('Notifications')}
-      />
+      <HeaderActions />
     </View>
   );
 };

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Utilisateur et RGPD | Documentation BlockLucky</title>
-<meta name="description" content="Le module user regroupe tout ce qui concerne le compte du citoyen connecté : profil, vérification d&#39;âge par pièce d&#39;identité, parrainage, quêtes sociales, limit">
+<meta name="description" content="Le module user regroupe tout ce qui concerne le compte du citoyen connecté : profil (dont le prénom et le nom), vérification d&#39;âge par pièce d&#39;identité, parrain">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../assets/css/doc.css">
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>7. Backend</span><span>Modules métier</span></div>
     <article class="markdown">
 <h1>Utilisateur et RGPD</h1>
-<p>Le module <code>user</code> regroupe tout ce qui concerne le compte du citoyen connecté : profil, vérification d&#39;âge par pièce d&#39;identité, parrainage, quêtes sociales, limite de jeu responsable, préférences d&#39;affichage, notifications et exercice des droits RGPD (export et suppression). Toutes les routes portent sur le compte du jeton : aucune ne prend d&#39;identifiant d&#39;utilisateur en paramètre. Une partie des données de ce module vit dans Redis et non en base.</p>
+<p>Le module <code>user</code> regroupe tout ce qui concerne le compte du citoyen connecté : profil (dont le prénom et le nom), vérification d&#39;âge par pièce d&#39;identité, parrainage, quêtes sociales, limite de jeu responsable, préférences d&#39;affichage et de notifications, notifications, message au support et exercice des droits RGPD (export et suppression). Toutes les routes portent sur le compte du jeton : aucune ne prend d&#39;identifiant d&#39;utilisateur en paramètre. Une partie des données de ce module vit dans Redis et non en base.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -47,11 +47,11 @@
 </thead>
 <tbody><tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.routes.ts</code></a></td>
-<td>12 routes</td>
+<td>14 routes</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.validators.ts</code></a></td>
-<td>5 schémas Zod</td>
+<td>7 schémas Zod</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a></td>
@@ -86,6 +86,18 @@
 <td>connecté</td>
 <td><code>authenticate</code></td>
 <td>Profil, statistiques, limite et préférences</td>
+</tr>
+<tr>
+<td><code>PATCH /api/v1/user/profile</code></td>
+<td>connecté</td>
+<td><code>authenticate</code>, <code>validate(updateProfileSchema)</code></td>
+<td>Prénom et nom</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/user/support</code></td>
+<td>connecté</td>
+<td><code>authenticate</code>, <code>supportRateLimiter</code>, <code>validate(supportRequestSchema)</code></td>
+<td>Message au support, transmis par email</td>
 </tr>
 <tr>
 <td><code>POST /api/v1/user/identity</code></td>
@@ -127,13 +139,13 @@
 <td><code>PUT /api/v1/user/preferences</code></td>
 <td>connecté</td>
 <td><code>authenticate</code>, <code>validate(updatePreferencesSchema)</code></td>
-<td>Thème, langue, notifications</td>
+<td>Thème, langue, interrupteur général et catégories des notifications</td>
 </tr>
 <tr>
 <td><code>GET /api/v1/user/notifications</code></td>
 <td>connecté</td>
 <td><code>authenticate</code></td>
-<td>Centre de notifications</td>
+<td>Centre de notifications, sans les catégories coupées</td>
 </tr>
 <tr>
 <td><code>GET /api/v1/user/gdpr/export</code></td>
@@ -165,8 +177,8 @@
 </thead>
 <tbody><tr>
 <td><code>user:prefs:&lt;userId&gt;</code></td>
-<td>JSON <code>{ theme, language, pushNotificationsEnabled }</code></td>
-<td><code>{ &quot;theme&quot;: &quot;DARK&quot;, &quot;language&quot;: &quot;FR&quot;, &quot;pushNotificationsEnabled&quot;: true }</code></td>
+<td>JSON <code>{ theme, language, pushNotificationsEnabled, notifications }</code></td>
+<td><code>{ &quot;theme&quot;: &quot;DARK&quot;, &quot;language&quot;: &quot;FR&quot;, &quot;pushNotificationsEnabled&quot;: true, &quot;notifications&quot;: { &quot;drawReminders&quot;: true, &quot;results&quot;: true, &quot;rewards&quot;: true, &quot;referrals&quot;: true } }</code></td>
 </tr>
 <tr>
 <td><code>user:ticket_limit:&lt;userId&gt;</code></td>
@@ -179,6 +191,7 @@
 <td><code>[]</code></td>
 </tr>
 </tbody></table></div>
+<p><code>readPreferences</code> lit <code>user:prefs:&lt;userId&gt;</code> et complète toujours la valeur avec les défauts : une préférence enregistrée avant l&#39;ajout des catégories reçoit les quatre catégories à <code>true</code>.</p>
 <p>Ces clés n&#39;ont pas d&#39;expiration et ne sont pas sauvegardées avec PostgreSQL. Si Redis est vidé, les préférences et les limites reviennent aux valeurs par défaut et les quêtes redeviennent validables, ce qui permet de recréditer leurs points. Elles ne sont pas supprimées lors de l&#39;anonymisation RGPD. Voir <a href="../../base-de-donnees/redis.html">Données Redis</a>.</p>
 <h2 id="get-user-profile"><a class="anchor" href="#get-user-profile" aria-hidden="true" tabindex="-1">#</a>GET /user/profile</h2>
 <p>Un compte supprimé (<code>deletedAt</code> renseigné) renvoie <code>404 Profil utilisateur introuvable ou supprimé</code>.</p>
@@ -190,6 +203,8 @@
       <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-5d2b-7f41-9c0e-6a8b2d4f1e37&quot;</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;walletAddress&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x8b3f0e5c2d9a71b46e0f3c8d2a5b7e9f1c4d6a08&quot;</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;citoyen@etherbay.fr&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;firstName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Camille&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;lastName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Durand&quot;</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;USER&quot;</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;pointsBalance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">125</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;referralCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;6f1d2c3b-4a5e-4f60-8b7c-9d0e1f2a3b4c&quot;</span><span class="hljs-punctuation">,</span>
@@ -200,7 +215,12 @@
       <span class="hljs-attr">&quot;ageVerificationStatus&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;VERIFIED&quot;</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;stats&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;ticketsCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;claimedRewardsCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;referralsCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;responsibleGaming&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;maxTicketsPerRound&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">50</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
-      <span class="hljs-attr">&quot;preferences&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;theme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;DARK&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;language&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;FR&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;pushNotificationsEnabled&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;preferences&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;theme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;DARK&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;language&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;FR&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;pushNotificationsEnabled&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;notifications&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;drawReminders&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;results&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;rewards&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;referrals&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span> <span class="hljs-punctuation">}</span>
+      <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
       <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T13:30:11.198Z&quot;</span>
     <span class="hljs-punctuation">}</span>
   <span class="hljs-punctuation">}</span>
@@ -364,6 +384,28 @@
 <p>Depuis le passage à un ticket par participant et par grand tirage, cette limite n&#39;a plus d&#39;effet pratique : <code>/lottery/buy</code> refuse un second ticket (409) avant même de la comparer, et la plus petite valeur admise est 1. La route et la clé Redis sont conservées, mais l&#39;application mobile ne propose plus de la régler.</p>
 </div>
 <div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Limite d&#x27;achat Jeu Responsable enregistrée&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;019a7c3e-...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;maxTicketsPerRound&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">10</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-11-11T16:00:00.000Z&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span></code></pre></div>
+<h2 id="patch-user-profile"><a class="anchor" href="#patch-user-profile" aria-hidden="true" tabindex="-1">#</a>PATCH /user/profile</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>firstName</code></td>
+<td>chaîne</td>
+<td>facultatif ; espaces de début et de fin retirés ; 50 caractères au plus ; lettres (accents compris), espaces, traits d&#39;union et apostrophes, avec au moins une lettre ; une chaîne vide efface la valeur</td>
+</tr>
+<tr>
+<td><code>lastName</code></td>
+<td>chaîne</td>
+<td>mêmes règles</td>
+</tr>
+</tbody></table></div>
+<p>Un champ absent n&#39;est pas modifié ; un corps vide renvoie les valeurs actuelles sans écrire en base. Messages de validation : <code>Le prénom ne doit pas dépasser 50 caractères</code>, <code>Le prénom ne peut contenir que des lettres, des espaces, des traits d&#39;union et des apostrophes</code>, et leurs équivalents pour le nom.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Profil mis à jour&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;profile&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;firstName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Camille&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;lastName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span></code></pre></div>
 <h2 id="put-user-preferences"><a class="anchor" href="#put-user-preferences" aria-hidden="true" tabindex="-1">#</a>PUT /user/preferences</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -386,12 +428,77 @@
 <tr>
 <td><code>pushNotificationsEnabled</code></td>
 <td>booléen</td>
-<td>facultatif</td>
+<td>facultatif, interrupteur général</td>
+</tr>
+<tr>
+<td><code>notifications</code></td>
+<td>objet</td>
+<td>facultatif ; booléens facultatifs <code>drawReminders</code> (rappels du tirage), <code>results</code> (résultats), <code>rewards</code> (offres et récompenses), <code>referrals</code> (parrainage)</td>
 </tr>
 </tbody></table></div>
-<p>Les champs fournis sont fusionnés avec les préférences existantes ; la réponse renvoie <code>{ &quot;preferences&quot;: {...} }</code> complet.</p>
+<p>Les champs fournis sont fusionnés avec les préférences existantes, catégorie par catégorie pour <code>notifications</code> ; un champ absent garde sa valeur. La réponse renvoie les préférences complètes :</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Préférences de thème, langue et notifications mises à jour&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;preferences&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;theme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;LIGHT&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;language&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;FR&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;pushNotificationsEnabled&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;notifications&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;drawReminders&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;results&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;rewards&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;referrals&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span> <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
 <h2 id="get-user-notifications"><a class="anchor" href="#get-user-notifications" aria-hidden="true" tabindex="-1">#</a>GET /user/notifications</h2>
-<p>Renvoie <code>{ &quot;notifications&quot;: [...] }</code> : trois notifications codées en dur dans le service, datées relativement à l&#39;heure de l&#39;appel (une heure, un jour et deux jours avant). Il n&#39;existe ni table de notifications ni envoi de notifications push côté backend.</p>
+<p>Renvoie <code>{ &quot;notifications&quot;: [...] }</code> : trois notifications codées en dur dans le service, datées relativement à l&#39;heure de l&#39;appel (une heure, un jour et deux jours avant). Chacune porte <code>id</code>, <code>category</code>, <code>title</code>, <code>body</code>, <code>read</code> et <code>createdAt</code>. La première et la troisième sont de catégorie <code>rewards</code>, la deuxième de catégorie <code>drawReminders</code> ; une notification dont la catégorie vaut <code>false</code> dans <code>preferences.notifications</code> est retirée de la liste. L&#39;interrupteur <code>pushNotificationsEnabled</code> ne filtre rien. Il n&#39;existe ni table de notifications ni envoi de notifications push côté backend.</p>
+<h2 id="post-user-support"><a class="anchor" href="#post-user-support" aria-hidden="true" tabindex="-1">#</a>POST /user/support</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Règles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>subject</code></td>
+<td>chaîne</td>
+<td>3 à 120 caractères après retrait des espaces de début et de fin</td>
+</tr>
+<tr>
+<td><code>message</code></td>
+<td>chaîne</td>
+<td>10 à 2 000 caractères, mêmes règles</td>
+</tr>
+</tbody></table></div>
+<p>Le service relit le compte, puis met en file un email <code>support-request</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/templates/emails/support-request.html" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/templates/emails/support-request.html</code></a>) :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Destinataire</td>
+<td><code>SUPPORT_EMAIL</code> (<code>support@etherbay.fr</code> par défaut)</td>
+</tr>
+<tr>
+<td>Objet</td>
+<td><code>[Support BlockLucky]</code> suivi de l&#39;objet saisi, retours à la ligne remplacés par des espaces</td>
+</tr>
+<tr>
+<td>Adresse de réponse (<code>replyTo</code>)</td>
+<td>Email du citoyen, s&#39;il en a un : la réponse de l&#39;administrateur part directement vers lui</td>
+</tr>
+<tr>
+<td>Variables</td>
+<td><code>USER_ID</code>, <code>EMAIL</code>, <code>FIRST_NAME</code>, <code>LAST_NAME</code> (<code>non renseigné</code> si vides), <code>SUBJECT</code>, <code>MESSAGE</code>, <code>DATE</code></td>
+</tr>
+</tbody></table></div>
+<p>Les valeurs sont échappées en HTML avant d&#39;être insérées dans le gabarit. Le message n&#39;est pas enregistré en base.</p>
+<div class="code-block"><div class="code-head"><span>JSON</span></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Votre message a été transmis au support&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span></code></pre></div>
+<p><code>supportRateLimiter</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/rateLimiter.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/rateLimiter.middleware.ts</code></a>) autorise 5 messages par heure, comptés par compte (<code>user:&lt;id&gt;</code>), ou par adresse IP à défaut. Au-delà : 429 <code>Trop de messages envoyés au support, veuillez réessayer dans une heure.</code></p>
 <h2 id="get-user-gdpr-export"><a class="anchor" href="#get-user-gdpr-export" aria-hidden="true" tabindex="-1">#</a>GET /user/gdpr/export</h2>
 <p>Renvoie l&#39;export des données du compte :</p>
 <div class="table-wrap"><table>
@@ -407,7 +514,7 @@
 </tr>
 <tr>
 <td><code>personalData</code></td>
-<td>identifiant, adresse, email, rôle, solde, code de parrainage, état de la 2FA, statut et date de la vérification d&#39;âge, dates</td>
+<td>identifiant, adresse, email, prénom, nom, rôle, solde, code de parrainage, état de la 2FA, statut et date de la vérification d&#39;âge, dates</td>
 </tr>
 <tr>
 <td><code>ticketsHistory</code></td>
@@ -484,7 +591,7 @@
 <td><code>0xdeleted_gdpr_</code> suivi des 8 premiers caractères de l&#39;identifiant</td>
 </tr>
 <tr>
-<td><code>walletEncryptedKey</code>, <code>welcomeGrantTxHash</code>, <code>email</code>, <code>passwordHash</code>, <code>ageVerificationNote</code></td>
+<td><code>walletEncryptedKey</code>, <code>welcomeGrantTxHash</code>, <code>email</code>, <code>passwordHash</code>, <code>firstName</code>, <code>lastName</code>, <code>ageVerificationNote</code></td>
 <td><code>null</code></td>
 </tr>
 <tr>
@@ -515,7 +622,7 @@
 <tbody><tr>
 <td>400</td>
 <td><code>Erreur de validation des données</code></td>
-<td>quêtes, limite, préférences, confirmation, image manquante</td>
+<td>quêtes, limite, préférences, profil, support, confirmation, image manquante</td>
 </tr>
 <tr>
 <td>400</td>
@@ -550,12 +657,17 @@
 <tr>
 <td>404</td>
 <td><code>Profil utilisateur introuvable ou supprimé</code></td>
-<td><code>profile</code></td>
+<td><code>GET</code> et <code>PATCH profile</code></td>
 </tr>
 <tr>
 <td>404</td>
 <td><code>Utilisateur introuvable</code></td>
-<td><code>identity</code>, <code>referrals</code>, <code>gdpr/export</code>, <code>gdpr/delete-request</code></td>
+<td><code>identity</code>, <code>referrals</code>, <code>support</code>, <code>gdpr/export</code>, <code>gdpr/delete-request</code></td>
+</tr>
+<tr>
+<td>429</td>
+<td><code>Trop de messages envoyés au support, veuillez réessayer dans une heure.</code></td>
+<td><code>support</code></td>
 </tr>
 <tr>
 <td>404</td>
@@ -571,7 +683,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#donnees-stockees-dans-redis">Données stockées dans Redis</a></li><li class="toc-h2"><a href="#get-user-profile">GET /user/profile</a></li><li class="toc-h2"><a href="#verification-d-age">Vérification d&#39;âge</a></li><li class="toc-h3"><a href="#post-user-identity">POST /user/identity</a></li><li class="toc-h3"><a href="#get-user-identity">GET /user/identity</a></li><li class="toc-h3"><a href="#controle-a-l-achat">Contrôle à l&#39;achat</a></li><li class="toc-h2"><a href="#get-user-referrals">GET /user/referrals</a></li><li class="toc-h2"><a href="#quetes-sociales">Quêtes sociales</a></li><li class="toc-h2"><a href="#put-user-responsible-limit">PUT /user/responsible-limit</a></li><li class="toc-h2"><a href="#put-user-preferences">PUT /user/preferences</a></li><li class="toc-h2"><a href="#get-user-notifications">GET /user/notifications</a></li><li class="toc-h2"><a href="#get-user-gdpr-export">GET /user/gdpr/export</a></li><li class="toc-h2"><a href="#suppression-du-compte">Suppression du compte</a></li><li class="toc-h3"><a href="#post-user-gdpr-delete-request">POST /user/gdpr/delete-request</a></li><li class="toc-h3"><a href="#post-user-gdpr-confirm-delete">POST /user/gdpr/confirm-delete</a></li><li class="toc-h2"><a href="#erreurs-du-module">Erreurs du module</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#routes">Routes</a></li><li class="toc-h2"><a href="#donnees-stockees-dans-redis">Données stockées dans Redis</a></li><li class="toc-h2"><a href="#get-user-profile">GET /user/profile</a></li><li class="toc-h2"><a href="#verification-d-age">Vérification d&#39;âge</a></li><li class="toc-h3"><a href="#post-user-identity">POST /user/identity</a></li><li class="toc-h3"><a href="#get-user-identity">GET /user/identity</a></li><li class="toc-h3"><a href="#controle-a-l-achat">Contrôle à l&#39;achat</a></li><li class="toc-h2"><a href="#get-user-referrals">GET /user/referrals</a></li><li class="toc-h2"><a href="#quetes-sociales">Quêtes sociales</a></li><li class="toc-h2"><a href="#put-user-responsible-limit">PUT /user/responsible-limit</a></li><li class="toc-h2"><a href="#patch-user-profile">PATCH /user/profile</a></li><li class="toc-h2"><a href="#put-user-preferences">PUT /user/preferences</a></li><li class="toc-h2"><a href="#get-user-notifications">GET /user/notifications</a></li><li class="toc-h2"><a href="#post-user-support">POST /user/support</a></li><li class="toc-h2"><a href="#get-user-gdpr-export">GET /user/gdpr/export</a></li><li class="toc-h2"><a href="#suppression-du-compte">Suppression du compte</a></li><li class="toc-h3"><a href="#post-user-gdpr-delete-request">POST /user/gdpr/delete-request</a></li><li class="toc-h3"><a href="#post-user-gdpr-confirm-delete">POST /user/gdpr/confirm-delete</a></li><li class="toc-h2"><a href="#erreurs-du-module">Erreurs du module</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

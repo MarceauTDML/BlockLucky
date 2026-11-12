@@ -14,14 +14,13 @@ import useAppTheme from '../../hooks/useAppTheme';
 import useAuth from '../../hooks/useAuth';
 import { useRootNavigation } from '../../navigation/hooks';
 import { useGetProfileQuery } from '../../store/api/authApi';
-import { shortenWallet } from '../../utils/formatters.util';
 
-type DialogState = 'none' | 'disable2fa' | 'disabled' | 'signOutAll';
+type DialogState = 'none' | 'disable2fa' | 'disabled';
 
 export const SecurityScreen: React.FC = () => {
   const { colors, t } = useAppTheme();
   const navigation = useRootNavigation();
-  const { user, disable2FA, isDisabling2FA, signOutEverywhere } = useAuth();
+  const { user, disable2FA, isDisabling2FA } = useAuth();
   const [dialog, setDialog] = useState<DialogState>('none');
   const [code, setCode] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -68,10 +67,30 @@ export const SecurityScreen: React.FC = () => {
         onBack={() => navigation.goBack()}
       />
 
-      <SectionHeader
-        title={t('Double authentification', 'Two-factor authentication')}
-        style={styles.firstSection}
-      />
+      <SectionHeader title={t('Connexion', 'Sign-in')} style={styles.firstSection} />
+      <ListGroup>
+        <ListRow
+          title={t('Adresse e-mail', 'E-mail address')}
+          subtitle={account?.email || t('Aucune adresse enregistrée', 'No address on file')}
+          icon="envelope"
+          iconTone="lavender"
+          onPress={() => navigation.navigate('ChangeEmail')}
+          divider
+        />
+        <ListRow
+          title={t('Mot de passe', 'Password')}
+          subtitle={
+            account?.hasPassword
+              ? t('Modifier votre mot de passe', 'Change your password')
+              : t('Aucun mot de passe : en créer un', 'No password yet: create one')
+          }
+          icon="lock"
+          iconTone="peach"
+          onPress={() => navigation.navigate('ChangePassword')}
+        />
+      </ListGroup>
+
+      <SectionHeader title={t('Double authentification', 'Two-factor authentication')} />
       <ListGroup>
         <ListRow
           title={twoFactorOn ? t('Activée', 'Enabled') : t('Désactivée', 'Disabled')}
@@ -110,27 +129,6 @@ export const SecurityScreen: React.FC = () => {
         ) : null}
       </ListGroup>
 
-      <SectionHeader title={t('Compte et appareils', 'Account and devices')} />
-      <ListGroup>
-        {account?.walletAddress ? (
-          <ListRow
-            title={t('Portefeuille intégré', 'Built-in wallet')}
-            subtitle={t('Créé et géré par l’application', 'Created and managed by the app')}
-            icon="giftTicket"
-            iconTone="lavender"
-            value={shortenWallet(account.walletAddress, 4)}
-            divider
-          />
-        ) : null}
-        <ListRow
-          title={t('Déconnecter tous les appareils', 'Sign out of all devices')}
-          subtitle={t('Toutes vos sessions seront fermées.', 'All your sessions will be closed.')}
-          icon="logout"
-          destructive
-          onPress={() => setDialog('signOutAll')}
-        />
-      </ListGroup>
-
       <ResultDialog
         visible={dialog === 'disable2fa'}
         status="info"
@@ -167,23 +165,6 @@ export const SecurityScreen: React.FC = () => {
         )}
         primaryLabel={t('Compris', 'Got it')}
         onPrimary={closeDialog}
-      />
-
-      <ResultDialog
-        visible={dialog === 'signOutAll'}
-        status="info"
-        title={t('Tout déconnecter ?', 'Sign out everywhere?')}
-        message={t(
-          'Vous serez déconnecté de cet appareil et de tous les autres.',
-          'You will be signed out of this device and all others.',
-        )}
-        primaryLabel={t('Tout déconnecter', 'Sign out everywhere')}
-        onPrimary={() => {
-          closeDialog();
-          signOutEverywhere();
-        }}
-        secondaryLabel={t('Annuler', 'Cancel')}
-        onSecondary={closeDialog}
       />
 
       {twoFactorOn ? null : (

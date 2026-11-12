@@ -57,13 +57,14 @@ mobile-app/
 ├── src/
 │   ├── App.tsx              point d'entrée, chargement de la police Inter
 │   ├── navigation/          RootNavigator, AuthStack, MainTabs, hooks typés
-│   ├── screens/             27 écrans : auth, lottery, marketplace, settings, sponsors
+│   ├── screens/             31 écrans : auth, lottery, marketplace, settings, sponsors
 │   ├── components/
 │   │   ├── auth/            formulaires d'authentification, boutons Google et Apple
 │   │   ├── draw/            roue, salle d'attente, discussion, résultats
 │   │   ├── lottery/         carte d'échéance, paliers, offres à gratter, formats
 │   │   ├── marketplace/     zone à gratter, cartes d'offres et de codes
 │   │   ├── profile/         identité, parrainage, résumé, listes de réglages
+│   │   ├── settings/        cartes de l'accueil des paramètres, nom affiché, enregistrement des préférences
 │   │   ├── ui/              composants de base et icônes SVG
 │   │   └── web3/            IntegratedWalletCard, IntegratedWalletButton, ExplorerLink (inutilisés)
 │   ├── hooks/               useAuth, useCitizenWallet, useSocket, usePoints, usePushNotifications, useAppTheme
@@ -116,7 +117,7 @@ Les imports sont relatifs (`../../hooks/useAuth`) : il n'y a pas d'alias `@/` co
 
 ## Configuration
 
-[`mobile-app/.env.example`](src:mobile-app/.env.example) liste quatre variables. Expo intègre au bundle toute variable préfixée `EXPO_PUBLIC_` au moment du démarrage de Metro ou du build.
+[`mobile-app/.env.example`](src:mobile-app/.env.example) liste huit variables. Expo intègre au bundle toute variable préfixée `EXPO_PUBLIC_` au moment du démarrage de Metro ou du build.
 
 | Variable | Valeur d'exemple | Lue par |
 |---|---|---|
@@ -124,8 +125,9 @@ Les imports sont relatifs (`../../hooks/useAuth`) : il n'y a pas d'alias `@/` co
 | `EXPO_PUBLIC_WS_URL` | `http://localhost:2053` | [`socket.client.ts`](src:mobile-app/src/services/socket.client.ts) |
 | `EXPO_PUBLIC_SENTRY_DSN` | vide | `sentry.client.ts`, qui ne l'utilise que pour écrire une trace locale |
 | `EXPO_PUBLIC_WEB3AUTH_CLIENT_ID` | `blocklucky-etherbay-client` | aucun fichier : vestige d'une intégration Web3Auth abandonnée |
+| `EXPO_PUBLIC_HELP_CENTER_URL` | vide | [`HelpSupportScreen.tsx`](src:mobile-app/src/screens/settings/HelpSupportScreen.tsx) : adresse du futur centre d'aide ; vide, la carte affiche « Bientôt » |
 
-Trois autres variables sont lues par [`SocialAuthButtons.tsx`](src:mobile-app/src/components/auth/SocialAuthButtons.tsx) sans figurer dans `.env.example` :
+Trois autres variables, listées vides, sont lues par [`SocialAuthButtons.tsx`](src:mobile-app/src/components/auth/SocialAuthButtons.tsx) :
 
 | Variable | Rôle |
 |---|---|

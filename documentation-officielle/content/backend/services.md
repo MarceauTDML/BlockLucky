@@ -25,7 +25,7 @@ Signe et vérifie les jetons de session JWT et gère leur révocation. Le compor
 | `revokeAllForUser(userId)` | pose `auth:revoked-before:<userId>` à l'instant courant moins une seconde, pour 30 jours |
 | `isRecent(token, maxAgeSeconds = 900)` | vrai si le jeton a été émis il y a moins de 15 minutes |
 
-`revokeAllForUser` est appelé à l'activation d'une 2FA, à la déconnexion de tous les appareils et à la confirmation d'une suppression RGPD. La marge d'une seconde garantit que le jeton émis juste après, dans la même requête, reste valable. Si un compte reste inactif plus de 30 jours, la clé expire, mais tous les jetons antérieurs ont expiré depuis longtemps.
+`revokeAllForUser` est appelé à l'activation d'une 2FA, à la déconnexion de tous les appareils, à la réinitialisation ou au changement du mot de passe et à la confirmation d'une suppression RGPD. La marge d'une seconde garantit que le jeton émis juste après, dans la même requête, reste valable. Si un compte reste inactif plus de 30 jours, la clé expire, mais tous les jetons antérieurs ont expiré depuis longtemps.
 
 ## otpChallengeService
 
@@ -85,14 +85,15 @@ Rend un gabarit HTML et l'envoie par Nodemailer ([`backend/src/config/mailer.con
 
 | Gabarit | Variables | Envoyé par |
 |---|---|---|
-| `otp-code` | `CODE`, `EXPIRES_MINUTES` | connexion, inscription, activation de la 2FA par email, réinitialisation du mot de passe |
+| `otp-code` | `CODE`, `EXPIRES_MINUTES` | connexion, inscription, activation de la 2FA par email, réinitialisation du mot de passe, confirmation d'une nouvelle adresse email |
 | `welcome` | `WALLET_ADDRESS`, `REFERRAL_CODE` | création de compte |
-| `security-alert` | `EVENT`, `DATE` | activation ou désactivation de la 2FA, utilisation d'un code de secours, mot de passe réinitialisé ou défini |
+| `security-alert` | `EVENT`, `DATE` | activation ou désactivation de la 2FA, utilisation d'un code de secours, mot de passe réinitialisé, défini ou modifié, adresse email remplacée (envoyée à l'ancienne adresse) |
 | `reward-claim` | `REWARD_TITLE`, `PARTNER_NAME`, `PROMO_CODE` | échange de récompense, ticket à gratter |
 | `identity-decision` | `DECISION`, `DETAILS` | décision de la Mairie sur une pièce d'identité |
 | `gdpr-deletion` | `CONFIRM_URL`, `TOKEN` | demande de suppression RGPD |
+| `support-request` | `USER_ID`, `EMAIL`, `FIRST_NAME`, `LAST_NAME`, `SUBJECT`, `MESSAGE`, `DATE` | message au support, envoyé à `SUPPORT_EMAIL` avec l'email du citoyen en adresse de réponse |
 
-Les gabarits sont dans `backend/src/templates/emails/`. Chaque `{{VARIABLE}}` est remplacée par sa valeur échappée pour HTML. Si le fichier est introuvable, le corps se réduit aux variables en JSON. `npm run compile` copie le dossier dans `dist/src/templates`.
+Les gabarits sont dans `backend/src/templates/emails/`. Chaque `{{VARIABLE}}` est remplacée par sa valeur échappée pour HTML. Si le fichier est introuvable, le corps se réduit aux variables en JSON. Un quatrième argument facultatif, `{ replyTo }`, ajoute une adresse de réponse au message. `npm run compile` copie le dossier dans `dist/src/templates`.
 
 | Situation | Comportement de `sendTemplateEmail` |
 |---|---|

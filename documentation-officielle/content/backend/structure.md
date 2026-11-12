@@ -93,7 +93,7 @@ Ils sont déclarés route par route dans les fichiers `*.routes.ts`, toujours da
 
 | Middleware | Fichier | Rôle |
 |---|---|---|
-| `authRateLimiter`, `identityUploadRateLimiter` | [`backend/src/middlewares/rateLimiter.middleware.ts`](src:backend/src/middlewares/rateLimiter.middleware.ts) | 30 requêtes par 10 minutes et par IP sur les routes de connexion, d'inscription, de mot de passe, OAuth et 2FA ; 10 envois par heure et par IP sur `POST /user/identity`. |
+| `authRateLimiter`, `identityUploadRateLimiter`, `supportRateLimiter` | [`backend/src/middlewares/rateLimiter.middleware.ts`](src:backend/src/middlewares/rateLimiter.middleware.ts) | 30 requêtes par 10 minutes et par IP sur les routes de connexion, d'inscription, de mot de passe, de changement d'email, OAuth et 2FA ; 10 envois par heure et par IP sur `POST /user/identity` ; 5 messages par heure et par compte sur `POST /user/support`, seul limiteur placé après `authenticate`. |
 | `authenticate` | [`backend/src/middlewares/auth.middleware.ts`](src:backend/src/middlewares/auth.middleware.ts) | Exige `Authorization: Bearer <jeton>`, vérifie signature, émetteur, audience, expiration et révocation, remplit `req.user` et `req.session`. |
 | `optionalAuthenticate` | même fichier | Remplit `req.user` si un jeton valide est présent, laisse passer sinon. |
 | `requireRoles(...)` | [`backend/src/middlewares/rbac.middleware.ts`](src:backend/src/middlewares/rbac.middleware.ts) | Compare le rôle du jeton à la liste, puis relit le compte en base (rôle inchangé, compte non supprimé, 2FA active pour un ADMIN). |

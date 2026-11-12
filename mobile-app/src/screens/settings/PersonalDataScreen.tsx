@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Share, StyleSheet, View } from 'react-native';
 
 import { getApiErrorMessage } from '../../components/marketplace/apiErrors';
@@ -18,17 +18,27 @@ import { useRootNavigation } from '../../navigation/hooks';
 import {
   useConfirmGdprDeletionMutation,
   useExportGdprDataMutation,
+  useGetProfileQuery,
   useRequestGdprDeletionMutation,
+  useUpdateProfileNamesMutation,
 } from '../../store/api/authApi';
 import { GdprExportResponse } from '../../types/api.types';
 import { formatDateShort } from '../../utils/date.util';
 
-type DialogState = 'none' | 'askDelete' | 'confirmDelete' | 'error';
+type DialogState = 'none' | 'askDelete' | 'confirmDelete' | 'error' | 'namesSaved';
 
-export const GDPRScreen: React.FC = () => {
+const NAME_PATTERN = /^[\p{L}][\p{L}' -]*$/u;
+
+export const PersonalDataScreen: React.FC = () => {
   const { colors, t } = useAppTheme();
   const navigation = useRootNavigation();
-  const { signOut } = useAuth();
+  const { user, signOut, patchUser } = useAuth();
+  const { data: profileRes } = useGetProfileQuery();
+  const [updateNames, { isLoading: isSavingNames }] = useUpdateProfileNamesMutation();
+  const profile = profileRes?.data?.profile ?? user;
+  const [firstName, setFirstName] = useState(profile?.firstName ?? '');
+  const [lastName, setLastName] = useState(profile?.lastName ?? '');
+  const [nameErrors, setNameErrors] = useState<{ firstName?: string; lastName?: string }>({});
   const [exportGdpr, { isLoading: isExporting }] = useExportGdprDataMutation();
   const [requestDeletion, { isLoading: isRequesting }] = useRequestGdprDeletionMutation();
   const [confirmDeletion, { isLoading: isConfirming }] = useConfirmGdprDeletionMutation();
@@ -39,6 +49,50 @@ export const GDPRScreen: React.FC = () => {
   const [token, setToken] = useState('');
   const [dialog, setDialog] = useState<DialogState>('none');
   const [errorMessage, setErrorMessage] = useState('');
+
+  const serverFirst = profile?.firstName ?? '';
+  const serverLast = profile?.lastName ?? '';
+  useEffect(() => {
+    setFirstName(serverFirst);
+    setLastName(serverLast);
+  }, [serverFirst, serverLast]);
+
+  const namesChanged = firstName.trim() !== serverFirst || lastName.trim() !== serverLast;
+
+  const validateName = (value: string): string | undefined => {
+    const trimmed = value.trim();
+    if (!trimmed) return undefined;
+    if (trimmed.length > 50) return t('50 caractères au plus.', '50 characters at most.');
+    if (!NAME_PATTERN.test(trimmed)) {
+      return t(
+        'Lettres, espaces, tirets et apostrophes uniquement.',
+        'Letters, spaces, hyphens and apostrophes only.',
+      );
+    }
+    return undefined;
+  };
+
+  const handleSaveNames = async () => {
+    const errors = { firstName: validateName(firstName), lastName: validateName(lastName) };
+    setNameErrors(errors);
+    if (errors.firstName || errors.lastName) return;
+    try {
+      const res = await updateNames({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+      }).unwrap();
+      await patchUser(res.data.profile);
+      setDialog('namesSaved');
+    } catch (error) {
+      fail(
+        error,
+        t(
+          'Impossible d’enregistrer votre nom pour le moment.',
+          'Unable to save your name right now.',
+        ),
+      );
+    }
+  };
 
   const fail = (error: unknown, fallback: string) => {
     setErrorMessage(getApiErrorMessage(error, fallback));
@@ -112,20 +166,59 @@ export const GDPRScreen: React.FC = () => {
     <Screen showSecurityFooter>
       <ScreenHeader
         title={t('Données personnelles', 'Personal data')}
-        subtitle={t(
-          'Vos droits RGPD : accès, portabilité, effacement',
-          'Your GDPR rights: access, portability, erasure',
-        )}
+        subtitle={t('Votre identité et vos droits RGPD', 'Your identity and your GDPR rights')}
         onBack={() => navigation.goBack()}
       />
 
       <SectionHeader
-        title={t('Exporter mes données', 'Export my data')}
+        title={t('Identité', 'Identity')}
+        subtitle={t(
+          'Affichés dans vos paramètres et utilisés par la Mairie pour vous contacter.',
+          'Shown in your settings and used by the city hall to contact you.',
+        )}
+        style={styles.firstSection}
+      />
+      <Card>
+        <AppInput
+          tone="muted"
+          label={t('Prénom', 'First name')}
+          value={firstName}
+          onChangeText={setFirstName}
+          errorText={nameErrors.firstName}
+          autoCapitalize="words"
+          autoComplete="given-name"
+          textContentType="givenName"
+          maxLength={50}
+          placeholder={t('Votre prénom', 'Your first name')}
+        />
+        <AppInput
+          tone="muted"
+          label={t('Nom', 'Last name')}
+          value={lastName}
+          onChangeText={setLastName}
+          errorText={nameErrors.lastName}
+          autoCapitalize="words"
+          autoComplete="family-name"
+          textContentType="familyName"
+          maxLength={50}
+          placeholder={t('Votre nom', 'Your last name')}
+        />
+        <AppButton
+          title={t('Enregistrer', 'Save')}
+          variant="dark"
+          size="md"
+          disabled={!namesChanged}
+          loading={isSavingNames}
+          onPress={handleSaveNames}
+        />
+      </Card>
+
+      <SectionHeader
+        title={t('Télécharger mes données', 'Download my data')}
         subtitle={t(
           'Profil, tickets, EtherPoints et codes, au format JSON.',
           'Profile, tickets, EtherPoints and codes, in JSON format.',
         )}
-        style={styles.firstSection}
       />
       <Card>
         {exported ? (
@@ -266,6 +359,15 @@ export const GDPRScreen: React.FC = () => {
       />
 
       <ResultDialog
+        visible={dialog === 'namesSaved'}
+        status="success"
+        title={t('Nom enregistré', 'Name saved')}
+        message={t('Votre identité est à jour.', 'Your identity is up to date.')}
+        primaryLabel={t('Fermer', 'Close')}
+        onPrimary={() => setDialog('none')}
+      />
+
+      <ResultDialog
         visible={dialog === 'error'}
         status="error"
         title={t('Une erreur est survenue', 'Something went wrong')}
@@ -304,4 +406,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GDPRScreen;
+export default PersonalDataScreen;

@@ -25,9 +25,13 @@ import MyCodesScreen from '../screens/marketplace/MyCodesScreen';
 import RewardDetailScreen from '../screens/marketplace/RewardDetailScreen';
 import RewardsCatalogScreen from '../screens/marketplace/RewardsCatalogScreen';
 import ScratchCardScreen from '../screens/marketplace/ScratchCardScreen';
-import GDPRScreen from '../screens/settings/GDPRScreen';
+import ChangeEmailScreen from '../screens/settings/ChangeEmailScreen';
+import ChangePasswordScreen from '../screens/settings/ChangePasswordScreen';
+import DisplaySettingsScreen from '../screens/settings/DisplaySettingsScreen';
 import HelpSupportScreen from '../screens/settings/HelpSupportScreen';
+import NotificationSettingsScreen from '../screens/settings/NotificationSettingsScreen';
 import NotificationsScreen from '../screens/settings/NotificationsScreen';
+import PersonalDataScreen from '../screens/settings/PersonalDataScreen';
 import SecurityScreen from '../screens/settings/SecurityScreen';
 import SettingsScreen from '../screens/settings/SettingsScreen';
 import VerifyAgeScreen from '../screens/settings/VerifyAgeScreen';
@@ -122,9 +126,13 @@ export const RootNavigator: React.FC = () => {
               <Stack.Screen name="MyCodes" component={MyCodesScreen} />
               <Stack.Screen name="VerifyAge" component={VerifyAgeScreen} />
               <Stack.Screen name="Settings" component={SettingsScreen} />
+              <Stack.Screen name="DisplaySettings" component={DisplaySettingsScreen} />
+              <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+              <Stack.Screen name="PersonalData" component={PersonalDataScreen} />
               <Stack.Screen name="Security" component={SecurityScreen} />
+              <Stack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
+              <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
               <Stack.Screen name="Setup2FA" component={Setup2FAScreen} />
-              <Stack.Screen name="GDPR" component={GDPRScreen} />
               <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
             </>
           )}

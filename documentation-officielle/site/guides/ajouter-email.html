@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ajouter un email | Documentation BlockLucky</title>
-<meta name="description" content="Le backend envoie six emails transactionnels : code de connexion, d&#39;inscription, de réinitialisation du mot de passe ou de 2FA (otp-code), alerte de sécurité (s">
+<meta name="description" content="Le backend envoie sept emails transactionnels : code de connexion, d&#39;inscription, de réinitialisation du mot de passe ou de 2FA (otp-code), alerte de sécurité (">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>15. Guides pratiques</span></div>
     <article class="markdown">
 <h1>Ajouter un email</h1>
-<p>Le backend envoie six emails transactionnels : code de connexion, d&#39;inscription, de réinitialisation du mot de passe ou de 2FA (<code>otp-code</code>), alerte de sécurité (<code>security-alert</code>), bienvenue (<code>welcome</code>), code promo d&#39;une récompense (<code>reward-claim</code>), confirmation de suppression RGPD (<code>gdpr-deletion</code>) et décision de la Mairie sur la vérification d&#39;âge (<code>identity-decision</code>). Ce guide en ajoute un septième, <code>ticket-gift</code>, qui prévient le destinataire d&#39;un ticket offert. Aujourd&#39;hui, <code>POST /api/v1/lottery/gift</code> crée si besoin le compte du destinataire et achète le ticket pour lui, mais ne lui écrit pas.</p>
+<p>Le backend envoie sept emails transactionnels : code de connexion, d&#39;inscription, de réinitialisation du mot de passe ou de 2FA (<code>otp-code</code>), alerte de sécurité (<code>security-alert</code>), bienvenue (<code>welcome</code>), code promo d&#39;une récompense (<code>reward-claim</code>), confirmation de suppression RGPD (<code>gdpr-deletion</code>) décision de la Mairie sur la vérification d&#39;âge (<code>identity-decision</code>) et message d&#39;un citoyen au support (<code>support-request</code>). Ce guide en ajoute un huitième, <code>ticket-gift</code>, qui prévient le destinataire d&#39;un ticket offert. Aujourd&#39;hui, <code>POST /api/v1/lottery/gift</code> crée si besoin le compte du destinataire et achète le ticket pour lui, mais ne lui écrit pas.</p>
 <h2 id="fichiers-a-toucher"><a class="anchor" href="#fichiers-a-toucher" aria-hidden="true" tabindex="-1">#</a>Fichiers à toucher</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -184,6 +184,7 @@
   | <span class="hljs-string">&#x27;welcome&#x27;</span>
   | <span class="hljs-string">&#x27;security-alert&#x27;</span>
   | <span class="hljs-string">&#x27;identity-decision&#x27;</span>
+  | <span class="hljs-string">&#x27;support-request&#x27;</span>
   | <span class="hljs-string">&#x27;ticket-gift&#x27;</span>;</code></pre></div>
 <p>Une méthode dédiée (<code>sendTicketGiftEmail</code>) n&#39;est pas nécessaire : les services métier appellent tous <code>enqueueEmail</code>, et les méthodes <code>send*Email</code> existantes ne sont utilisées par aucun service.</p>
 <h2 id="3-mettre-l-envoi-en-file"><a class="anchor" href="#3-mettre-l-envoi-en-file" aria-hidden="true" tabindex="-1">#</a>3. Mettre l&#39;envoi en file</h2>

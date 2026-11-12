@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>15. Guides pratiques</span></div>
     <article class="markdown">
 <h1>Ajouter un écran mobile</h1>
-<p>L&#39;application mobile (<a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/</code></a>) est une application Expo SDK 58 en React Native, avec React Navigation 7 et RTK Query. Ce guide ajoute un écran « Historique des tirages » qui consomme la route <code>GET /api/v1/lottery/rounds</code> créée dans <a href="ajouter-endpoint.html">Ajouter un endpoint</a>, et l&#39;ouvre depuis l&#39;écran « Aide et charte ».</p>
+<p>L&#39;application mobile (<a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/</code></a>) est une application Expo SDK 58 en React Native, avec React Navigation 7 et RTK Query. Ce guide ajoute un écran « Historique des tirages » qui consomme la route <code>GET /api/v1/lottery/rounds</code> créée dans <a href="ajouter-endpoint.html">Ajouter un endpoint</a>, et l&#39;ouvre depuis l&#39;écran « Comment ça marche ».</p>
 <h2 id="fichiers-a-toucher"><a class="anchor" href="#fichiers-a-toucher" aria-hidden="true" tabindex="-1">#</a>Fichiers à toucher</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -67,7 +67,7 @@
 <td>Enregistrement de l&#39;écran</td>
 </tr>
 <tr>
-<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/HelpSupportScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/settings/HelpSupportScreen.tsx</code></a></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/HowItWorksScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/screens/lottery/HowItWorksScreen.tsx</code></a></td>
 <td>Bouton d&#39;accès</td>
 </tr>
 </tbody></table></div>
@@ -76,7 +76,7 @@
 <div class="diagram"><pre class="mermaid">flowchart TD
     R[&quot;RootNavigator, pile racine&quot;] --&gt;|&quot;non connecté&quot;| A[&quot;AuthStack : Onboarding, SignIn, SignUp, Verify2FA, ForgotPassword, ResetPassword, Setup2FA&quot;]
     R --&gt;|&quot;connecté&quot;| M[&quot;MainTabs, quatre onglets&quot;]
-    R --&gt; P[&quot;Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, Security, Setup2FA, GDPR, HelpSupport&quot;]
+    R --&gt; P[&quot;Écrans empilés : BuyTicket, GiftTicket, WaitingRoom, LiveDraw, TransactionHistory, Notifications, HowItWorks, RewardsCatalog, RewardDetail, ScratchCard, MyCodes, VerifyAge, Settings, DisplaySettings, NotificationSettings, PersonalData, Security, ChangeEmail, ChangePassword, Setup2FA, HelpSupport&quot;]
     M --&gt; T1[&quot;HomeTab&quot;]
     M --&gt; T2[&quot;TicketsTab&quot;]
     M --&gt; T3[&quot;SponsorsTab&quot;]
@@ -109,7 +109,7 @@
 <td><code>useAuthNavigation</code></td>
 </tr>
 </tbody></table></div>
-<p>Les réglages n&#39;ont plus de pile propre : <code>Settings</code>, <code>Security</code>, <code>GDPR</code> et <code>HelpSupport</code> sont des écrans de la pile racine, sans barre d&#39;onglets. L&#39;historique des tirages va donc aussi dans la pile racine, comme <code>TransactionHistory</code>. Les écrans de la pile racine ne sont montés que si l&#39;utilisateur est connecté (<code>isAuthenticated</code> de <code>useAuth</code>). Les deux hooks viennent de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/hooks.ts" class="external" target="_blank" rel="noopener noreferrer"><code>navigation/hooks.ts</code></a>.</p>
+<p>Les réglages n&#39;ont pas de pile propre : <code>Settings</code> et ses écrans (<code>DisplaySettings</code>, <code>NotificationSettings</code>, <code>PersonalData</code>, <code>Security</code>, <code>ChangeEmail</code>, <code>ChangePassword</code>, <code>HelpSupport</code>) sont des écrans de la pile racine, sans barre d&#39;onglets ; on y entre par la roue dentée de l&#39;en-tête (<code>HeaderActions</code>). L&#39;historique des tirages va donc aussi dans la pile racine, comme <code>TransactionHistory</code>. Les écrans de la pile racine ne sont montés que si l&#39;utilisateur est connecté (<code>isAuthenticated</code> de <code>useAuth</code>). Les deux hooks viennent de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/hooks.ts" class="external" target="_blank" rel="noopener noreferrer"><code>navigation/hooks.ts</code></a>.</p>
 <h2 id="1-typer-la-reponse-et-declarer-l-appel"><a class="anchor" href="#1-typer-la-reponse-et-declarer-l-appel" aria-hidden="true" tabindex="-1">#</a>1. Typer la réponse et déclarer l&#39;appel</h2>
 <p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/types/api.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>api.types.ts</code></a> :</p>
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">RoundHistoryItem</span> {
@@ -229,7 +229,7 @@
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript">&lt;<span class="hljs-title class_">Stack</span>.<span class="hljs-property">Screen</span> name=<span class="hljs-string">&quot;RoundHistory&quot;</span> component={<span class="hljs-title class_">RoundHistoryScreen</span>} /&gt;</code></pre></div>
 <p>TypeScript refuse un <code>name</code> absent de <code>RootStackParamList</code> : l&#39;étape 2 est obligatoire.</p>
 <h2 id="5-ouvrir-l-ecran"><a class="anchor" href="#5-ouvrir-l-ecran" aria-hidden="true" tabindex="-1">#</a>5. Ouvrir l&#39;écran</h2>
-<p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/HelpSupportScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>HelpSupportScreen.tsx</code></a>, écran de la pile racine, ajouter une ligne au groupe existant :</p>
+<p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/lottery/HowItWorksScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>HowItWorksScreen.tsx</code></a>, écran de la pile racine ouvert depuis la carte « Comment se passe le tirage ? » de l&#39;accueil, ajouter une ligne dans la carte de la charte, à côté de « Voir le Smart Contract » :</p>
 <div class="code-block"><div class="code-head"><span>TypeScript</span></div><pre><code class="hljs language-typescript">&lt;<span class="hljs-title class_">ListRow</span>
   title={<span class="hljs-title function_">t</span>(<span class="hljs-string">&#x27;Historique des tirages&#x27;</span>, <span class="hljs-string">&#x27;Draw history&#x27;</span>)}
   icon=<span class="hljs-string">&quot;trophy&quot;</span>
@@ -245,7 +245,7 @@ npm run lint
 npx expo config --<span class="hljs-built_in">type</span> public &gt; /dev/null</code></pre></div>
 <p>Ce sont les trois contrôles du job <code>mobile</code> de la CI. Le projet n&#39;a pas de script de tests exécutable (voir <a href="../contribuer/tests-qualite.html#application-mobile">Tests et qualité</a>) : l&#39;écran se vérifie à la main.</p>
 <div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">npm start</code></pre></div>
-<p>Ouvrir l&#39;application dans Expo Go, se connecter avec un compte du seed, aller dans Profil, puis « Aide et support », puis « Historique des tirages ». Sur un téléphone physique, l&#39;API doit être joignable : remplacer <code>localhost</code> par l&#39;adresse IP locale du poste dans <code>mobile-app/.env</code> (voir <a href="../mobile/telephone-physique.html">Tester sur un téléphone</a>).</p>
+<p>Ouvrir l&#39;application dans Expo Go, se connecter avec un compte du seed, toucher la carte « Comment se passe le tirage ? » de l&#39;accueil, puis « Historique des tirages ». Sur un téléphone physique, l&#39;API doit être joignable : remplacer <code>localhost</code> par l&#39;adresse IP locale du poste dans <code>mobile-app/.env</code> (voir <a href="../mobile/telephone-physique.html">Tester sur un téléphone</a>).</p>
 <p>À vérifier sur l&#39;appareil :</p>
 <div class="table-wrap"><table>
 <thead>
@@ -256,11 +256,11 @@ npx expo config --<span class="hljs-built_in">type</span> public &gt; /dev/null<
 </thead>
 <tbody><tr>
 <td>Thème sombre</td>
-<td>Activer « Mode sombre » dans Profil, puis Paramètres : l&#39;application ne suit pas le thème du système</td>
+<td>Choisir « Sombre » dans Paramètres (roue dentée de l&#39;en-tête), puis Affichage : l&#39;application ne suit pas le thème du système</td>
 </tr>
 <tr>
 <td>Anglais</td>
-<td>Changer la langue dans Profil, puis Paramètres</td>
+<td>Choisir « English » dans Paramètres, puis Affichage</td>
 </tr>
 <tr>
 <td>Lecteur d&#39;écran</td>

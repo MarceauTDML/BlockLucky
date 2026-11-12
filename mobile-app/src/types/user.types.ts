@@ -15,10 +15,20 @@ export interface IdentityVerificationState {
   note?: string | null;
 }
 
+export interface NotificationPreferences {
+  drawReminders: boolean;
+  results: boolean;
+  rewards: boolean;
+  referrals: boolean;
+}
+
+export type NotificationCategory = keyof NotificationPreferences;
+
 export interface UserPreferences {
   theme: ThemeMode;
   language: LanguageCode;
   pushNotificationsEnabled: boolean;
+  notifications?: NotificationPreferences;
 }
 
 export interface UserStats {
@@ -31,6 +41,8 @@ export interface UserProfile {
   id: string;
   walletAddress: string;
   email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   role: Role;
   pointsBalance: number;
   referralCode: string;

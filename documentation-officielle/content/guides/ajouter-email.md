@@ -1,6 +1,6 @@
 # Ajouter un email
 
-Le backend envoie six emails transactionnels : code de connexion, d'inscription, de réinitialisation du mot de passe ou de 2FA (`otp-code`), alerte de sécurité (`security-alert`), bienvenue (`welcome`), code promo d'une récompense (`reward-claim`), confirmation de suppression RGPD (`gdpr-deletion`) et décision de la Mairie sur la vérification d'âge (`identity-decision`). Ce guide en ajoute un septième, `ticket-gift`, qui prévient le destinataire d'un ticket offert. Aujourd'hui, `POST /api/v1/lottery/gift` crée si besoin le compte du destinataire et achète le ticket pour lui, mais ne lui écrit pas.
+Le backend envoie sept emails transactionnels : code de connexion, d'inscription, de réinitialisation du mot de passe ou de 2FA (`otp-code`), alerte de sécurité (`security-alert`), bienvenue (`welcome`), code promo d'une récompense (`reward-claim`), confirmation de suppression RGPD (`gdpr-deletion`) décision de la Mairie sur la vérification d'âge (`identity-decision`) et message d'un citoyen au support (`support-request`). Ce guide en ajoute un huitième, `ticket-gift`, qui prévient le destinataire d'un ticket offert. Aujourd'hui, `POST /api/v1/lottery/gift` crée si besoin le compte du destinataire et achète le ticket pour lui, mais ne lui écrit pas.
 
 ## Fichiers à toucher
 
@@ -97,6 +97,7 @@ export type EmailTemplateName =
   | 'welcome'
   | 'security-alert'
   | 'identity-decision'
+  | 'support-request'
   | 'ticket-gift';
 ```
 
