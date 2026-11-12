@@ -68,7 +68,8 @@ export const useAuth = () => {
           setPendingTwoFactor({
             userId: result.userId,
             method: result.twoFactorMethod,
-            email: result.user?.email,
+            email: result.user?.email ?? payload.email,
+            loginTicket: result.loginTicket,
           })
         );
         return { requiresTwoFactor: true as const, user: result.user };
@@ -87,9 +88,24 @@ export const useAuth = () => {
   );
 
   const verifyOtpCode = useCallback(
-    async (userId: string, code: string) => {
-      const response = await verify2FATrigger({ userId, code }).unwrap();
+    async (userId: string, code: string, loginTicket?: string | null) => {
+      const response = await verify2FATrigger({
+        userId,
+        code,
+        ...(loginTicket ? { loginTicket } : {}),
+      }).unwrap();
       const result = response.data;
+      if (result.requiresTwoFactor && result.userId && result.loginTicket) {
+        dispatch(
+          setPendingTwoFactor({
+            userId: result.userId,
+            method: result.twoFactorMethod ?? 'APP',
+            email: authState.pendingTwoFactorEmail,
+            loginTicket: result.loginTicket,
+          })
+        );
+        return result;
+      }
       if (result.token && result.user) {
         const merged = { ...(authState.user || {}), ...result.user } as UserProfile;
         persistSession(result.token, merged);
@@ -98,7 +114,7 @@ export const useAuth = () => {
       }
       return result;
     },
-    [authState.user, dispatch, refreshProfile, verify2FATrigger]
+    [authState.pendingTwoFactorEmail, authState.user, dispatch, refreshProfile, verify2FATrigger]
   );
 
   const endSession = useCallback(

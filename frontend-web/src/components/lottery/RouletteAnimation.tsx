@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Icon from '@/components/ui/Icon';
+import useSound, { SOUNDS } from '@/hooks/useSound';
 import { cn } from '@/lib/cn';
 import { shortenWallet } from '@/lib/formatters';
 import { useAppTheme } from '@/theme/ThemeProvider';
@@ -17,6 +18,14 @@ export const RouletteAnimation: React.FC<{
   drawRequested?: boolean;
 }> = ({ spinning, winnerWallet, vrfRequestId, certified = true, drawRequested = false }) => {
   const { t } = useAppTheme();
+  const { play, stop } = useSound(SOUNDS.wheel);
+
+  useEffect(() => {
+    if (!spinning) return undefined;
+    play({ loop: true });
+    return stop;
+  }, [spinning, play, stop]);
+
   return (
     <section className="card mb-3.5 flex flex-col items-center overflow-hidden p-5 md:p-8">
       <span

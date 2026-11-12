@@ -2,8 +2,8 @@
 
 import React from 'react';
 import Icon, { IconName } from '@/components/ui/Icon';
-import { Skeleton } from '@/components/ui/Loader';
-import { useGetTransparencyCharterQuery } from '@/store/api/lotteryApi';
+import { getLegalDocument, LEGAL_VERSION } from '@/content/legal';
+import { useGetLotteryStatusQuery } from '@/store/api/lotteryApi';
 import { useAppTheme } from '@/theme/ThemeProvider';
 
 const SECTION_STYLES: { icon: IconName; tone: string }[] = [
@@ -13,79 +13,82 @@ const SECTION_STYLES: { icon: IconName; tone: string }[] = [
   { icon: 'star', tone: 'bg-peach text-terracotta' },
 ];
 
+const HARDHAT_CHAIN_ID = 31337;
+const SEPOLIA_CHAIN_ID = 11155111;
+
+type Environment = 'hardhat' | 'sepolia' | 'simulated' | null;
+
+const ENVIRONMENT_ORDER: Exclude<Environment, null>[] = ['hardhat', 'sepolia', 'simulated'];
+
 export const TransparencyCharter: React.FC<{ headingLevel?: 'h1' | 'h2' }> = ({ headingLevel = 'h1' }) => {
   const { language, t } = useAppTheme();
-  const { data, isLoading } = useGetTransparencyCharterQuery();
-  const charter = data?.data;
+  const { data } = useGetLotteryStatusQuery();
+  const blockchain = data?.data?.blockchain;
+  const charter = getLegalDocument('transparence', language);
   const Heading = headingLevel;
 
-  const fallbackSections = [
-    {
-      heading: t('1. Registre public Ethereum', '1. Public Ethereum Ledger'),
-      body: t(
-        'Chaque participation et chaque tirage sont inscrits de façon immuable sur la blockchain. Aucune intervention humaine ne peut modifier le résultat.',
-        'Every entry and draw is immutably recorded on the blockchain. No human intervention can alter the outcome.'
-      ),
-    },
-    {
-      heading: t('2. Tirage aléatoire certifié (Chainlink VRF)', '2. Certified Randomness (Chainlink VRF)'),
-      body: t(
-        "Le gagnant est désigné par un oracle cryptographique vérifiable qui génère une preuve mathématique d'impartialité.",
-        'The winner is selected by a verifiable cryptographic oracle that generates a mathematical proof of fairness.'
-      ),
-    },
-    {
-      heading: t('3. Remboursement automatique', '3. Automatic Refund Guarantee'),
-      body: t(
-        "Le Smart Contract intègre une clause de remboursement automatique : si le tirage est annulé, l'intégralité des fonds engagés est restituée.",
-        'The Smart Contract includes an automatic refund clause: if the draw is cancelled, 100% of committed funds are returned.'
-      ),
-    },
-    {
-      heading: t('4. Ethers fictifs', '4. Test ethers'),
-      body: t(
-        "Ce pilote pédagogique fonctionne exclusivement avec des unités de test sans valeur monétaire. Aucune somme d'argent réelle n'est collectée ni redistribuée.",
-        'This educational pilot only uses test units with no monetary value. No real money is collected or paid out.'
-      ),
-    },
-  ];
-
-  const sections = language === 'FR' && charter?.sections?.length ? charter.sections : fallbackSections;
+  const environment: Environment =
+    blockchain?.mode === 'simulated' || data?.data?.guarantees?.simulated
+      ? 'simulated'
+      : blockchain?.chainId === HARDHAT_CHAIN_ID
+        ? 'hardhat'
+        : blockchain?.chainId === SEPOLIA_CHAIN_ID
+          ? 'sepolia'
+          : null;
 
   return (
     <div className="flex flex-col gap-3.5">
       <div>
-        <Heading className="text-title font-bold md:text-hero">
-          {language === 'FR' ? charter?.title || 'Charte de transparence' : 'Transparency Charter'}
-        </Heading>
+        <Heading className="text-title font-bold md:text-hero">{charter.title}</Heading>
         <p className="mt-1.5 inline-flex rounded-full bg-sun-chip px-3 py-1 text-caption font-semibold text-on-sun dark:text-sun">
-          {t(
-            `Version ${charter?.version || '2026.1'} • Ville d'EtherBay`,
-            `Version ${charter?.version || '2026.1'} • City of EtherBay`
-          )}
+          {t(`${LEGAL_VERSION.FR} • Ville d'EtherBay`, `${LEGAL_VERSION.EN} • City of EtherBay`)}
         </p>
+        <p className="mt-3 max-w-3xl text-body text-fg-secondary">{charter.intro}</p>
       </div>
-      {isLoading ? (
-        <>
-          <Skeleton className="h-24 w-full rounded-[24px]" />
-          <Skeleton className="h-24 w-full rounded-[24px]" />
-        </>
-      ) : (
-        <div className="grid gap-3.5 md:grid-cols-2">
-          {sections.map((sec, index) => (
-            <section key={sec.heading} className="card flex flex-col gap-3 p-5">
-              <span
-                aria-hidden
-                className={`flex h-10 w-10 items-center justify-center rounded-full ${SECTION_STYLES[index % SECTION_STYLES.length].tone}`}
-              >
-                <Icon name={SECTION_STYLES[index % SECTION_STYLES.length].icon} size={20} />
-              </span>
-              <h2 className="text-subtitle font-bold">{sec.heading}</h2>
-              <p className="text-body text-fg-secondary">{sec.body}</p>
-            </section>
-          ))}
-        </div>
-      )}
+      <div className="grid gap-3.5 md:grid-cols-2">
+        {charter.sections.map((sec, index) => (
+          <section
+            key={sec.heading}
+            className={`card flex flex-col gap-3 p-5 ${sec.items?.length ? 'md:col-span-2' : ''}`}
+          >
+            <span
+              aria-hidden
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${SECTION_STYLES[index % SECTION_STYLES.length].tone}`}
+            >
+              <Icon name={SECTION_STYLES[index % SECTION_STYLES.length].icon} size={20} />
+            </span>
+            <h2 className="text-subtitle font-bold">{sec.heading}</h2>
+            {sec.paragraphs.map((paragraph) => (
+              <p key={paragraph} className="text-body text-fg-secondary">
+                {paragraph}
+              </p>
+            ))}
+            {sec.items?.length ? (
+              <dl className="grid gap-2.5 md:grid-cols-3">
+                {sec.items.map((item, itemIndex) => {
+                  const current = environment !== null && ENVIRONMENT_ORDER[itemIndex] === environment;
+                  return (
+                    <div
+                      key={item.title}
+                      className={`rounded-[18px] p-4 ${current ? 'bg-sun-chip' : 'bg-surface-elevated'}`}
+                    >
+                      <dt className="mb-1 flex flex-wrap items-center gap-2 text-small font-bold text-fg">
+                        {item.title}
+                        {current ? (
+                          <span className="rounded-full bg-surface px-2 py-0.5 text-caption font-semibold">
+                            {t('Environnement actuel', 'Current environment')}
+                          </span>
+                        ) : null}
+                      </dt>
+                      <dd className="text-small text-fg-secondary">{item.text}</dd>
+                    </div>
+                  );
+                })}
+              </dl>
+            ) : null}
+          </section>
+        ))}
+      </div>
     </div>
   );
 };

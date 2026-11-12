@@ -18,7 +18,7 @@ contract BlockLucky is VRFConsumerBaseV2Plus, AccessControl, Pausable, Reentranc
 | `ReentrancyGuard` | OpenZeppelin 5.6.1 | Modificateur `nonReentrant` |
 | `AutomationCompatibleInterface` | Chainlink 1.5.0 | Signatures `checkUpkeep` et `performUpkeep` |
 
-`VRFConsumerBaseV2Plus` hérite lui-même de `ConfirmedOwner`. Le contrat a donc, en plus des rôles, un propriétaire : le compte qui l'a déployé. Ce propriétaire peut appeler `setCoordinator` et `transferOwnership`. Les conséquences sont analysées dans [Sécurité du contrat](securite.md#abus-de-l-administrateur).
+`VRFConsumerBaseV2Plus` hérite lui-même de `ConfirmedOwner`. Le contrat a donc, en plus des rôles, un propriétaire, d'abord le compte qui l'a déployé. Ce propriétaire peut appeler `setCoordinator` et `transferOwnership`. Les scripts de déploiement transfèrent cette propriété en deux temps (`transferOwnership` puis `acceptOwnership`) à l'administrateur de la Mairie, ou à `VRF_OWNER_ADDRESS` sur Sepolia. Les conséquences sont analysées dans [Sécurité du contrat](securite.md#abus-de-l-administrateur).
 
 ## Constantes
 
@@ -129,14 +129,14 @@ L'événement `TicketsPurchased` porte les deux adresses (`player` et `payer`). 
 
 | Rôle | Titulaire prévu | Fonctions |
 |---|---|---|
-| `DEFAULT_ADMIN_ROLE` | Mairie (`admin` du constructeur) | `setTreasury`, `setRoundConfig`, `setVrfConfig`, `grantRole`, `revokeRole` |
-| `OPERATOR_ROLE` | Mairie et compte opérateur du backend | `retryDraw`, `cancelRound`, `withdrawFees` |
-| `PAUSER_ROLE` | Mairie et compte opérateur du backend | `pause`, `unpause` |
-| Propriétaire `ConfirmedOwner` | Compte qui déploie | `setCoordinator`, `transferOwnership` |
+| `DEFAULT_ADMIN_ROLE` | Administrateur de la Mairie : multisig `MAIRIE_ADMIN_ADDRESS` sur Sepolia, compte Hardhat n° 2 en local (plus l'opérateur, en administrateur additionnel) | `setTreasury`, `setRoundConfig`, `setVrfConfig`, `grantRole`, `revokeRole` |
+| `OPERATOR_ROLE` | Compte opérateur du backend (`OPERATOR_ADDRESS`) | `retryDraw`, `cancelRound`, `withdrawFees` |
+| `PAUSER_ROLE` | `PAUSER_ADDRESS`, l'opérateur par défaut | `pause`, `unpause` |
+| Propriétaire `ConfirmedOwner` | Compte qui déploie, puis `VRF_OWNER_ADDRESS` (l'administrateur par défaut) après `acceptOwnership` | `setCoordinator`, `transferOwnership` |
 | Coordinateur VRF | Contrat Chainlink | `rawFulfillRandomWords`, `setCoordinator` |
 | Tout le monde | Citoyens, keeper, Chainlink Automation | `buyTickets`, `buyTicketsFor`, `requestDraw`, `closeExpiredRound`, `claimPrize`, `claimRefund`, `performUpkeep` |
 
-Le constructeur accorde les trois rôles à `admin`. Les scripts de déploiement accordent ensuite `OPERATOR_ROLE` et `PAUSER_ROLE` à l'opérateur du backend s'il est distinct (voir [Exploitation du contrat](exploitation.md)). `DEFAULT_ADMIN_ROLE` est l'administrateur de tous les rôles : seul son titulaire peut en accorder ou en retirer.
+Le constructeur accorde les trois rôles à `admin`. Les scripts de déploiement passent le déployeur comme `admin` provisoire, puis répartissent les rôles avec [`scripts/lib/roles.ts`](src:smart-contract/scripts/lib/roles.ts) : administrateur, opérateur, pauseur et trésorerie distincts, puis retrait de ses rôles au déployeur (voir [Déploiement sur Sepolia](sepolia.md#1-comptes) et [Blockchain locale](blockchain-locale.md#repartition-des-roles)). `DEFAULT_ADMIN_ROLE` est l'administrateur de tous les rôles : seul son titulaire peut en accorder ou en retirer.
 
 ## Constructeur
 

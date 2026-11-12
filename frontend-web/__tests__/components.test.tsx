@@ -68,6 +68,7 @@ describe('RequireRole', () => {
           pendingTwoFactorUserId: null,
           pendingTwoFactorMethod: null,
           pendingTwoFactorEmail: null,
+          pendingLoginTicket: null,
           ...auth,
         },
       },

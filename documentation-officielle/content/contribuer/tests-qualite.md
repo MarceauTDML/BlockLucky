@@ -75,7 +75,7 @@ La liste générée des jobs est dans [Intégration continue](../infrastructure/
 | `npm run build` | Compile les contrats (Hardhat 3, Solidity 0.8.34) | indirectement |
 | `npm run typecheck` | Compile puis vérifie le TypeScript des tests et scripts | oui |
 | `npm run lint` | solhint avec `--max-warnings 0` sur `contracts/*.sol` | oui, zéro avertissement |
-| `npm test` | 43 tests TypeScript (mocha et ethers) et 4 tests de fuzzing Solidity | via `test:coverage` |
+| `npm test` | 50 tests TypeScript (mocha et ethers), dont 7 sur la répartition des rôles des scripts de déploiement (`test/roles.test.ts`), et 4 tests de fuzzing Solidity | via `test:coverage` |
 | `npm run test:coverage` | Mêmes tests avec mesure de couverture, rapport dans `coverage/lcov.info` | oui |
 | `npm run coverage:check` | Échoue si un contrat de production a moins de 100 % de lignes couvertes ; seuil réglable par `COVERAGE_MIN_LINES` | oui, 100 % |
 | `node scripts/export-abi.mjs --check` | Compare les ABI compilées à celles de `backend/src/blockchain/abi/` | oui |
@@ -96,7 +96,7 @@ Les tests sont décrits dans [Tests, fuzzing et couverture](../smart-contracts/t
 | `npm run lint` | ESLint, dont `no-floating-promises` | oui |
 | `npx prisma migrate deploy` | Applique toutes les migrations sur une base PostgreSQL 15 vierge | oui |
 | `npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code` | Échoue si `schema.prisma` décrit un état que les migrations ne produisent pas | oui |
-| `npm test` | Jest en série (`--runInBand`), avec Prisma et Redis simulés en mémoire | oui, avec `--ci` |
+| `npm test` | Jest en série (`--runInBand`), avec Prisma et Redis simulés en mémoire : 108 tests dans 19 fichiers | oui, avec `--ci` |
 | `npm run test:coverage` | Mêmes tests avec couverture | non |
 | `npm run compile` | Compile vers `dist/` et copie les gabarits d'emails | oui |
 | `npm run test:chain` | Tests de bout en bout sur un nœud Hardhat réel | job `chain` |
@@ -126,7 +126,7 @@ Voir [Tests sur une vraie chaîne](../integration-blockchain/tests.md).
 | `npm audit --omit=dev --audit-level=high` | Vulnérabilités des dépendances de production | oui |
 | `npm run lint` | ESLint de Next.js | oui |
 | `npm run typecheck` | `tsc --noEmit` | oui |
-| `npm test` | Vitest en environnement jsdom, fichiers `__tests__/**/*.test.{ts,tsx}` | oui |
+| `npm test` | Vitest en environnement jsdom, fichiers `__tests__/**/*.test.{ts,tsx}` : 21 tests dans 3 fichiers, dont 8 pour le consentement à la mesure d'audience et son bandeau (`consent.test.tsx`) | oui |
 | `npm run build` | Build de production Next.js, télémétrie désactivée | oui |
 | Contrôle du bundle | Échoue si `.next/static` contient une clé `sk_live_`, une clé AWS, une clé privée PEM ou la clé du compte Hardhat n° 0, ou un fichier `.map` | oui |
 

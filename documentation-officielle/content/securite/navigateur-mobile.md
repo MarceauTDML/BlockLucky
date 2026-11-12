@@ -112,9 +112,9 @@ Le site n'envoie aucune donnée à un serveur. Panier, favoris, commandes de dé
 
 Une copie du jeton est aussi gardée dans un cache mémoire du module, vidé à la fermeture de l'application. Les erreurs d'écriture dans le stockage sécurisé sont ignorées silencieusement. L'application ne relit de toute façon pas la session au démarrage : le jeton reste stocké mais l'utilisateur doit se reconnecter. À la déconnexion, le jeton et le profil sont effacés après l'appel à `POST /api/auth/logout`. Aucun mot de passe n'est stocké sur l'appareil.
 
-### Connexion Google et Apple
+### Connexion Google
 
-Le mobile obtient le jeton d'identité par `expo-auth-session` (Google, avec les identifiants `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` et `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`) ou par `expo-apple-authentication` (Apple, sur iOS seulement), puis le transmet au backend, qui le vérifie ([`SocialAuthButtons.tsx`](src:mobile-app/src/components/auth/SocialAuthButtons.tsx)). L'application ne garde pas ce jeton. Les identifiants client sont publics par nature ; ils figurent vides dans [`mobile-app/.env.example`](src:mobile-app/.env.example). Sans eux, ou si le backend répond 503, le bouton Google est désactivé.
+Le mobile obtient le jeton d'identité par `expo-auth-session` (Google, avec les identifiants `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` et `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`), puis le transmet au backend, qui le vérifie ([`SocialAuthButtons.tsx`](src:mobile-app/src/components/auth/SocialAuthButtons.tsx)). L'application ne garde pas ce jeton. Les identifiants client sont publics par nature ; ils figurent vides dans [`mobile-app/.env.example`](src:mobile-app/.env.example). Sans eux, ou si le backend répond 503, le bouton Google est désactivé.
 
 ### Photos de la pièce d'identité
 
@@ -126,7 +126,7 @@ Le mobile obtient le jeton d'identité par `expo-auth-session` (Google, avec les
 |---|---|---|
 | Sauvegarde Android | [`mobile-app/app.json`](src:mobile-app/app.json) | `android.allowBackup: false` : les données de l'application ne partent pas dans la sauvegarde Google |
 | Chiffrement déclaré | idem | `ios.config.usesNonExemptEncryption: false` |
-| Autorisations | idem | Appareil photo et photos (plugin `expo-image-picker`), avec un texte qui explique l'usage pour la pièce d'identité ; connexion Apple (`ios.usesAppleSignIn`) |
+| Autorisations | idem | Appareil photo et photos (plugin `expo-image-picker`), avec un texte qui explique l'usage pour la pièce d'identité ; lecture des sons par le plugin `expo-audio`, sans autorisation particulière |
 | Schéma d'URL | idem | `blocklucky`, qui permet à `expo-auth-session` de revenir dans l'application après l'authentification Google ; aucun lien profond applicatif n'est configuré |
 | Secrets embarqués | [`mobile-app/.env.example`](src:mobile-app/.env.example) | Uniquement des URL et des identifiants client publics ; toute variable `EXPO_PUBLIC_*` est lisible dans le binaire |
 

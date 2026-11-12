@@ -48,16 +48,6 @@ export const supportRequestSchema = z.object({
   }),
 });
 
-export const setResponsibleGamingLimitSchema = z.object({
-  body: z.object({
-    maxTicketsPerRound: z.coerce
-      .number()
-      .int()
-      .min(1, 'La limite doit être d\'au moins 1 ticket')
-      .max(500, 'La limite maximale autorisée est de 500 tickets'),
-  }),
-});
-
 export const completeSocialQuestSchema = z.object({
   body: z.object({
     questId: z.enum([

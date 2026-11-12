@@ -18,16 +18,16 @@ La configuration principale est dans la section `jest` de [`backend/package.json
 
 ## Résultats actuels
 
-Exécution de `npx jest` sur la branche de travail, le 11 novembre 2026 :
+Exécution de `npx jest` sur la branche de travail, le 12 novembre 2026 :
 
 ```text
-Test Suites: 13 passed, 13 total
-Tests:       41 passed, 41 total
+Test Suites: 19 passed, 19 total
+Tests:       108 passed, 108 total
 Snapshots:   0 total
-Time:        33.055 s
+Time:        63.977 s
 ```
 
-Avec `npm run test:coverage`, sur l'ensemble des fichiers chargés par les suites :
+Avec `npm run test:coverage`, mesure du 11 novembre 2026, sur l'ensemble des fichiers chargés par les suites :
 
 | Mesure | Couverture |
 |---|---|
@@ -92,18 +92,19 @@ Une nouvelle requête Prisma dans le code doit être ajoutée à la doublure, si
 
 | Suite | Tests | Ce qui est vérifié |
 |---|---|---|
-| `api/auth-security.test.ts` | 10 | code email exigé avant création du compte ; code invalidé après 5 essais ; révocation à la déconnexion ; rejet d'un JWT d'un autre algorithme ou sans émetteur ; 2FA imposée aux administrateurs ; rôle du jeton relu en base ; rejet du rejeu TOTP ; ré-authentification pour désactiver la 2FA ; types analytiques réservés ; isolation entre partenaires |
+| `api/auth-security.test.ts` | 14 | code email exigé avant création du compte ; code invalidé après 5 essais ; révocation à la déconnexion ; rejet d'un JWT d'un autre algorithme ou sans émetteur ; 2FA imposée aux administrateurs ; rôle du jeton relu en base ; code de l'application accepté après une demande de code email abandonnée ; rejet du rejeu TOTP ; code de l'application refusé avec le seul identifiant du compte ; activation de la 2FA par application refusée sans session ; code de l'application demandé après le mot de passe, avec un ticket de connexion ; ré-authentification pour désactiver la 2FA ; types analytiques réservés ; isolation entre partenaires |
 | `api/auth.test.ts` | 3 | écrans d'accueil ; refus sans certification 18+ ; inscription, +25 points, configuration et vérification TOTP |
-| `api/auth-password.test.ts` | 10 | inscription après code email ; refus d'une seconde inscription ; politique de mot de passe et conditions ; activation d'un compte créé par un cadeau ; message unique d'échec ; blocage après 10 échecs, adresse inconnue comprise ; code TOTP demandé ; réinitialisation et révocation des sessions ; mot de passe défini sur un compte sans mot de passe ; `hasPassword` et `ageVerificationStatus` dans le profil |
-| `api/auth-oauth.test.ts` | 8 | jetons Google et Apple vérifiés avec audience, émetteur et clés ; email non vérifié ou jeton rejeté ; 503 sans configuration ; création puis reconnexion par email ; 2FA demandée avant la session |
+| `api/auth-password.test.ts` | 10 | inscription après code email ; refus d'une seconde inscription ; politique de mot de passe, conditions et déclaration de majorité ; activation d'un compte créé par un cadeau ; message unique d'échec ; blocage après 10 échecs, adresse inconnue comprise ; code TOTP demandé ; réinitialisation et révocation des sessions ; mot de passe défini sur un compte sans mot de passe ; `hasPassword` et `ageVerificationStatus` dans le profil |
+| `api/auth-oauth.test.ts` | 6 | jeton Google vérifié contre les identifiants client configurés ; email non vérifié ou jeton rejeté ; 503 sans configuration ; création puis reconnexion par email ; 2FA par application demandée avec un ticket de connexion avant la session ; route `/oauth/apple` absente (404) |
 | `api/identity.test.ts` | 7 | envoi chiffré au repos et statut `PENDING` ; corps de plus de 1 Mo accepté sur cette route seule ; image trop lourde, format inconnu ou face manquante ; session exigée ; consultation, approbation, effacement des images et email ; motif obligatoire puis nouvel envoi ; routes réservées à l'ADMIN et interdiction de statuer sur sa propre pièce |
 | `api/lottery.test.ts` | 11 | statut et paliers ; phase, salle d'attente et participants ; achats refusés en salle d'attente ; ticket unique, +50 points et numéro ; second ticket refusé ; cadeau ; cadeau à une personne qui a déjà son ticket ; numéro et résultat dans `my-tickets` ; achat, cadeau et échange refusés sans âge vérifié, puis achat accepté ; métadonnées POAP |
 | `api/idempotency.test.ts` | 2 | rejeu d'un achat avec la même clé sans second ticket ; refus d'une clé mal formée |
 | `api/marketplace.test.ts` | 5 | catalogue, échange, QR code dans « Mes codes » ; ticket à gratter : débit et récompense en stock, refus sans points et sans débit, 404 sans récompense, offre inconnue et âge exigé |
 | `api/partners.test.ts` | 1 | création d'entreprise et d'offre, import CSV, statistiques |
-| `api/user.test.ts` | 1 | quêtes, limite de jeu responsable, export RGPD, suppression confirmée |
+| `api/user.test.ts` | 1 | quêtes, route `PUT /user/responsible-limit` absente (404), export RGPD, suppression confirmée |
 | `api/settings.test.ts` | 17 | prénom et nom : enregistrement, effacement par chaîne vide, refus des valeurs invalides, présence dans l'export RGPD ; catégories de notifications par défaut, fusion partielle, préférences anciennes complétées, refus d'une valeur non booléenne, notifications masquées ; changement d'email par code, mot de passe exigé, adresse déjà prise, compte sans mot de passe et mauvais code, confirmation sans demande ; premier mot de passe, mot de passe actuel exigé, révocation des anciennes sessions et nouvelle session ; message au support avec adresse de réponse, validation de l'objet et du message, session exigée |
 | `api/admin.test.ts` | 2 | refus 403 pour un USER ; tableau de bord, disjoncteur, trésorerie, export CSV, audit pour un ADMIN |
+| `api/admin-accounts.test.ts` | 7 | liste des comptes Mairie et partenaires avec filtre de rôle et recherche ; liste refusée à un compte non ADMIN ; création d'un compte partenaire rattaché à un établissement, audit et invitation ; promotion d'un compte existant et refus d'un rôle déjà attribué ; refus de modifier son propre rôle ; retrait du rôle partenaire, détachement des établissements et protection du dernier compte Mairie ; validation des données envoyées |
 | `api/system.test.ts` | 8 | sondes de vivacité et de disponibilité, `X-Request-Id`, `/api/config`, préfixe `/api/v1`, `/metrics`, JSON mal formé, CORS |
 | `integration/blockchain-indexer.test.ts` | 4 | indexation idempotente par webhook signé, rejeu ignoré, signature absente ou périmée, corps invalide |
 | `integration/full-draw-flow.test.ts` | 1 | inscription, achat, tirage simulé, gagnant |
@@ -111,7 +112,7 @@ Une nouvelle requête Prisma dans le code doit être ajoutée à la doublure, si
 | `services/ledger.test.ts` | 2 | crédit et débit avec historique, refus d'un débit supérieur au solde |
 | `services/totp.test.ts` | 2 | secret, code, QR code et vérification ; format des codes de secours |
 
-Plusieurs suites (`admin`, `auth-security`, `partners`, `full-draw-flow`) signent directement leurs jetons avec `sessionService.sign(...)` après insertion du compte dans la doublure ; les autres passent par `POST /auth/login`, qui délivre le jeton immédiatement puisque le code email est désactivé.
+Plusieurs suites (`admin`, `admin-accounts`, `auth-security`, `partners`, `full-draw-flow`) signent directement leurs jetons avec `sessionService.sign(...)` après insertion du compte dans la doublure ; les autres passent par `POST /auth/login`, qui délivre le jeton immédiatement puisque le code email est désactivé.
 
 ## Test sur une vraie chaîne
 

@@ -1,6 +1,6 @@
 # Comptes de démonstration et connexion
 
-On se connecte à BlockLucky de deux façons selon le client. L'application mobile utilise un email et un mot de passe, ou Google et Apple quand ils sont configurés. Le frontend web n'a pas de mot de passe : il envoie un code à 6 chiffres par email. Cette page décrit les comptes créés par le seed, le déroulement de la connexion en local, la vérification d'âge et les particularités des comptes partenaire et administrateur.
+On se connecte à BlockLucky de deux façons selon le client. L'application mobile utilise un email et un mot de passe, ou Google quand il est configuré. Le frontend web n'a pas de mot de passe : il envoie un code à 6 chiffres par email. Cette page décrit les comptes créés par le seed, le déroulement de la connexion en local, la vérification d'âge et les particularités des comptes partenaire et administrateur.
 
 ## Les comptes du seed
 
@@ -50,7 +50,7 @@ sequenceDiagram
     participant W as Frontend web
     participant B as Backend
     participant M as Mailpit
-    U->>W: Email et majorité confirmée
+    U->>W: Email, conditions acceptées et majorité confirmée
     W->>B: POST /api/v1/auth/login
     B->>M: Code à 6 chiffres
     B-->>W: requiresTwoFactor, userId, devOtpPreview
@@ -68,7 +68,7 @@ Un email inconnu crée un compte citoyen au moment de la vérification du code :
 Quand `NODE_ENV=development` (valeur de `.env.example`), la réponse de `POST /api/v1/auth/login` contient aussi le code dans le champ `devOtpPreview`. Il est visible dans l'onglet Réseau des outils de développement du navigateur, ou directement avec curl :
 
 ```bash
-curl -s -X POST http://localhost:2053/api/v1/auth/login -H "content-type: application/json" -d '{"walletAddress":"0x0000000000000000000000000000000000000001","email":"citoyen@etherbay.fr","provider":"EMAIL","isAdultConfirmed":true}'
+curl -s -X POST http://localhost:2053/api/v1/auth/login -H "content-type: application/json" -d '{"walletAddress":"0x0000000000000000000000000000000000000001","email":"citoyen@etherbay.fr","provider":"EMAIL","isAdultConfirmed":true,"acceptTerms":true}'
 ```
 
 ```json
@@ -103,9 +103,9 @@ L'écran de connexion demande l'email et le mot de passe. Avec un compte du seed
 curl -s -X POST http://localhost:2053/api/v1/auth/signin -H "content-type: application/json" -d '{"email":"citoyen@etherbay.fr","password":"EtherBay2026demo"}'
 ```
 
-L'inscription d'un nouveau compte se fait sur l'écran « Créer un compte » : email, mot de passe d'au moins 10 caractères avec une lettre et un chiffre, acceptation des conditions. Un code à 6 chiffres part dans Mailpit (et dans `devOtpPreview` en développement), à saisir sur `Verify2FAScreen`. « Mot de passe oublié » suit le même principe avec un code de réinitialisation.
+L'inscription d'un nouveau compte se fait sur l'écran « Créer un compte » : email, mot de passe d'au moins 10 caractères avec une lettre et un chiffre, et deux cases obligatoires : l'acceptation des conditions générales d'utilisation et du règlement de participation, et la certification d'avoir 18 ans ou plus. Un code à 6 chiffres part dans Mailpit (et dans `devOtpPreview` en développement), à saisir sur `Verify2FAScreen`. « Mot de passe oublié » suit le même principe avec un code de réinitialisation.
 
-Les boutons Google et Apple répondent 503 tant que `GOOGLE_CLIENT_IDS` et `APPLE_CLIENT_IDS` sont vides dans `backend/.env`, ce qui est le cas par défaut ; sur le mobile, le bouton Google est aussi désactivé sans les variables `EXPO_PUBLIC_GOOGLE_*_CLIENT_ID`. Voir [Authentification mobile](../mobile/authentification.md#google-et-apple).
+Le bouton Google répond 503 tant que `GOOGLE_CLIENT_IDS` est vide dans `backend/.env`, ce qui est le cas par défaut ; sur le mobile, le bouton Google est aussi désactivé sans les variables `EXPO_PUBLIC_GOOGLE_*_CLIENT_ID`. Voir [Authentification mobile](../mobile/authentification.md#google).
 
 Les comptes inscrits par le web peuvent aussi se connecter sur le mobile après avoir défini un mot de passe par « Mot de passe oublié ».
 
@@ -133,7 +133,7 @@ Avec `ADMIN_MFA_REQUIRED=true` (valeur par défaut, obligatoire en production), 
 | Méthode activée | Connexion suivante |
 |---|---|
 | Email | Code envoyé par email, comme avant |
-| Application TOTP | Plus d'email : le backend demande directement un code de l'application ou un code de secours |
+| Application TOTP | Sur le web, le code email d'abord, puis un code de l'application ou un code de secours ; sur le mobile, le mot de passe puis le code de l'application. Le code de l'application n'est accepté qu'avec le ticket de connexion délivré à l'étape précédente, valable 10 minutes |
 
 Pour désactiver la 2FA, il faut un code valide ou une connexion de moins de 15 minutes. La sécurité de ces mécanismes est détaillée dans [Authentification et 2FA](../securite/authentification.md).
 
@@ -162,10 +162,19 @@ Le test automatisé `npm run test:chain` du backend joue un scénario équivalen
 
 ## Créer d'autres comptes partenaire ou administrateur
 
-Aucune route ni aucun écran ne permet d'attribuer un rôle. Un compte créé par l'interface est toujours `USER`. Pour promouvoir un compte en local, après sa première connexion :
+Un compte créé par l'inscription ou la connexion est toujours `USER`. Les rôles `PARTNER` et `ADMIN` s'attribuent depuis la page **Comptes** de l'espace Mairie (`/mairie/comptes`, entrée « Comptes » du menu), réservée à un administrateur dont la 2FA est active.
+
+1. Se connecter avec `maire@etherbay.fr` et ouvrir `/mairie/comptes`.
+2. « Créer un compte » : saisir l'email, le rôle (Mairie ou partenaire), un prénom et un nom facultatifs et, pour un partenaire, l'établissement à lui rattacher.
+3. Si l'adresse est inconnue, le compte est créé avec son portefeuille intégré, sans mot de passe ; si elle appartient déjà à un compte, celui-ci reçoit le nouveau rôle et ses sessions sont fermées.
+4. L'invitation part dans Mailpit (modèle `staff-invitation`). La personne se connecte sur le web avec un code email, ou définit un mot de passe sur le mobile par « Mot de passe oublié ». Un nouveau compte Mairie doit ensuite activer sa 2FA pour accéder au dashboard.
+
+Depuis la liste, filtrée par rôle et consultable par email ou par nom, on peut aussi changer le rôle d'un compte ou le retirer (retour à `USER`, et détachement des établissements d'un ancien partenaire). Un administrateur ne peut pas modifier son propre rôle, et le dernier compte Mairie ne peut pas être retiré. Chaque action apparaît dans `/mairie/audit` (`STAFF_ACCOUNT_CREATED`, `STAFF_ROLE_CHANGED`, `STAFF_ROLE_REVOKED`). Les routes sont décrites dans [Administration Mairie](../backend/modules/administration.md#comptes-mairie-et-partenaires).
+
+Seul le premier compte administrateur ne peut pas être créé ainsi : en local, c'est `maire@etherbay.fr` du seed ; sur une base vierge, il faut promouvoir un compte en base, après sa première connexion :
 
 ```sql
-UPDATE "User" SET role = 'PARTNER' WHERE email = 'nouveau@etherbay.fr';
+UPDATE "User" SET role = 'ADMIN' WHERE email = 'nouveau@etherbay.fr';
 ```
 
 Le backend relit le rôle en base à chaque requête protégée : si le rôle ne correspond plus à celui de la session, il répond « Droits révoqués ou modifiés : reconnectez-vous ». Il suffit alors de se reconnecter.

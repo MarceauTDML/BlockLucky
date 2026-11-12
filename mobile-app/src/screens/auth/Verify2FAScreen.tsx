@@ -22,7 +22,7 @@ const Verify2FAScreen: React.FC = () => {
   const { colors, t } = useAppTheme();
   const navigation = useAuthNavigation();
   const { params } = useRoute<RouteProp<AuthStackParamList, 'Verify2FA'>>();
-  const { userId, method, email, purpose = 'signin', devOtpPreview } = params;
+  const { userId, method, loginTicket, email, purpose = 'signin', devOtpPreview } = params;
   const { verifyOtpCode, isVerifying2FA } = useAuth();
 
   const [code, setCode] = useState('');
@@ -46,7 +46,18 @@ const Verify2FAScreen: React.FC = () => {
       return;
     }
     try {
-      await verifyOtpCode(userId, trimmed);
+      const result = await verifyOtpCode(userId, trimmed, loginTicket);
+      if (result.requiresTwoFactor && result.userId && result.loginTicket) {
+        setCode('');
+        setUseBackup(false);
+        navigation.replace('Verify2FA', {
+          userId: result.userId,
+          method: result.twoFactorMethod ?? 'APP',
+          loginTicket: result.loginTicket,
+          email,
+          purpose: 'signin',
+        });
+      }
     } catch (error) {
       setFormError(
         getErrorMessage(error, t('Code invalide ou expiré.', 'Invalid or expired code.')),

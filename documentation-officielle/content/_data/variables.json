@@ -57,6 +57,5 @@
   "AGE_VERIFICATION_REQUIRED": { "categorie": "Sécurité et sessions", "description": "Exige une pièce d'identité validée par la Mairie (`ageVerificationStatus = VERIFIED`) pour acheter ou offrir un ticket et échanger une récompense. Refusée à false en production ; désactivée seulement par la suite de tests." },
   "SCRATCH_COST_VIOLET": { "categorie": "Fonctionnalités", "description": "Prix en EtherPoints du ticket à gratter « violet » (`POST /marketplace/scratch`), qui attribue au hasard une récompense partenaire en stock (50 par défaut)." },
   "SCRATCH_COST_LUCKY": { "categorie": "Fonctionnalités", "description": "Prix en EtherPoints du ticket à gratter « lucky » (`POST /marketplace/scratch`), qui attribue au hasard une récompense partenaire en stock (100 par défaut)." },
-  "GOOGLE_CLIENT_IDS": { "categorie": "Sécurité et sessions", "description": "Identifiants client OAuth Google acceptés comme audience des jetons d'identité, séparés par des virgules. Vide par défaut : la connexion Google répond alors 503." },
-  "APPLE_CLIENT_IDS": { "categorie": "Sécurité et sessions", "description": "Identifiants de service ou bundle ID Apple acceptés comme audience des jetons Sign in with Apple, séparés par des virgules. Vide par défaut : la connexion Apple répond alors 503." }
+  "GOOGLE_CLIENT_IDS": { "categorie": "Sécurité et sessions", "description": "Identifiants client OAuth Google acceptés comme audience des jetons d'identité, séparés par des virgules. Vide par défaut : la connexion Google répond alors 503." }
 }

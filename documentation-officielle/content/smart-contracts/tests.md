@@ -1,6 +1,6 @@
 # Tests, fuzzing et couverture
 
-Les contrats sont couverts par 47 tests : 43 tests TypeScript (Mocha, Chai et ethers v6) et 4 tests de fuzzing écrits en Solidity, exécutés 256 fois chacun avec des entrées aléatoires. La couverture des lignes des deux contrats de production est de 100 %, et la CI échoue en dessous. Les résultats de cette page ont été obtenus en lançant les commandes du projet sur la branche `marceau`, avec Node.js 22.
+Les contrats sont couverts par 54 tests : 50 tests TypeScript (Mocha, Chai et ethers v6) et 4 tests de fuzzing écrits en Solidity, exécutés 256 fois chacun avec des entrées aléatoires. La couverture des lignes des deux contrats de production est de 100 %, et la CI échoue en dessous. Les résultats de cette page ont été obtenus en lançant les commandes du projet sur la branche `marceau`, avec Node.js 22.
 
 ## Commandes
 
@@ -24,6 +24,7 @@ Dans la CI ([`.github/workflows/ci.yml`](src:.github/workflows/ci.yml), job `con
 | [`test/fixtures.ts`](src:smart-contract/test/fixtures.ts) | Déploiement du mock VRF, création et financement d'un abonnement, déploiement de `BlockLucky` et `BlockLuckyPOAP`, constantes partagées |
 | [`test/BlockLucky.test.ts`](src:smart-contract/test/BlockLucky.test.ts) | 38 tests de la loterie, en onze groupes |
 | [`test/BlockLuckyPOAP.test.ts`](src:smart-contract/test/BlockLuckyPOAP.test.ts) | 5 tests du badge |
+| [`test/roles.test.ts`](src:smart-contract/test/roles.test.ts) | 7 tests de la répartition des rôles au déploiement ([`scripts/lib/roles.ts`](src:smart-contract/scripts/lib/roles.ts)) : adresses manquantes, invalides ou nulles refusées ; administrateur confondu avec l'opérateur refusé sauf `ALLOW_SHARED_ROLES` ; lecture des variables d'environnement et valeurs par défaut ; transfert des rôles, de la trésorerie et de la propriété VRF puis retrait de tout pouvoir au déployeur ; droits conservés quand le déployeur est aussi l'opérateur et un administrateur additionnel (cas local) ; idempotence et détection d'un rôle manquant ; sérialisation des arguments de constructeur pour la vérification Etherscan |
 | [`test/BlockLucky.t.sol`](src:smart-contract/test/BlockLucky.t.sol) | 4 tests de fuzzing, base `forge-std/Test.sol` |
 | [`contracts/test/ReentrantPlayer.sol`](src:smart-contract/contracts/test/ReentrantPlayer.sol) | Attaquant par réentrance |
 | [`contracts/test/RejectingPlayer.sol`](src:smart-contract/contracts/test/RejectingPlayer.sol) | Participant qui refuse les ethers |
@@ -108,12 +109,12 @@ Running Mocha tests
       ✓ refuse les achats après la fin du tour
       ✓ refuse tout envoi direct d'ethers hors achat
 
-  43 passing (1s)
+  50 passing (1s)
 
-47 passing (4 solidity, 43 mocha)
+54 passing (4 solidity, 50 mocha)
 ```
 
-La sortie complète liste les 43 tests Mocha ; l'extrait ci-dessus en montre le début. L'ensemble s'exécute en quelques secondes.
+La sortie complète liste les 50 tests Mocha ; l'extrait ci-dessus en montre le début. L'ensemble s'exécute en quelques secondes.
 
 ## Couverture
 
@@ -187,5 +188,5 @@ Lecture des chiffres :
 ## Ce qui n'est pas testé ici
 
 - L'intégration avec le backend sur une vraie chaîne fait l'objet d'un job CI distinct (`chain`), qui construit l'image Docker du nœud et lance `npm run test:chain` dans `backend/` : voir [Tests sur une vraie chaîne](../integration-blockchain/tests.md).
-- Les scripts de déploiement ne sont pas testés automatiquement ; `deploy-local.ts` est exercé à chaque démarrage du conteneur `blockchain`, `deploy-sepolia.ts` ne l'est pas.
+- Les scripts de déploiement eux-mêmes ne sont pas testés automatiquement : seule leur bibliothèque de rôles l'est (`roles.test.ts`). `deploy-local.ts` est exercé à chaque démarrage du conteneur `blockchain` ; `setup-vrf-sepolia.ts`, `deploy-sepolia.ts`, `register-automation-sepolia.ts` et `verify-sepolia.ts` ne le sont pas.
 - Le vrai coordinateur Chainlink n'est jamais appelé par les tests.

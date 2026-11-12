@@ -5,7 +5,6 @@ import {
   AuthSessionResponse,
   SignInPayload,
   SignUpPayload,
-  AppleSignInPayload,
   ResetPasswordPayload,
   IdentitySubmitPayload,
   Setup2FAResponse,
@@ -51,14 +50,6 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['User', 'Points'],
     }),
-    appleSignIn: builder.mutation<ApiResponse<AuthSessionResponse>, AppleSignInPayload>({
-      query: (body) => ({
-        url: '/auth/oauth/apple',
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: ['User', 'Points'],
-    }),
     forgotPassword: builder.mutation<
       ApiResponse<{ sent: boolean; devOtpPreview?: string }>,
       { email: string }
@@ -98,7 +89,10 @@ export const authApi = baseApi.injectEndpoints({
         body,
       }),
     }),
-    verify2FA: builder.mutation<ApiResponse<Verify2FAResponse>, { userId: string; code: string }>({
+    verify2FA: builder.mutation<
+      ApiResponse<Verify2FAResponse>,
+      { userId: string; code: string; loginTicket?: string }
+    >({
       query: (body) => ({
         url: '/auth/2fa/verify',
         method: 'POST',
@@ -143,17 +137,6 @@ export const authApi = baseApi.injectEndpoints({
         body,
       }),
       invalidatesTags: ['Quests', 'User', 'Points'],
-    }),
-    setResponsibleLimit: builder.mutation<
-      ApiResponse<{ userId: string; maxTicketsPerRound: number }>,
-      { maxTicketsPerRound: number }
-    >({
-      query: (body) => ({
-        url: '/user/responsible-limit',
-        method: 'PUT',
-        body,
-      }),
-      invalidatesTags: ['User'],
     }),
     updatePreferences: builder.mutation<
       ApiResponse<{ preferences: UserPreferences }>,
@@ -266,7 +249,6 @@ export const {
   useSignInMutation,
   useSignUpMutation,
   useGoogleSignInMutation,
-  useAppleSignInMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useGetIdentityStatusQuery,
@@ -279,7 +261,6 @@ export const {
   useGetReferralsQuery,
   useGetQuestsQuery,
   useCompleteQuestMutation,
-  useSetResponsibleLimitMutation,
   useUpdatePreferencesMutation,
   useUpdateProfileNamesMutation,
   useRequestEmailChangeMutation,

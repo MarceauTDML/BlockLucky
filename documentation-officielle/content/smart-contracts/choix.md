@@ -38,8 +38,8 @@ Le kickoff présente Remix et Hardhat côte à côte. Voici sa comparaison, rés
 |---|---|---|---|
 | Nature | IDE web | Outil en ligne de commande, installé par npm | Hardhat pour le dépôt et la CI |
 | Compilation | Compilateur intégré avec interface graphique | Commande de compilation (`hardhat build` en version 3) | `npm run build` |
-| Déploiement | Depuis l'interface | Par scripts, vers n'importe quel réseau | [`deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) et [`deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) |
-| Tests | Module de tests en Solidity | Tests en JavaScript ou TypeScript | 43 tests TypeScript, plus 4 tests de fuzzing Solidity que Hardhat 3 exécute aussi |
+| Déploiement | Depuis l'interface | Par scripts, vers n'importe quel réseau | [`deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts), [`deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) et les scripts d'abonnement VRF, d'upkeep et de vérification |
+| Tests | Module de tests en Solidity | Tests en JavaScript ou TypeScript | 50 tests TypeScript, plus 4 tests de fuzzing Solidity que Hardhat 3 exécute aussi |
 | Débogage | Débogueur de transactions | Débogage des transactions et des tests | Messages d'erreur personnalisés décodés par les tests |
 | Réseau local | Machine virtuelle JavaScript dans le navigateur | `hardhat node` | Nœud Hardhat dans Docker, partagé avec le backend |
 | Usage principal | Débutants, prototypage | Développement professionnel, tests avancés, déploiements complexes | Les deux : Hardhat pour livrer, Remix pour montrer |
@@ -56,7 +56,7 @@ Foundry est une alternative sérieuse, rapide et centrée sur Solidity. Hardhat 
 2. **Il exécute aussi les tests Solidity de style Foundry.** [`test/BlockLucky.t.sol`](src:smart-contract/test/BlockLucky.t.sol) hérite de `Test` de `forge-std` (déclaré en dépendance de développement) et Hardhat 3 le lance avec `npm test`, 256 exécutions par test de fuzzing. Le projet obtient le fuzzing sans deuxième chaîne d'outils.
 3. **Il partage le langage du backend.** Les scripts de déploiement, l'oracle local et les tests Mocha sont en TypeScript avec ethers v6, comme le backend. Les types `RoundConfig` et `VrfConfig` de [`scripts/lib/deployment.ts`](src:smart-contract/scripts/lib/deployment.ts) reprennent les structures du contrat.
 
-Hardhat 3 apporte enfin le keystore chiffré (`npx hardhat keystore set`), utilisé pour les secrets Sepolia, la vérification Etherscan intégrée (`npx hardhat verify`) et le rapport de gaz (`--gas-stats`).
+Hardhat 3 apporte enfin le keystore chiffré (`npx hardhat keystore set`), utilisé pour les secrets Sepolia, la vérification Etherscan (`@nomicfoundation/hardhat-verify`, appelé par `npm run verify:sepolia`) et le rapport de gaz (`--gas-stats`).
 
 ### Configuration retenue
 
@@ -114,4 +114,4 @@ En local, le coordinateur est remplacé par `VRFCoordinatorV2_5Mock`, dont l'al�
 
 ## Chainlink Automation
 
-Le contrat implémente `AutomationCompatibleInterface` (`checkUpkeep` et `performUpkeep`). Le tirage peut donc être déclenché par Chainlink Automation sans dépendre du backend. Dans le projet, c'est le keeper du backend qui joue ce rôle, et aucun upkeep n'est enregistré : voir [Chainlink Automation](automation.md).
+Le contrat implémente `AutomationCompatibleInterface` (`checkUpkeep` et `performUpkeep`). Le tirage peut donc être déclenché par Chainlink Automation sans dépendre du backend. Dans le projet, c'est le keeper du backend qui joue ce rôle ; le script `npm run automation:sepolia` inscrit l'upkeep, mais aucun n'est enregistré tant que le contrat n'est pas déployé sur Sepolia : voir [Chainlink Automation](automation.md).

@@ -2,10 +2,10 @@
 
 Toute la configuration du backend passe par un schéma Zod unique, [`backend/src/config/env.config.ts`](src:backend/src/config/env.config.ts), validé au démarrage. Une valeur invalide arrête le processus avec la liste des erreurs, avant qu'aucune connexion ne soit ouverte. Ce guide ajoute une variable de bout en bout : schéma, `.env.example`, contrôle `env:check`, utilisation, Compose et documentation.
 
-L'exemple rend configurable le plafond de tickets par tour appliqué par défaut à un citoyen qui n'a pas défini sa propre limite de jeu responsable. Il est aujourd'hui codé en dur à 50 dans `buyOnchain` de [`lottery.services.ts`](src:backend/src/api/lottery/lottery.services.ts) :
+L'exemple rend configurable le bonus d'EtherPoints crédité à la création d'un compte. Il est aujourd'hui codé en dur à 25 dans [`auth.services.ts`](src:backend/src/api/auth/auth.services.ts), et utilisé par `welcomeNewAccount` :
 
 ```typescript
-const maxTicketsAllowed = limitStr ? Number(limitStr) : 50;
+const WELCOME_POINTS = 25;
 ```
 
 ## Fichiers à toucher
@@ -14,7 +14,7 @@ const maxTicketsAllowed = limitStr ? Number(limitStr) : 50;
 | --- | --- |
 | [`backend/src/config/env.config.ts`](src:backend/src/config/env.config.ts) | Déclaration, type, valeur par défaut, contraintes, règle de production éventuelle |
 | [`backend/.env.example`](src:backend/.env.example) | Ligne d'exemple |
-| Code qui utilise la valeur | Ici [`lottery.services.ts`](src:backend/src/api/lottery/lottery.services.ts) |
+| Code qui utilise la valeur | Ici [`auth.services.ts`](src:backend/src/api/auth/auth.services.ts) |
 | [`docker-compose.yml`](src:docker-compose.yml) | Valeur pour la stack conteneurisée, si elle diffère du défaut |
 | [`.github/workflows/ci.yml`](src:.github/workflows/ci.yml) | Valeur pour la CI, si elle diffère du défaut |
 | [`documentation-officielle/content/_data/variables.json`](src:documentation-officielle/content/_data/variables.json) | Catégorie et description |
@@ -24,7 +24,7 @@ const maxTicketsAllowed = limitStr ? Number(limitStr) : 50;
 Ajouter une ligne dans l'objet passé à `z.object({...})`, près des variables de même domaine :
 
 ```typescript
-    DEFAULT_TICKET_LIMIT: z.coerce.number().int().min(1).max(100).default(50),
+    WELCOME_POINTS: z.coerce.number().int().min(0).max(500).default(25),
 ```
 
 > [!IMPORTANT]
@@ -43,9 +43,9 @@ Les constructions disponibles, toutes déjà utilisées dans le schéma :
 | Format imposé | `z.string().regex(/.../, 'message').default('...')` | `ENCRYPTION_KEY`, `LOTTERY_CONTRACT_ADDRESS` |
 | Facultative | `.optional()` | `LOG_LEVEL` |
 
-Une variable vide dans l'environnement (`DEFAULT_TICKET_LIMIT=`) n'est pas « absente » : Zod reçoit une chaîne vide, que `z.coerce.number()` convertit en `0`, refusé ici par `min(1)`. Le défaut ne s'applique que si la variable n'existe pas.
+Une variable vide dans l'environnement (`WELCOME_POINTS=`) n'est pas « absente » : Zod reçoit une chaîne vide, que `z.coerce.number()` convertit en `0`, accepté ici par `min(0)` : le bonus serait silencieusement supprimé. Le défaut ne s'applique que si la variable n'existe pas. Pour refuser ce cas, borner par `min(1)`.
 
-Le type TypeScript est déduit du schéma (`export type Env = z.infer<typeof envSchema>`) : `env.DEFAULT_TICKET_LIMIT` est un `number` partout, sans conversion.
+Le type TypeScript est déduit du schéma (`export type Env = z.infer<typeof envSchema>`) : `env.WELCOME_POINTS` est un `number` partout, sans conversion.
 
 ### Secret ou règle de production
 
@@ -65,11 +65,11 @@ const DEV_DEFAULTS = {
 Une règle propre à la production s'ajoute dans le `superRefine`, après le test `if (values.NODE_ENV !== 'production') return;`, sur le modèle de `METRICS_TOKEN` :
 
 ```typescript
-if (values.DEFAULT_TICKET_LIMIT > 50) {
+if (values.WELCOME_POINTS > 100) {
   ctx.addIssue({
     code: 'custom',
-    path: ['DEFAULT_TICKET_LIMIT'],
-    message: 'DEFAULT_TICKET_LIMIT ne peut pas dépasser 50 en production (jeu responsable)',
+    path: ['WELCOME_POINTS'],
+    message: 'WELCOME_POINTS ne peut pas dépasser 100 en production (équilibre du catalogue partenaire)',
   });
 }
 ```
@@ -81,7 +81,7 @@ Une valeur publique de développement ajoutée à `DEV_DEFAULTS` doit aussi êtr
 Dans [`backend/.env.example`](src:backend/.env.example), qui sert de modèle au `.env` de chaque développeur (`cp .env.example .env`) :
 
 ```ini
-DEFAULT_TICKET_LIMIT=50
+WELCOME_POINTS=25
 ```
 
 Puis vérifier la synchronisation, depuis `backend/` :
@@ -91,7 +91,7 @@ npm run env:check
 ```
 
 ```text
-.env.example synchronisé avec le schéma (54 variables)
+.env.example synchronisé avec le schéma (60 variables)
 ```
 
 Le script compare les deux listes et échoue dans les deux sens : variable du schéma absente de l'exemple, ou variable de l'exemple inconnue du schéma. La CI le lance dans le job `backend`.
@@ -107,9 +107,13 @@ Importer `env`, jamais `process.env` hors de `src/config/` :
 import { env } from '../../config/env.config';
 ```
 
+`auth.services.ts` importe déjà `env`. Supprimer la constante `WELCOME_POINTS` et lire la variable à sa place :
+
 ```typescript
-const maxTicketsAllowed = limitStr ? Number(limitStr) : env.DEFAULT_TICKET_LIMIT;
+await ledgerService.creditPoints(user.id, env.WELCOME_POINTS, 'SOCIAL_QUEST', 'Bonus de bienvenue Onboarding EtherBay');
 ```
+
+Le test d'[`auth.test.ts`](src:backend/__tests__/api/auth.test.ts) qui attend les 25 points de bienvenue reste vert tant que le défaut ne change pas.
 
 La valeur est lue une fois au démarrage : la changer demande de redémarrer l'API et le worker.
 
@@ -129,9 +133,9 @@ Ajouter l'entrée dans [`variables.json`](src:documentation-officielle/content/_
 
 ```json
 {
-  "DEFAULT_TICKET_LIMIT": {
+  "WELCOME_POINTS": {
     "categorie": "Fonctionnalités",
-    "description": "Nombre maximal de tickets qu'un citoyen peut acheter par tour tant qu'il n'a pas défini sa propre limite de jeu responsable. Le contrat applique en plus son propre plafond `maxTicketsPerPlayer`."
+    "description": "EtherPoints crédités une fois à la création d'un compte, en plus de la dotation de bienvenue en ETH de test (25 par défaut)."
   }
 }
 ```

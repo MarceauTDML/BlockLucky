@@ -1,13 +1,16 @@
 # Analytique et consentement
 
-Le kickoff demande de mesurer le parcours des citoyens et l'efficacité des canaux d'acquisition, avec un public cible de 18 à 35 ans. Le frontend web y répond par une mesure d'audience maison : il envoie lui-même des événements à l'API BlockLucky, sans outil tiers, sans cookie et sans traceur publicitaire. Le visiteur peut s'y opposer depuis la politique de confidentialité. L'application mobile n'envoie aucun de ces événements.
+Le kickoff demande de mesurer le parcours des citoyens et l'efficacité des canaux d'acquisition, avec un public cible de 18 à 35 ans. Le frontend web y répond par une mesure d'audience maison : il envoie lui-même des événements à l'API BlockLucky, sans outil tiers, sans cookie et sans traceur publicitaire. Cette mesure ne fonctionne qu'avec l'accord du visiteur, demandé par un bandeau au premier accès et modifiable à tout moment par « Gérer mes traceurs ». L'application mobile n'envoie aucun de ces événements.
 
 Fichiers concernés :
 
 | Fichier | Rôle |
 |---|---|
-| [`frontend-web/src/lib/analytics.ts`](src:frontend-web/src/lib/analytics.ts) | `trackEvent`, capture UTM, opposition |
-| [`frontend-web/src/app/confidentialite/page.tsx`](src:frontend-web/src/app/confidentialite/page.tsx) | Texte d'information et bouton d'opposition |
+| [`frontend-web/src/lib/analytics.ts`](src:frontend-web/src/lib/analytics.ts) | `trackEvent`, capture et mémorisation de la source UTM |
+| [`frontend-web/src/lib/consent.ts`](src:frontend-web/src/lib/consent.ts) | Enregistrement, lecture et expiration du choix de mesure d'audience |
+| [`frontend-web/src/components/layout/ConsentBanner.tsx`](src:frontend-web/src/components/layout/ConsentBanner.tsx) | Bandeau `ConsentBanner` et boutons `ConsentControls` |
+| [`frontend-web/src/app/traceurs/page.tsx`](src:frontend-web/src/app/traceurs/page.tsx), [`confidentialite/page.tsx`](src:frontend-web/src/app/confidentialite/page.tsx) | Politiques relative aux traceurs et de confidentialité, avec les boutons de choix |
+| [`frontend-web/src/content/legal.ts`](src:frontend-web/src/content/legal.ts) | Textes des documents légaux |
 | [`frontend-web/src/app/mairie/analytique/page.tsx`](src:frontend-web/src/app/mairie/analytique/page.tsx) | Restitution pour la Mairie |
 | [`backend/src/api/analytics/analytics.routes.ts`](src:backend/src/api/analytics/analytics.routes.ts) | `POST /analytics/track` et `GET /analytics/dashboard` |
 
@@ -47,7 +50,7 @@ flowchart LR
 
 ## Envoi d'un événement
 
-`trackEvent(eventType, metadata)` ne fait rien côté serveur (rendu Next.js) ni si l'opposition est active. Sinon il envoie :
+`trackEvent(eventType, metadata)` ne fait rien côté serveur (rendu Next.js) ni tant que le visiteur n'a pas accepté la mesure (`hasAudienceConsent()` faux). Sinon il envoie :
 
 ```http
 POST /api/analytics/track
@@ -70,39 +73,61 @@ Côté backend, la route applique `optionalAuthenticate` puis `trackEventSchema`
 
 L'événement est stocké dans la table `Analytics` avec l'identifiant du compte si un jeton valide accompagne la requête (voir [Modèle de données](../base-de-donnees/modele.md)). La route n'a pas de limite de débit propre ; seule la limite globale de l'API s'applique.
 
-> [!IMPORTANT]
-> La politique de confidentialité parle d'« événements de parcours anonymisés ». C'est inexact pour un visiteur connecté : le jeton est envoyé et le backend rattache l'événement à son compte. Les événements sont pseudonymes, pas anonymes. Il faut aligner le texte ou le code (par exemple ne pas joindre le jeton à `trackEvent`). Le cadre applicable est décrit dans [RGPD](../juridique/rgpd.md).
+> [!NOTE]
+> Pour un visiteur connecté, le jeton est envoyé et le backend rattache l'événement à son compte : les événements sont pseudonymes, pas anonymes. La politique de confidentialité et la politique relative aux traceurs le disent désormais (événements « reliés à votre compte si vous êtes connecté »). Le cadre applicable est décrit dans [RGPD](../juridique/rgpd.md).
 
 ## Attribution de la source
 
-`captureUtmSource(window.location.search)` est appelée à chaque chargement par `SessionBootstrap`. Si l'URL contient `utm_source` et que la valeur respecte `^[a-z0-9_\-.]{1,40}$` (insensible à la casse), elle est mise en minuscules et stockée dans `bl.utm.source`. Une valeur suspecte est ignorée.
+`captureUtmSource(window.location.search)` est appelée à chaque chargement par `SessionBootstrap`, juste après `discardAudienceDataWithoutConsent()`, qui efface `bl.utm.source` si la mesure n'est pas acceptée. Si l'URL contient `utm_source` et que la valeur respecte `^[a-z0-9_\-.]{1,40}$` (insensible à la casse), `rememberUtmSource` la met en minuscules. Avec l'accord du visiteur, elle est stockée dans `bl.utm.source` ; sans accord, elle est seulement gardée en mémoire (`pendingUtm`) et écrite si le visiteur accepte pendant la même visite. Une valeur suspecte est ignorée.
 
 | Situation | Source envoyée |
 |---|---|
-| Arrivée par `?utm_source=instagram` | `instagram`, conservée pour les visites suivantes |
-| Arrivée par `/invite/<code>` sans source déjà connue | `referral` |
+| Arrivée par `?utm_source=instagram`, mesure acceptée | `instagram`, conservée pour les visites suivantes |
+| Arrivée par `/invite/<code>` sans source déjà connue | `referral` (`rememberUtmSource('referral', true)`), sous la même condition d'accord |
+| Mesure refusée ou pas encore choisie | `web_direct`, quelle que soit l'URL |
 | Aucune source connue | `web_direct` |
 
-La source accompagne chaque événement et la requête de connexion (`utmSource` de `POST /auth/login`), ce qui permet au backend de l'attacher à l'inscription. Une nouvelle URL avec `utm_source` remplace l'ancienne valeur : l'attribution est au dernier clic. Le test `attribution UTM` de [`frontend-web/__tests__/lib.test.ts`](src:frontend-web/__tests__/lib.test.ts) couvre la capture et le rejet des valeurs suspectes.
+La source accompagne chaque événement et la requête de connexion (`utmSource` de `POST /auth/login`), ce qui permet au backend de l'attacher à l'inscription ; `getUtmSource()` renvoie `web_direct` sans accord. Une nouvelle URL avec `utm_source` remplace l'ancienne valeur : l'attribution est au dernier clic. Le test `attribution UTM` de [`frontend-web/__tests__/lib.test.ts`](src:frontend-web/__tests__/lib.test.ts) couvre la capture, après acceptation, et le rejet des valeurs suspectes ; [`consent.test.tsx`](src:frontend-web/__tests__/consent.test.tsx) couvre le comportement avant et après le choix.
 
-## Opposition
+## Consentement
 
-La section « Mesure d'audience » de `/confidentialite` explique ce qui est mesuré et propose un bouton (`aria-pressed`) :
+### Le choix enregistré
 
-| État | Libellé | Effet |
+[`consent.ts`](src:frontend-web/src/lib/consent.ts) range le choix dans `localStorage` sous la clé `bl.consent.choice` :
+
+| Champ | Valeur |
+|---|---|
+| `audience` | `granted` (accepté) ou `denied` (refusé) |
+| `date` | Date du choix, au format ISO |
+| `version` | `CONSENT_VERSION`, 1 ; un choix d'une autre version est ignoré |
+
+Un choix est valable 182 jours (`CONSENT_VALIDITY_MS`, environ 6 mois). Au-delà, ou si l'enregistrement est mal formé, l'état redevient `unknown` et le bandeau réapparaît. L'ancienne clé `bl.tracking.optout = 1`, écrite par la version précédente du bouton d'opposition, est lue comme un refus tant qu'aucun nouveau choix n'existe ; elle est supprimée au premier choix.
+
+| État | Mesure d'audience | Source UTM |
 |---|---|---|
-| Mesure active | « M'opposer à la mesure d'audience » | `setTrackingOptOut(true)` : écrit `bl.tracking.optout = 1` |
-| Opposition active | « Mesure désactivée, la réactiver » | `setTrackingOptOut(false)` : supprime la clé |
+| `unknown` (aucun choix valable) | aucun événement envoyé | gardée en mémoire seulement, effacée du stockage au chargement |
+| `denied` | aucun événement envoyé | `bl.utm.source` supprimée |
+| `granted` | événements envoyés | stockée dans `bl.utm.source` |
 
-Dès que la clé existe, `trackEvent` sort sans rien envoyer. Le choix est propre au navigateur et à l'appareil ; il survit à la déconnexion mais pas à l'effacement des données du site.
+`setAudienceConsent(granted)` écrit le choix, prévient les abonnés (`onConsentChoice`, `subscribeConsent`) et ferme le gestionnaire. Les anciennes fonctions `isTrackingOptedOut` et `setTrackingOptOut` de `analytics.ts` sont conservées et s'appuient maintenant sur ce consentement.
 
-L'opposition ne concerne que les événements de parcours. Elle n'empêche pas l'envoi de `utmSource` lors de la connexion, ni les traitements nécessaires au service (tickets, points, journaux de sécurité).
+### Bandeau et gestion des choix
 
-## Pourquoi il n'y a pas de bandeau de consentement
+`ConsentBanner` est monté dans [`providers.tsx`](src:frontend-web/src/app/providers.tsx), après `GlobalOverlays`, sur toutes les pages. Il s'affiche en bas de l'écran (région « Vos choix de traceurs ») tant que l'état vaut `unknown`, ou quand le gestionnaire est rouvert par `openConsentManager()`.
 
-Le frontend web ne dépose aucun cookie et ne charge aucun script tiers. Les seules données conservées dans le navigateur sont des clés `localStorage` nécessaires au service (session, préférences, parrainage) et la source UTM. La mesure est exercée par le responsable de traitement lui-même, sur ses propres serveurs, avec une opposition simple : le choix retenu est celui d'une information plus un droit d'opposition, et non d'un consentement préalable.
+| Élément | Contenu |
+|---|---|
+| Texte | Ce qui est mesuré avec l'accord, ce qui reste actif sans accord (session, langue, thème, code de parrainage), et le fait que refuser ne bloque ni la navigation ni la participation |
+| Boutons | « Tout refuser » et « Tout accepter », de même niveau ; lien « Politique relative aux traceurs » vers `/traceurs` |
+| Réouverture | Bouton « Fermer sans modifier » et rappel du choix actuel |
 
-Ce choix repose sur l'exemption de consentement prévue pour la mesure d'audience strictement limitée. Il reste à valider par le DPO de la Ville, en particulier parce que les événements sont rattachés au compte quand l'utilisateur est connecté. L'analyse juridique est dans [Cookies, mentions et CGU](../juridique/cookies-mentions.md) et la liste des questions ouvertes dans [Points à valider](../juridique/points-a-valider.md).
+« Gérer mes traceurs » rouvre le bandeau depuis le pied de page de `PublicShell` et la ligne légale de `AppShell`. `ConsentControls`, inséré dans `/traceurs` (section « Gérer mes traceurs ») et dans `/confidentialite` (section « Mon choix de mesure d'audience »), affiche l'état courant en `role="status"` et les mêmes boutons, avec `aria-pressed` sur le choix actif.
+
+Le choix est propre au navigateur et à l'appareil ; il survit à la déconnexion mais pas à l'effacement des données du site. Le refus ne concerne que la mesure d'audience : il n'empêche ni les traitements nécessaires au service (tickets, points, journaux de sécurité) ni les événements que le backend enregistre lui-même (`USER_SIGNUP`, `USER_LOGIN`).
+
+Les tests de [`consent.test.tsx`](src:frontend-web/__tests__/consent.test.tsx) vérifient l'absence de mesure et de stockage de la source avant un choix, l'écriture de la source en attente après acceptation, l'effacement au refus, l'expiration du choix, la conservation du code de parrainage sans accord, la lecture de l'ancienne opposition comme un refus, l'égalité des deux boutons au premier accès et la réouverture depuis « Gérer mes traceurs ».
+
+Le frontend web ne dépose toujours aucun cookie et ne charge aucun script tiers. Le passage d'une simple opposition à un consentement préalable aligne la mesure sur le régime général des traceurs ; l'analyse juridique est dans [Cookies, mentions et CGU](../juridique/cookies-mentions.md) et les questions ouvertes dans [Points à valider](../juridique/points-a-valider.md).
 
 ## Restitution à la Mairie
 
@@ -114,6 +139,6 @@ Ce choix repose sur l'exemption de consentement prévue pour la mesure d'audienc
 | Répartition par tranche d'âge et part des 18-35 ans | Comptage de `metadata.ageGroup` sur les 500 derniers événements | Valeurs fixes 42, 33, 17 et 8 renvoyées si aucun événement ne porte de tranche ; une même personne compte autant de fois qu'elle a d'événements |
 | Événements par source | Nombre d'événements groupés par `utmSource`, la source interne `admin-dashboard` étant masquée | Ce sont des événements, pas des conversions, malgré le nom du champ `conversions` |
 
-La page rappelle elle-même que les visiteurs opposés à la mesure ne sont pas comptés et qu'une personne peut posséder plusieurs comptes. Le drapeau `target18_35Validated` renvoyé par le backend vaut toujours `true` : il n'est pas calculé. Ces approximations sont à garder en tête avant de présenter les chiffres à un jury ou à un élu ; les objectifs chiffrés du projet sont dans [Objectifs et indicateurs](../presentation/objectifs-indicateurs.md).
+La page rappelle elle-même que les visiteurs ayant refusé la mesure d'audience, comme ceux qui n'ont pas encore choisi, ne sont pas comptés et qu'une personne peut posséder plusieurs comptes. Le drapeau `target18_35Validated` renvoyé par le backend vaut toujours `true` : il n'est pas calculé. Ces approximations sont à garder en tête avant de présenter les chiffres à un jury ou à un élu ; les objectifs chiffrés du projet sont dans [Objectifs et indicateurs](../presentation/objectifs-indicateurs.md).
 
 L'export CSV vient de `GET /admin/reports/export?format=CSV`. Le format PDF ouvre un rapport HTML imprimable généré dans le navigateur par `openPrintableReport` ([`download.ts`](src:frontend-web/src/lib/download.ts)), dont les valeurs sont échappées.

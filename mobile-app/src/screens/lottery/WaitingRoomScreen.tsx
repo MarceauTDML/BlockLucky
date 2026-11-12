@@ -28,6 +28,7 @@ import Icon from '../../components/ui/icons/Icon';
 import useAppTheme from '../../hooks/useAppTheme';
 import useAuth from '../../hooks/useAuth';
 import useSocket from '../../hooks/useSocket';
+import useSound, { CHRONO_SECONDS, SOUNDS } from '../../hooks/useSound';
 import { useRootNavigation } from '../../navigation/hooks';
 import { useAppSelector } from '../../store';
 import {
@@ -94,6 +95,21 @@ const WaitingRoomScreen: React.FC = () => {
   const revealReached = phase === 'WAITING_ROOM' && remaining !== null && remaining <= 0;
   const announcedRound = announcement?.contractRoundId;
   const currentRound = round?.contractRoundId;
+
+  const { play: playChrono, stop: stopChrono } = useSound(SOUNDS.chrono);
+  const chronoRound = useRef<number | undefined>(undefined);
+  const inFinalCountdown =
+    roomActive && remaining !== null && remaining > 0 && remaining <= CHRONO_SECONDS;
+  useEffect(() => {
+    if (!inFinalCountdown || currentRound === undefined) return;
+    if (chronoRound.current === currentRound) return;
+    chronoRound.current = currentRound;
+    playChrono();
+  }, [inFinalCountdown, currentRound, playChrono]);
+  useEffect(() => {
+    if (!roomActive) stopChrono();
+  }, [roomActive, stopChrono]);
+  useEffect(() => stopChrono, [stopChrono]);
 
   useEffect(() => {
     const watched = watchedRound.current;

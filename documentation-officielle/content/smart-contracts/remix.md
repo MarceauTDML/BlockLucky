@@ -116,7 +116,7 @@ Une fois le contrat déployé par [`deploy-sepolia.ts`](src:smart-contract/scrip
 3. coller l'adresse de `BlockLucky` dans le champ « At Address » et valider ;
 4. les fonctions apparaissent : lectures gratuites, écritures signées par MetaMask.
 
-Cette voie sert à l'administrateur pour les opérations ponctuelles (`setRoundConfig`, `grantRole`, `transferOwnership`) quand il ne veut pas utiliser la console Hardhat. Les citoyens, eux, n'utilisent jamais Remix ni MetaMask : leurs transactions passent par leur portefeuille intégré (voir [Portefeuilles intégrés](../integration-blockchain/portefeuilles.md)).
+Cette voie sert aux opérations ponctuelles (`setRoundConfig`, `grantRole`, `acceptOwnership`) quand on ne veut pas utiliser la console Hardhat. Sur Sepolia, l'administrateur étant un multisig, ces écritures passent plutôt par le Transaction Builder du Safe ou l'onglet « Write Contract » d'Etherscan. Les citoyens, eux, n'utilisent jamais Remix ni MetaMask : leurs transactions passent par leur portefeuille intégré (voir [Portefeuilles intégrés](../integration-blockchain/portefeuilles.md)).
 
 L'onglet « Write Contract » d'Etherscan offre le même service une fois le code vérifié, sans compilation.
 
@@ -124,7 +124,7 @@ L'onglet « Write Contract » d'Etherscan offre le même service une fois le cod
 
 | Besoin | Remix | Hardhat dans le dépôt |
 |---|---|---|
-| Tests automatisés en CI | Non | 47 tests, `npm test` |
+| Tests automatisés en CI | Non | 54 tests, `npm test` |
 | Mesure de couverture | Non | `npm run test:coverage` |
 | Adresses déterministes pour le backend | Non | `deploy-local.ts` |
 | Oracle VRF qui répond seul | Non, appel manuel du mock | `local-vrf-responder.ts` |

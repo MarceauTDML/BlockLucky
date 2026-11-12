@@ -10,7 +10,7 @@ Cette page décrit l'application du règlement (UE) 2016/679 (RGPD) dans BlockLu
 | Délégué à la protection des données | DPO de la Ville | dpo@etherbay.fr |
 | Appui technique | Équipe BlockLucky (Epitech Digital School) | |
 
-Ces informations figurent aussi dans la politique de confidentialité du web ([`frontend-web/src/app/confidentialite/page.tsx`](src:frontend-web/src/app/confidentialite/page.tsx)) et dans l'export JSON (`controller`). La désignation effective du DPO et l'adresse dpo@etherbay.fr sont à confirmer par la Ville.
+Ces informations figurent aussi dans la politique de confidentialité, commune au web (`/confidentialite`) et à l'application mobile (écran `Legal`) et rédigée dans [`frontend-web/src/content/legal.ts`](src:frontend-web/src/content/legal.ts), ainsi que dans l'export JSON (`controller`). La désignation effective du DPO et l'adresse dpo@etherbay.fr sont à confirmer par la Ville.
 
 ## Données traitées
 
@@ -23,21 +23,22 @@ Ces informations figurent aussi dans la politique de confidentialité du web ([`
 | Fidélité | Solde et journal des points, récompenses et codes promo obtenus | Tables `User`, `PointTransaction`, `ClaimedReward` |
 | Parrainage | Code de parrainage, parrain | Table `User` |
 | Sécurité | Secret TOTP chiffré, empreintes des codes de secours, codes temporaires, compteurs, révocations | Table `User`, Redis |
-| Déclaratif | Confirmation de majorité et tranche d'âge (`18-25`, `26-35`, `36-50`, `50+`), demandées par la connexion web seulement | Métadonnées de l'événement analytique `USER_SIGNUP` |
-| Préférences | Thème, langue, interrupteur général et catégories de notifications, limite de jeu responsable, quêtes accomplies | Redis (`user:prefs:*`, `user:ticket_limit:*`, `user:quests:*`) |
-| Mesure d'audience | Type d'événement, source UTM, plateforme, page, identifiant du compte s'il est connecté | Table `Analytics` |
+| Déclaratif | Confirmation de majorité, exigée à la connexion web et à l'inscription mobile par mot de passe ; tranche d'âge (`18-25`, `26-35`, `36-50`, `50+`), demandée par la connexion web seulement ; acceptation des CGU et du règlement, vérifiée mais non enregistrée | Métadonnées de l'événement analytique `USER_SIGNUP` |
+| Préférences | Thème, langue, interrupteur général et catégories de notifications, quêtes accomplies | Redis (`user:prefs:*`, `user:quests:*`) |
+| Mesure d'audience | Type d'événement, source UTM, plateforme, page, identifiant du compte s'il est connecté ; sur le web, seulement après accord | Table `Analytics` |
 
-Aucune donnée bancaire n'est collectée. Le prénom et le nom ne sont saisis que si le citoyen les renseigne dans l'écran Données personnelles du mobile ; ils servent à l'affichage des paramètres et aux messages envoyés au support. La date de naissance, le numéro du document et, le cas échéant, l'adresse ne sont pas saisis, mais ils figurent sur les photos de la pièce d'identité jusqu'à la décision de la Mairie : ce sont alors des données d'identité civile, à protéger en conséquence. Le nom transmis par Apple à la première connexion est ignoré. Le modèle complet est décrit dans [Modèle de données](../base-de-donnees/modele.md).
+Aucune donnée bancaire n'est collectée. Le prénom et le nom ne sont saisis que si le citoyen les renseigne dans l'écran Données personnelles du mobile ; ils servent à l'affichage des paramètres et aux messages envoyés au support. La date de naissance, le numéro du document et, le cas échéant, l'adresse ne sont pas saisis, mais ils figurent sur les photos de la pièce d'identité jusqu'à la décision de la Mairie : ce sont alors des données d'identité civile, à protéger en conséquence. Le modèle complet est décrit dans [Modèle de données](../base-de-donnees/modele.md).
 
 ## Bases légales
 
 | Traitement | Base légale retenue | Commentaire |
 |---|---|---|
-| Compte et participation à la loterie | Exécution du contrat (conditions de participation) | Les conditions publiées sont une version de travail |
+| Compte et participation à la loterie | Exécution du contrat (CGU et règlement de participation) | Textes acceptés par une case obligatoire à la connexion web et à l'inscription mobile par mot de passe ; rédigés pour le scénario, à relire par un juriste |
 | Programme EtherPoints et récompenses | Exécution du contrat | |
 | Vérification d'âge par pièce d'identité | Obligation légale (exclusion des mineurs des jeux d'argent), à confirmer | Voir [Mineurs](#mineurs) |
 | Sécurité des comptes (mot de passe, 2FA, limites, révocation) | Intérêt légitime | |
-| Mesure d'audience | Intérêt légitime, avec opposition | Le droit d'opposition n'est offert que sur le web et ne couvre pas les événements enregistrés par le serveur |
+| Mesure d'audience du web | Consentement | Bandeau au premier passage ; aucun événement ni source UTM enregistré avant l'accord |
+| Événements de connexion et d'inscription enregistrés par le serveur | Intérêt légitime | `USER_LOGIN` et `USER_SIGNUP`, hors du champ du bandeau |
 | Journal d'administration | Obligation légale et intérêt légitime | |
 | Emails transactionnels | Exécution du contrat et intérêt légitime | Codes, alertes, bienvenue, confirmation RGPD, codes promo |
 | Messages au support | Exécution du contrat, à confirmer | Objet, message, identifiant, email, prénom et nom transmis à l'adresse `SUPPORT_EMAIL` ; aucune copie en base |
@@ -79,7 +80,7 @@ Le choix de l'exécution du contrat pour un service public communal, plutôt que
 | `claimedRewards` | Récompenses, offre et commerçant |
 | `analyticsEvents` | Événements analytiques rattachés au compte |
 
-L'export ne contient ni la clé privée chiffrée, ni l'empreinte du mot de passe, ni le secret TOTP, ni les empreintes des codes de secours. Il omet aussi des données qui devraient y figurer : préférences, limite de jeu responsable et quêtes stockées dans Redis, parrain et liste des filleuls, motif d'un refus de la pièce d'identité et dates de la demande. Les photos de la pièce n'y figurent pas ; elles sont de toute façon effacées dès la décision.
+L'export ne contient ni la clé privée chiffrée, ni l'empreinte du mot de passe, ni le secret TOTP, ni les empreintes des codes de secours. Il omet aussi des données qui devraient y figurer : préférences et quêtes stockées dans Redis, parrain et liste des filleuls, motif d'un refus de la pièce d'identité et dates de la demande. Les photos de la pièce n'y figurent pas ; elles sont de toute façon effacées dès la décision.
 
 ### Effacement
 
@@ -124,7 +125,7 @@ Ce qui **n'est pas** effacé :
 | Tickets | Conservés avec `transactionHash`, `payerWallet` et `userId` : le lien entre l'identifiant du compte et l'ancienne adresse du portefeuille subsiste par ces colonnes |
 | Journal des points, récompenses et codes promo | Conservés, rattachés à l'identifiant |
 | Événements analytiques | Conservés avec `userId` et leurs métadonnées, y compris le motif d'un refus de pièce d'identité dans le journal d'administration |
-| Données Redis | Préférences, limite de jeu et quêtes non supprimées |
+| Données Redis | Préférences et quêtes non supprimées |
 | Entreprises partenaires | Restent rattachées au compte (`ownerId`), puisque la ligne `User` n'est pas supprimée |
 | Transactions sur la chaîne | Impossibles à effacer (voir [Blockchain et données personnelles](blockchain-donnees.md)) |
 
@@ -135,7 +136,7 @@ Une fois l'email supprimé, ces données restantes ne permettent plus d'identifi
 
 ### Rectification
 
-Le citoyen peut modifier son thème, sa langue, ses notifications et sa limite de jeu. Sur le mobile, il peut aussi rectifier lui-même :
+Le citoyen peut modifier son thème, sa langue et ses notifications. Sur le mobile, il peut aussi rectifier lui-même :
 
 | Donnée | Écran | Route |
 |---|---|---|
@@ -144,9 +145,9 @@ Le citoyen peut modifier son thème, sa langue, ses notifications et sa limite d
 
 Le web ne propose aucun de ces deux écrans. Les autres rectifications passent par une demande au DPO, avec une réponse sous un mois.
 
-### Opposition à la mesure d'audience
+### Consentement à la mesure d'audience
 
-Sur le web, le bouton de la page Confidentialité enregistre `bl.tracking.optout` dans le `localStorage`. `trackEvent` de [`frontend-web/src/lib/analytics.ts`](src:frontend-web/src/lib/analytics.ts) n'envoie alors plus d'événement. Le choix est propre à l'appareil et au navigateur. Il ne couvre pas les événements `USER_LOGIN` et `USER_SIGNUP`, enregistrés par le serveur à chaque connexion et inscription. L'application mobile n'envoie pas d'événement de parcours. Voir [Analytique et consentement](../web/analytique-consentement.md).
+Sur le web, la mesure ne fonctionne qu'après un accord donné dans le bandeau de consentement. Le choix est enregistré dans `bl.consent.choice` du `localStorage`, avec sa date, pour 182 jours ; il se modifie à tout moment par « Gérer mes traceurs » (pied de page, `/traceurs`, `/confidentialite`). Tant que l'accord manque, `trackEvent` de [`frontend-web/src/lib/analytics.ts`](src:frontend-web/src/lib/analytics.ts) n'envoie aucun événement et la source UTM n'est pas enregistrée ; un refus efface celle déjà enregistrée. Le choix est propre à l'appareil et au navigateur. Il ne couvre pas les événements `USER_LOGIN` et `USER_SIGNUP`, enregistrés par le serveur à chaque connexion et inscription. L'application mobile n'envoie pas d'événement de parcours. Voir [Analytique et consentement](../web/analytique-consentement.md).
 
 ### Délai de réponse
 
@@ -158,7 +159,7 @@ La participation est réservée aux majeurs. Deux mécanismes coexistent :
 
 | Mécanisme | Où | Portée |
 |---|---|---|
-| Déclaration de majorité (`isAdultConfirmed: true`) | Connexion web `POST /api/auth/login` | Déclarative ; l'inscription mobile par mot de passe, Google ou Apple ne la demande pas |
+| Déclaration de majorité (`isAdultConfirmed: true`) | Connexion web `POST /api/auth/login` et inscription mobile `POST /api/auth/signup` | Déclarative ; la connexion Google ne la demande pas |
 | Vérification d'âge par pièce d'identité | `POST /api/user/identity`, décision d'un agent de la Mairie | Exigée pour acheter ou offrir un ticket, échanger une récompense et acheter un ticket à gratter (`AGE_VERIFICATION_REQUIRED`, obligatoire en production) |
 
 Le citoyen envoie depuis `/profil/identite` sur le web, ou depuis l'application mobile, une photo du recto et du verso, après avoir coché sur le web une case de consentement à la consultation par la Mairie. Les images sont chiffrées à la réception, consultées par un agent sur la page Identités de l'espace Mairie, puis effacées à la décision ; le citoyen reçoit la décision par email, avec le motif en cas de refus, et peut envoyer une nouvelle pièce. Chaque consultation et chaque décision sont journalisées. Le détail technique est dans [Autorisations](../securite/autorisations.md#verification-d-age).
@@ -168,7 +169,6 @@ Le contrôle a des limites à faire connaître :
 - l'agent juge sur photo : aucun contrôle ne vérifie que la pièce est authentique ni qu'elle appartient à la personne qui joue ;
 - l'API ne connaît pas la date de naissance : la décision est entièrement humaine et n'est pas réexaminée ;
 - un achat direct sur le contrat, sans passer par BlockLucky, échappe au contrôle ;
-- le web n'offre pas l'envoi de la pièce : un citoyen sans l'application mobile ne peut pas faire vérifier son âge.
 
 La collecte d'une copie de pièce d'identité est un traitement sensible pour la CNIL, qui recommande de la limiter au strict nécessaire et de privilégier des solutions de vérification d'âge qui ne transmettent pas l'identité au service. La proportionnalité de ce choix et la nécessité d'une analyse d'impact sont à valider (voir [Points à valider](points-a-valider.md)).
 
@@ -200,7 +200,7 @@ Les mesures de sécurité (article 32) sont décrites dans la partie [Sécurité
 | Page web de confirmation de suppression | À créer, ou lien à retirer de l'email |
 | Effacement des données Redis à l'anonymisation | À ajouter |
 | Délai maximal pour une pièce d'identité jamais traitée | À fixer et à implémenter |
-| Information sur la vérification d'âge dans la politique de confidentialité | À rédiger |
-| Analyse d'impact (AIPD) | Non réalisée ; fortement recommandée depuis la collecte des pièces d'identité, à apprécier par le DPO |
+| Information sur la vérification d'âge dans la politique de confidentialité | Faite |
+| Analyse d'impact (AIPD) | Version de travail rédigée ([AIPD](aipd.md)), avis du DPO à recueillir |
 | Contrats de sous-traitance | À signer |
-| Preuve du consentement | Sans objet tant qu'aucun traitement ne repose sur le consentement |
+| Preuve du consentement | Choix conservé sur l'appareil seulement ; aucune trace côté serveur, ni de l'acceptation des CGU et du règlement |

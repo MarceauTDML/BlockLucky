@@ -2,7 +2,7 @@
 
 Un tour ne se tire pas tout seul : une transaction doit appeler `requestDraw` quand les conditions sont réunies, ou `closeExpiredRound` quand le tour expire sans assez de participants. `BlockLucky` implémente l'interface `AutomationCompatibleInterface` de Chainlink pour que ce déclenchement puisse être confié à Chainlink Automation, un réseau de nœuds qui surveille les contrats et envoie les transactions de maintenance.
 
-Dans le projet, cette interface est prête mais **aucun upkeep Chainlink Automation n'est enregistré**. Le déclenchement est assuré par le [keeper du backend](../integration-blockchain/keeper.md), qui appelle les mêmes prédicats. Cette page décrit l'interface, son comportement exact et la manière de basculer vers Chainlink Automation.
+Dans le projet, cette interface est prête et le script [`register-automation-sepolia.ts`](src:smart-contract/scripts/register-automation-sepolia.ts) (`npm run automation:sepolia`) inscrit l'upkeep, mais **aucun upkeep Chainlink Automation n'est encore enregistré** : le contrat n'est pas déployé sur Sepolia, faute des clés et des fonds de test de l'équipe. Le déclenchement est assuré par le [keeper du backend](../integration-blockchain/keeper.md), qui appelle les mêmes prédicats. Cette page décrit l'interface, son comportement exact et la manière de basculer vers Chainlink Automation.
 
 ## Interface
 
@@ -83,19 +83,37 @@ Le keeper signe avec le compte opérateur, qui paie donc le gaz du tirage. Le co
 |---|---|---|
 | Disponibilité | Celle du backend et de Redis | Réseau décentralisé de nœuds |
 | Coût | Gaz payé par l'opérateur | Gaz et prime payés en LINK par l'upkeep |
-| Mise en place | Aucune, actif en mode `onchain` | Enregistrement et financement d'un upkeep |
+| Mise en place | Aucune, actif en mode `onchain` | `npm run automation:sepolia`, avec du LINK de test |
 | Indexation immédiate | Oui, le reçu est traité aussitôt | Non, l'indexeur lit l'événement au passage suivant |
 | Fonctionne en local | Oui | Non, Automation n'existe pas sur le nœud Hardhat |
 
 ## Basculer vers Chainlink Automation
 
-Aucun script du dépôt n'enregistre d'upkeep : l'opération se fait à la main, par l'équipe, sur Sepolia.
+L'inscription est faite par [`scripts/register-automation-sepolia.ts`](src:smart-contract/scripts/register-automation-sepolia.ts), après le déploiement (voir [Déploiement sur Sepolia](sepolia.md)) :
 
-1. Déployer le contrat et vérifier son code sur Etherscan (voir [Déploiement sur Sepolia](sepolia.md)).
-2. Dans l'application Chainlink Automation, réseau Sepolia, enregistrer un upkeep de type « logique personnalisée » (custom logic) pointant sur l'adresse de `BlockLucky`. Aucun `checkData` n'est nécessaire.
-3. Fixer une limite de gaz couvrant `performUpkeep` avec une marge : le maximum mesuré est 214 837 gaz, 500 000 laissent de la marge.
-4. Financer l'upkeep en LINK de test.
-5. Laisser le keeper du backend actif ou non. Les deux peuvent coexister : le premier qui agit l'emporte, l'autre reçoit `DrawNotReady` ou `RoundNotCancellable`, sans effet.
+```bash
+npm run automation:sepolia
+```
+
+Le script :
+
+1. vérifie que le réseau est Sepolia et lit `deployments/sepolia.json` ; il s'arrête si un upkeep y est déjà enregistré, sauf `AUTOMATION_FORCE=true` ;
+2. lit la configuration du registrar Automation v2.1 (`getConfig`) et refuse un montant inférieur au minimum de LINK demandé ;
+3. vérifie le solde LINK du déployeur, puis autorise le registrar à prélever le montant (`approve`) si l'autorisation en place ne suffit pas ;
+4. appelle `registerUpkeep` avec un déclencheur conditionnel (logique personnalisée), l'adresse de `BlockLucky`, un `checkData` vide et la limite de gaz ;
+5. lit l'identifiant de l'upkeep dans l'événement `RegistrationApproved` et l'ajoute à `deployments/sepolia.json` (section `automation` : registrar, registre, jeton LINK, identifiant, administrateur, gaz, LINK versés, date et transaction). Si Chainlink n'approuve pas l'inscription automatiquement, il s'arrête avec le hash de la demande en attente.
+
+| Variable | Défaut | Effet |
+|---|---|---|
+| `AUTOMATION_LINK_AMOUNT` | `5` | LINK versés à l'upkeep |
+| `AUTOMATION_GAS_LIMIT` | `500000` | Limite de gaz de `performUpkeep` ; le maximum mesuré est 214 837 gaz |
+| `AUTOMATION_ADMIN_ADDRESS` | `admin` de `sepolia.json`, soit `MAIRIE_ADMIN_ADDRESS` | Administrateur de l'upkeep (recharge, pause, retrait) |
+| `AUTOMATION_UPKEEP_NAME` | `BlockLucky EtherBay` | Nom affiché sur automation.chain.link |
+| `SEPOLIA_AUTOMATION_REGISTRAR` | `0xb0E49c5D0d05cbc241d68c05BC5BA1d1B7B72976` | Registrar Automation v2.1 |
+| `SEPOLIA_LINK_TOKEN` | `0x779877A7B0D9E8603169DdbD7836e478b4624789` | Jeton LINK de Sepolia |
+| `AUTOMATION_FORCE` | vide | `true` pour inscrire un second upkeep |
+
+Le suivi se fait sur `https://automation.chain.link/sepolia/<identifiant>`, adresse affichée par le script. Le keeper du backend peut rester actif : les deux coexistent, le premier qui agit l'emporte, l'autre reçoit `DrawNotReady` ou `RoundNotCancellable`, sans effet.
 
 > [!NOTE]
 > Un upkeep Automation et un abonnement VRF sont deux financements distincts. L'upkeep paie la transaction `performUpkeep` ; l'abonnement VRF paie la livraison de l'aléa qui suit.

@@ -113,7 +113,7 @@ L'accueil ([`HomeScreen.tsx`](src:mobile-app/src/screens/lottery/HomeScreen.tsx)
 
 ## Salle d'attente
 
-[`WaitingRoomScreen.tsx`](src:mobile-app/src/screens/lottery/WaitingRoomScreen.tsx) interroge le statut toutes les 5 secondes.
+[`WaitingRoomScreen.tsx`](src:mobile-app/src/screens/lottery/WaitingRoomScreen.tsx) interroge le statut toutes les 5 secondes. Dans les 8 dernières secondes du compte à rebours, il joue une fois `chrono.mp3`, sauf si les sons sont coupés dans Affichage.
 
 | Situation | Affichage |
 |---|---|
@@ -131,7 +131,7 @@ Ouvert avec `contractRoundId` depuis la salle d'attente, l'écran suit ce tour m
 
 | Élément | Comportement |
 |---|---|
-| `DrawWheel` | Roue de 10 secteurs animée avec `Animated` : rotation en boucle pendant le tirage, puis arrêt sur le secteur du numéro gagnant |
+| `DrawWheel` | Roue de 10 secteurs animée avec `Animated` : rotation en boucle pendant le tirage, puis arrêt sur le secteur du numéro gagnant ; le son `roue-tirage.mp3` accompagne la rotation si les sons sont activés (voir [Thème et composants](theme-composants.md#sons)) |
 | Étiquettes de la roue | Numéros à 5 chiffres répartis sur le nombre de participants ; le numéro gagnant et celui du citoyen y figurent toujours |
 | Résultat | Numéro gagnant, gagné ou perdu (`isWinner` du ticket, ou adresse du gagnant égale à celle du portefeuille), annoncé par `accessibilityLiveRegion` |
 | Retrait des gains | Bouton affiché au gagnant si `guarantees.simulated` est faux ; message selon `CLAIMED`, `ALREADY_CLAIMED` ou `FAILED` |

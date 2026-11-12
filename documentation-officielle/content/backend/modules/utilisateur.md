@@ -1,11 +1,11 @@
 # Utilisateur et RGPD
 
-Le module `user` regroupe tout ce qui concerne le compte du citoyen connecté : profil (dont le prénom et le nom), vérification d'âge par pièce d'identité, parrainage, quêtes sociales, limite de jeu responsable, préférences d'affichage et de notifications, notifications, message au support et exercice des droits RGPD (export et suppression). Toutes les routes portent sur le compte du jeton : aucune ne prend d'identifiant d'utilisateur en paramètre. Une partie des données de ce module vit dans Redis et non en base.
+Le module `user` regroupe tout ce qui concerne le compte du citoyen connecté : profil (dont le prénom et le nom), vérification d'âge par pièce d'identité, parrainage, quêtes sociales, préférences d'affichage et de notifications, notifications, message au support et exercice des droits RGPD (export et suppression). Toutes les routes portent sur le compte du jeton : aucune ne prend d'identifiant d'utilisateur en paramètre. Une partie des données de ce module vit dans Redis et non en base.
 
 | Fichier | Contenu |
 |---|---|
-| [`backend/src/api/user/user.routes.ts`](src:backend/src/api/user/user.routes.ts) | 14 routes |
-| [`backend/src/api/user/user.validators.ts`](src:backend/src/api/user/user.validators.ts) | 7 schémas Zod |
+| [`backend/src/api/user/user.routes.ts`](src:backend/src/api/user/user.routes.ts) | 13 routes |
+| [`backend/src/api/user/user.validators.ts`](src:backend/src/api/user/user.validators.ts) | 6 schémas Zod |
 | [`backend/src/api/user/user.services.ts`](src:backend/src/api/user/user.services.ts) | Règles métier, catalogue des quêtes |
 | [`backend/src/api/user/user.repo.ts`](src:backend/src/api/user/user.repo.ts) | Profil, pièce d'identité, export, jetons de suppression, anonymisation |
 | [`backend/src/utils/identity-image.util.ts`](src:backend/src/utils/identity-image.util.ts) | Décodage et contrôle des images de la pièce d'identité |
@@ -17,7 +17,7 @@ Les obligations juridiques couvertes par ces routes sont analysées dans [RGPD](
 
 | Méthode et chemin | Accès | Middlewares | Rôle |
 |---|---|---|---|
-| `GET /api/v1/user/profile` | connecté | `authenticate` | Profil, statistiques, limite et préférences |
+| `GET /api/v1/user/profile` | connecté | `authenticate` | Profil, statistiques et préférences |
 | `PATCH /api/v1/user/profile` | connecté | `authenticate`, `validate(updateProfileSchema)` | Prénom et nom |
 | `POST /api/v1/user/support` | connecté | `authenticate`, `supportRateLimiter`, `validate(supportRequestSchema)` | Message au support, transmis par email |
 | `POST /api/v1/user/identity` | connecté | `identityUploadRateLimiter`, `authenticate`, `identityUploadJsonParser`, `validate(submitIdentitySchema)` | Envoi du recto et du verso de la pièce d'identité |
@@ -25,7 +25,6 @@ Les obligations juridiques couvertes par ces routes sont analysées dans [RGPD](
 | `GET /api/v1/user/referrals` | connecté | `authenticate` | Code et lien de parrainage, filleuls |
 | `GET /api/v1/user/quests` | connecté | `authenticate` | Quêtes et leur état |
 | `POST /api/v1/user/quests/complete` | connecté | `authenticate`, `validate(completeSocialQuestSchema)` | Validation d'une quête |
-| `PUT /api/v1/user/responsible-limit` | connecté | `authenticate`, `validate(setResponsibleGamingLimitSchema)` | Limite de tickets par tour |
 | `PUT /api/v1/user/preferences` | connecté | `authenticate`, `validate(updatePreferencesSchema)` | Thème, langue, interrupteur général et catégories des notifications |
 | `GET /api/v1/user/notifications` | connecté | `authenticate` | Centre de notifications, sans les catégories coupées |
 | `GET /api/v1/user/gdpr/export` | connecté | `authenticate` | Export JSON des données personnelles |
@@ -37,12 +36,14 @@ Les obligations juridiques couvertes par ces routes sont analysées dans [RGPD](
 | Clé | Contenu | Valeur par défaut si absente |
 |---|---|---|
 | `user:prefs:<userId>` | JSON `{ theme, language, pushNotificationsEnabled, notifications }` | `{ "theme": "DARK", "language": "FR", "pushNotificationsEnabled": true, "notifications": { "drawReminders": true, "results": true, "rewards": true, "referrals": true } }` |
-| `user:ticket_limit:<userId>` | entier | 50 |
 | `user:quests:<userId>` | tableau JSON des identifiants de quêtes validées | `[]` |
 
 `readPreferences` lit `user:prefs:<userId>` et complète toujours la valeur avec les défauts : une préférence enregistrée avant l'ajout des catégories reçoit les quatre catégories à `true`.
 
-Ces clés n'ont pas d'expiration et ne sont pas sauvegardées avec PostgreSQL. Si Redis est vidé, les préférences et les limites reviennent aux valeurs par défaut et les quêtes redeviennent validables, ce qui permet de recréditer leurs points. Elles ne sont pas supprimées lors de l'anonymisation RGPD. Voir [Données Redis](../../base-de-donnees/redis.md).
+Ces clés n'ont pas d'expiration et ne sont pas sauvegardées avec PostgreSQL. Si Redis est vidé, les préférences reviennent aux valeurs par défaut et les quêtes redeviennent validables, ce qui permet de recréditer leurs points. Elles ne sont pas supprimées lors de l'anonymisation RGPD. Voir [Données Redis](../../base-de-donnees/redis.md).
+
+> [!NOTE]
+> L'ancienne clé `user:ticket_limit:<userId>` (plafond personnel de jeu responsable) n'est plus lue ni écrite par le backend. Des valeurs écrites avant la suppression de la route peuvent subsister dans Redis, sans effet.
 
 ## GET /user/profile
 
@@ -68,7 +69,7 @@ Un compte supprimé (`deletedAt` renseigné) renvoie `404 Profil utilisateur int
       "hasPassword": true,
       "ageVerificationStatus": "VERIFIED",
       "stats": { "ticketsCount": 3, "claimedRewardsCount": 1, "referralsCount": 0 },
-      "responsibleGaming": { "maxTicketsPerRound": 50 },
+      "responsibleGaming": { "maxTicketsPerRound": 1 },
       "preferences": {
         "theme": "DARK",
         "language": "FR",
@@ -190,21 +191,6 @@ Le catalogue est codé en dur dans `QUESTS_CATALOG`.
 > [!NOTE]
 > La validation est déclarative : le backend ne vérifie ni l'abonnement, ni le partage, ni la lecture. La lecture puis l'écriture de la clé Redis ne sont pas atomiques : deux appels simultanés pour la même quête peuvent créditer deux fois.
 
-## PUT /user/responsible-limit
-
-| Champ | Type | Règles |
-|---|---|---|
-| `maxTicketsPerRound` | entier | 1 à 500, messages `La limite doit être d'au moins 1 ticket` et `La limite maximale autorisée est de 500 tickets` |
-
-La valeur est écrite dans `user:ticket_limit:<userId>` et lue par [`POST /lottery/buy`](loterie.md#post-lottery-buy). Elle s'applique immédiatement dans les deux sens : une hausse ne comporte ni délai de réflexion ni confirmation.
-
-> [!NOTE]
-> Depuis le passage à un ticket par participant et par grand tirage, cette limite n'a plus d'effet pratique : `/lottery/buy` refuse un second ticket (409) avant même de la comparer, et la plus petite valeur admise est 1. La route et la clé Redis sont conservées, mais l'application mobile ne propose plus de la régler.
-
-```json
-{ "success": true, "message": "Limite d'achat Jeu Responsable enregistrée", "data": { "userId": "019a7c3e-...", "maxTicketsPerRound": 10, "updatedAt": "2026-11-11T16:00:00.000Z" } }
-```
-
 ## PATCH /user/profile
 
 | Champ | Type | Règles |
@@ -285,7 +271,7 @@ Renvoie l'export des données du compte :
 | `claimedRewards` | toutes les récompenses avec offre et partenaire |
 | `analyticsEvents` | tous les événements analytiques rattachés au compte |
 
-L'export ne contient pas les données Redis du compte (préférences, limite, quêtes) ni les images de la pièce d'identité. Les secrets (empreinte du mot de passe, clé de portefeuille chiffrée, secret TOTP, codes de secours) sont exclus.
+L'export ne contient pas les données Redis du compte (préférences, quêtes) ni les images de la pièce d'identité. Les secrets (empreinte du mot de passe, clé de portefeuille chiffrée, secret TOTP, codes de secours) sont exclus.
 
 ## Suppression du compte
 
@@ -355,7 +341,7 @@ Ce qui reste après l'anonymisation : la ligne `User` (identifiant, rôle, solde
 
 | Statut | Message | Route |
 |---|---|---|
-| 400 | `Erreur de validation des données` | quêtes, limite, préférences, profil, support, confirmation, image manquante |
+| 400 | `Erreur de validation des données` | quêtes, préférences, profil, support, confirmation, image manquante |
 | 400 | `Image recto invalide : ...`, `Image verso invalide : ...` | `identity` |
 | 403 | `Vérifiez votre âge pour jouer.` | routes protégées par `requireAgeVerification` |
 | 409 | `Votre âge est déjà vérifié.` | `identity` |

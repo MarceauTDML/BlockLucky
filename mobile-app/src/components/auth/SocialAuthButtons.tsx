@@ -1,4 +1,3 @@
-import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -89,8 +88,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({
   canStart,
 }) => {
   const { colors, t } = useAppTheme();
-  const { signInWithGoogle, signInWithApple, isGoogleSigningIn, isAppleSigningIn } = useAuth();
-  const [appleAvailable, setAppleAvailable] = useState(false);
+  const { signInWithGoogle, isGoogleSigningIn } = useAuth();
   const [googleUnavailable, setGoogleUnavailable] = useState<string | null>(
     platformGoogleClientId
       ? null
@@ -99,21 +97,6 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({
           'Google sign-in is not configured for this app.',
         ),
   );
-  const [appleUnavailable, setAppleUnavailable] = useState<string | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-    if (Platform.OS === 'ios') {
-      AppleAuthentication.isAvailableAsync()
-        .then((available) => {
-          if (mounted) setAppleAvailable(available);
-        })
-        .catch(() => undefined);
-    }
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const start = useCallback(() => (canStart ? canStart() : true), [canStart]);
 
@@ -139,46 +122,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({
     );
   }, [onError, t]);
 
-  const handleApple = useCallback(async () => {
-    if (!start()) return;
-    try {
-      const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });
-      if (!credential.identityToken) {
-        onError(
-          t(
-            'Apple n’a pas renvoyé de jeton. Réessayez.',
-            'Apple did not return a token. Try again.',
-          ),
-        );
-        return;
-      }
-      const fullName = [credential.fullName?.givenName, credential.fullName?.familyName]
-        .filter(Boolean)
-        .join(' ');
-      onResult(
-        await signInWithApple({
-          identityToken: credential.identityToken,
-          ...(fullName ? { fullName } : {}),
-        }),
-      );
-    } catch (error) {
-      if ((error as { code?: string })?.code === 'ERR_REQUEST_CANCELED') return;
-      const message = getErrorMessage(
-        error,
-        t('Connexion Apple impossible. Réessayez.', 'Apple sign-in failed. Try again.'),
-      );
-      if (getErrorStatus(error) === 503) setAppleUnavailable(message);
-      else onError(message);
-    }
-  }, [onError, onResult, signInWithApple, start, t]);
-
   const googleTitle = t('Continuer avec Google', 'Continue with Google');
-  const busy = isGoogleSigningIn || isAppleSigningIn;
 
   return (
     <View style={styles.list}>
@@ -186,7 +130,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({
         <GoogleButton
           title={googleTitle}
           busy={isGoogleSigningIn}
-          disabled={busy}
+          disabled={isGoogleSigningIn}
           onStart={start}
           onIdToken={handleGoogleToken}
           onFailure={handleGoogleFailure}
@@ -204,24 +148,6 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({
         <AppText size={11} color={colors.inkMuted} align="center">
           {googleUnavailable}
         </AppText>
-      ) : null}
-
-      {appleAvailable ? (
-        <>
-          <AppButton
-            title={t('Continuer avec Apple', 'Continue with Apple')}
-            variant="dark"
-            leftIcon="apple"
-            loading={isAppleSigningIn}
-            disabled={busy || Boolean(appleUnavailable)}
-            onPress={handleApple}
-          />
-          {appleUnavailable ? (
-            <AppText size={11} color={colors.inkMuted} align="center">
-              {appleUnavailable}
-            </AppText>
-          ) : null}
-        </>
       ) : null}
     </View>
   );

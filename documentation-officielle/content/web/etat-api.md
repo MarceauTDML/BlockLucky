@@ -36,11 +36,11 @@ Aucune requête n'envoie d'en-tête `Idempotency-Key`, bien que `POST /lottery/b
 
 ## Les tags de cache
 
-`baseApi` déclare onze types de tags. Une requête qui fournit un tag est rejouée automatiquement quand une mutation l'invalide, si un composant l'observe encore.
+`baseApi` déclare douze types de tags. Une requête qui fournit un tag est rejouée automatiquement quand une mutation l'invalide, si un composant l'observe encore.
 
 | Tag | Fourni par | Invalidé par |
 |---|---|---|
-| `User` | `getProfile`, `getReferrals` | `socialLogin`, `verify2FA`, `disable2FA`, `completeQuest`, `setResponsibleLimit`, `updatePreferences`, `buyTicket`, `giftTicket`, `claimReward`, `submitIdentity` |
+| `User` | `getProfile`, `getReferrals` | `socialLogin`, `verify2FA`, `disable2FA`, `completeQuest`, `updatePreferences`, `buyTicket`, `giftTicket`, `claimReward`, `submitIdentity` |
 | `Lottery` | `getLotteryStatus`, `getLeaderboard`, `getMyTransactions` | `buyTicket`, `giftTicket`, `claimPrize`, `triggerDraw`, `refundRound`, `toggleCircuitBreaker` ; événement `draw:winner` |
 | `Wallet` | `getWallet` | `buyTicket`, `giftTicket`, `claimPrize` ; erreurs de solde ; événement `draw:winner` |
 | `Marketplace` | `getCatalog`, `getRewardDetail`, `getMyCodes` | `claimReward`, `redeemCode`, `setPartnerStatus`, `createOffer`, `uploadCodes` |
@@ -48,9 +48,10 @@ Aucune requête n'envoie d'en-tête `Idempotency-Key`, bien que `POST /lottery/b
 | `Quests` | `getQuests` | `completeQuest` |
 | `Notifications` | `getNotifications` | aucune mutation |
 | `Admin` | `getAdminDashboard`, `getAnalyticsDashboard` | `triggerDraw`, `refundRound`, `toggleCircuitBreaker`, `withdrawTreasury`, `setPartnerStatus` ; événement `draw:winner` |
-| `Partners` | `getPartners`, `getPartnerConsumption` | `createPartner`, `createOffer`, `uploadCodes`, `redeemCode`, `setPartnerStatus` |
-| `Audit` | `getAuditLogs` | `toggleCircuitBreaker`, `withdrawTreasury`, `setPartnerStatus`, `exportReport`, `decideIdentityVerification` |
+| `Partners` | `getPartners`, `getPartnerConsumption` | `createPartner`, `createOffer`, `uploadCodes`, `redeemCode`, `setPartnerStatus`, `createStaffAccount`, `updateStaffRole` |
+| `Audit` | `getAuditLogs` | `toggleCircuitBreaker`, `withdrawTreasury`, `setPartnerStatus`, `exportReport`, `decideIdentityVerification`, `createStaffAccount`, `updateStaffRole` |
 | `Identity` | `getIdentityVerifications`, `getIdentityStatus` | `decideIdentityVerification`, `submitIdentity` |
+| `Accounts` | `getStaffAccounts` | `createStaffAccount`, `updateStaffRole` |
 
 Le tag `Notifications` n'est jamais invalidé : la liste des notifications ne change qu'au rechargement ou par `refetchNotifications`.
 
@@ -65,9 +66,9 @@ Les hooks sont générés par RTK Query : `useXxxQuery` pour une lecture, `useXx
 | Endpoint | Méthode et route | Type |
 |---|---|---|
 | `getOnboarding` | `GET /auth/onboarding` | query |
-| `socialLogin` | `POST /auth/login` | mutation |
+| `socialLogin` | `POST /auth/login` ; la page de connexion envoie `acceptTerms: true` | mutation |
 | `setup2FA` | `POST /auth/2fa/setup` | mutation |
-| `verify2FA` | `POST /auth/2fa/verify` | mutation |
+| `verify2FA` | `POST /auth/2fa/verify` avec `userId`, `code` et `loginTicket` facultatif | mutation |
 | `disable2FA` | `POST /auth/2fa/disable` | mutation |
 | `logout` | `POST /auth/logout` (jeton passé en argument) | mutation |
 | `getProfile` | `GET /user/profile` | query |
@@ -76,7 +77,6 @@ Les hooks sont générés par RTK Query : `useXxxQuery` pour une lecture, `useXx
 | `getReferrals` | `GET /user/referrals` | query |
 | `getQuests` | `GET /user/quests` | query |
 | `completeQuest` | `POST /user/quests/complete` | mutation |
-| `setResponsibleLimit` | `PUT /user/responsible-limit` | mutation |
 | `updatePreferences` | `PUT /user/preferences` | mutation |
 | `getNotifications` | `GET /user/notifications` | query |
 | `exportGdprData` | `GET /user/gdpr/export` | mutation |
@@ -93,7 +93,7 @@ Les hooks sont générés par RTK Query : `useXxxQuery` pour une lecture, `useXx
 |---|---|---|
 | `getLotteryStatus` | `GET /lottery/status` | query |
 | `getLeaderboard` | `GET /lottery/leaderboard` | query |
-| `getTransparencyCharter` | `GET /lottery/transparency-charter` | query |
+| `getTransparencyCharter` | `GET /lottery/transparency-charter` ; plus appelé par aucune page depuis que `TransparencyCharter` lit `content/legal.ts` | query |
 | `getMyTransactions` | `GET /lottery/my-tickets?page=1&limit=25` par défaut | query |
 | `buyTicket` | `POST /lottery/buy` avec `quantity`, `retryAttempt` | mutation |
 | `giftTicket` | `POST /lottery/gift` avec `recipientEmail`, `personalMessage` | mutation |
@@ -131,6 +131,9 @@ Les hooks sont générés par RTK Query : `useXxxQuery` pour une lecture, `useXx
 | `getIdentityVerifications` | `GET /admin/identity-verifications` avec `status`, `page`, `limit` | query |
 | `getIdentityVerification` | `GET /admin/identity-verifications/:id` ; `keepUnusedDataFor: 0`, les images ne restent pas en cache après la fermeture du panneau | query |
 | `decideIdentityVerification` | `POST /admin/identity-verifications/:id/decision` avec `approved` et `note` | mutation |
+| `getStaffAccounts` | `GET /admin/accounts` avec `role` (`ADMIN` ou `PARTNER`), `search`, `page`, `limit` ; renvoie `accounts` et la pagination | query |
+| `createStaffAccount` | `POST /admin/accounts` avec `email`, `role`, `firstName`, `lastName` et `partnerId` facultatifs ; renvoie `account` et `created` | mutation |
+| `updateStaffRole` | `PATCH /admin/accounts/:id/role` avec `role` (`USER`, `PARTNER` ou `ADMIN`) | mutation |
 
 ### partnersApi
 
@@ -169,6 +172,7 @@ Les requêtes liées à la session (`getPointsBalance`, `getNotifications`) util
 | `hydrated` | Vrai après la lecture de `localStorage` ; les gardes attendent ce drapeau |
 | `isAuthenticated`, `token`, `user` | Session courante |
 | `pendingTwoFactorUserId`, `pendingTwoFactorMethod`, `pendingTwoFactorEmail` | Vérification en cours après `POST /auth/login` |
+| `pendingLoginTicket` | Ticket de connexion renvoyé par le backend quand le code de l'application est attendu ; renvoyé avec ce code à `POST /auth/2fa/verify`, effacé par `setCredentials` et `logout` |
 
 Actions : `hydrateSession`, `setCredentials`, `setPendingTwoFactor`, `updateUserPoints`, `updateUserProfile`, `logout`. Le parcours complet est dans [Authentification et routes protégées](authentification.md).
 

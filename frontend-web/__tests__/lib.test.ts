@@ -4,6 +4,7 @@ import { safeInternalPath } from '@/lib/navigation';
 import { isValidEmail, isValidOtpCode } from '@/lib/validators';
 import { generateDeterministicWallet } from '@/lib/wallet';
 import { captureUtmSource, getUtmSource } from '@/lib/analytics';
+import { setAudienceConsent } from '@/lib/consent';
 
 describe('wallet déterministe', () => {
   it('produit une adresse Ethereum de 42 caractères, stable et insensible à la casse', () => {
@@ -64,6 +65,7 @@ describe('parseCodes (upload CSV partenaire)', () => {
 describe('attribution UTM', () => {
   beforeEach(() => window.localStorage.clear());
   it('capture une source valide et ignore les valeurs suspectes', () => {
+    setAudienceConsent(true);
     expect(getUtmSource()).toBe('web_direct');
     expect(captureUtmSource('?utm_source=Instagram')).toBe('instagram');
     expect(getUtmSource()).toBe('instagram');

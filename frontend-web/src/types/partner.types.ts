@@ -3,6 +3,7 @@ export interface PartnerRecord {
   name: string;
   logoUrl: string;
   isActive: boolean;
+  ownerId?: string | null;
   createdAt: string;
 }
 

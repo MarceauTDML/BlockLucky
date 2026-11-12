@@ -12,6 +12,7 @@ Toutes les primitives cryptographiques du backend sont regroupées dans [`backen
 | Mot de passe | bcrypt, coût 12 | `hashValue` | Non |
 | Code de connexion, d'inscription ou de réinitialisation | HMAC-SHA-256 avec clé dérivée | `hmacSha256` | Non |
 | Email d'une tentative sur un compte inconnu (sujet de blocage) | HMAC-SHA-256 avec clé dérivée | `hmacSha256` | Non |
+| Ticket de connexion avant le code de l'application (nom de la clé Redis `auth:login-ticket:<HMAC>`) | HMAC-SHA-256 avec clé dérivée | `hmacSha256` | Non |
 | Code de secours 2FA | SHA-256 de `backup:<code>` | `sha256` | Non |
 | Jeton de suppression RGPD | SHA-256 | `sha256` dans [`backend/src/api/user/user.repo.ts`](src:backend/src/api/user/user.repo.ts) | Non |
 | Signature des webhooks | HMAC-SHA-256 avec `WEBHOOK_SECRET` | `hmacSha256` | Sans objet |

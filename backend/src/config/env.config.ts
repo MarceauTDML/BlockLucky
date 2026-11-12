@@ -111,7 +111,6 @@ const envSchema = z
     SCRATCH_COST_VIOLET: z.coerce.number().int().positive().default(50),
     SCRATCH_COST_LUCKY: z.coerce.number().int().positive().default(100),
     GOOGLE_CLIENT_IDS: csvList(''),
-    APPLE_CLIENT_IDS: csvList(''),
   })
   .superRefine((values, ctx) => {
     if (values.NODE_ENV !== 'production') return;

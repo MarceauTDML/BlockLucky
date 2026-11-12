@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -37,6 +37,36 @@ export interface DeploymentRecord {
     keyHash: string;
     subscriptionId: string;
     mock: boolean;
+    nativePayment?: boolean;
+    subscriptionOwner?: string;
+    consumerAdded?: boolean;
+  };
+  roles?: {
+    deployer: string;
+    admin: string;
+    treasury: string;
+    operator: string;
+    pauser: string;
+    vrfOwner: string;
+    extraAdmins: string[];
+    allowSharedRoles: boolean;
+    deployerRenouncedAdmin: boolean;
+    vrfOwnershipPending: boolean;
+  };
+  constructorArgs?: {
+    lottery: unknown[];
+    poap: unknown[];
+  };
+  automation?: {
+    registrar: string;
+    registry: string;
+    linkToken: string;
+    upkeepId: string;
+    upkeepAdmin: string;
+    gasLimit: number;
+    fundedLinkJuels: string;
+    registeredAt: string;
+    transactionHash: string;
   };
   roundConfig: {
     ticketPriceWei: string;
@@ -93,6 +123,15 @@ export const writeDeployment = (record: DeploymentRecord): string => {
   writeFileSync(target, `${JSON.stringify(record, null, 2)}\n`, "utf8");
   return target;
 };
+
+export const readDeployment = (networkName: string): DeploymentRecord => {
+  const source = deploymentPath(networkName);
+  if (!existsSync(source)) throw new Error(`Aucun déploiement trouvé dans ${source}`);
+  return JSON.parse(readFileSync(source, "utf8")) as DeploymentRecord;
+};
+
+export const serializeConstructorArgs = (args: unknown[]): unknown[] =>
+  JSON.parse(JSON.stringify(args, (_key, value: unknown) => (typeof value === "bigint" ? value.toString() : value))) as unknown[];
 
 export const serializeRoundConfig = (config: RoundConfig): DeploymentRecord["roundConfig"] => ({
   ticketPriceWei: config.ticketPrice.toString(),

@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomBytes, randomUUID } from 'crypto';
 import redis from '../config/redis.config';
 import { generateOtpCode, hmacSha256, safeEqual } from '../utils/crypto.util';
 import { AppError } from '../utils/response.util';
@@ -33,10 +33,13 @@ const MAX_ATTEMPTS_PER_CODE = 5;
 const MAX_FAILURES_PER_ACCOUNT = 10;
 const FAILURE_WINDOW_SECONDS = 60 * 60;
 const TOTP_REPLAY_TTL_SECONDS = 120;
+const LOGIN_TICKET_TTL_SECONDS = 10 * 60;
 
 const challengeKey = (subjectId: string) => `auth:otp:${subjectId}`;
 const failuresKey = (subjectId: string) => `auth:otp-failures:${subjectId}`;
 const totpUsedKey = (userId: string, counter: number) => `auth:totp-used:${userId}:${counter}`;
+
+const loginTicketKey = (ticket: string) => `auth:login-ticket:${hmacSha256(`login-ticket:${ticket}`)}`;
 
 const hashCode = (subjectId: string, code: string) => hmacSha256(`${subjectId}:${code.trim()}`);
 
@@ -116,6 +119,20 @@ export class OtpChallengeService {
 
     await redis.del(key);
     return { purpose: challenge.purpose, signup: challenge.signup };
+  }
+
+  public async issueLoginTicket(userId: string): Promise<string> {
+    const ticket = randomBytes(32).toString('base64url');
+    await redis.set(loginTicketKey(ticket), userId, LOGIN_TICKET_TTL_SECONDS);
+    return ticket;
+  }
+
+  public async readLoginTicket(ticket: string): Promise<string | null> {
+    return redis.get(loginTicketKey(ticket));
+  }
+
+  public async revokeLoginTicket(ticket: string): Promise<void> {
+    await redis.del(loginTicketKey(ticket));
   }
 
   public async markTotpUsed(userId: string, counter: number): Promise<boolean> {

@@ -94,7 +94,7 @@ Le `body` applique un espacement des lettres de -0,1 px et le lissage `antialias
 
 ## Icônes et logo
 
-[`Icon.tsx`](src:frontend-web/src/components/ui/Icon.tsx) affiche une icône SVG en ligne à partir de [`iconData.ts`](src:frontend-web/src/components/ui/iconData.ts), copie du jeu d'icônes du mobile (45 icônes : onglets, cloche, étoile, ticket, roue, bouclier, logo...). Il reçoit `name` (type `IconName`), `size` (20 px par défaut, la hauteur suit les proportions de l'icône) et `className`. Les tracés utilisent `currentColor` : l'icône prend la couleur du texte du parent. Elle est toujours `aria-hidden`, le libellé doit donc être porté par le bouton ou le lien qui la contient. Aucune bibliothèque d'icônes n'est installée.
+[`Icon.tsx`](src:frontend-web/src/components/ui/Icon.tsx) affiche une icône SVG en ligne à partir de [`iconData.ts`](src:frontend-web/src/components/ui/iconData.ts), copie du jeu d'icônes du mobile (47 icônes : onglets, cloche, étoile, ticket, roue, bouclier, logo, haut-parleur `volume` et `volumeOff`...). Il reçoit `name` (type `IconName`), `size` (20 px par défaut, la hauteur suit les proportions de l'icône) et `className`. Les tracés utilisent `currentColor` : l'icône prend la couleur du texte du parent. Elle est toujours `aria-hidden`, le libellé doit donc être porté par le bouton ou le lien qui la contient. Aucune bibliothèque d'icônes n'est installée.
 
 Le logo est le « B » encre sur carré jaune `#FFDA38` du mobile (icône `logoSymbol`, identique à [`mobile-app/assets/icons/logo-symbol.svg`](src:mobile-app/assets/icons/logo-symbol.svg)). Il sert aussi de favicon par [`frontend-web/src/app/icon.svg`](src:frontend-web/src/app/icon.svg), que Next.js déclare automatiquement. `Brand` l'accompagne du mot « Block*Lucky* » avec « Lucky » en italique, comme `BrandLogo` sur mobile.
 
@@ -173,8 +173,8 @@ Ils s'appuient sur les composants de base :
 
 | Dossier | Composants |
 |---|---|
-| [`components/layout`](src:frontend-web/src/components/layout) | `AppShell` (barre latérale, en-tête, onglets bas), `PublicShell`, `LegalPage`, `Brand`, `SecurityFooter`, `PreferenceToggles`, `RequireRole`, `AccessDenied`, `GlobalOverlays` |
-| [`components/lottery`](src:frontend-web/src/components/lottery) | `WalletCard`, `WinnerClaimCard`, `DemoModeBadge`, `NetworkPill`, `CountdownTimer`, `RouletteAnimation`, `ChatBox`, `TicketCard`, `LeaderboardList`, `TransparencyCharter` |
+| [`components/layout`](src:frontend-web/src/components/layout) | `AppShell` (barre latérale, en-tête, onglets bas, liens légaux), `PublicShell`, `LegalPage` (avec `LegalDocumentPage`, `legalSections` et `LegalLinks`), `ConsentBanner` et `ConsentControls`, `Brand`, `SecurityFooter`, `PreferenceToggles`, `RequireRole`, `AccessDenied`, `GlobalOverlays` |
+| [`components/lottery`](src:frontend-web/src/components/lottery) | `WalletCard`, `WinnerClaimCard`, `DemoModeBadge`, `NetworkPill`, `CountdownTimer`, `RouletteAnimation`, `SoundToggle`, `ChatBox`, `TicketCard`, `LeaderboardList`, `TransparencyCharter` |
 | [`components/marketplace`](src:frontend-web/src/components/marketplace) | `PointsBalanceCard`, `RewardCard`, `ScratchCanvas` (carte à gratter sur `<canvas>`) |
 | [`components/charts`](src:frontend-web/src/components/charts) | `BarList`, `RingMeter`, `KpiTile`, sans dépendance externe |
 
@@ -184,7 +184,8 @@ Ils s'appuient sur les composants de base :
 
 | Zone | Rendu |
 |---|---|
-| Barre latérale (à partir de `lg`) | Carte flottante de 272 px de large, rayon 28 px, décollée des bords de 16 px ; logo, nom de l'espace en pilule `sun-chip`, entrées avec leur icône, entrée active sur fond `sun-nav` ; en bas, thème et langue, adresse du portefeuille avec un bouton rond de déconnexion, puis `SecurityFooter` |
+| Barre latérale (à partir de `lg`) | Carte flottante de 272 px de large, rayon 28 px, décollée des bords de 16 px ; logo, nom de l'espace en pilule `sun-chip`, entrées avec leur icône, entrée active sur fond `sun-nav` ; en bas, thème et langue, adresse du portefeuille avec un bouton rond de déconnexion, `SecurityFooter`, puis la ligne légale `ShellLegalLinks` (titres des six documents et bouton « Gérer mes traceurs », en 11 px) |
+| Contenu (sous `lg`) | La même ligne légale est affichée sous le contenu de chaque page |
 | En-tête | Bandeau translucide flouté ; pour l'espace citoyen, pilule du portefeuille (icône ticket sur fond menthe, adresse raccourcie, masquée sous `sm`), pilule jaune des points avec une étoile, bouton rond de la cloche avec une pastille corail quand des notifications sont non lues |
 | Barre basse (sous `lg`) | Barre blanche aux coins supérieurs arrondis (24 px), icône au-dessus du libellé, onglet actif sur fond `sun-nav`, menu « Plus » (icône `settings`) au-delà de cinq entrées, `SecurityFooter` en dessous |
 
@@ -192,7 +193,9 @@ Chaque entrée de navigation (`NavItem`) accepte un champ facultatif `icon`, de 
 
 [`SecurityFooter.tsx`](src:frontend-web/src/components/layout/SecurityFooter.tsx) affiche la mention « Application sécurisée · Aucun argent réel » avec un bouclier, comme le composant du même nom sur mobile. On la retrouve dans `AppShell`, `PublicShell`, `AccessDenied` et les pages de connexion.
 
-`PublicShell` garde son en-tête (logo, lien vers les règles, préférences, bouton « Participer » ou « Mon espace ») et met son pied de page dans une carte, avec des liens en pilules. `LegalPage` ouvre sur un surtitre en pilule jaune. `AccessDenied` présente une carte avec une icône sur fond pêche. `GlobalOverlays` utilise les mêmes feuilles et pilules que le reste de l'interface.
+`PublicShell` garde son en-tête (logo, lien vers les règles, préférences, bouton « Participer » ou « Mon espace ») et met son pied de page dans une carte, avec des liens en pilules : les six documents légaux dans l'ordre de `LEGAL_DOC_ORDER` (CGU, règlement, mentions légales, confidentialité, traceurs, transparence) et le bouton « Gérer mes traceurs ». `LegalPage` ouvre sur un surtitre en pilule jaune ; `LegalDocumentPage` y affiche un document de [`content/legal.ts`](src:frontend-web/src/content/legal.ts) (surtitre, titre, version du 12 novembre 2026, introduction, sections et éléments en liste de définitions), éventuellement suivi de sections propres à la page, puis `LegalLinks`, la liste des autres documents avec le document courant mis en évidence (`aria-current="page"`).
+
+`ConsentBanner` est une carte fixe en bas de l'écran (au-dessus des autres contenus, `z-[70]`, 36 rem de large au plus) ; ses deux boutons de choix ont la même variante `outline`. `SoundToggle` est un bouton rond de 36 px, bordé, avec l'icône `volume` ou `volumeOff` et le libellé « Couper les sons » ou « Activer les sons ». `AccessDenied` présente une carte avec une icône sur fond pêche. `GlobalOverlays` utilise les mêmes feuilles et pilules que le reste de l'interface.
 
 ### Graphiques
 

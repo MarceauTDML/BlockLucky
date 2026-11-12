@@ -100,7 +100,7 @@ Non. Elle vérifie le code, construit les images et les analyse, mais ne publie 
 
 ### Les contrats sont-ils déployés sur Sepolia ?
 
-Le script de déploiement est prêt et vérifié, mais aucune adresse Sepolia n'est versionnée dans le dépôt. La démonstration en ligne utilise un nœud Hardhat sur la VM. Voir [Déploiement sur Sepolia](../smart-contracts/sepolia.md).
+Non. Les scripts sont prêts (`npm run vrf:sepolia`, `deploy:sepolia`, `automation:sepolia`, `verify:sepolia`) et répartissent les rôles entre le multisig de la Mairie, la trésorerie et l'opérateur, mais leur exécution demande les clés et les fonds de test de l'équipe, et aucune adresse Sepolia n'est versionnée dans le dépôt. La démonstration en ligne utilise un nœud Hardhat sur la VM. Voir [Déploiement sur Sepolia](../smart-contracts/sepolia.md).
 
 ### Les notifications push fonctionnent-elles ?
 
@@ -118,4 +118,4 @@ Elle anonymise le compte en base, efface la clé chiffrée du portefeuille, le m
 
 ### Quelles données sont envoyées à des tiers ?
 
-En démonstration, aucune : les emails restent dans Mailpit et la chaîne est locale. Seule la connexion Google ou Apple, si elle est configurée, fait intervenir ces fournisseurs, qui délivrent le jeton d'identité vérifié par le backend. Sur Sepolia, les adresses et transactions deviennent publiques. Le registre complet est dans [Registre des traitements](../juridique/registre-traitements.md).
+En démonstration, aucune : les emails restent dans Mailpit et la chaîne est locale. Seule la connexion Google, si elle est configurée, fait intervenir ce fournisseur, qui délivre le jeton d'identité vérifié par le backend. Sur Sepolia, les adresses et transactions deviennent publiques. Le registre complet est dans [Registre des traitements](../juridique/registre-traitements.md).

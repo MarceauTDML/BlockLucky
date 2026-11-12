@@ -102,7 +102,9 @@ Pour un nouveau compte créé depuis « Inscription », le code de vérification
 > [!NOTE]
 > Si l'application affiche « Connexion impossible. Vérifiez votre connexion et réessayez. », vérifier l'adresse de l'API dans `mobile-app/.env` et le pare-feu du poste.
 
-La connexion Google n'est disponible que si `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` ou `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` est défini dans `mobile-app/.env` et que `GOOGLE_CLIENT_IDS` est renseigné côté backend. La connexion Apple n'apparaît que sur iOS, et le backend n'accepte que les audiences listées dans `APPLE_CLIENT_IDS`. Sans ces réglages, les boutons sont désactivés ou masqués.
+La connexion Google n'est disponible que si `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` ou `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` est défini dans `mobile-app/.env` et que `GOOGLE_CLIENT_IDS` est renseigné côté backend. Sans ces réglages, le bouton reste affiché mais désactivé. La connexion Apple n'existe plus.
+
+Les sons de la roue et du compte à rebours passent par le haut-parleur du téléphone ; ils se coupent dans Paramètres, puis Affichage, interrupteur « Sons ».
 
 La photo de la pièce d'identité fonctionne sur un téléphone physique avec l'appareil photo ou la galerie ; sur un émulateur ou un simulateur, choisir une image de la galerie.
 

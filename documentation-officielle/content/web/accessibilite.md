@@ -9,7 +9,7 @@ Le frontend web vise le niveau AA du RGAA et des WCAG 2.1, exigé pour un servic
 | Langue du document | `<html lang="fr">`, passé à `en` quand l'utilisateur choisit l'anglais (voir [Internationalisation](i18n.md)) |
 | Lien d'évitement | « Aller au contenu » vers `#contenu`, premier élément focusable de `AppShell` et `PublicShell`, visible au focus |
 | Zone principale | `<main id="contenu">` dans les coquilles, la connexion et la vérification |
-| Navigation | `<nav aria-label="Navigation principale">` (barre latérale et barre basse), « Navigation publique » sur les pages publiques |
+| Navigation | `<nav aria-label="Navigation principale">` (barre latérale et barre basse), « Navigation publique » sur les pages publiques, « Informations légales » pour les liens vers les documents légaux |
 | Page courante | `aria-current="page"` sur l'entrée active, calculée par le préfixe le plus long |
 | Titres | Un `h1` par page via `PageHeader`, `h2` pour les cartes et les feuilles |
 | Titre de l'onglet | Gabarit `%s · BlockLucky EtherBay` défini dans le layout racine |
@@ -21,7 +21,8 @@ Le frontend web vise le niveau AA du RGAA et des WCAG 2.1, exigé pour un servic
 - Les boutons qui ne contiennent qu'une icône (cloche, déconnexion, fermeture des feuilles) portent un `aria-label` ; les icônes elles-mêmes sont en `aria-hidden`.
 - Les feuilles modales ([`Sheet.tsx`](src:frontend-web/src/components/ui/Sheet.tsx)) ont `role="dialog"`, `aria-modal="true"` et `aria-labelledby` sur leur titre. À l'ouverture, le focus va au premier élément focusable ; Tab et Maj+Tab restent piégés dans la feuille ; Échap ferme si la feuille est fermable ; le défilement de la page est bloqué ; à la fermeture, le focus revient à l'élément qui l'avait ouverte.
 - La carte à gratter ([`ScratchCanvas.tsx`](src:frontend-web/src/components/marketplace/ScratchCanvas.tsx)) se gratte à la souris, au doigt ou au stylet (événements `pointer`) et propose un bouton « Révéler sans gratter » pour le clavier et les lecteurs d'écran. La couche à gratter est peinte en jaune `--sun` (lu dans les styles calculés, `#FFDA38` par défaut) avec son libellé en encre `#1D2637`. Le code masqué est annoncé « Code masqué » puis révélé dans une zone `aria-live`.
-- Le bouton d'opposition à la mesure d'audience expose son état par `aria-pressed`.
+- Le bandeau de consentement (`ConsentBanner`) est une région titrée (`role="region"`, `aria-labelledby`) ; ses boutons « Tout refuser » et « Tout accepter » ont la même présentation. Dans `ConsentControls`, le choix actif est exposé par `aria-pressed` et l'état courant est annoncé en `role="status"`. Le bandeau n'est pas une feuille modale : il ne piège pas le focus.
+- Le bouton de son (`SoundToggle`) ne contient qu'une icône ; il porte un `aria-label` et un `title` qui changent avec l'état (« Couper les sons » ou « Activer les sons »).
 
 > [!NOTE]
 > `SegmentedTabs` (`role="tablist"`) et `ChoicePills` (`role="radiogroup"`) se parcourent avec Tab, chaque option étant un bouton. Ils ne gèrent pas les flèches du clavier ni `aria-controls`, attendus par les motifs ARIA correspondants. Ce sont des améliorations à prévoir, pas des blocages.
@@ -60,6 +61,8 @@ Une règle globale de `globals.css` neutralise toutes les animations et transiti
 ```
 
 La roue du tirage, les squelettes et l'ouverture des feuilles deviennent donc instantanés.
+
+Les sons du tirage (roue sur `/tirage`, compte à rebours des 8 dernières secondes sur `/accueil`) ne partent jamais d'eux-mêmes au chargement : [`useSound.ts`](src:frontend-web/src/hooks/useSound.ts) attend une première interaction (clic, toucher ou touche du clavier, ou `navigator.userActivation.hasBeenActive`). Ils se coupent avec `SoundToggle`, et ce choix est mémorisé (`bl.pref.sound`). Aucune information n'est transmise par le son seul : la roue et le compte à rebours restent visibles.
 
 ## Contrastes
 

@@ -1,5 +1,19 @@
-import { AgeVerificationStatus } from '@prisma/client';
+import { AgeVerificationStatus, Prisma, Role } from '@prisma/client';
 import prisma from '../../config/prisma.config';
+
+const staffAccountSelect = {
+  id: true,
+  email: true,
+  role: true,
+  firstName: true,
+  lastName: true,
+  isTwoFactorEnabled: true,
+  createdAt: true,
+  ownedPartners: {
+    select: { id: true, name: true, isActive: true },
+    orderBy: { name: 'asc' },
+  },
+} satisfies Prisma.UserSelect;
 
 export class AdminRepository {
   public async getGlobalOverview() {
@@ -131,6 +145,108 @@ export class AdminRepository {
         select: { id: true },
       });
       return { id: data.id, userId: data.userId, status, reviewedAt };
+    });
+  }
+
+  public async listStaffAccounts(filters: { role?: 'ADMIN' | 'PARTNER' | undefined; search?: string | undefined }, skip: number, take: number) {
+    const where: Prisma.UserWhereInput = {
+      deletedAt: null,
+      role: filters.role ?? { in: ['ADMIN', 'PARTNER'] },
+      ...(filters.search
+        ? {
+            OR: [
+              { email: { contains: filters.search, mode: 'insensitive' } },
+              { firstName: { contains: filters.search, mode: 'insensitive' } },
+              { lastName: { contains: filters.search, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
+    const [items, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        select: staffAccountSelect,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take,
+      }),
+      prisma.user.count({ where }),
+    ]);
+    return { items, total };
+  }
+
+  public async findStaffAccountById(id: string) {
+    return prisma.user.findUnique({ where: { id }, select: { ...staffAccountSelect, deletedAt: true } });
+  }
+
+  public async findAccountByEmail(email: string) {
+    return prisma.user.findUnique({
+      where: { email },
+      select: { ...staffAccountSelect, deletedAt: true },
+    });
+  }
+
+  public async countActiveAdmins() {
+    return prisma.user.count({ where: { role: 'ADMIN', deletedAt: null } });
+  }
+
+  public async findPartnerById(id: string) {
+    return prisma.partner.findUnique({ where: { id } });
+  }
+
+  public async createStaffAccount(data: {
+    email: string;
+    role: Role;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    walletAddress: string;
+    walletEncryptedKey: string;
+    partnerId?: string | undefined;
+  }) {
+    return prisma.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          email: data.email,
+          role: data.role,
+          walletAddress: data.walletAddress,
+          walletEncryptedKey: data.walletEncryptedKey,
+          isEmailVerified: false,
+          ...(data.firstName ? { firstName: data.firstName } : {}),
+          ...(data.lastName ? { lastName: data.lastName } : {}),
+        },
+        select: { id: true },
+      });
+      if (data.partnerId) {
+        await tx.partner.update({ where: { id: data.partnerId }, data: { ownerId: created.id } });
+      }
+      return created;
+    });
+  }
+
+  public async changeAccountRole(data: {
+    userId: string;
+    role: Role;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    partnerId?: string | undefined;
+  }) {
+    return prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: data.userId },
+        data: {
+          role: data.role,
+          ...(data.firstName ? { firstName: data.firstName } : {}),
+          ...(data.lastName ? { lastName: data.lastName } : {}),
+        },
+        select: { id: true },
+      });
+      if (data.role !== 'PARTNER') {
+        await tx.partner.updateMany({ where: { ownerId: data.userId }, data: { ownerId: null } });
+      }
+      if (data.partnerId) {
+        await tx.partner.update({ where: { id: data.partnerId }, data: { ownerId: data.userId } });
+      }
+      return { id: data.userId };
     });
   }
 

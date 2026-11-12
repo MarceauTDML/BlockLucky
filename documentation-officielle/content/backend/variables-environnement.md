@@ -35,7 +35,7 @@ Changer `JWT_SECRET` invalide toutes les sessions ouvertes : c'est un moyen radi
 | Utiliser l'administration sans 2FA | `ADMIN_MFA_REQUIRED=false` (refusé en production) |
 | Jouer sans faire vérifier son âge | `AGE_VERIFICATION_REQUIRED=false` (refusé en production) ; les comptes du seed sont déjà vérifiés |
 | Raccourcir la salle d'attente du tirage | `DRAW_REVEAL_DELAY_SECONDS=0` pour un tirage dès la fermeture des achats, ou une valeur courte pour une démonstration |
-| Tester la connexion Google ou Apple | renseigner `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` avec les identifiants client de l'application ; sans eux, les routes répondent 503 |
+| Tester la connexion Google | renseigner `GOOGLE_CLIENT_IDS` avec les identifiants client de l'application ; sans eux, la route répond 503 |
 | Voir les requêtes SQL | `DB_LOG_QUERIES=true` |
 | Tester l'application mobile sur un téléphone | ajouter l'origine Expo à `CORS_ORIGINS` (voir [Tester sur un téléphone](../mobile/telephone-physique.md)) |
 
@@ -78,7 +78,7 @@ Pour brancher le backend sur le déploiement public, reprendre les valeurs du fi
 > [!WARNING]
 > Sur Sepolia, le compte opérateur paie le gaz des tirages, des annulations, de la frappe des POAP et des dotations. Un solde vide bloque silencieusement les dotations (journalisées en erreur) puis les achats des nouveaux citoyens, qui reçoivent `402 Solde d'ethers fictifs insuffisant`.
 
-`POST /admin/treasury/withdraw` appelle `setTreasury` sur le contrat quand l'adresse demandée diffère de la trésorerie actuelle. Cette fonction exige le rôle d'administrateur du contrat : si le compte opérateur n'est pas aussi administrateur, seul un retrait vers la trésorerie déjà configurée fonctionne.
+`POST /admin/treasury/withdraw` appelle `setTreasury` sur le contrat quand l'adresse demandée diffère de la trésorerie actuelle. Cette fonction exige `DEFAULT_ADMIN_ROLE`. Sur Sepolia, le script de déploiement réserve ce rôle au multisig `MAIRIE_ADMIN_ADDRESS` : l'opérateur ne l'a pas, et seul un retrait vers la trésorerie configurée (`MAIRIE_TREASURY_ADDRESS`) fonctionne ; changer de trésorerie passe par le multisig. En local, `deploy-local.ts` laisse ce rôle à l'opérateur, sauf avec `LOCAL_STRICT_ROLES=true`.
 
 ## Référence
 

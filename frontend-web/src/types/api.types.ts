@@ -21,8 +21,9 @@ export interface OnboardingSlide {
 export interface SocialLoginPayload {
   walletAddress: string;
   email?: string;
-  provider?: 'GOOGLE' | 'APPLE' | 'EMAIL' | 'WALLET';
+  provider?: 'GOOGLE' | 'EMAIL' | 'WALLET';
   isAdultConfirmed: boolean;
+  acceptTerms?: true;
   ageGroup?: '18-25' | '26-35' | '36-50' | '50+';
   referralCode?: string;
   utmSource?: string;
@@ -32,6 +33,7 @@ export interface SocialLoginResponse {
   requiresTwoFactor: boolean;
   twoFactorMethod?: 'APP' | 'EMAIL' | null;
   userId?: string;
+  loginTicket?: string;
   token?: string;
   isNewUser?: boolean;
   user: UserProfile;
@@ -49,8 +51,12 @@ export interface Setup2FAResponse {
 
 export interface Verify2FAResponse {
   verified: boolean;
-  token: string;
-  user: UserProfile;
+  token?: string;
+  user?: UserProfile;
+  requiresTwoFactor?: boolean;
+  twoFactorMethod?: 'APP' | 'EMAIL';
+  userId?: string;
+  loginTicket?: string;
 }
 
 export interface Milestone {

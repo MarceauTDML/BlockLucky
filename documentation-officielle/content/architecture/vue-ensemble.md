@@ -204,9 +204,9 @@ Dans chaque route, les middlewares spécifiques suivent l'ordre `authenticate`, 
 | `lottery` | `/lottery` | Statut du tour, achat, cadeau, portefeuille, retrait de cagnotte, tirage et annulation (Mairie), métadonnées POAP, classement, charte | [Loterie](../backend/modules/loterie.md) |
 | `marketplace` | `/marketplace` | Catalogue, solde d'EtherPoints, échange contre un code, codes du citoyen, validation en caisse | [Boutique et récompenses](../backend/modules/boutique.md) |
 | `partners` | `/partners` | Entreprises partenaires, offres, lots de codes | [Partenaires](../backend/modules/partenaires.md) |
-| `user` | `/user` | Profil, parrainage, quêtes sociales, limite de jeu responsable, préférences, notifications, export et suppression RGPD | [Utilisateur et RGPD](../backend/modules/utilisateur.md) |
+| `user` | `/user` | Profil, parrainage, quêtes sociales, préférences, notifications, export et suppression RGPD | [Utilisateur et RGPD](../backend/modules/utilisateur.md) |
 | `analytics` | `/analytics` | Événements d'acquisition et tableau analytique | [Analytique](../backend/modules/analytique.md) |
-| `admin` | `/admin` | Tableau de bord, disjoncteur, trésorerie, approbation des partenaires, rapports, journal d'audit | [Administration Mairie](../backend/modules/administration.md) |
+| `admin` | `/admin` | Tableau de bord, disjoncteur, trésorerie, approbation des partenaires, comptes Mairie et partenaires, pièces d'identité, rapports, journal d'audit | [Administration Mairie](../backend/modules/administration.md) |
 | `webhooks` | `/webhooks` | Webhook signé d'indexation, désactivé en mode `onchain` | [Webhooks et système](../backend/modules/webhooks-systeme.md) |
 | `system` | racine | Sondes de santé et configuration client | [Webhooks et système](../backend/modules/webhooks-systeme.md) |
 

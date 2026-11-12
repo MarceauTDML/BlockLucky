@@ -36,7 +36,7 @@ Particularités de ce mode :
 - `RUN_WORKERS=true` par défaut : un seul processus `npm run dev` porte l'API, les workers BullMQ, l'indexeur et le keeper ;
 - les journaux sont colorés et lisibles, au niveau `debug` ;
 - `/metrics` et le détail de `/health/deep` sont accessibles sans jeton si `METRICS_TOKEN` est vide ;
-- le compte opérateur est le compte Hardhat n° 0, déjà administrateur des contrats.
+- le compte opérateur est le compte Hardhat n° 0, qui a déployé les contrats et garde les rôles opérateur, pause, frappe et `DEFAULT_ADMIN_ROLE` ; l'administrateur de la Mairie est le compte n° 2, la trésorerie le compte n° 1.
 
 Le mode simulé (`BLOCKCHAIN_MODE=simulated`) permet de travailler sans nœud : achats, tirages et badges sont alors fabriqués par [`blockchain.service.ts`](src:backend/src/services/blockchain.service.ts) avec des hachages aléatoires. Il est refusé en production. Voir [Mode onchain ou simulé](../integration-blockchain/modes.md).
 
@@ -55,7 +55,7 @@ Ce qui change par rapport au développement local :
 | Configuration | `NODE_ENV=production` dans `x-backend-env` : tous les contrôles de production s'appliquent |
 | Secrets | `JWT_SECRET`, `ENCRYPTION_KEY`, `RELAYER_PRIVATE_KEY`, `WEBHOOK_SECRET` et `METRICS_TOKEN` doivent être fournis par un fichier `.env` racine, sinon l'API et le worker refusent de démarrer |
 | Processus | API (`RUN_WORKERS=false`) et worker séparés |
-| Opérateur | compte dérivé de `RELAYER_PRIVATE_KEY`, habilité et approvisionné par `deploy-local.ts` |
+| Opérateur | compte dérivé de `RELAYER_PRIVATE_KEY`, habilité (y compris `DEFAULT_ADMIN_ROLE` additionnel) et approvisionné par `deploy-local.ts` ; le compte n° 0 qui a déployé perd tous ses rôles |
 | Migrations | appliquées par le service `migrate` ; aucun seed n'est lancé, la base démarre vide |
 | Journaux | JSON sur une ligne, niveau `info` : les requêtes réussies (niveau `http`) ne sont pas journalisées |
 | `/metrics` | protégé par `Authorization: Bearer <METRICS_TOKEN>` |
@@ -84,7 +84,7 @@ La procédure complète, avec la liste de ce qui reste à faire, est dans [Dépl
 
 Sepolia est le réseau de test public d'Ethereum. C'est le seul environnement où le tirage utilise le vrai service Chainlink VRF v2.5 et où les transactions sont visibles par tous sur un explorateur. Les ethers y sont gratuits mais rares (robinets limités), ce qui change l'exploitation : le compte opérateur paie le gas du keeper, des badges et de chaque dotation de bienvenue.
 
-Le script `npm run deploy:sepolia` de `smart-contract/` vérifie le réseau, la key hash et le financement de l'abonnement VRF, déploie les deux contrats, accorde les rôles à `OPERATOR_ADDRESS` et écrit `deployments/sepolia.json` (fichier non versionné). Aucune adresse Sepolia n'est enregistrée dans le dépôt à la date de rédaction. La procédure est détaillée dans [Déploiement sur Sepolia](../smart-contracts/sepolia.md) et [Redéployer sur Sepolia](../guides/redeployer-sepolia.md).
+La mise en place passe par quatre scripts de `smart-contract/`, à lancer dans l'ordre : `npm run vrf:sepolia` crée et finance l'abonnement VRF, `npm run deploy:sepolia` vérifie le réseau, la key hash et le financement, déploie les deux contrats, répartit les rôles entre le multisig de la Mairie (`MAIRIE_ADMIN_ADDRESS`), la trésorerie (`MAIRIE_TREASURY_ADDRESS`) et l'opérateur (`OPERATOR_ADDRESS`), puis écrit `deployments/sepolia.json` (fichier non versionné) ; `npm run automation:sepolia` inscrit l'upkeep Chainlink Automation et `npm run verify:sepolia` publie le code sur Etherscan. Aucun de ces scripts n'a encore été exécuté : ils demandent les clés et les fonds de test de l'équipe, et aucune adresse Sepolia n'est enregistrée dans le dépôt. La procédure est détaillée dans [Déploiement sur Sepolia](../smart-contracts/sepolia.md) et [Redéployer sur Sepolia](../guides/redeployer-sepolia.md).
 
 Côté backend, les variables à changer par rapport à la stack locale :
 
@@ -97,7 +97,7 @@ Côté backend, les variables à changer par rapport à la stack locale :
 | `CHAIN_CONFIRMATIONS` | `2` |
 | `EXPLORER_URL` | `https://sepolia.etherscan.io` |
 | `LOTTERY_CONTRACT_ADDRESS`, `POAP_CONTRACT_ADDRESS` | adresses déployées |
-| `RELAYER_PRIVATE_KEY` | clé de l'opérateur habilité, approvisionnée en ETH Sepolia |
+| `RELAYER_PRIVATE_KEY` | clé de `OPERATOR_ADDRESS`, approvisionnée en ETH Sepolia ; elle n'a pas `DEFAULT_ADMIN_ROLE`, le reversement de commission ne fonctionne donc que vers `MAIRIE_TREASURY_ADDRESS` |
 | `WELCOME_GRANT_WEI` | à réduire, voire `0`, selon le solde disponible de l'opérateur |
 
 > [!WARNING]

@@ -49,9 +49,9 @@ S'y ajouteraient la réglementation des jeux d'argent, puisque la mise et le gai
 | Script de déploiement limité à Sepolia | [`smart-contract/scripts/deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) | Arrêt si l'identifiant de chaîne n'est pas 11155111 |
 | Aucun réseau principal configuré | [`smart-contract/hardhat.config.ts`](src:smart-contract/hardhat.config.ts) | Seuls `localhost` et `sepolia` sont déclarés, en plus du réseau intégré de Hardhat |
 | Aucune fonction d'achat d'ethers | API et clients | Les ethers ne s'obtiennent que par la dotation |
-| Mention de l'absence de valeur | [`frontend-web/src/app/mentions-legales/page.tsx`](src:frontend-web/src/app/mentions-legales/page.tsx) | « Ils n'ont aucune valeur monétaire et ne peuvent être convertis en argent. » |
+| Mention de l'absence de valeur | Conditions générales d'utilisation, règlement et charte de [`frontend-web/src/content/legal.ts`](src:frontend-web/src/content/legal.ts), repris par le mobile | « Les ETH de test n'ont aucune valeur monétaire. » ; la cagnotte est « sans valeur monétaire et sans conversion en euros » |
 | Commission plafonnée | `MAX_FEE_BPS = 2000` dans [`smart-contract/contracts/BlockLucky.sol`](src:smart-contract/contracts/BlockLucky.sol) | La Mairie ne peut pas prélever plus de 20 % de la cagnotte |
-| Remboursement en cas d'annulation | `claimRefund` | Chaque participant récupère sa contribution |
+| Remboursement en cas d'annulation | `claimRefund` | Le portefeuille qui a financé le ticket récupère son prix, hors frais réseau |
 
 Ces garde-fous sont techniques : ils n'empêchent pas un opérateur de modifier la configuration Hardhat pour viser un autre réseau. La décision de ne pas déployer sur un réseau principal relève de la gouvernance de la Ville.
 
@@ -59,7 +59,7 @@ Ces garde-fous sont techniques : ils n'empêchent pas un opérateur de modifier 
 
 - Ne jamais présenter les ethers fictifs, la cagnotte ou les EtherPoints comme un investissement, un placement ou une monnaie.
 - Ne pas afficher de contre-valeur en euros.
-- Rappeler le caractère de démonstration dans l'interface (bandeau de démonstration, charte de transparence) et dans les conditions de participation.
+- Rappeler le caractère de démonstration dans l'interface (bandeau de démonstration, charte de transparence) et dans les conditions générales d'utilisation et le règlement de participation.
 
 ## EtherPoints
 

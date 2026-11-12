@@ -25,7 +25,7 @@ Les risques ajoutés dans cette version sont marqués « nouveau ». Leur cotati
 | SC5 | Abus de l'administrateur : commission excessive, détournement | 2 | 4 | Commission plafonnée à 20 % dans le code, seule la commission est retirable, rôles séparés, événements publics, code vérifiable sur Etherscan | 1 | 3 | Mairie |
 | SC6 | Faille découverte après déploiement | 2 | 4 | Disjoncteur `pause`, 100 % des lignes couvertes, fuzzing, Slither. Le contrat n'est pas modifiable : une correction passe par un redéploiement documenté. | 1 | 4 | DSI |
 | SC7 | Abonnement VRF non financé sur Sepolia | 3 | 2 | Vérification au déploiement, `retryDraw`, suivi du solde dans le Subscription Manager | 2 | 2 | Opérateur |
-| SC8 | Nouveau. Le propriétaire hérité de `VRFConsumerBaseV2Plus` (le déployeur) remplace le coordinateur par `setCoordinator` et désigne le gagnant | 2 | 4 | Événement public `CoordinatorSet` ; aucune autre mesure, la propriété n'est pas transférée | 2 | 4 | Mairie |
+| SC8 | Nouveau. Le propriétaire hérité de `VRFConsumerBaseV2Plus` (le déployeur) remplace le coordinateur par `setCoordinator` et désigne le gagnant | 2 | 4 | Événement public `CoordinatorSet` ; les scripts de déploiement transfèrent la propriété au compte `VRF_OWNER_ADDRESS` (multisig de la Mairie sur Sepolia, compte Hardhat n° 2 en local), qui l'accepte par `acceptOwnership()` ; pas encore exécuté sur Sepolia | 2 | 4 | Mairie |
 | SC9 | Nouveau. Un porteur d'`OPERATOR_ROLE` voit la réponse VRF dans le mempool et la devance par `cancelRound` pour censurer un gagnant | 1 | 3 | Remboursement intégral de tous les participants ; annulation visible sur la chaîne | 1 | 3 | Équipe contrat |
 
 ## Portefeuilles et clés
@@ -40,7 +40,7 @@ Les risques ajoutés dans cette version sont marqués « nouveau ». Leur cotati
 
 Corrections apportées :
 
-- **K1.** Le registre initial indiquait des « rôles limités (pas d'administration) » pour l'opérateur. En local, l'opérateur par défaut est le compte n°0 de Hardhat, qui est aussi administrateur et propriétaire VRF. Le reversement de commission du backend appelle `setTreasury`, réservé à `DEFAULT_ADMIN_ROLE`, dès que l'adresse demandée diffère de la trésorerie enregistrée. La limitation des rôles dépend donc entièrement du déploiement (voir [Clés et garde des portefeuilles](../securite/cles-portefeuilles.md#compte-operateur)). La probabilité résiduelle reste à 1, mais l'impact résiduel n'est réellement de 3 que si l'opérateur ne détient pas `DEFAULT_ADMIN_ROLE`.
+- **K1.** Le registre initial indiquait des « rôles limités (pas d'administration) » pour l'opérateur. Les scripts séparent désormais les rôles ([`smart-contract/scripts/lib/roles.ts`](src:smart-contract/scripts/lib/roles.ts)) : sur Sepolia, l'opérateur n'a que `OPERATOR_ROLE`, `PAUSER_ROLE` (sauf `PAUSER_ADDRESS` distinct) et `MINTER_ROLE`, et le déployeur renonce à ses rôles. En local, l'opérateur garde aussi `DEFAULT_ADMIN_ROLE`, sauf avec `LOCAL_STRICT_ROLES=true`, car le reversement de commission du backend appelle `setTreasury`, réservé à ce rôle, dès que l'adresse demandée diffère de la trésorerie enregistrée. La limitation des rôles dépend donc du déploiement (voir [Clés et garde des portefeuilles](../securite/cles-portefeuilles.md#compte-operateur)). La probabilité résiduelle reste à 1, mais l'impact résiduel n'est réellement de 3 que si l'opérateur ne détient pas `DEFAULT_ADMIN_ROLE`.
 - **K3.** Le registre initial renvoyait aux runbooks pour la sauvegarde du secret. Il n'existe en outre aucun outil de re-chiffrement : une rotation de la clé a le même effet qu'une perte. L'impact résiduel est relevé de 2 à 3.
 
 ## Plateforme et exploitation
@@ -58,20 +58,20 @@ Corrections apportées :
 Corrections apportées :
 
 - **P4.** Les clients web et mobile n'envoient pas l'en-tête `Idempotency-Key` : la protection HTTP ne joue pas pour eux. Les deux autres mesures restent effectives. L'impact résiduel passe de 1 à 2.
-- **P5.** La 2FA par email n'ajoute pas de facteur à la connexion par code email, et le code TOTP remplace le code email au lieu de s'y ajouter (voir [Authentification](../securite/authentification.md#limites-connues)). La probabilité résiduelle est relevée de 1 à 2.
+- **P5.** La 2FA par email n'ajoute pas de facteur à la connexion par code email (voir [Authentification](../securite/authentification.md#limites-connues)). Le code TOTP, lui, ne remplace plus le premier facteur : il n'est accepté qu'avec le `loginTicket` délivré après le mot de passe ou le code email, ou avec une session du même compte. La probabilité résiduelle reste à 2 tant que la 2FA par email est permise aux administrateurs.
 
 ## Juridique, éthique et image
 
 | N° | Risque | P | I | Mesures en place | P résid. | I résid. | Responsable |
 |---|---|---|---|---|---|---|---|
 | J1 | Requalification en loterie prohibée | 2 | 4 | Ethers fictifs gratuits, aucune vente ni conversion, réseau de test uniquement, [veille juridique](veille-juridique.md) à faire valider | 1 | 4 | Mairie |
-| J2 | Participation de mineurs | 2 | 3 | Pièce d'identité examinée par la Mairie avant tout achat, cadeau ou échange (`AGE_VERIFICATION_REQUIRED`, obligatoire en production), envoyée depuis `/profil/identite` sur le web ou depuis le mobile ; déclaration de majorité à la connexion web | 1 | 2 | Mairie |
+| J2 | Participation de mineurs | 2 | 3 | Pièce d'identité examinée par la Mairie avant tout achat, cadeau ou échange (`AGE_VERIFICATION_REQUIRED`, obligatoire en production), envoyée depuis `/profil/identite` sur le web ou depuis le mobile ; déclaration de majorité à la connexion web et à l'inscription mobile par mot de passe | 1 | 2 | Mairie |
 | J3 | Non-conformité RGPD liée à l'immutabilité de la chaîne | 2 | 3 | Aucune donnée personnelle directe sur la chaîne, suppression de l'email et de la clé, registre des traitements | 1 | 2 | DPO |
-| J4 | Incitation excessive au jeu | 2 | 2 | Plafonds par participant dans le contrat et le backend, aucun achat d'ethers possible | 1 | 2 | Mairie |
+| J4 | Incitation excessive au jeu | 2 | 2 | Un seul ticket par participant et par tirage, imposé par le contrat et le backend, aucun achat d'ethers possible | 1 | 2 | Mairie |
 | J5 | Perte de confiance si une transaction « disparaît » de l'explorateur | 2 | 3 | Liens vers l'explorateur uniquement pour de vraies transactions, mode démonstration affiché quand la blockchain est simulée | 1 | 2 | Équipe front |
 | J6 | Nouveau. Création d'un compte pour le bénéficiaire d'un cadeau sans démarche de sa part ni vérification de majorité | 3 | 2 | Le bénéficiaire doit faire vérifier son âge pour acheter, offrir ou échanger, mais il détient le ticket reçu | 3 | 2 | DPO |
 | J7 | Nouveau. Non-conformité à l'obligation d'accessibilité d'un service public | 3 | 2 | Mesures de base sur le web, le site de l'Office de Tourisme et les composants principaux du mobile ; aucun audit ni déclaration | 3 | 2 | Mairie |
-| J8 | Nouveau. Absence de licence du dépôt et mentions incomplètes (LCEN, police mobile sans fichier OFL) | 2 | 2 | Licences des dépendances permissives | 2 | 2 | Équipe |
+| J8 | Nouveau. Absence de licence du dépôt et mentions incomplètes (LCEN, police mobile sans fichier OFL) | 2 | 2 | Fichier `LICENSE` MIT à la racine, mentions légales publiées sur le web et le mobile, licences des dépendances permissives | 1 | 2 | Équipe |
 | J9 | Nouveau. Purges non implémentées : conservation au-delà des durées annoncées | 3 | 2 | Durées documentées dans le registre des traitements | 3 | 2 | DPO |
 | J10 | Nouveau. Fuite ou consultation abusive des pièces d'identité | 2 | 4 | Chiffrement AES-256-GCM, accès ADMIN avec 2FA, consultation journalisée, images effacées à la décision | 1 | 4 | DSI |
 | J11 | Nouveau. Ticket à gratter payé en EtherPoints avec un lot tiré au hasard, perçu comme un jeu de hasard | 2 | 3 | Points gratuits, non achetables ; achat réservé aux âges vérifiés | 2 | 3 | Mairie |
@@ -85,7 +85,7 @@ Correction apportée :
 
 | N° | Criticité résiduelle | Pourquoi |
 |---|---|---|
-| SC8 | 8 | Seul risque qui permette de truquer un tirage ; se traite par un simple transfert de propriété |
+| SC8 | 8 | Seul risque qui permette de truquer un tirage ; le transfert de propriété est scripté mais doit être exécuté et accepté par le multisig au déploiement Sepolia |
 | J6, J7, J9, J11 | 6 | Écarts de conformité d'un service public, qualification du ticket à gratter |
 | J10 | 4 | Impact maximal en cas de fuite : identité civile des citoyens |
 | P5 | 6 | Le compte ADMIN pilote le tirage, la trésorerie et le disjoncteur |

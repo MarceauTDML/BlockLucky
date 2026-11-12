@@ -4,16 +4,15 @@ Cette page recense la licence du code de BlockLucky lui-même, puis celles des d
 
 ## Licence du dépôt
 
-> [!WARNING]
-> Le dépôt ne contient **aucun fichier `LICENSE`** à sa racine ni dans ses sous-projets. Sans licence explicite, le code est par défaut protégé par le droit d'auteur : nul ne peut le réutiliser, le modifier ni le redistribuer sans autorisation des auteurs. Les mentions éparses ci-dessous ne remplacent pas un choix de licence global.
+Le code écrit pour BlockLucky est diffusé sous **licence MIT**, par le fichier [`LICENSE`](src:LICENSE) placé à la racine du dépôt (« Copyright (c) 2026 the BlockLucky team (Epitech Digital School) »). Ce fichier ajoute une note sur les composants tiers : les dépendances gardent leur propre licence, en particulier `@chainlink/contracts`, distribué sous Business Source License 1.1 (BUSL-1.1), alors que les fichiers de contrat importés par BlockLucky portent un en-tête MIT ; la lecture de ces conditions est suivie par JUR-8 dans [Points à valider](points-a-valider.md). Les polices, icônes et images fournies par des tiers restent soumises à leur licence.
 
 | Emplacement | Mention | Commentaire |
 |---|---|---|
-| [`backend/package.json`](src:backend/package.json) | `"license": "ISC"` | Valeur par défaut écrite par `npm init`, probablement non choisie ; contradictoire avec l'absence de fichier de licence |
-| [`frontend-web/package.json`](src:frontend-web/package.json), [`mobile-app/package.json`](src:mobile-app/package.json), [`smart-contract/package.json`](src:smart-contract/package.json), [`frontend-office-tourisme/package.json`](src:frontend-office-tourisme/package.json), [`documentation-officielle/package.json`](src:documentation-officielle/package.json) | `"private": true`, pas de champ `license` | `private` empêche seulement la publication sur npm |
+| [`LICENSE`](src:LICENSE) | Texte de la licence MIT, suivi de la note sur les composants tiers | S'applique à tout le dépôt |
+| [`backend/package.json`](src:backend/package.json), [`frontend-web/package.json`](src:frontend-web/package.json), [`mobile-app/package.json`](src:mobile-app/package.json), [`smart-contract/package.json`](src:smart-contract/package.json), [`frontend-office-tourisme/package.json`](src:frontend-office-tourisme/package.json), [`documentation-officielle/package.json`](src:documentation-officielle/package.json) | `"license": "MIT"` | Harmonisé ; le backend portait auparavant `ISC`, valeur par défaut de `npm init`. `"private": true` empêche toujours la publication sur npm |
 | [`smart-contract/contracts/BlockLucky.sol`](src:smart-contract/contracts/BlockLucky.sol), [`smart-contract/contracts/BlockLuckyPOAP.sol`](src:smart-contract/contracts/BlockLuckyPOAP.sol) et les deux contrats de test | `// SPDX-License-Identifier: MIT` | Le code source vérifié sur Etherscan sera affiché sous cette mention |
 
-Le choix d'une licence revient aux auteurs et, le cas échéant, à l'école et à la Ville, selon les règles de propriété intellectuelle applicables à un projet pédagogique. Il est repris dans [Points à valider](points-a-valider.md). Un choix cohérent avec les mentions existantes serait une licence MIT pour l'ensemble, avec un fichier `LICENSE` à la racine et le champ `license` harmonisé dans chaque `package.json`.
+Les mentions légales du web et de l'application rappellent cette licence (section « Contact et propriété intellectuelle » de [`frontend-web/src/content/legal.ts`](src:frontend-web/src/content/legal.ts)). La titularité des droits sur un projet pédagogique, entre auteurs, école et Ville, reste à confirmer (JUR-11).
 
 ## Smart contracts
 
@@ -78,7 +77,7 @@ Ressources embarquées :
 
 | Paquet | Version | Licence |
 |---|---|---|
-| `expo` et modules `expo-*` | 58.x | MIT |
+| `expo` et modules `expo-*`, dont `expo-audio` 58.0.12 pour les sons du tirage | 58.x | MIT |
 | `react-native` | 0.88.1 | MIT |
 | `react` | 19.3.0 | MIT |
 | `@react-navigation/*` | 7.x | MIT |
@@ -95,6 +94,7 @@ Ressources embarquées :
 | Polices `Inter-Regular.ttf`, `Inter-Medium.ttf`, `Inter-Bold.ttf` dans `mobile-app/assets/fonts` | SIL Open Font License 1.1 (police Inter). **Le fichier de licence n'est pas joint** dans ce dossier, alors que l'OFL impose de le distribuer avec la police. |
 | Animations Lottie `confetti.json`, `loading-spinner.json`, `roulette-spin.json` | Origine non documentée dans le dépôt |
 | Icônes et écran de démarrage (`mobile-app/assets/images`) | Origine non documentée |
+| Sons `chrono.mp3` et `roue-tirage.mp3` dans `mobile-app/assets/sounds`, copiés dans `frontend-web/public/sounds` | Fournis par l'équipe BlockLucky, couverts par la licence du dépôt |
 
 ## Site de l'Office de Tourisme
 

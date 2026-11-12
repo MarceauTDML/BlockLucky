@@ -11,6 +11,7 @@ Les fichiers à lire en premier dans chaque projet, avec leur rôle. Ils suffise
 | [`.nvmrc`](src:.nvmrc) | Version de Node.js (22), lue par la CI |
 | [`.gitleaks.toml`](src:.gitleaks.toml) | Règles de détection de secrets et valeurs publiques autorisées |
 | [`.editorconfig`](src:.editorconfig), [`.gitattributes`](src:.gitattributes) | Indentation et fins de ligne communes |
+| [`LICENSE`](src:LICENSE) | Licence MIT du code de BlockLucky, avec une note sur les licences des dépendances (BUSL-1.1 de `@chainlink/contracts`) |
 | [`SECURITY.md`](src:SECURITY.md) | Politique de signalement des vulnérabilités |
 | [`CONTRIBUTING.md`](src:CONTRIBUTING.md) | Règles de contribution |
 | [`.vscode/launch.json`](src:.vscode/launch.json) | Configurations de débogage de l'éditeur |
@@ -33,15 +34,21 @@ Les fichiers à lire en premier dans chaque projet, avec leur rôle. Ils suffise
 | [`contracts/BlockLucky.sol`](src:smart-contract/contracts/BlockLucky.sol) | Contrat de loterie : tours, tickets, tirage VRF, cagnotte, remboursements, commission, pause, rôles |
 | [`contracts/BlockLuckyPOAP.sol`](src:smart-contract/contracts/BlockLuckyPOAP.sol) | Badge ERC-721 non transférable, un par participant et par tour |
 | [`hardhat.config.ts`](src:smart-contract/hardhat.config.ts) | Compilateur 0.8.34, réseaux `localhost` et `sepolia`, clé Etherscan |
-| [`scripts/deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) | Déploiement local avec coordinateur VRF simulé et habilitation de l'opérateur |
+| [`scripts/deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) | Déploiement local avec coordinateur VRF simulé et rôles séparés (administrateur n° 2, trésorerie n° 1, opérateur du backend) |
 | [`scripts/local-vrf-responder.ts`](src:smart-contract/scripts/local-vrf-responder.ts) | Oracle VRF simulé qui répond aux demandes d'aléa |
-| [`scripts/deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) | Déploiement Sepolia avec contrôles du coordinateur et de l'abonnement |
+| [`scripts/deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) | Déploiement Sepolia avec contrôles du coordinateur et de l'abonnement, attribution des rôles au multisig, à la trésorerie et à l'opérateur, renonciation du déployeur |
+| [`scripts/setup-vrf-sepolia.ts`](src:smart-contract/scripts/setup-vrf-sepolia.ts) | Création et financement en ETH de l'abonnement Chainlink VRF (`npm run vrf:sepolia`) |
+| [`scripts/register-automation-sepolia.ts`](src:smart-contract/scripts/register-automation-sepolia.ts) | Inscription de l'upkeep Chainlink Automation (`npm run automation:sepolia`) |
+| [`scripts/verify-sepolia.ts`](src:smart-contract/scripts/verify-sepolia.ts) | Publication du code source sur Etherscan (`npm run verify:sepolia`) |
+| [`scripts/lib/roles.ts`](src:smart-contract/scripts/lib/roles.ts) | Plan, attribution et contrôle des rôles des deux contrats |
+| [`scripts/lib/sepolia.ts`](src:smart-contract/scripts/lib/sepolia.ts) | Adresses Chainlink de Sepolia, ABI minimales, fichier `deployments/sepolia-vrf.json` |
 | [`scripts/lib/deployment.ts`](src:smart-contract/scripts/lib/deployment.ts) | Configuration des tours par variables d'environnement (un ticket par participant par défaut), écriture de `deployments/` |
 | [`scripts/export-abi.mjs`](src:smart-contract/scripts/export-abi.mjs) | Copie des ABI vers le backend, mode `--check` pour la CI |
 | [`docker/start-local-chain.sh`](src:smart-contract/docker/start-local-chain.sh) | Démarrage du conteneur : nœud, déploiement, oracle |
 | [`test/BlockLucky.test.ts`](src:smart-contract/test/BlockLucky.test.ts) | Tests unitaires du contrat de loterie |
 | [`test/BlockLucky.t.sol`](src:smart-contract/test/BlockLucky.t.sol) | Tests de fuzzing en Solidity |
 | [`test/BlockLuckyPOAP.test.ts`](src:smart-contract/test/BlockLuckyPOAP.test.ts) | Tests du badge |
+| [`test/roles.test.ts`](src:smart-contract/test/roles.test.ts) | Tests de la répartition des rôles par les scripts |
 | [`scripts/check-coverage.mjs`](src:smart-contract/scripts/check-coverage.mjs) | Exigence de 100 % de couverture des lignes |
 | [`slither.config.json`](src:smart-contract/slither.config.json) | Configuration de l'analyse statique Slither |
 
@@ -90,7 +97,8 @@ Voir [Smart contracts](../smart-contracts/index.md).
 | [`src/middlewares/rateLimiter.middleware.ts`](src:backend/src/middlewares/rateLimiter.middleware.ts) | Limites de débit partagées dans Redis |
 | [`src/middlewares/error.middleware.ts`](src:backend/src/middlewares/error.middleware.ts) | Format unique des erreurs |
 | [`src/services/session.service.ts`](src:backend/src/services/session.service.ts) | Émission et révocation des sessions |
-| [`src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) | Vérification des jetons d'identité Google et Apple |
+| [`src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) | Vérification des jetons d'identité Google |
+| [`src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) | Codes email à usage unique, verrouillage après échecs, tickets de connexion (`loginTicket`) de la 2FA par application |
 | [`src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) | Codes à 6 chiffres de connexion, d'inscription et de réinitialisation, verrouillage après échecs |
 | [`src/services/ledger.service.ts`](src:backend/src/services/ledger.service.ts) | Mouvements d'EtherPoints |
 | [`src/utils/crypto.util.ts`](src:backend/src/utils/crypto.util.ts) | Chiffrement AES-256-GCM des textes et des images, hachage bcrypt, HMAC, comparaison à temps constant |
@@ -125,7 +133,10 @@ Chaque dossier de `src/api/` suit le même découpage : `*.routes.ts` (routes et
 | [`src/app/fonts/`](src:frontend-web/src/app/fonts) | Police Inter chargée par `next/font/local`, avec sa licence |
 | [`src/components/ui/Icon.tsx`](src:frontend-web/src/components/ui/Icon.tsx), [`src/components/ui/iconData.ts`](src:frontend-web/src/components/ui/iconData.ts) | Icônes SVG copiées du mobile |
 | [`src/components/layout/AppShell.tsx`](src:frontend-web/src/components/layout/AppShell.tsx) | Barre latérale, en-tête et barre d'onglets des espaces connectés |
-| [`src/app/providers.tsx`](src:frontend-web/src/app/providers.tsx) | Store Redux, restauration de la session, thème, capture de la source UTM, fenêtres globales |
+| [`src/app/providers.tsx`](src:frontend-web/src/app/providers.tsx) | Store Redux, restauration de la session, thème, capture de la source UTM, fenêtres globales, bandeau de consentement |
+| [`src/content/legal.ts`](src:frontend-web/src/content/legal.ts) | Textes des conditions générales, du règlement, des mentions légales, de la confidentialité, des traceurs et de la charte de transparence, en français et en anglais (même fichier sur le mobile) |
+| [`src/lib/consent.ts`](src:frontend-web/src/lib/consent.ts), [`src/components/layout/ConsentBanner.tsx`](src:frontend-web/src/components/layout/ConsentBanner.tsx) | Choix de mesure d'audience (`bl.consent.choice`, 6 mois) et bandeau de consentement |
+| [`src/hooks/useSound.ts`](src:frontend-web/src/hooks/useSound.ts) | Sons de la roue et du chronomètre, préférence `bl.pref.sound` |
 | [`src/lib/config.ts`](src:frontend-web/src/lib/config.ts) | URL de l'API et constantes de la loterie |
 | [`src/store/api/baseApi.ts`](src:frontend-web/src/store/api/baseApi.ts) | Client RTK Query, en-tête d'authentification |
 | [`src/store/index.ts`](src:frontend-web/src/store/index.ts) | Store Redux |
@@ -136,6 +147,7 @@ Chaque dossier de `src/api/` suit le même découpage : `*.routes.ts` (routes et
 | [`src/theme/ThemeProvider.tsx`](src:frontend-web/src/theme/ThemeProvider.tsx) | Thème clair ou sombre et traductions |
 | [`src/app/mairie/page.tsx`](src:frontend-web/src/app/mairie/page.tsx) | Tableau de bord de la Mairie |
 | [`src/app/mairie/identites/page.tsx`](src:frontend-web/src/app/mairie/identites/page.tsx) | Examen des pièces d'identité et décision sur la vérification d'âge |
+| [`src/app/mairie/comptes/page.tsx`](src:frontend-web/src/app/mairie/comptes/page.tsx) | Comptes Mairie et partenaires : création avec invitation, changement et retrait de rôle |
 | [`src/app/(citoyen)/billetterie/page.tsx`](src:frontend-web/src/app/(citoyen)/billetterie/page.tsx) | Achat et cadeau de tickets |
 | [`src/app/(citoyen)/tirage/page.tsx`](src:frontend-web/src/app/(citoyen)/tirage/page.tsx) | Salle de tirage en direct |
 | [`Dockerfile`](src:frontend-web/Dockerfile) | Image de production |
@@ -156,7 +168,9 @@ Voir [Frontend web](../web/structure.md).
 | [`src/services/socket.client.ts`](src:mobile-app/src/services/socket.client.ts) | Client Socket.IO |
 | [`src/services/secureStorage.ts`](src:mobile-app/src/services/secureStorage.ts) | Stockage sécurisé du jeton de session |
 | [`src/store/api/baseApi.ts`](src:mobile-app/src/store/api/baseApi.ts) | Client RTK Query |
-| [`src/hooks/useAuth.ts`](src:mobile-app/src/hooks/useAuth.ts) | Connexion par mot de passe, Google et Apple, inscription, réinitialisation, déconnexion |
+| [`src/hooks/useAuth.ts`](src:mobile-app/src/hooks/useAuth.ts) | Connexion par mot de passe ou Google, inscription, vérification des codes avec `loginTicket`, réinitialisation, déconnexion |
+| [`src/hooks/useSound.ts`](src:mobile-app/src/hooks/useSound.ts) | Sons de la roue et du chronomètre (`expo-audio`), préférence `blocklucky_sound_enabled` |
+| [`src/screens/settings/LegalScreen.tsx`](src:mobile-app/src/screens/settings/LegalScreen.tsx), [`src/content/legal.ts`](src:mobile-app/src/content/legal.ts) | Écran `Legal` et textes légaux partagés avec le web |
 | [`src/hooks/useCitizenWallet.ts`](src:mobile-app/src/hooks/useCitizenWallet.ts) | Portefeuille intégré, achat et cadeau, classement des erreurs |
 | [`src/screens/settings/VerifyAgeScreen.tsx`](src:mobile-app/src/screens/settings/VerifyAgeScreen.tsx) | Envoi du recto et du verso de la pièce d'identité |
 | [`src/theme/ThemeProvider.tsx`](src:mobile-app/src/theme/ThemeProvider.tsx), [`src/theme/colors.ts`](src:mobile-app/src/theme/colors.ts) | Thème et jetons de couleur de la maquette |

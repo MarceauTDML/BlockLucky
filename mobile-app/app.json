@@ -16,8 +16,7 @@
       "bundleIdentifier": "fr.etherbay.blocklucky",
       "config": {
         "usesNonExemptEncryption": false
-      },
-      "usesAppleSignIn": true
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -36,14 +35,14 @@
       "expo-font",
       "expo-status-bar",
       "expo-web-browser",
-      "expo-apple-authentication",
       [
         "expo-image-picker",
         {
           "photosPermission": "BlockLucky accède à vos photos pour envoyer le recto et le verso de votre pièce d'identité à la Mairie.",
           "cameraPermission": "BlockLucky utilise l'appareil photo pour photographier votre pièce d'identité afin de vérifier votre âge."
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "scheme": "blocklucky"
   }

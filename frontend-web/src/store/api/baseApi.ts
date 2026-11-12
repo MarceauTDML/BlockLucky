@@ -56,6 +56,7 @@ export const baseApi = createApi({
     'Partners',
     'Audit',
     'Identity',
+    'Accounts',
   ],
   endpoints: () => ({}),
 });

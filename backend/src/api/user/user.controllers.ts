@@ -91,20 +91,6 @@ export class UserController {
     }
   }
 
-  public async setResponsibleLimit(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const userId = req.user?.userId;
-      if (!userId) throw new AppError('Authentification requise', 401);
-      const result = await userService.setResponsibleGamingLimit(
-        userId,
-        req.body.maxTicketsPerRound
-      );
-      sendSuccess(res, result, "Limite d'achat Jeu Responsable enregistrée");
-    } catch (error) {
-      next(error);
-    }
-  }
-
   public async updatePreferences(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?.userId;

@@ -111,7 +111,7 @@ La sonde `GET /health/ready` exécute `SELECT 1` avec un délai de 2 s et répon
 |---|---|---|
 | Comptes, empreintes des mots de passe, clés chiffrées des portefeuilles, pièces d'identité chiffrées en attente, EtherPoints, partenaires, récompenses, analytique | PostgreSQL | `pg_dump` manuel |
 | Tickets, tours, cagnottes | Smart contract `BlockLucky` | Aucun : reconstruction par l'indexeur (voir [Reconstruire depuis la chaîne](reconstruction.md)) |
-| Files de jobs, limites de jeu responsable, préférences, quêtes, lots de codes promo | Redis | Persistance AOF `appendfsync everysec` sur le volume `redisdata` |
+| Files de jobs, préférences, quêtes, lots de codes promo | Redis | Persistance AOF `appendfsync everysec` sur le volume `redisdata` |
 | Clé `ENCRYPTION_KEY` | Secret d'environnement | Hors de la base, à conserver séparément |
 
 > [!CAUTION]

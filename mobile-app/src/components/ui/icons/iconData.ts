@@ -10,11 +10,6 @@ export const iconData = {
     height: 24,
     xml: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 8V13M12 16.5V16.6M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   },
-  apple: {
-    width: 21,
-    height: 21,
-    xml: '<svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.6329 6.034C9.80341 6.034 8.51979 5.09075 7.16791 5.124C5.38291 5.14762 3.74666 6.15912 2.82704 7.76125C0.974664 10.9769 2.34929 15.7264 4.15616 18.34C5.04254 19.6122 6.08816 21.0438 7.47416 20.9991C8.80416 20.9423 9.30291 20.1355 10.9173 20.1355C12.5194 20.1355 12.9735 20.9991 14.3823 20.965C15.8147 20.9422 16.7238 19.67 17.5988 18.3855C18.6103 16.9085 19.0303 15.4761 19.053 15.3974C19.0189 15.386 16.2688 14.329 16.2355 11.1475C16.2128 8.4875 18.4055 7.21525 18.5079 7.15837C17.2575 5.32962 15.3378 5.12488 14.6667 5.07937C12.9167 4.94287 11.451 6.034 10.6329 6.034ZM13.5887 3.35125C14.3263 2.46575 14.8137 1.22763 14.678 0C13.6219 0.0455 12.3488 0.704375 11.5875 1.59075C10.905 2.37475 10.3153 3.6365 10.4737 4.8405C11.6444 4.9315 12.8493 4.2385 13.5878 3.35213" fill="currentColor"/></svg>',
-  },
   arrowLeft: {
     width: 24,
     height: 24,
@@ -209,6 +204,16 @@ export const iconData = {
     width: 24,
     height: 24,
     xml: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 20V18C16 15.79 14.21 14 12 14H6C3.79 14 2 15.79 2 18V20M22 20V18C22 16.14 20.73 14.57 19 14.13M16 3.13C17.73 3.57 19 5.14 19 7C19 8.86 17.73 10.43 16 10.87M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  },
+  volume: {
+    width: 24,
+    height: 24,
+    xml: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 5L6 9H3V15H6L11 19V5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.5 8.5C16.44 9.44 17 10.68 17 12C17 13.32 16.44 14.56 15.5 15.5M18.5 5.5C20.16 7.16 21 9.5 21 12C21 14.5 20.16 16.84 18.5 18.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  },
+  volumeOff: {
+    width: 24,
+    height: 24,
+    xml: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 5L6 9H3V15H6L11 19V5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 9L22 15M22 9L16 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   },
   wheel: {
     width: 300,

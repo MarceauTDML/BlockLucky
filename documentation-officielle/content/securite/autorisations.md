@@ -52,7 +52,7 @@ Légende : **oui** accès accordé, **non** refusé (401 sans jeton, 403 avec un
 | `POST /api/auth/password/forgot`, `/password/reset` | `authRateLimiter` | oui | oui | oui | oui |
 | `POST /api/auth/password/change` | `authRateLimiter`, `authenticate`, mot de passe actuel s'il en existe un | non | propre | propre | propre |
 | `POST /api/auth/email/change`, `/email/confirm` | `authRateLimiter`, `authenticate`, mot de passe actuel s'il en existe un, puis code envoyé à la nouvelle adresse | non | propre | propre | propre |
-| `POST /api/auth/oauth/google`, `/oauth/apple` | `authRateLimiter` ; 503 si le fournisseur n'est pas configuré | oui | oui | oui | oui |
+| `POST /api/auth/oauth/google` | `authRateLimiter` ; 503 si `GOOGLE_CLIENT_IDS` est vide | oui | oui | oui | oui |
 | `POST /api/auth/login` | `authRateLimiter` | oui | oui | oui | oui |
 | `POST /api/auth/2fa/verify` | `authRateLimiter`, `optionalAuthenticate` | oui | oui | oui | oui |
 | `POST /api/auth/2fa/setup` | `authenticate` | non | propre | propre | propre |
@@ -103,7 +103,6 @@ Légende : **oui** accès accordé, **non** refusé (401 sans jeton, 403 avec un
 | `GET /api/user/referrals` | `authenticate` | non | propre | propre | propre |
 | `GET /api/user/quests` | `authenticate` | non | propre | propre | propre |
 | `POST /api/user/quests/complete` | `authenticate` | non | propre | propre | propre |
-| `PUT /api/user/responsible-limit` | `authenticate` | non | propre | propre | propre |
 | `PUT /api/user/preferences` | `authenticate` | non | propre | propre | propre |
 | `GET /api/user/notifications` | `authenticate` | non | propre | propre | propre |
 | `GET /api/user/gdpr/export` | `authenticate` | non | propre | propre | propre |
@@ -123,6 +122,9 @@ Les routes « propres » de ce module n'acceptent aucun identifiant de compte en
 | `POST /api/admin/treasury/withdraw` | idem, journalisé | non | non | non | oui |
 | `PATCH /api/admin/partners/:partnerId/status` | idem, journalisé | non | non | non | oui |
 | `GET /api/admin/reports/export` | idem, journalisé | non | non | non | oui |
+| `GET /api/admin/accounts` | idem | non | non | non | oui |
+| `POST /api/admin/accounts` | idem, journalisé (`STAFF_ACCOUNT_CREATED` ou `STAFF_ROLE_CHANGED`) | non | non | non | oui |
+| `PATCH /api/admin/accounts/:id/role` | idem, journalisé ; interdit sur son propre compte et sur le dernier compte ADMIN ; sessions du compte révoquées | non | non | non | oui |
 | `GET /api/admin/audit-logs` | idem | non | non | non | oui |
 | `GET /api/admin/identity-verifications` | idem | non | non | non | oui |
 | `GET /api/admin/identity-verifications/:id` | idem, journalisé, `Cache-Control: no-store` | non | non | non | oui |

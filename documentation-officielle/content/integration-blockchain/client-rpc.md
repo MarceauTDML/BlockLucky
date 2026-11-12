@@ -64,7 +64,7 @@ L'état de bascule est exposé par `GET /health` (`network.isFallback`), qui lit
 
 ## Compte opérateur
 
-Le compte opérateur est le compte de la Mairie qui détient les rôles du contrat (opérateur, pause, frappe des POAP) et paie les dotations de bienvenue. Sa clé est `RELAYER_PRIVATE_KEY`. La valeur par défaut est la clé publique du compte n° 0 de Hardhat, refusée en production.
+Le compte opérateur est le compte de la Mairie qui détient les rôles d'exploitation du contrat (opérateur, pause, frappe des POAP) et paie les dotations de bienvenue. Sa clé est `RELAYER_PRIVATE_KEY`. La valeur par défaut est la clé publique du compte n° 0 de Hardhat, refusée en production. Il n'est pas l'administrateur du contrat : `DEFAULT_ADMIN_ROLE` revient au compte n° 2 en local (l'opérateur le garde en plus, sauf `LOCAL_STRICT_ROLES=true`) et au multisig `MAIRIE_ADMIN_ADDRESS` sur Sepolia (voir [Exploitation du contrat](../smart-contracts/exploitation.md#roles)).
 
 ```typescript
 this.operatorSigner ??= new NonceManager(new Wallet(env.RELAYER_PRIVATE_KEY, this.provider));
@@ -81,7 +81,7 @@ Transactions signées par l'opérateur :
 | [File d'actions](actions.md) | `mintBadge` sur le contrat POAP |
 | [Portefeuilles](portefeuilles.md#dotation-de-bienvenue) | Transfert d'ethers de la dotation |
 
-Le compte doit disposer d'ethers pour le gaz et pour les dotations. Sur le nœud Hardhat local, le compte n° 0 en a 10 000. Sur Sepolia, il faut l'alimenter.
+Le compte doit disposer d'ethers pour le gaz et pour les dotations. Sur le nœud Hardhat local, le compte n° 0 en a 10 000 ; un opérateur distinct en reçoit 1 000 du déploiement. Sur Sepolia, il faut l'alimenter.
 
 ### resetOperatorNonce et reprise sur NONCE_EXPIRED
 

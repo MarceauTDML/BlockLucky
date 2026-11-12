@@ -32,7 +32,7 @@ Le test `refuse un jeton signé avec un autre algorithme ou sans émetteur` de [
 
 ## Durée
 
-La durée vient de `JWT_EXPIRES_IN`, au format `<nombre><s|m|h|d>`, par défaut `12h`. Il n'y a pas de jeton de rafraîchissement : à l'expiration, l'utilisateur se reconnecte avec son mot de passe, un compte Google ou Apple, ou un nouveau code. Ce choix simplifie le modèle (pas de rotation de jetons à gérer) au prix d'une reconnexion deux fois par jour au plus.
+La durée vient de `JWT_EXPIRES_IN`, au format `<nombre><s|m|h|d>`, par défaut `12h`. Il n'y a pas de jeton de rafraîchissement : à l'expiration, l'utilisateur se reconnecte avec son mot de passe, son compte Google ou un nouveau code. Ce choix simplifie le modèle (pas de rotation de jetons à gérer) au prix d'une reconnexion deux fois par jour au plus.
 
 ## Révocation
 

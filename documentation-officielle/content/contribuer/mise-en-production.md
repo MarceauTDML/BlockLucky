@@ -61,7 +61,7 @@ Liste de contrôle :
 - [ ] `SITE.lotteryAppUrl` de l'Office de Tourisme ne vaut plus `http://localhost:3000` (voir [Servir et déployer](../office-tourisme/deploiement.md#avant-une-mise-en-ligne)).
 - [ ] `MAINTENANCE_MODE=false`.
 - [ ] `DRAW_REVEAL_DELAY_SECONDS` est validé avec le responsable événementiel (600 secondes par défaut).
-- [ ] Pour la connexion Google et Apple, `GOOGLE_CLIENT_IDS` et `APPLE_CLIENT_IDS` listent les identifiants client des applications publiées, et le build mobile reçoit les `EXPO_PUBLIC_GOOGLE_*_CLIENT_ID` correspondants. Vides, les deux routes répondent 503.
+- [ ] Pour la connexion Google, `GOOGLE_CLIENT_IDS` liste les identifiants client des applications publiées, et le build mobile reçoit les `EXPO_PUBLIC_GOOGLE_*_CLIENT_ID` correspondants. Vide, la route répond 503. La connexion Apple n'existe plus.
 - [ ] La procédure d'examen des pièces d'identité est confiée à des agents habilités, avec un délai de traitement annoncé aux citoyens (voir [Points à valider](../juridique/points-a-valider.md)).
 - [ ] `SCRATCH_COST_VIOLET` et `SCRATCH_COST_LUCKY` sont validés ; le mobile affiche les prix par défaut, écrits dans son code.
 
@@ -81,6 +81,7 @@ Liste de contrôle :
 - [ ] Sauvegarde complète prise juste avant la migration, et restauration testée.
 - [ ] `npm run prisma:status` montre l'état attendu avant et après.
 - [ ] Le premier compte administrateur est créé par une procédure tracée (promotion d'un compte existant en `ADMIN` en base), puis active sa 2FA à la première connexion.
+- [ ] Les autres comptes Mairie et partenaires sont créés par cet administrateur depuis la page `/mairie/comptes` (`POST /admin/accounts`), qui envoie l'invitation par email et journalise `STAFF_ACCOUNT_CREATED` ou `STAFF_ROLE_CHANGED`. Chaque nouvel agent active sa 2FA à la première connexion ; un rôle se retire par `PATCH /admin/accounts/:id/role`, qui refuse de retirer le dernier compte Mairie.
 - [ ] Les comptes et partenaires de démonstration n'existent pas.
 
 Voir [Migrations](../base-de-donnees/migrations.md) et [Ajouter une migration](../guides/ajouter-migration.md).
@@ -92,17 +93,20 @@ Le contrat est immuable : une erreur de configuration au déploiement oblige à 
 Liste de contrôle :
 
 - [ ] Les contrats sont ceux du commit fusionné dans `main`, CI verte (tests, couverture 100 %, Slither).
-- [ ] Trois comptes distincts : administrateur de la Mairie (`DEFAULT_ADMIN_ROLE`), opérateur du backend, trésorerie. Idéalement l'administrateur et la trésorerie sont des portefeuilles multi-signatures (`MAIRIE_ADMIN_ADDRESS`, `MAIRIE_TREASURY_ADDRESS` du script).
+- [ ] Comptes distincts, passés à `npm run deploy:sepolia` : administrateur de la Mairie (`MAIRIE_ADMIN_ADDRESS`, multisig, reçoit `DEFAULT_ADMIN_ROLE`), trésorerie (`MAIRIE_TREASURY_ADDRESS`), opérateur du backend (`OPERATOR_ADDRESS`), et au besoin `PAUSER_ADDRESS` et `VRF_OWNER_ADDRESS` (administrateur par défaut). Le script refuse un administrateur identique à l'opérateur, sauf `ALLOW_SHARED_ROLES=true`.
+- [ ] Le déployeur, une clé jetable, a renoncé à tous ses rôles : le tableau affiché en fin de script et `roles.deployerRenouncedAdmin` de `deployments/sepolia.json` le confirment.
+- [ ] Le multisig a appelé `acceptOwnership()` sur `BlockLucky` pour devenir propriétaire VRF (transfert en deux temps lancé par le script).
 - [ ] Les paramètres des tours sont validés par la Mairie : `TICKET_PRICE_WEI`, `MAX_TICKETS`, `MIN_TICKETS_TO_DRAW`, `MAX_TICKETS_PER_PLAYER`, `ROUND_DURATION_SECONDS`, `MUNICIPALITY_FEE_BPS` (20 % au plus, imposé par le contrat).
-- [ ] L'abonnement Chainlink VRF est financé et le contrat y est ajouté comme consommateur.
-- [ ] Le code source des deux contrats est vérifié sur Etherscan.
-- [ ] L'opérateur a reçu `OPERATOR_ROLE` et `PAUSER_ROLE` sur `BlockLucky` et `MINTER_ROLE` sur `BlockLuckyPOAP`.
+- [ ] L'abonnement Chainlink VRF est créé et financé (`npm run vrf:sepolia`, enregistré dans `deployments/sepolia-vrf.json`) et le contrat y est ajouté comme consommateur.
+- [ ] Un upkeep Chainlink Automation est inscrit (`npm run automation:sepolia`) et financé en LINK, si le tirage ne doit pas dépendre du seul keeper du backend.
+- [ ] Le code source des deux contrats est vérifié sur Etherscan (`npm run verify:sepolia`).
+- [ ] L'opérateur a reçu `OPERATOR_ROLE` (et `PAUSER_ROLE` sans `PAUSER_ADDRESS` distinct) sur `BlockLucky` et `MINTER_ROLE` sur `BlockLuckyPOAP`, sans `DEFAULT_ADMIN_ROLE`.
 - [ ] `treasury()` du contrat vaut déjà l'adresse de trésorerie qui sera saisie dans le dashboard Mairie.
 - [ ] `POAP_BASE_URI` pointe vers l'API publique (`https://<api>/api/v1/lottery/poap/`).
-- [ ] `deployments/sepolia.json` et `deployments/sepolia-blocklucky-args.ts`, non versionnés, sont archivés avec la documentation de mise en production.
+- [ ] `deployments/sepolia.json` (adresses, rôles, arguments de constructeur, upkeep) et `deployments/sepolia-vrf.json` (abonnement VRF) sont archivés avec la documentation de mise en production.
 
 > [!WARNING]
-> Le reversement de la commission (`withdrawFees` de [`lottery.gateway.ts`](src:backend/src/blockchain/lottery.gateway.ts)) appelle `setTreasury` avec l'adresse saisie si elle diffère de la trésorerie du contrat. `setTreasury` exige `DEFAULT_ADMIN_ROLE`, que l'opérateur n'a pas quand l'administrateur est un compte distinct : le retrait échoue alors avec « Le compte opérateur du backend n'a pas le rôle requis ». Fixer la trésorerie depuis le compte administrateur avant la mise en service, et saisir exactement cette adresse dans le dashboard.
+> Le reversement de la commission (`withdrawFees` de [`lottery.gateway.ts`](src:backend/src/blockchain/lottery.gateway.ts)) appelle `setTreasury` avec l'adresse saisie si elle diffère de la trésorerie du contrat. `setTreasury` exige `DEFAULT_ADMIN_ROLE`, que l'opérateur n'a pas sur Sepolia : le retrait échoue alors avec « Le compte opérateur du backend n'a pas le rôle requis ». Saisir dans le dashboard exactement l'adresse `MAIRIE_TREASURY_ADDRESS` fixée au déploiement ; changer de trésorerie passe par le multisig. En local, l'opérateur garde ce rôle, sauf avec `LOCAL_STRICT_ROLES=true`.
 
 La procédure de déploiement est dans [Déploiement sur Sepolia](../smart-contracts/sepolia.md) et [Redéployer sur Sepolia](../guides/redeployer-sepolia.md).
 

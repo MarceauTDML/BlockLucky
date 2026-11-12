@@ -3,8 +3,6 @@ import prismaMock, { resetPrismaMockStore } from '../__mocks__/prisma.mock';
 import redisMock, { resetRedisMockStore } from '../__mocks__/redis.mock';
 
 const mockVerifyIdToken = jest.fn();
-const mockJwtVerify = jest.fn();
-const mockCreateRemoteJWKSet = jest.fn((_url: URL) => 'apple-jwks');
 
 jest.mock('../../src/config/prisma.config', () => ({
   __esModule: true,
@@ -22,33 +20,24 @@ jest.mock('google-auth-library', () => ({
   OAuth2Client: jest.fn().mockImplementation(() => ({ verifyIdToken: mockVerifyIdToken })),
 }));
 
-jest.mock('jose', () => ({
-  createRemoteJWKSet: (url: URL) => mockCreateRemoteJWKSet(url),
-  jwtVerify: (...args: unknown[]) => mockJwtVerify(...args),
-}));
-
 import app from '../../src/app';
 import { env } from '../../src/config/env.config';
 import oauthVerifierService from '../../src/services/oauth-verifier.service';
 
 const GOOGLE_TOKEN = 'google.id.token.simule.pour.les.tests';
-const APPLE_TOKEN = 'apple.identity.token.simule.pour.les.tests';
 
 const googleTicket = (payload: Record<string, unknown>) => ({ getPayload: () => payload });
 
-describe('Connexion Google et Apple', () => {
+describe('Connexion Google', () => {
   beforeEach(() => {
     resetPrismaMockStore();
     resetRedisMockStore();
     mockVerifyIdToken.mockReset();
-    mockJwtVerify.mockReset();
     env.GOOGLE_CLIENT_IDS = ['web.apps.googleusercontent.com', 'ios.apps.googleusercontent.com'];
-    env.APPLE_CLIENT_IDS = ['fr.etherbay.blocklucky'];
   });
 
   afterAll(() => {
     env.GOOGLE_CLIENT_IDS = [];
-    env.APPLE_CLIENT_IDS = [];
   });
 
   describe('vérification des jetons (unitaire)', () => {
@@ -70,37 +59,14 @@ describe('Connexion Google et Apple', () => {
         message: 'Jeton Google invalide ou expiré.',
       });
     });
-
-    it('vérifie le jeton Apple avec l’émetteur, l’audience et les clés publiques d’Apple', async () => {
-      mockJwtVerify.mockResolvedValue({ payload: { sub: 'a-1', email: 'relay@privaterelay.appleid.com', email_verified: 'true' } });
-      const identity = await oauthVerifierService.verifyApple(APPLE_TOKEN);
-      expect(identity).toEqual({ provider: 'APPLE', subject: 'a-1', email: 'relay@privaterelay.appleid.com' });
-      expect(mockJwtVerify).toHaveBeenCalledWith(APPLE_TOKEN, 'apple-jwks', {
-        issuer: 'https://appleid.apple.com',
-        audience: ['fr.etherbay.blocklucky'],
-        algorithms: ['RS256'],
-      });
-      expect(String(mockCreateRemoteJWKSet.mock.calls[0]?.[0])).toBe('https://appleid.apple.com/auth/keys');
-    });
-
-    it('refuse un jeton Apple invalide ou sans email', async () => {
-      mockJwtVerify.mockRejectedValueOnce(new Error('signature verification failed'));
-      await expect(oauthVerifierService.verifyApple(APPLE_TOKEN)).rejects.toMatchObject({ statusCode: 401 });
-      mockJwtVerify.mockResolvedValueOnce({ payload: { sub: 'a-2' } });
-      await expect(oauthVerifierService.verifyApple(APPLE_TOKEN)).rejects.toMatchObject({ statusCode: 401 });
-    });
   });
 
   describe('routes', () => {
-    it('répond 503 quand Google ou Apple ne sont pas configurés', async () => {
+    it('répond 503 quand Google n’est pas configuré', async () => {
       env.GOOGLE_CLIENT_IDS = [];
-      env.APPLE_CLIENT_IDS = [];
       const google = await request(app).post('/api/v1/auth/oauth/google').send({ idToken: GOOGLE_TOKEN });
       expect(google.status).toBe(503);
       expect(google.body.message).toBe('Connexion Google non configurée.');
-      const apple = await request(app).post('/api/v1/auth/oauth/apple').send({ identityToken: APPLE_TOKEN });
-      expect(apple.status).toBe(503);
-      expect(apple.body.message).toBe('Connexion Apple non configurée.');
       expect(mockVerifyIdToken).not.toHaveBeenCalled();
     });
 
@@ -126,29 +92,35 @@ describe('Connexion Google et Apple', () => {
       expect(second.body.data.user.id).toBe(first.body.data.user.id);
     });
 
-    it('demande la 2FA par application avant de délivrer la session', async () => {
+    it('demande la 2FA par application avec un ticket de connexion avant de délivrer la session', async () => {
       const user = await prismaMock.user.create({
         data: {
-          walletAddress: '0xapple000000000000000000000000000000000001',
-          email: 'apple@etherbay.fr',
+          walletAddress: '0x2fa0000000000000000000000000000000000001',
+          email: 'deuxfacteurs@etherbay.fr',
           isEmailVerified: true,
           isTwoFactorEnabled: true,
           twoFactorMethod: 'APP',
         },
       });
-      mockJwtVerify.mockResolvedValue({ payload: { sub: 'a-3', email: 'apple@etherbay.fr', email_verified: true } });
-      const res = await request(app)
-        .post('/api/v1/auth/oauth/apple')
-        .send({ identityToken: APPLE_TOKEN, fullName: 'Jeanne Citoyenne' });
+      mockVerifyIdToken.mockResolvedValue(
+        googleTicket({ sub: 'g-4', email: 'deuxfacteurs@etherbay.fr', email_verified: true })
+      );
+      const res = await request(app).post('/api/v1/auth/oauth/google').send({ idToken: GOOGLE_TOKEN });
       expect(res.status).toBe(200);
-      expect(res.body.data).toEqual({ requiresTwoFactor: true, twoFactorMethod: 'APP', userId: user.id });
+      expect(res.body.data).toEqual({
+        requiresTwoFactor: true,
+        twoFactorMethod: 'APP',
+        userId: user.id,
+        loginTicket: expect.any(String),
+      });
+      expect(res.body.data.token).toBeUndefined();
     });
 
-    it('refuse un jeton Apple rejeté', async () => {
-      mockJwtVerify.mockRejectedValue(new Error('unexpected "aud" claim value'));
-      const res = await request(app).post('/api/v1/auth/oauth/apple').send({ identityToken: APPLE_TOKEN });
-      expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Jeton Apple invalide ou expiré.');
+    it('ne propose plus la connexion Apple', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/oauth/apple')
+        .send({ identityToken: 'apple.identity.token.simule.pour.les.tests' });
+      expect(res.status).toBe(404);
     });
   });
 });

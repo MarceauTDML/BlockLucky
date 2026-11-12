@@ -128,7 +128,7 @@ Message : la Ville communique sur la loterie avec ses canaux habituels ; le site
 
 ### 2. Inscription, dotation et vérification d'âge
 
-Sur l'application mobile, Camille choisit « Créer un compte », saisit `camille@etherbay.fr` et un mot de passe d'au moins 10 caractères avec une lettre et un chiffre, accepte les conditions, puis saisit le code reçu dans Mailpit. En arrière-plan :
+Sur l'application mobile, Camille choisit « Créer un compte », saisit `camille@etherbay.fr` et un mot de passe d'au moins 10 caractères avec une lettre et un chiffre, coche l'acceptation des conditions générales d'utilisation et du règlement ainsi que la case « Je certifie avoir 18 ans ou plus », puis saisit le code reçu dans Mailpit. Les liens des deux cases ouvrent les textes dans l'application. En arrière-plan :
 
 1. un portefeuille Ethereum est créé pour elle, sa clé privée chiffrée en AES-256-GCM avec `ENCRYPTION_KEY` ;
 2. la Mairie (compte opérateur) lui verse une dotation de bienvenue de 0,5 ether fictif (`WELCOME_GRANT_WEI`) ;
@@ -280,9 +280,9 @@ Les valeurs affichées doivent correspondre à celles de l'application : c'est l
 | La commission est plafonnée | 10 % par défaut, refus au-delà de 20 % (`MAX_FEE_BPS = 2000`) ; seule la commission est retirable vers la trésorerie |
 | Les fonds ne peuvent pas rester bloqués | cagnotte et remboursements en retrait (`claimPrize`, `claimRefund`), non bloqués par la pause ; un tour échu sans assez de participants est annulé et intégralement remboursable |
 | Le jeu est responsable | un seul ticket par participant et par tour (`maxTicketsPerPlayer`, 1 au déploiement, contrôlé aussi par le backend), majorité vérifiée par la Mairie sur pièce d'identité avant tout achat |
-| Le code est vérifié | 47 tests de contrat dont 4 de fuzzing, 100 % des lignes couvertes, Slither sans constat Medium, test d'intégration du backend sur un vrai nœud (voir [Tests et qualité](../contribuer/tests-qualite.md)) |
-| Les actions de la Mairie sont tracées | journal d'audit `/mairie/audit` : disjoncteur, retraits de trésorerie, partenaires, consultations et décisions sur les pièces d'identité |
-| Les règles sont expliquées aux citoyens | page publique `/transparence` |
+| Le code est vérifié | 54 tests de contrat dont 4 de fuzzing et 7 sur la répartition des rôles au déploiement, 100 % des lignes couvertes, Slither sans constat Medium, test d'intégration du backend sur un vrai nœud (voir [Tests et qualité](../contribuer/tests-qualite.md)) |
+| Les actions de la Mairie sont tracées | journal d'audit `/mairie/audit` : disjoncteur, retraits de trésorerie, partenaires, consultations et décisions sur les pièces d'identité, création de comptes et changements de rôle depuis `/mairie/comptes` |
+| Les règles sont expliquées aux citoyens | pages publiques `/reglement` et `/transparence`, dont la charte indique l'environnement courant et précise qu'en local le tirage n'est pas certifié par Chainlink |
 
 > [!WARNING]
 > Sur la blockchain locale, l'aléa vient du coordinateur simulé `VRFCoordinatorV2_5Mock` : il calcule les nombres aléatoires à partir de l'identifiant de la requête (`keccak256(requestId, i)`), donc de façon prévisible, et l'oracle local est un simple script. C'est suffisant pour démontrer le circuit, pas l'imprévisibilité. Sur Sepolia, le coordinateur est celui de Chainlink VRF v2.5, qui fournit un aléa accompagné d'une preuve cryptographique vérifiée par le contrat du coordinateur. Le dire avant que la question ne soit posée.
@@ -316,8 +316,8 @@ Les valeurs affichées doivent correspondre à celles de l'application : c'est l
 | Question | Réponse |
 | --- | --- |
 | Qui détient les clés des portefeuilles ? | Le backend : le modèle est custodial (ADR 0004). Les clés sont chiffrées en AES-256-GCM avec `ENCRYPTION_KEY`, qui doit être sauvegardée à part. Acceptable avec des ethers fictifs, pas avec de vrais fonds. |
-| Que se passe-t-il si le compte opérateur est compromis ? | Il peut mettre en pause, annuler un tour, frapper des badges et dépenser son solde, mais pas toucher à la cagnotte d'un gagnant ni à la configuration (réservée à l'administrateur). L'administrateur lui retire ses rôles (`revokeRole`). |
-| Comment sont protégés les comptes ? | Connexion par code email sur le web, par mot de passe haché par bcrypt ou par Google et Apple sur mobile, verrouillage après échecs répétés, 2FA par application ou email, 2FA obligatoire pour les administrateurs, droits relus en base à chaque requête (voir [Authentification et 2FA](../securite/authentification.md)). |
+| Que se passe-t-il si le compte opérateur est compromis ? | Il peut mettre en pause, annuler un tour, frapper des badges et dépenser son solde, mais pas toucher à la cagnotte d'un gagnant ni, sur Sepolia, à la configuration, réservée au multisig administrateur (`MAIRIE_ADMIN_ADDRESS`). L'administrateur lui retire ses rôles (`revokeRole`). En local, l'opérateur garde aussi le rôle d'administrateur pour le reversement de commission, sauf avec `LOCAL_STRICT_ROLES=true`. |
+| Comment sont protégés les comptes ? | Connexion par code email sur le web, par mot de passe haché par bcrypt ou par Google sur mobile, verrouillage après échecs répétés, 2FA par application ou email (le code de l'application n'est accepté qu'avec le ticket de connexion délivré après le premier facteur), 2FA obligatoire pour les administrateurs, droits relus en base à chaque requête (voir [Authentification et 2FA](../securite/authentification.md)). |
 | Quelle CI ? | Typecheck, lint, tests, migrations sur base vierge, dérive du schéma, contrats (couverture 100 %, Slither), test sur une vraie chaîne, images Docker avec Trivy, gitleaks, CodeQL, Dependabot. |
 | Et si le serveur tombe ? | La blockchain est la source de vérité : la base se reconstruit depuis la chaîne en remettant le curseur de l'indexeur au bloc de déploiement. Sauvegardes PostgreSQL et runbooks documentés. |
 | Peut-on mettre à jour le contrat ? | Non, il est immuable : une nouvelle version est un nouveau déploiement (voir [Redéployer sur Sepolia](redeployer-sepolia.md)). La configuration des tours, l'oracle et la trésorerie se modifient sans redéploiement. |

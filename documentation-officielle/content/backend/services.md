@@ -92,6 +92,7 @@ Rend un gabarit HTML et l'envoie par Nodemailer ([`backend/src/config/mailer.con
 | `identity-decision` | `DECISION`, `DETAILS` | décision de la Mairie sur une pièce d'identité |
 | `gdpr-deletion` | `CONFIRM_URL`, `TOKEN` | demande de suppression RGPD |
 | `support-request` | `USER_ID`, `EMAIL`, `FIRST_NAME`, `LAST_NAME`, `SUBJECT`, `MESSAGE`, `DATE` | message au support, envoyé à `SUPPORT_EMAIL` avec l'email du citoyen en adresse de réponse |
+| `staff-invitation` | `EMAIL`, `INTRO`, `PARTNER` | création d'un compte Mairie ou partenaire, ou attribution de ce rôle à un compte existant, par `POST /admin/accounts` |
 
 Les gabarits sont dans `backend/src/templates/emails/`. Chaque `{{VARIABLE}}` est remplacée par sa valeur échappée pour HTML. Si le fichier est introuvable, le corps se réduit aux variables en JSON. Un quatrième argument facultatif, `{ replyTo }`, ajoute une adresse de réponse au message. `npm run compile` copie le dossier dans `dist/src/templates`.
 

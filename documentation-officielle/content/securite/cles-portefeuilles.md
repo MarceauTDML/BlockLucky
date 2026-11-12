@@ -17,7 +17,8 @@ flowchart TD
     RK -->|"MINTER_ROLE"| POAP["Contrat BlockLuckyPOAP"]
     RK -->|"dotation de bienvenue"| DB
     ADM["Compte administrateur Mairie"] -->|"DEFAULT_ADMIN_ROLE"| SC
-    DEP["Compte déployeur"] -->|"owner, setCoordinator"| SC
+    VO["Propriétaire VRF, le multisig par défaut"] -->|"owner, setCoordinator"| SC
+    DEP["Compte déployeur"] -.->|"aucun rôle après le déploiement"| SC
 ```
 
 ## Portefeuilles custodial des citoyens
@@ -62,7 +63,7 @@ Ce modèle retire au citoyen toute manipulation de clé, mais fait de la Ville l
 | Émission des badges POAP | `mintBadge` | `MINTER_ROLE` sur `BlockLuckyPOAP` |
 
 > [!WARNING]
-> `withdrawFees` du gateway appelle `setTreasury` quand l'adresse `multisigWallet` envoyée par l'administrateur diffère de la trésorerie enregistrée. Cela suppose que l'opérateur détienne `DEFAULT_ADMIN_ROLE`, ce qui contredit l'objectif de rôles limités affiché dans le [registre des risques](../juridique/registre-risques.md) (risque K1). Avec un opérateur sans ce rôle, le reversement échoue dès que l'adresse demandée diffère de la trésorerie. Avec un opérateur qui le détient, un compte ADMIN de l'application peut rediriger la commission vers n'importe quelle adresse.
+> `withdrawFees` du gateway appelle `setTreasury` quand l'adresse `multisigWallet` envoyée par l'administrateur diffère de la trésorerie enregistrée. Cela suppose que l'opérateur détienne `DEFAULT_ADMIN_ROLE`. Sur Sepolia, [`deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) ne le lui donne pas : le reversement ne fonctionne que vers `MAIRIE_TREASURY_ADDRESS`, et un changement de trésorerie passe par le multisig. En local, [`deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) le lui laisse en administrateur additionnel (sauf `LOCAL_STRICT_ROLES=true`) : un compte ADMIN de l'application peut alors rediriger la commission vers n'importe quelle adresse, ce qui est sans enjeu sur une chaîne jetable mais contredit l'objectif de rôles limités du [registre des risques](../juridique/registre-risques.md) (risque K1).
 
 ## Rôles sur la chaîne
 
@@ -70,23 +71,25 @@ Les rôles sont gérés par `AccessControl` d'OpenZeppelin dans [`smart-contract
 
 | Rôle | Contrat | Fonctions | Attribué au déploiement à |
 |---|---|---|---|
-| `DEFAULT_ADMIN_ROLE` | BlockLucky | `setTreasury`, `setRoundConfig`, `setVrfConfig`, `grantRole`, `revokeRole` | `admin` |
-| `OPERATOR_ROLE` | BlockLucky | `retryDraw`, `cancelRound`, `withdrawFees` | `admin`, puis `OPERATOR_ADDRESS` si fourni |
-| `PAUSER_ROLE` | BlockLucky | `pause`, `unpause` | `admin`, puis `OPERATOR_ADDRESS` si fourni |
-| `MINTER_ROLE` | BlockLuckyPOAP | `mintBadge` | `admin`, puis `OPERATOR_ADDRESS` si fourni |
-| Propriétaire (`owner`) | BlockLucky, via `ConfirmedOwner` hérité de `VRFConsumerBaseV2Plus` | `setCoordinator`, `transferOwnership` | Le compte **déployeur** |
+| `DEFAULT_ADMIN_ROLE` | Les deux | `setTreasury`, `setRoundConfig`, `setVrfConfig`, `setBaseUri`, `grantRole`, `revokeRole` | `MAIRIE_ADMIN_ADDRESS` |
+| `OPERATOR_ROLE` | BlockLucky | `retryDraw`, `cancelRound`, `withdrawFees` | `OPERATOR_ADDRESS` |
+| `PAUSER_ROLE` | BlockLucky | `pause`, `unpause` | `PAUSER_ADDRESS`, l'opérateur par défaut |
+| `MINTER_ROLE` | BlockLuckyPOAP | `mintBadge` | `OPERATOR_ADDRESS` |
+| Propriétaire (`owner`) | BlockLucky, via `ConfirmedOwner` hérité de `VRFConsumerBaseV2Plus` | `setCoordinator`, `transferOwnership` | `VRF_OWNER_ADDRESS` (l'administrateur par défaut), après `acceptOwnership` |
+
+Les contrats sont construits avec le déployeur comme administrateur provisoire. Les deux scripts de déploiement répartissent ensuite les rôles avec la même bibliothèque, [`smart-contract/scripts/lib/roles.ts`](src:smart-contract/scripts/lib/roles.ts) : `planRoles` refuse une adresse absente, invalide ou nulle et un administrateur confondu avec l'opérateur (sauf `ALLOW_SHARED_ROLES=true`), `applyRoles` accorde les rôles, positionne la trésorerie, propose la propriété VRF, retire au déployeur ses rôles d'exploitation et le fait renoncer à `DEFAULT_ADMIN_ROLE`, et `roleProblems` arrête le script si un titulaire manque. Ce comportement est couvert par [`smart-contract/test/roles.test.ts`](src:smart-contract/test/roles.test.ts).
 
 ### Selon l'environnement
 
 | Environnement | Administrateur | Opérateur | Propriétaire VRF |
 |---|---|---|---|
-| Blockchain locale ([`smart-contract/scripts/deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts)) | Compte n°0 de Hardhat | Compte n°0 par défaut (`RELAYER_PRIVATE_KEY` de développement), ou `OPERATOR_PRIVATE_KEY` s'il est fourni | Compte n°0 |
-| Sepolia ([`smart-contract/scripts/deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts)) | `MAIRIE_ADMIN_ADDRESS`, ou le déployeur à défaut | `OPERATOR_ADDRESS` ; les rôles ne sont accordés automatiquement que si le déployeur est l'administrateur, sinon le script affiche les rôles à accorder | Le déployeur (`SEPOLIA_PRIVATE_KEY`) |
+| Blockchain locale ([`smart-contract/scripts/deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts)) | Compte n°2 de Hardhat, plus l'opérateur en administrateur additionnel (sauf `LOCAL_STRICT_ROLES=true`) | Compte n°0 par défaut (`RELAYER_PRIVATE_KEY` de développement), ou `OPERATOR_PRIVATE_KEY` s'il est fourni ; trésorerie au compte n°1 | Compte n°2, qui accepte la propriété dans le script |
+| Sepolia ([`smart-contract/scripts/deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts)) | `MAIRIE_ADMIN_ADDRESS` (multisig), obligatoire ; le déployeur renonce à `DEFAULT_ADMIN_ROLE` | `OPERATOR_ADDRESS`, obligatoire ; trésorerie `MAIRIE_TREASURY_ADDRESS`, obligatoire | `VRF_OWNER_ADDRESS`, une fois qu'il a appelé `acceptOwnership` ; le déployeur jusque-là |
 
-En local, une seule clé, publiquement connue, détient donc tous les pouvoirs. C'est sans conséquence sur une chaîne jetable, mais cela signifie que la configuration locale ne teste pas la séparation des rôles.
+En local, la séparation est appliquée comme sur Sepolia, à une exception près : l'opérateur garde `DEFAULT_ADMIN_ROLE` pour que le reversement de commission puisse appeler `setTreasury`. Avec la clé de développement par défaut, l'opérateur est aussi le déployeur, qui garde alors ses rôles ; les clés locales sont de toute façon publiques. `LOCAL_STRICT_ROLES=true` reproduit exactement la configuration de Sepolia.
 
 > [!IMPORTANT]
-> Le propriétaire hérité de Chainlink peut remplacer le coordinateur VRF par une adresse de son choix, qui fournirait alors l'« aléa » et désignerait le gagnant. Aucun script ne transfère cette propriété. Après un déploiement sur Sepolia, il est recommandé d'appeler `transferOwnership(<multisig de la Mairie>)` puis `acceptOwnership()` depuis ce multisig, et de surveiller l'événement `CoordinatorSet`. Voir le [modèle de menaces](menaces.md#oracle-chainlink-vrf).
+> Le propriétaire hérité de Chainlink peut remplacer le coordinateur VRF par une adresse de son choix, qui fournirait alors l'« aléa » et désignerait le gagnant. Les scripts de déploiement appellent `transferOwnership(VRF_OWNER_ADDRESS)` ; sur Sepolia, le multisig doit encore appeler `acceptOwnership()`, sans quoi le déployeur reste propriétaire. Il faut ensuite surveiller l'événement `CoordinatorSet`. Voir le [modèle de menaces](menaces.md#oracle-chainlink-vrf).
 
 ### Séparation recommandée
 
@@ -96,7 +99,7 @@ En local, une seule clé, publiquement connue, détient donc tous les pouvoirs. 
 | Trésorerie | Multisignature distincte | Aucun rôle ; reçoit la commission |
 | Opérateur backend | Serveur | `OPERATOR_ROLE`, `PAUSER_ROLE`, `MINTER_ROLE`, rien d'autre |
 
-Avec cette séparation, la route de trésorerie doit envoyer l'adresse de trésorerie déjà enregistrée ; tout changement de trésorerie passe par le multisig.
+C'est la séparation que met en place `npm run deploy:sepolia` (variables `MAIRIE_ADMIN_ADDRESS`, `MAIRIE_TREASURY_ADDRESS`, `OPERATOR_ADDRESS`, `PAUSER_ADDRESS`, `VRF_OWNER_ADDRESS`). La route de trésorerie doit alors envoyer l'adresse de trésorerie déjà enregistrée ; tout changement de trésorerie passe par le multisig. Le multisig lui-même n'est pas créé par les scripts, qui ne vérifient pas non plus que l'adresse fournie en est un.
 
 ## Compromission et révocation
 
@@ -123,7 +126,7 @@ Sur un réseau de test, la réponse raisonnable est de redéployer et de redistr
 
 ### Clé administrateur ou déployeur compromise
 
-C'est le scénario le plus grave : l'attaquant peut changer la configuration des tours, la trésorerie, les rôles et, avec la propriété VRF, le coordinateur. Le contrat n'étant pas modifiable, la seule réponse est de le mettre en pause s'il en est encore temps, d'informer les participants et de redéployer. D'où l'importance d'un multisig pour ces deux comptes.
+C'est le scénario le plus grave : l'attaquant peut changer la configuration des tours, la trésorerie, les rôles et, avec la propriété VRF, le coordinateur. Une fois le déploiement terminé et `acceptOwnership` signé par le multisig, la clé du déployeur ne détient plus aucun de ces pouvoirs : sa fuite n'a d'effet qu'avant ce moment. Le contrat n'étant pas modifiable, la seule réponse est de le mettre en pause s'il en est encore temps, d'informer les participants et de redéployer. D'où l'importance d'un multisig pour ces deux comptes.
 
 ## Limites connues
 

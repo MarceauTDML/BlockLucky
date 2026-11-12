@@ -116,7 +116,20 @@ Le fichier [`backend/src/types/socket.types.ts`](src:backend/src/types/socket.ty
 
 ## Compte à rebours
 
-[`frontend-web/src/components/lottery/CountdownTimer.tsx`](src:frontend-web/src/components/lottery/CountdownTimer.tsx) ne dépend pas du temps réel : un `setInterval` d'une seconde recalcule le temps restant à partir de `round.drawTargetTime`, ou décrémente `remainingSeconds` si la date est absente. La valeur affichée porte `aria-live="off"` pour ne pas être annoncée chaque seconde par les lecteurs d'écran. Le statut est rechargé par RTK Query pour corriger une éventuelle dérive.
+[`frontend-web/src/components/lottery/CountdownTimer.tsx`](src:frontend-web/src/components/lottery/CountdownTimer.tsx) ne dépend pas du temps réel : un `setInterval` d'une seconde recalcule le temps restant à partir de `round.drawTargetTime`, ou décrémente `remainingSeconds` si la date est absente. La valeur affichée porte `aria-live="off"` pour ne pas être annoncée chaque seconde par les lecteurs d'écran. Le statut est rechargé par RTK Query pour corriger une éventuelle dérive. Avec la prop `sound` (utilisée par `/accueil`), le composant affiche `SoundToggle` et joue `chrono.mp3` une seule fois par couple tour et échéance, dans les 8 dernières secondes.
+
+## Sons
+
+[`frontend-web/src/hooks/useSound.ts`](src:frontend-web/src/hooks/useSound.ts) lit les fichiers de [`frontend-web/public/sounds`](src:frontend-web/public/sounds), fournis par l'équipe : `SOUNDS.wheel` (`/sounds/roue-tirage.mp3`) et `SOUNDS.chrono` (`/sounds/chrono.mp3`).
+
+| Élément | Comportement |
+|---|---|
+| `useSound(src)` | Renvoie `play({ loop? })` et `stop()` ; crée un `HTMLAudioElement` au premier `play`, repart de zéro à chaque lecture, ignore les refus du navigateur |
+| Activation | Aucun son avant une interaction de l'utilisateur (`pointerdown`, `keydown`, ou `navigator.userActivation.hasBeenActive`), conformément aux règles de lecture automatique des navigateurs |
+| `useSoundPreference()` | `soundEnabled` et `setSoundEnabled`, partagés par `useSyncExternalStore` ; valeur `bl.pref.sound` dans `localStorage` (`'0'` coupe, absent ou `'1'` active), synchronisée entre onglets par l'événement `storage` |
+| `SoundToggle` | Bouton rond qui bascule la préférence ; couper arrête aussitôt les sons en cours |
+
+Les sons ne dépendent pas de Socket.IO : la roue sonne quand `RouletteAnimation` tourne, le compte à rebours quand le temps local atteint le seuil.
 
 ## Notifications
 

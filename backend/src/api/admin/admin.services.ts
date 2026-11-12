@@ -4,11 +4,34 @@ import blockchainService from '../../services/blockchain.service';
 import s3Service from '../../services/s3.service';
 import chainClient from '../../blockchain/chain.client';
 import lotteryGateway from '../../blockchain/lottery.gateway';
-import { AgeVerificationStatus } from '@prisma/client';
+import { AgeVerificationStatus, Role } from '@prisma/client';
+import walletService from '../../blockchain/wallet.service';
+import sessionService from '../../services/session.service';
+import logger from '../../utils/logger.util';
 import { enqueueEmail } from '../../queues/emails.queue';
 import { decryptBuffer, neutralizeSpreadsheetCell } from '../../utils/crypto.util';
 import { toDataUrl } from '../../utils/identity-image.util';
 import { AppError } from '../../utils/response.util';
+
+type StaffRole = 'ADMIN' | 'PARTNER';
+type StaffAccount = NonNullable<Awaited<ReturnType<typeof adminRepository.findStaffAccountById>>>;
+
+const ROLE_LABELS: Record<Role, string> = {
+  USER: 'Citoyen',
+  PARTNER: 'Partenaire',
+  ADMIN: 'Mairie',
+};
+
+const toStaffAccount = (account: Omit<StaffAccount, 'deletedAt'>) => ({
+  id: account.id,
+  email: account.email,
+  role: account.role,
+  firstName: account.firstName,
+  lastName: account.lastName,
+  isTwoFactorEnabled: account.isTwoFactorEnabled,
+  createdAt: account.createdAt,
+  partners: account.role === 'PARTNER' ? account.ownedPartners : [],
+});
 
 export class AdminService {
   public async getCentralDashboard() {
@@ -202,6 +225,169 @@ export class AdminService {
       reviewedAt: decision.reviewedAt,
       note: input.approved ? null : note,
     };
+  }
+
+  public async listStaffAccounts(
+    filters: { role?: StaffRole | undefined; search?: string | undefined },
+    page: number,
+    limit: number
+  ) {
+    const { items, total } = await adminRepository.listStaffAccounts(filters, (page - 1) * limit, limit);
+    return { accounts: items.map(toStaffAccount), total };
+  }
+
+  private async assertPartnerAssignable(partnerId: string | undefined, userId: string | null) {
+    if (!partnerId) return null;
+    const partner = await adminRepository.findPartnerById(partnerId);
+    if (!partner) throw new AppError('Établissement partenaire introuvable', 404);
+    if (partner.ownerId && partner.ownerId !== userId) {
+      throw new AppError('Cet établissement est déjà rattaché à un autre compte partenaire.', 409);
+    }
+    return partner;
+  }
+
+  private async sendStaffInvitation(email: string, role: StaffRole, isNewAccount: boolean, partnerName?: string) {
+    const roleLabel = role === 'ADMIN' ? "agent de la Mairie d'EtherBay" : 'partenaire commerçant';
+    await enqueueEmail({
+      to: email,
+      subject:
+        role === 'ADMIN'
+          ? 'Votre accès Mairie BlockLucky est prêt'
+          : 'Votre accès partenaire BlockLucky est prêt',
+      templateName: 'staff-invitation',
+      variables: {
+        EMAIL: email,
+        INTRO: isNewAccount
+          ? `La Mairie d'EtherBay vous a créé un compte BlockLucky en tant que ${roleLabel}.`
+          : `Votre compte BlockLucky dispose désormais des droits ${roleLabel}.`,
+        PARTNER: partnerName ? `Établissement rattaché : ${partnerName}.` : '',
+      },
+    }).catch((error: Error) => logger.warn(`Invitation non envoyée : ${error.message}`));
+  }
+
+  public async createStaffAccount(
+    adminId: string,
+    input: {
+      email: string;
+      role: StaffRole;
+      firstName?: string | undefined;
+      lastName?: string | undefined;
+      partnerId?: string | undefined;
+    }
+  ) {
+    const email = input.email.trim().toLowerCase();
+    const existing = await adminRepository.findAccountByEmail(email);
+
+    if (existing) {
+      if (existing.deletedAt) {
+        throw new AppError('Ce compte a été supprimé et ne peut pas recevoir de rôle.', 409);
+      }
+      if (existing.id === adminId) {
+        throw new AppError('Vous ne pouvez pas modifier votre propre rôle.', 403);
+      }
+      if (existing.role === input.role) {
+        throw new AppError(`Ce compte a déjà le rôle ${ROLE_LABELS[input.role]}.`, 409);
+      }
+      await this.assertLastAdminKept(existing.role, input.role);
+      const partner = await this.assertPartnerAssignable(input.partnerId, existing.id);
+
+      await adminRepository.changeAccountRole({
+        userId: existing.id,
+        role: input.role,
+        firstName: existing.firstName ? undefined : input.firstName,
+        lastName: existing.lastName ? undefined : input.lastName,
+        partnerId: partner?.id,
+      });
+      await sessionService.revokeAllForUser(existing.id);
+
+      await adminRepository.recordAdminAuditLog({
+        adminId,
+        action: 'STAFF_ROLE_CHANGED',
+        metadata: {
+          userId: existing.id,
+          email,
+          previousRole: existing.role,
+          role: input.role,
+          ...(partner ? { partnerId: partner.id, partnerName: partner.name } : {}),
+        },
+      });
+      await this.sendStaffInvitation(email, input.role, false, partner?.name);
+
+      const account = await this.getStaffAccount(existing.id);
+      return { account, created: false };
+    }
+
+    const partner = await this.assertPartnerAssignable(input.partnerId, null);
+    const wallet = walletService.createCustodialWallet();
+    const created = await adminRepository.createStaffAccount({
+      email,
+      role: input.role,
+      firstName: input.firstName,
+      lastName: input.lastName,
+      walletAddress: wallet.address,
+      walletEncryptedKey: wallet.encryptedKey,
+      partnerId: partner?.id,
+    });
+
+    await adminRepository.recordAdminAuditLog({
+      adminId,
+      action: 'STAFF_ACCOUNT_CREATED',
+      metadata: {
+        userId: created.id,
+        email,
+        role: input.role,
+        ...(partner ? { partnerId: partner.id, partnerName: partner.name } : {}),
+      },
+    });
+    await this.sendStaffInvitation(email, input.role, true, partner?.name);
+
+    const account = await this.getStaffAccount(created.id);
+    return { account, created: true };
+  }
+
+  public async updateStaffRole(adminId: string, userId: string, role: Role) {
+    if (userId === adminId) {
+      throw new AppError('Vous ne pouvez pas modifier votre propre rôle.', 403);
+    }
+    const account = await adminRepository.findStaffAccountById(userId);
+    if (!account || account.deletedAt) throw new AppError('Compte introuvable', 404);
+    if (account.role === role) {
+      throw new AppError(`Ce compte a déjà le rôle ${ROLE_LABELS[role]}.`, 409);
+    }
+    await this.assertLastAdminKept(account.role, role);
+
+    await adminRepository.changeAccountRole({ userId, role });
+    await sessionService.revokeAllForUser(userId);
+
+    await adminRepository.recordAdminAuditLog({
+      adminId,
+      action: role === 'USER' ? 'STAFF_ROLE_REVOKED' : 'STAFF_ROLE_CHANGED',
+      metadata: {
+        userId,
+        email: account.email,
+        previousRole: account.role,
+        role,
+        ...(account.role === 'PARTNER' && role !== 'PARTNER' && account.ownedPartners.length
+          ? { detachedPartnerIds: account.ownedPartners.map((partner) => partner.id) }
+          : {}),
+      },
+    });
+
+    return this.getStaffAccount(userId);
+  }
+
+  private async assertLastAdminKept(currentRole: Role, nextRole: Role) {
+    if (currentRole !== 'ADMIN' || nextRole === 'ADMIN') return;
+    const admins = await adminRepository.countActiveAdmins();
+    if (admins <= 1) {
+      throw new AppError('Impossible de retirer le dernier compte Mairie.', 409);
+    }
+  }
+
+  private async getStaffAccount(userId: string) {
+    const account = await adminRepository.findStaffAccountById(userId);
+    if (!account) throw new AppError('Compte introuvable', 404);
+    return toStaffAccount(account);
   }
 
   public async getAuditLogs(limit = 100) {

@@ -12,7 +12,7 @@ Autour du contrat, le dépôt contient une plateforme complète :
 
 - un backend Express 5 en TypeScript ([`backend/src/app.ts`](src:backend/src/app.ts)) avec PostgreSQL, Redis, BullMQ et Socket.IO. Il crée pour chaque citoyen un portefeuille Ethereum intégré, chiffré en AES-256-GCM, lui verse une dotation de bienvenue en ethers fictifs, signe ses achats avec sa clé et projette les événements du contrat en base ;
 - un frontend web Next.js 16 avec trois espaces : citoyen, commerçant partenaire et dashboard de la Mairie, qui examine aussi les pièces d'identité envoyées pour la vérification d'âge ;
-- une application mobile Expo pour les citoyens, avec compte par mot de passe ou Google et Apple, vérification d'âge, salle d'attente et roue du tirage ;
+- une application mobile Expo pour les citoyens, avec compte par mot de passe ou Google, vérification d'âge, salle d'attente et roue du tirage ;
 - un site vitrine statique de l'Office de Tourisme, livré en bonus ;
 - une blockchain locale en conteneur (nœud Hardhat, contrats déployés à des adresses fixes, oracle VRF simulé), une CI GitHub Actions et des scénarios de charge k6.
 

@@ -41,6 +41,7 @@ Les données dont la durée est critique portent leur propre échéance : le dé
 |---|---|---|---|
 | `auth:otp:<sujet>` | JSON du défi : empreinte du code, usage (`LOGIN`, `SIGNUP`, `SETUP`, `PASSWORD_RESET`, `EMAIL_CHANGE`), tentatives, échéance, éventuelle inscription en attente avec l'empreinte bcrypt du mot de passe. Le sujet est l'identifiant du compte, un identifiant provisoire d'inscription, `password-reset:<userId>` ou `email-change:<userId>` | 600 s (avec gigue) ; réécrite avec la durée restante après une erreur | [`backend/src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) |
 | `auth:otp-failures:<sujet>` | Nombre d'erreurs de code ou de mot de passe. Pour une adresse sans compte, le sujet est `signin:<HMAC>` ou `password-reset:<HMAC>` de l'adresse | 3 600 s (avec gigue) | idem |
+| `auth:login-ticket:<HMAC>` | Identifiant du compte qui a franchi le premier facteur (mot de passe, code email ou Google) et doit encore saisir le code de son application TOTP. La clé contient l'empreinte HMAC du ticket, jamais le ticket lui-même : un ticket aléatoire de 256 bits encodé en base64url, renvoyé au client sous le nom `loginTicket` | 600 s ; à usage unique, supprimée après un code TOTP ou de secours valide | `issueLoginTicket`, lue par `readLoginTicket` et supprimée par `revokeLoginTicket` de [`otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) |
 | `auth:email-change:<userId>` | Nouvelle adresse email en attente de confirmation | 600 s (avec gigue) | `requestEmailChange` de [`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts), effacée à la confirmation |
 | `auth:totp-used:<userId>:<compteur>` | `1` : fenêtre TOTP déjà consommée, contre le rejeu | 120 s, `setIfAbsent` | idem |
 | `auth:revoked:<jti>` | `1` : jeton de session révoqué | Durée restante du jeton × 1,2 + 30 s | [`backend/src/services/session.service.ts`](src:backend/src/services/session.service.ts) |
@@ -69,14 +70,15 @@ Ces clés n'ont pas de durée de vie et n'ont **pas d'équivalent en base**. Ell
 
 | Clé | Valeur | Écrite par | Lue par |
 |---|---|---|---|
-| `user:ticket_limit:<userId>` | Limite de tickets par tour choisie par le citoyen (jeu responsable) ; 50 si absente | `PUT /user/responsible-limit` | Achat et cadeau, profil |
 | `user:prefs:<userId>` | JSON des préférences : thème, langue, `pushNotificationsEnabled` et `notifications` (quatre catégories) | `updatePreferences` | `readPreferences`, appelé par `getProfile`, `updatePreferences` et `getPushNotificationsHistory` |
 | `user:quests:<userId>` | JSON de la liste des quêtes sociales réalisées | `completeSocialQuest` | `getSocialQuests`, `completeSocialQuest` |
 | `partner:codes:<rewardId>` | JSON du lot de codes promo importés pour une offre, consommé à chaque échange | `POST /partners/codes/upload` | Échange de récompense |
 | `partner:offer_expiry:<offreId>` | Date d'expiration d'une offre | Création d'offre | Jamais relue |
 
 > [!WARNING]
-> Une perte des données Redis efface les limites de jeu responsable (retour à 50 tickets), les préférences, l'historique des quêtes (une quête pourrait être validée une seconde fois) et les codes promo importés non encore distribués. Ces données ne sont pas couvertes par `pg_dump` ; voir [Performance et sauvegardes](performance-sauvegardes.md).
+> Une perte des données Redis efface les préférences, l'historique des quêtes (une quête pourrait être validée une seconde fois) et les codes promo importés non encore distribués. Ces données ne sont pas couvertes par `pg_dump` ; voir [Performance et sauvegardes](performance-sauvegardes.md).
+
+L'ancienne clé `user:ticket_limit:<userId>`, qui portait le plafond personnel de jeu responsable, n'est plus ni écrite ni lue depuis le retrait de `PUT /user/responsible-limit` : avec un ticket par participant, le profil renvoie toujours `maxTicketsPerRound: 1`. Les valeurs déjà présentes dans une instance Redis existante restent sans effet et peuvent être supprimées (`SCAN` sur le motif `*:user:ticket_limit:*`, puis `DEL`).
 
 ## Clés hors RedisManager
 

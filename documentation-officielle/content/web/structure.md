@@ -27,25 +27,28 @@ Aucune bibliothèque de composants, d'icônes, de graphiques ou de formulaires n
 
 ```text
 frontend-web/
-├── __tests__/               tests Vitest (lib.test.ts, components.test.tsx)
-├── public/.well-known/      security.txt
+├── __tests__/               tests Vitest (lib.test.ts, components.test.tsx, consent.test.tsx)
+├── public/
+│   ├── .well-known/         security.txt
+│   └── sounds/              roue-tirage.mp3 et chrono.mp3, fournis par l'équipe
 ├── src/
 │   ├── app/                 routes App Router, layouts, globals.css, icon.svg (favicon)
 │   │   ├── fonts/           Inter en 5 graisses (.ttf) et LICENSE-inter.txt
 │   │   ├── (citoyen)/       espace citoyen (groupe de routes sans segment d'URL)
 │   │   ├── mairie/          dashboard Mairie
 │   │   ├── partenaire/      espace partenaires
-│   │   └── ...              pages publiques, connexion, erreurs
+│   │   └── ...              pages publiques et légales (cgu, reglement, traceurs...), connexion, erreurs
 │   ├── components/
 │   │   ├── auth/            OnboardingCarousel
 │   │   ├── charts/          BarList, RingMeter, KpiTile
-│   │   ├── layout/          AppShell, PublicShell, Brand, SecurityFooter, RequireRole, AccessDenied...
-│   │   ├── lottery/         WalletCard, WinnerClaimCard, CountdownTimer, ChatBox...
+│   │   ├── layout/          AppShell, PublicShell, LegalPage, ConsentBanner, Brand, SecurityFooter, RequireRole...
+│   │   ├── lottery/         WalletCard, WinnerClaimCard, CountdownTimer, SoundToggle, ChatBox...
 │   │   ├── marketplace/     PointsBalanceCard, RewardCard, ScratchCanvas
 │   │   ├── partner/         PartnerSelection (choix de l'établissement)
 │   │   └── ui/              Button, Input, Card, Sheet, Loader, Icon (et iconData), Misc...
-│   ├── hooks/               useAuth, useBlockLuckyWallet, useAgeVerification, useSocket, usePoints...
-│   ├── lib/                 config, storage, analytics, socket, validators...
+│   ├── content/             legal.ts : textes des six documents légaux, en français et en anglais
+│   ├── hooks/               useAuth, useBlockLuckyWallet, useAgeVerification, useSocket, usePoints, useSound...
+│   ├── lib/                 config, storage, analytics, consent, legalPaths, socket, validators...
 │   ├── store/               store Redux, RTK Query (api/) et slices
 │   ├── theme/               ThemeProvider (thème et langue)
 │   └── types/               types des réponses de l'API
@@ -55,7 +58,7 @@ frontend-web/
 └── .env.example
 ```
 
-Le dossier `(citoyen)` est un groupe de routes : son nom n'apparaît pas dans l'URL. La page [`frontend-web/src/app/(citoyen)/accueil/page.tsx`](src:frontend-web/src/app/(citoyen)/accueil/page.tsx) répond donc à `/accueil`. Le détail des 31 pages est dans [Pages et espaces](pages.md).
+Le dossier `(citoyen)` est un groupe de routes : son nom n'apparaît pas dans l'URL. La page [`frontend-web/src/app/(citoyen)/accueil/page.tsx`](src:frontend-web/src/app/(citoyen)/accueil/page.tsx) répond donc à `/accueil`. Le détail des 35 pages est dans [Pages et espaces](pages.md).
 
 ## Point d'entrée et providers
 
@@ -65,9 +68,10 @@ Le dossier `(citoyen)` est un groupe de routes : son nom n'apparaît pas dans l'
 
 1. le `Provider` Redux, avec un store créé une seule fois par `makeStore` ;
 2. le `ThemeProvider` (thème clair ou sombre, français ou anglais) ;
-3. `SessionBootstrap`, qui au montage capture `utm_source` dans l'URL puis restaure la session depuis `localStorage` (`hydrateSession`) ;
+3. `SessionBootstrap`, qui au montage efface la source UTM stockée si la mesure d'audience n'est pas acceptée (`discardAudienceDataWithoutConsent`), capture `utm_source` dans l'URL, puis restaure la session depuis `localStorage` (`hydrateSession`) ;
 4. les pages ;
-5. `GlobalOverlays`, les feuilles modales globales (points crédités, réseau encombré, file d'attente, erreur réseau, tiroir de notifications).
+5. `GlobalOverlays`, les feuilles modales globales (points crédités, réseau encombré, file d'attente, erreur réseau, tiroir de notifications) ;
+6. `ConsentBanner`, le bandeau de choix des traceurs (voir [Analytique et consentement](analytique-consentement.md#consentement)).
 
 ```mermaid
 flowchart TD
@@ -77,6 +81,7 @@ flowchart TD
   T --> S["SessionBootstrap : UTM et session"]
   T --> C["Pages de src/app"]
   T --> O["GlobalOverlays"]
+  T --> B["ConsentBanner"]
   C --> G["Layouts d'espace : RequireRole et AppShell"]
 ```
 
@@ -89,7 +94,7 @@ flowchart TD
 | Mairie | [`frontend-web/src/app/mairie/layout.tsx`](src:frontend-web/src/app/mairie/layout.tsx) | `RequireRole roles={['ADMIN']}` | `AppShell` |
 | Partenaires | [`frontend-web/src/app/partenaire/layout.tsx`](src:frontend-web/src/app/partenaire/layout.tsx) | `RequireRole roles={['PARTNER', 'ADMIN']}` | `PartnerSelectionProvider` puis `AppShell` |
 
-Chaque layout déclare sa liste d'entrées de navigation (`NavItem`). `AppShell` affiche une barre latérale fixe à partir de 1024 px (`lg`) et, en dessous, une barre d'onglets basse avec les entrées sans `desktopOnly`. Au-delà de cinq entrées (`MAX_MOBILE_ITEMS`), la barre montre les quatre premières et un bouton « Plus » qui ouvre un petit menu avec les suivantes ; le menu se ferme au clic sur un lien, avec Échap, au clic en dehors ou au changement de page. L'espace Mairie compte six entrées : sous 1024 px, « Sécurité » et « Audit » sont dans le menu « Plus ». L'espace citoyen, qui en a cinq, n'a pas de bouton « Plus ». Le fonctionnement de la garde est détaillé dans [Authentification et routes protégées](authentification.md#garde-des-routes).
+Chaque layout déclare sa liste d'entrées de navigation (`NavItem`). `AppShell` affiche une barre latérale fixe à partir de 1024 px (`lg`) et, en dessous, une barre d'onglets basse avec les entrées sans `desktopOnly`. Au-delà de cinq entrées (`MAX_MOBILE_ITEMS`), la barre montre les quatre premières et un bouton « Plus » qui ouvre un petit menu avec les suivantes ; le menu se ferme au clic sur un lien, avec Échap, au clic en dehors ou au changement de page. L'espace Mairie compte sept entrées (Pilotage, Analytique, Partenaires, Identités, Comptes, Sécurité, Audit) : sous 1024 px, « Comptes », « Sécurité » et « Audit » sont dans le menu « Plus ». L'espace citoyen, qui en a cinq, n'a pas de bouton « Plus ». Le fonctionnement de la garde est détaillé dans [Authentification et routes protégées](authentification.md#garde-des-routes).
 
 ## Organisation du code applicatif
 
@@ -107,7 +112,9 @@ Fichiers de `src/lib` :
 |---|---|
 | [`config.ts`](src:frontend-web/src/lib/config.ts) | URL de l'API et du WebSocket, constantes d'affichage (prix 0,01 ETH, 50 points par ticket, 75 points par cadeau, objectif 10 000 participants) |
 | [`storage.ts`](src:frontend-web/src/lib/storage.ts) | Accès protégé à `localStorage` et liste des clés `bl.*` |
-| [`analytics.ts`](src:frontend-web/src/lib/analytics.ts) | Événements du parcours et opposition à la mesure |
+| [`analytics.ts`](src:frontend-web/src/lib/analytics.ts) | Événements du parcours et source UTM, envoyés seulement avec l'accord du visiteur |
+| [`consent.ts`](src:frontend-web/src/lib/consent.ts) | Choix de mesure d'audience (`bl.consent.choice`, 6 mois), ouverture du gestionnaire « Gérer mes traceurs » |
+| [`legalPaths.ts`](src:frontend-web/src/lib/legalPaths.ts) | URL de chaque document légal (`/cgu`, `/reglement`, `/mentions-legales`, `/confidentialite`, `/traceurs`, `/transparence`) |
 | [`socket.ts`](src:frontend-web/src/lib/socket.ts) | Client Socket.IO unique |
 | [`navigation.ts`](src:frontend-web/src/lib/navigation.ts) | `safeInternalPath`, filtre anti redirection ouverte |
 | [`validators.ts`](src:frontend-web/src/lib/validators.ts) | Email, adresse Ethereum, code OTP à 6 chiffres |

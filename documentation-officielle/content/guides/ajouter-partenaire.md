@@ -44,11 +44,10 @@ sequenceDiagram
     participant A as API
     participant D as Base de données
     participant M as Mairie
-    C->>W: Connexion par code email
-    W->>A: POST /auth/login puis /auth/2fa/verify
-    A->>D: Compte USER et portefeuille intégré
-    M->>D: Passage du rôle à PARTNER
-    C->>W: Reconnexion, espace partenaires
+    M->>A: POST /admin/accounts (rôle PARTNER)
+    A->>D: Compte PARTNER et portefeuille intégré
+    A-->>C: Email d'invitation
+    C->>W: Connexion par code email, espace partenaires
     W->>A: POST /partners
     W->>A: POST /partners/offers
     W->>A: POST /partners/codes/upload
@@ -60,20 +59,22 @@ sequenceDiagram
 
 ## 1. Créer le compte du commerçant
 
-Le commerçant se connecte sur `/connexion` du frontend web avec son adresse email, comme un citoyen : un code à 6 chiffres lui est envoyé, un compte `USER` et un portefeuille intégré sont créés. En local, le code arrive dans Mailpit (`http://localhost:8025`).
+Un administrateur ouvre la page `/mairie/comptes` du frontend web ([`frontend-web/src/app/mairie/comptes/page.tsx`](src:frontend-web/src/app/mairie/comptes/page.tsx)), choisit « Créer un compte », saisit l'adresse email du commerçant, éventuellement son prénom et son nom, le rôle « Partenaire » et, si l'entreprise existe déjà sans propriétaire, l'établissement à lui rattacher. La page appelle `POST /api/v1/admin/accounts` ([`admin.services.ts`](src:backend/src/api/admin/admin.services.ts), `createStaffAccount`) :
 
-## 2. Lui attribuer le rôle partenaire
+| Situation | Effet |
+|---|---|
+| Adresse inconnue | Compte `PARTNER` créé avec un portefeuille intégré, sans mot de passe ; réponse 201 et action `STAFF_ACCOUNT_CREATED` au journal d'audit |
+| Compte existant d'un autre rôle | Rôle remplacé par `PARTNER`, sessions du compte révoquées ; réponse 200 et action `STAFF_ROLE_CHANGED` |
+| Compte qui a déjà ce rôle, compte supprimé ou son propre compte | Refus 409 ou 403 |
+| Établissement déjà rattaché à un autre partenaire | Refus 409 |
 
-Aucune route de l'API ne modifie le rôle d'un compte : le passage à `PARTNER` est une opération manuelle en base, faite par un administrateur. En local :
+Dans les deux premiers cas, le commerçant reçoit l'email `staff-invitation` : sur le web, il se connecte sur `/connexion` avec son adresse et le code reçu par email ; sur le mobile, il définit un mot de passe par « Mot de passe oublié ». En local, les emails arrivent dans Mailpit (`http://localhost:8025`).
 
-```bash
-docker compose exec postgres psql -U etherbay_admin -d blocklucky_db -c "UPDATE \"User\" SET role = 'PARTNER' WHERE email = 'librairie@etherbay.fr';"
-```
+## 2. Changer ou retirer le rôle
 
-Le jeton de session porte l'ancien rôle. `requireRoles` relit le rôle en base à chaque requête et répond 403 « Droits révoqués ou modifiés : reconnectez-vous » tant que le jeton et la base diffèrent : le commerçant doit se déconnecter puis se reconnecter.
+Sur la même page, le menu d'un compte appelle `PATCH /api/v1/admin/accounts/{id}/role` avec `USER`, `PARTNER` ou `ADMIN`. Repasser un partenaire en `USER` détache ses établissements (`ownerId` remis à vide) et inscrit `STAFF_ROLE_REVOKED` au journal, avec les identifiants détachés. Un administrateur ne peut pas modifier son propre rôle, et le dernier compte Mairie ne peut pas perdre le sien (409).
 
-> [!NOTE]
-> Une route d'administration pour promouvoir un compte, tracée dans le journal d'audit comme l'activation d'un partenaire, serait l'évolution naturelle. Voir [Ajouter un endpoint](ajouter-endpoint.md) pour la créer dans [`admin.routes.ts`](src:backend/src/api/admin/admin.routes.ts).
+Chaque changement révoque les sessions du compte. Un jeton émis avant serait de toute façon refusé : `requireRoles` relit le rôle en base à chaque requête et répond 403 « Droits révoqués ou modifiés : reconnectez-vous » tant que le jeton et la base diffèrent.
 
 ## 3. Créer l'entreprise et son offre
 
@@ -172,8 +173,8 @@ Dans `LIEUX`, le commerce apparaît sur la page Découvrir. Dans `RESTAURANTS`, 
 
 ## Liste de contrôle
 
-- [ ] Compte du commerçant créé par une première connexion.
-- [ ] Rôle `PARTNER` attribué, reconnexion faite.
+- [ ] Compte `PARTNER` créé ou rôle attribué depuis `/mairie/comptes`, invitation reçue.
+- [ ] Première connexion du commerçant faite.
 - [ ] Entreprise et offre créées, logo en HTTPS.
 - [ ] Codes importés si le commerçant en fournit, stock vérifié.
 - [ ] Entreprise activée par la Mairie, visible dans la boutique.

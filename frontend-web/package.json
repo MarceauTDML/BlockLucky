@@ -1,6 +1,7 @@
 {
   "name": "blocklucky-frontend-web",
   "version": "1.0.0",
+  "license": "MIT",
   "private": true,
   "description": "Frontend web BlockLucky — espace citoyen, espace partenaires et dashboard Mairie d'EtherBay",
   "scripts": {

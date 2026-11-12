@@ -53,7 +53,7 @@ Valeurs relevées dans le code et en lançant les commandes du projet.
 | Dépendances | `@openzeppelin/contracts` 5.6.1 et `@chainlink/contracts` 1.5.0 |
 | Taille de `BlockLucky.sol` | 415 lignes, 11 événements et 18 erreurs personnalisées propres |
 | Taille du bytecode | 12 474 octets pour `BlockLucky`, 5 909 pour `BlockLuckyPOAP` (limite EIP-170 : 24 576) |
-| Tests | 47 : 43 en TypeScript (Mocha et ethers) et 4 tests de fuzzing Solidity de 256 exécutions |
+| Tests | 54 : 50 en TypeScript (Mocha et ethers), dont 7 sur la répartition des rôles au déploiement, et 4 tests de fuzzing Solidity de 256 exécutions |
 | Couverture | 100 % des lignes des deux contrats (171 sur 171 et 19 sur 19) |
 | Analyse statique | solhint sans avertissement, Slither bloquant dès le niveau Medium |
 | Paramètres par défaut d'un tour | 0,01 ETH le ticket, 10 000 tickets, 2 tickets minimum, 100 par participant, 10 % de commission |
@@ -67,7 +67,7 @@ Valeurs relevées dans le code et en lançant les commandes du projet.
 | Remix | Mock déployé à la main | Lecture et démonstration interactive | [Utiliser Remix](remix.md) |
 
 > [!IMPORTANT]
-> À la date de rédaction, aucun déploiement Sepolia n'est enregistré dans le dépôt : aucun fichier `smart-contract/deployments/sepolia.json` n'est versionné. Le script de déploiement Sepolia existe et est documenté, mais ses étapes demandent des comptes personnels (faucet, abonnement Chainlink, clé Etherscan).
+> À la date de rédaction, aucun déploiement Sepolia n'est enregistré dans le dépôt : aucun fichier `smart-contract/deployments/sepolia.json` n'est versionné. Les scripts Sepolia (abonnement VRF, déploiement avec séparation des rôles, upkeep Automation, vérification Etherscan) existent et sont documentés, mais ils demandent les clés et les fonds de test de l'équipe : portefeuille de déploiement, multisig de la Mairie, ETH et LINK de test, accès RPC, clé Etherscan.
 
 ## Commandes du projet
 
@@ -84,7 +84,10 @@ Toutes se lancent depuis `smart-contract/` après `npm ci` (Node.js 22.12 ou plu
 | `npm run slither` | Slither 0.11.6 dans Docker |
 | `npm run node` | Démarre un nœud Hardhat local |
 | `npm run deploy:local` | Déploie sur le nœud local |
-| `npm run deploy:sepolia` | Déploie sur Sepolia |
+| `npm run vrf:sepolia` | Crée ou recharge l'abonnement VRF Sepolia, financé en ETH ([`setup-vrf-sepolia.ts`](src:smart-contract/scripts/setup-vrf-sepolia.ts)) |
+| `npm run deploy:sepolia` | Déploie sur Sepolia et répartit les rôles ([`deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts)) |
+| `npm run automation:sepolia` | Inscrit l'upkeep Chainlink Automation ([`register-automation-sepolia.ts`](src:smart-contract/scripts/register-automation-sepolia.ts)) |
+| `npm run verify:sepolia` | Publie le code des deux contrats sur Etherscan ([`verify-sepolia.ts`](src:smart-contract/scripts/verify-sepolia.ts)) |
 | `npm run export:abi` | Copie les ABI dans `backend/src/blockchain/abi/` |
 
 ## Plan de cette partie

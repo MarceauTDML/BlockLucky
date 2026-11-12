@@ -7,7 +7,6 @@ import { identityUploadJsonParser } from '../../middlewares/body-parser.middlewa
 import {
   submitIdentitySchema,
   updatePreferencesSchema,
-  setResponsibleGamingLimitSchema,
   completeSocialQuestSchema,
   confirmGdprDeletionSchema,
   updateProfileSchema,
@@ -115,20 +114,6 @@ router.post(
   authenticate,
   validate(completeSocialQuestSchema),
   (req, res, next) => userController.completeQuest(req, res, next)
-);
-
-/**
- * @openapi
- * /api/user/responsible-limit:
- *   put:
- *     tags: [User]
- *     summary: Définir sa limite personnelle d'achat de tickets (Jeu Responsable)
- */
-router.put(
-  '/responsible-limit',
-  authenticate,
-  validate(setResponsibleGamingLimitSchema),
-  (req, res, next) => userController.setResponsibleLimit(req, res, next)
 );
 
 /**

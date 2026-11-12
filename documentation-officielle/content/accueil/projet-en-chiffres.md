@@ -1,6 +1,6 @@
 # Le projet en chiffres
 
-Cette page donne la taille réelle du projet, mesurée dans le dépôt le 12 novembre 2026 sur la branche `marceau`, fichiers de la refonte des comptes et du mobile et de l'espace Paramètres du mobile compris, y compris ceux qui ne sont pas encore commités. Chaque chiffre est accompagné de la méthode de comptage, pour pouvoir le recalculer après une évolution. Les commandes se lancent depuis la racine du dépôt, dans un terminal Bash (Git Bash sous Windows).
+Cette page donne la taille réelle du projet, mesurée dans le dépôt le 12 novembre 2026 sur la branche `marceau`, fichiers de la refonte des comptes et du mobile, de l'espace Paramètres du mobile et de la dernière série de corrections (ticket de connexion, comptes Mairie, pages légales, scripts Sepolia) compris, y compris ceux qui ne sont pas encore commités. Chaque chiffre est accompagné de la méthode de comptage, pour pouvoir le recalculer après une évolution. Les commandes se lancent depuis la racine du dépôt, dans un terminal Bash (Git Bash sous Windows).
 
 > [!NOTE]
 > Les chiffres de l'API, des variables, de la base, des contrats, de Docker Compose et de la CI sont aussi présents dans les pages générées depuis le code ([référence de l'API](../backend/reference-api.md), [variables d'environnement](../backend/variables-environnement.md), [dictionnaire de données](../base-de-donnees/dictionnaire.md), [intégration continue](../infrastructure/ci.md)). En cas d'écart, ces pages générées font foi.
@@ -9,23 +9,23 @@ Cette page donne la taille réelle du projet, mesurée dans le dépôt le 12 nov
 
 | Indicateur | Valeur |
 |---|---|
-| Routes HTTP de l'API | 69, dans 9 modules |
-| Pages du frontend web | 30 |
-| Écrans de l'application mobile | 31 |
+| Routes HTTP de l'API | 70, dans 9 modules |
+| Pages du frontend web | 35 |
+| Écrans de l'application mobile | 32 |
 | Tables PostgreSQL (modèles Prisma) | 11, plus 5 énumérations |
 | Migrations Prisma | 6 |
-| Variables d'environnement du backend | 60 |
+| Variables d'environnement du backend | 59 |
 | Contrats Solidity de production | 2 (`BlockLucky`, `BlockLuckyPOAP`) |
 | Lignes Solidity des contrats de production | 479 (398 hors lignes vides et commentaires) |
-| Tests automatisés | 47 pour les contrats, 100 unitaires et d'intégration pour le backend, 2 sur une vraie chaîne, 13 pour le web, 8 écrits pour le mobile |
+| Tests automatisés | 54 pour les contrats, 108 unitaires et d'intégration pour le backend, 2 sur une vraie chaîne, 21 pour le web, 8 écrits pour le mobile |
 | Événements Socket.IO typés | 13 (9 du serveur vers les clients, 4 des clients vers le serveur) |
 | Services Docker Compose | 9 (4 par défaut, 5 dans le profil `app`) |
 | Jobs de CI | 11 (10 dans `ci.yml`, 1 dans `codeql.yml`) |
-| Commits | 381 sur la branche `marceau`, dont 204 hors fusions |
+| Commits | 427 sur la branche `marceau`, dont 227 hors fusions |
 
 ## API
 
-69 routes, comptées comme le fait le générateur de la [référence de l'API](../backend/reference-api.md) : chaque appel `router.get|post|put|patch|delete(` des fichiers `*.routes.ts`.
+70 routes, comptées comme le fait le générateur de la [référence de l'API](../backend/reference-api.md) : chaque appel `router.get|post|put|patch|delete(` des fichiers `*.routes.ts`.
 
 ```bash
 grep -cE "router\.(get|post|put|patch|delete)\(" backend/src/api/*/*.routes.ts
@@ -34,45 +34,45 @@ grep -cE "router\.(get|post|put|patch|delete)\(" backend/src/api/*/*.routes.ts
 | Module | Fichier | Routes |
 |---|---|---|
 | Système (sondes, configuration) | [`backend/src/api/system/system.routes.ts`](src:backend/src/api/system/system.routes.ts) | 5 |
-| Authentification | [`backend/src/api/auth/auth.routes.ts`](src:backend/src/api/auth/auth.routes.ts) | 15 |
+| Authentification | [`backend/src/api/auth/auth.routes.ts`](src:backend/src/api/auth/auth.routes.ts) | 14 |
 | Loterie | [`backend/src/api/lottery/lottery.routes.ts`](src:backend/src/api/lottery/lottery.routes.ts) | 11 |
 | Boutique (marketplace) | [`backend/src/api/marketplace/marketplace.routes.ts`](src:backend/src/api/marketplace/marketplace.routes.ts) | 7 |
 | Partenaires | [`backend/src/api/partners/partners.routes.ts`](src:backend/src/api/partners/partners.routes.ts) | 5 |
-| Utilisateur et RGPD | [`backend/src/api/user/user.routes.ts`](src:backend/src/api/user/user.routes.ts) | 14 |
+| Utilisateur et RGPD | [`backend/src/api/user/user.routes.ts`](src:backend/src/api/user/user.routes.ts) | 13 |
 | Analytique | [`backend/src/api/analytics/analytics.routes.ts`](src:backend/src/api/analytics/analytics.routes.ts) | 2 |
-| Administration Mairie | [`backend/src/api/admin/admin.routes.ts`](src:backend/src/api/admin/admin.routes.ts) | 9 |
+| Administration Mairie | [`backend/src/api/admin/admin.routes.ts`](src:backend/src/api/admin/admin.routes.ts) | 12 |
 | Webhooks | [`backend/src/api/webhooks/webhooks.routes.ts`](src:backend/src/api/webhooks/webhooks.routes.ts) | 1 |
 
-Les 64 routes métier sont servies deux fois : sous `/api/v1` (préfixe à utiliser) et sous `/api` (compatibilité). Les 5 routes système (`/health`, `/health/live`, `/health/ready`, `/health/deep`, `/api/config`) sont montées à la racine. `/metrics` et `/api/docs` sont montés directement dans [`backend/src/app.ts`](src:backend/src/app.ts) et ne sont pas comptés.
+Les 65 routes métier sont servies deux fois : sous `/api/v1` (préfixe à utiliser) et sous `/api` (compatibilité). Les 5 routes système (`/health`, `/health/live`, `/health/ready`, `/health/deep`, `/api/config`) sont montées à la racine. `/metrics` et `/api/docs` sont montés directement dans [`backend/src/app.ts`](src:backend/src/app.ts) et ne sont pas comptés.
 
-Répartition par niveau d'accès : 24 routes publiques (dont les 5 sondes, le webhook signé et les 6 routes d'inscription, de connexion par mot de passe ou OAuth et de réinitialisation), 28 réservées à un utilisateur connecté, 5 aux rôles `PARTNER` ou `ADMIN`, 12 au rôle `ADMIN` seul.
+Répartition par niveau d'accès : 23 routes publiques (dont les 5 sondes, le webhook signé et les 5 routes d'inscription, de connexion par mot de passe ou Google et de réinitialisation), 27 réservées à un utilisateur connecté, 5 aux rôles `PARTNER` ou `ADMIN`, 15 au rôle `ADMIN` seul.
 
 ## Interfaces
 
-### Frontend web : 31 pages
+### Frontend web : 35 pages
 
 Une page Next.js (App Router) est un fichier `page.tsx` sous `frontend-web/src/app/`.
 
 ```bash
-git ls-files frontend-web/src/app | grep -cE "/page\.tsx$"
+find frontend-web/src/app -name page.tsx | wc -l
 ```
 
 | Espace | Pages |
 |---|---|
-| Public (accueil municipal, transparence, confidentialité, mentions légales, connexion, vérification du code, invitation) | 7 |
+| Public (accueil municipal, conditions générales, règlement, mentions légales, confidentialité, traceurs, transparence, connexion, vérification du code, invitation) | 10 |
 | Citoyen (groupe de routes `(citoyen)`), dont la vérification d'identité | 14 |
-| Dashboard Mairie (`/mairie`), dont la vérification des identités | 6 |
+| Dashboard Mairie (`/mairie`), dont la vérification des identités et les comptes | 7 |
 | Espace partenaire (`/partenaire`) | 4 |
 
 Les pages d'erreur (`error.tsx`, `global-error.tsx`, `not-found.tsx`) et les trois `layout.tsx` d'espace ne sont pas comptées. Le détail est dans [Pages et espaces](../web/pages.md).
 
-### Application mobile : 31 écrans
+### Application mobile : 32 écrans
 
 ```bash
-git ls-files mobile-app/src/screens | wc -l
+find mobile-app/src/screens -type f | wc -l
 ```
 
-7 écrans d'authentification, 8 de loterie, 4 de boutique, 11 de profil et réglages et 1 de parrainage, déclarés dans les navigateurs de `mobile-app/src/navigation/`. L'application mobile ne couvre que l'espace citoyen : les espaces Mairie et partenaire sont uniquement sur le web. Voir [Navigation et écrans](../mobile/navigation-ecrans.md).
+7 écrans d'authentification, 8 de loterie, 4 de boutique, 12 de profil et réglages (dont l'écran `Legal` des documents légaux) et 1 de parrainage, déclarés dans les navigateurs de `mobile-app/src/navigation/`. L'application mobile ne couvre que l'espace citoyen : les espaces Mairie et partenaire sont uniquement sur le web. Voir [Navigation et écrans](../mobile/navigation-ecrans.md).
 
 ### Office de Tourisme
 
@@ -91,13 +91,13 @@ git ls-files frontend-office-tourisme | grep -cE "^frontend-office-tourisme/[^/]
 | Index et unicités composés | 16 attributs `@@index` ou `@@unique` | `grep -cE "@@index\|@@unique" backend/prisma/schema.prisma` |
 | Contraintes CHECK | 5, toutes dans la migration du 9 novembre | `grep -c CHECK` sur les fichiers `migration.sql` |
 | Migrations | 6, du 2 au 12 novembre 2026 | `ls backend/prisma/migrations` |
-| Templates d'email | 7 | `ls backend/src/templates/emails` |
+| Templates d'email | 8, dont `staff-invitation` | `ls backend/src/templates/emails` |
 
 Le détail est dans le [modèle de données](../base-de-donnees/modele.md) et la page [Migrations](../base-de-donnees/migrations.md).
 
 ## Configuration
 
-60 variables d'environnement, déclarées dans le schéma Zod de [`backend/src/config/env.config.ts`](src:backend/src/config/env.config.ts). Le script `npm run env:check` du backend vérifie que [`backend/.env.example`](src:backend/.env.example) contient exactement ces variables. Le frontend web lit 2 variables (`NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WS_URL`) et l'application mobile 7 (`EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_WS_URL`, `EXPO_PUBLIC_SENTRY_DSN`, `EXPO_PUBLIC_HELP_CENTER_URL` et les trois identifiants client Google `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, listés vides dans `mobile-app/.env.example`).
+59 variables d'environnement, déclarées dans le schéma Zod de [`backend/src/config/env.config.ts`](src:backend/src/config/env.config.ts). Le script `npm run env:check` du backend vérifie que [`backend/.env.example`](src:backend/.env.example) contient exactement ces variables. Le frontend web lit 2 variables (`NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WS_URL`) et l'application mobile 7 (`EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_WS_URL`, `EXPO_PUBLIC_SENTRY_DSN`, `EXPO_PUBLIC_HELP_CENTER_URL` et les trois identifiants client Google `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, listés vides dans `mobile-app/.env.example`).
 
 ## Smart contracts
 
@@ -121,15 +121,15 @@ grep -cvE '^\s*$|^\s*//|^\s*/?\*' smart-contract/contracts/BlockLucky.sol
 Un cas de test est un appel `it(` ou `test(` (TypeScript) ou une fonction `test...` (Solidity).
 
 ```bash
-grep -cE "^\s*(it|test)\(\s*['\"\`]" backend/__tests__/api/*.ts
+grep -cE "^\s*(it|test)\(\s*['\"\`]" backend/__tests__/*/*.ts
 ```
 
 | Projet | Fichiers | Cas | Commande |
 |---|---|---|---|
-| Smart contracts | 3 | 47 : 38 dans `BlockLucky.test.ts`, 5 dans `BlockLuckyPOAP.test.ts`, 4 fuzzing dans `BlockLucky.t.sol` | `npm test` |
-| Backend, unitaires et intégration | 18 | 100 | `npm test` |
+| Smart contracts | 4 | 54 : 38 dans `BlockLucky.test.ts`, 5 dans `BlockLuckyPOAP.test.ts`, 7 dans `roles.test.ts`, 4 fuzzing dans `BlockLucky.t.sol` | `npm test` |
+| Backend, unitaires et intégration | 19 | 108 | `npm test` |
 | Backend, vraie blockchain locale | 1 | 2 | `npm run test:chain` |
-| Frontend web | 2 | 13 | `npm test` |
+| Frontend web | 3 | 21 | `npm test` |
 | Application mobile | 3 | 8 | aucune |
 
 > [!WARNING]
@@ -162,27 +162,27 @@ Fichiers TypeScript et JavaScript versionnés, hors tests et hors configuration 
 
 | Dossier | Lignes |
 |---|---|
-| `backend/src/` | 9 966 |
-| `frontend-web/src/` | 11 456 |
-| `mobile-app/src/` | 18 540 |
-| `smart-contract/scripts/` | 430 |
+| `backend/src/` | 10 310 |
+| `frontend-web/src/` | 13 297 |
+| `mobile-app/src/` | 19 647 |
+| `smart-contract/scripts/` | 1 033 |
 | `frontend-office-tourisme/` (JavaScript) | 4 010 |
 
 ```bash
-git ls-files backend/src | grep -E '\.(ts|tsx|js|mjs)$' | xargs cat | wc -l
+(git ls-files backend/src; git ls-files --others --exclude-standard backend/src) | grep -E '\.(ts|tsx|js|mjs)$' | xargs cat | wc -l
 ```
 
-Le dépôt compte 666 fichiers, hors dossier `documentation-officielle/` et hors cache local `mobile-app/.expo/`.
+Le dépôt compte 693 fichiers, versionnés ou non encore commités, hors dossier `documentation-officielle/` et hors cache local `mobile-app/.expo/`.
 
 ## Historique Git
 
 | Indicateur | Valeur | Commande |
 |---|---|---|
-| Commits sur la branche `marceau` | 381 | `git rev-list --count HEAD` |
-| Commits hors fusions | 204 | `git log --no-merges --oneline \| wc -l` |
-| Fusions de pull requests | 177 | `git log --merges --oneline \| wc -l` |
+| Commits sur la branche `marceau` | 427 | `git rev-list --count HEAD` |
+| Commits hors fusions | 227 | `git log --no-merges --oneline \| wc -l` |
+| Fusions de pull requests | 200 | `git log --merges --oneline \| wc -l` |
 | Premier commit | 2 novembre 2026 | `git log --reverse --format=%ad --date=short \| head -1` |
-| Dernier commit | 11 novembre 2026 | `git log -1 --format=%ad --date=short` |
-| Jours avec au moins un commit | 5 (2, 3, 9, 10 et 11 novembre) | `git log --format=%ad --date=short \| sort -u` |
+| Dernier commit | 12 novembre 2026 | `git log -1 --format=%ad --date=short` |
+| Jours avec au moins un commit | 6 (2, 3, 9, 10, 11 et 12 novembre) | `git log --format=%ad --date=short \| sort -u` |
 
 Tous les commits de la branche sont signés du même auteur Git ; seuls 12 commits de Dependabot existent sur d'autres branches distantes. Les livrables UX, marketing et budget de l'équipe sont des documents PDF hors dépôt. Les grandes étapes sont résumées dans [Historique et feuille de route](../presentation/historique.md).

@@ -4,7 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import Icon, { IconName } from '@/components/ui/Icon';
+import { getLegalDocument, LEGAL_DOC_ORDER } from '@/content/legal';
 import { cn } from '@/lib/cn';
+import { openConsentManager } from '@/lib/consent';
+import { LEGAL_PATHS } from '@/lib/legalPaths';
 import { shortenWallet } from '@/lib/formatters';
 import useAuth from '@/hooks/useAuth';
 import usePoints from '@/hooks/usePoints';
@@ -129,6 +132,7 @@ export const AppShell: React.FC<{
                 </button>
               </div>
             ) : null}
+            <ShellLegalLinks />
             <SecurityFooter />
           </div>
         </div>
@@ -152,6 +156,7 @@ export const AppShell: React.FC<{
           className="mx-auto w-full max-w-6xl px-4 pt-3 pb-36 md:px-6 md:pt-5 lg:px-8 lg:pb-12"
         >
           {children}
+          <ShellLegalLinks className="mt-10 lg:hidden" />
         </main>
       </div>
 
@@ -237,6 +242,28 @@ export const AppShell: React.FC<{
         />
       ) : null}
     </div>
+  );
+};
+
+const ShellLegalLinks: React.FC<{ className?: string }> = ({ className }) => {
+  const { language, t } = useAppTheme();
+  return (
+    <nav aria-label={t('Informations légales', 'Legal information')} className={className}>
+      <ul className="flex flex-wrap justify-center gap-x-2.5 gap-y-1 text-[11px] font-medium text-fg-muted">
+        {LEGAL_DOC_ORDER.map((id) => (
+          <li key={id}>
+            <Link href={LEGAL_PATHS[id]} className="hover:text-fg hover:underline">
+              {getLegalDocument(id, language).title}
+            </Link>
+          </li>
+        ))}
+        <li>
+          <button type="button" onClick={openConsentManager} className="hover:text-fg hover:underline">
+            {t('Gérer mes traceurs', 'Manage trackers')}
+          </button>
+        </li>
+      </ul>
+    </nav>
   );
 };
 

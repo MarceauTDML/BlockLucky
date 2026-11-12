@@ -5,14 +5,19 @@ import {
   AnalyticsDashboardResponse,
   AuditLogEntry,
   CircuitBreakerResponse,
+  CreateStaffAccountPayload,
+  CreateStaffAccountResponse,
   IdentityDecisionResponse,
   IdentityVerificationDetail,
   IdentityVerificationStatus,
   IdentityVerificationSummary,
   ReportExportResponse,
+  StaffAccount,
+  StaffRole,
   TreasuryWithdrawResponse,
 } from '@/types/admin.types';
 import { PartnerRecord } from '@/types/partner.types';
+import { Role } from '@/types/user.types';
 
 export const adminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -71,6 +76,21 @@ export const adminApi = baseApi.injectEndpoints({
       query: ({ id, ...body }) => ({ url: `/admin/identity-verifications/${id}/decision`, method: 'POST', body }),
       invalidatesTags: ['Identity', 'Audit'],
     }),
+    getStaffAccounts: builder.query<
+      ApiResponse<{ accounts: StaffAccount[] }>,
+      { role?: StaffRole; search?: string; page?: number; limit?: number }
+    >({
+      query: (params) => ({ url: '/admin/accounts', params }),
+      providesTags: ['Accounts'],
+    }),
+    createStaffAccount: builder.mutation<ApiResponse<CreateStaffAccountResponse>, CreateStaffAccountPayload>({
+      query: (body) => ({ url: '/admin/accounts', method: 'POST', body }),
+      invalidatesTags: ['Accounts', 'Partners', 'Audit'],
+    }),
+    updateStaffRole: builder.mutation<ApiResponse<{ account: StaffAccount }>, { id: string; role: Role }>({
+      query: ({ id, role }) => ({ url: `/admin/accounts/${id}/role`, method: 'PATCH', body: { role } }),
+      invalidatesTags: ['Accounts', 'Partners', 'Audit'],
+    }),
     exportReport: builder.mutation<ApiResponse<ReportExportResponse>, { format: 'CSV' | 'PDF' }>({
       query: ({ format }) => ({ url: '/admin/reports/export', params: { format } }),
       invalidatesTags: ['Audit'],
@@ -89,4 +109,7 @@ export const {
   useGetIdentityVerificationsQuery,
   useGetIdentityVerificationQuery,
   useDecideIdentityVerificationMutation,
+  useGetStaffAccountsQuery,
+  useCreateStaffAccountMutation,
+  useUpdateStaffRoleMutation,
 } = adminApi;

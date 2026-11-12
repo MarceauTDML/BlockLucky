@@ -12,7 +12,7 @@ Cette page dit quelles données sauvegarder, avec quels objectifs de perte et de
 | Comptes, emails, rôles, 2FA, EtherPoints, récompenses, partenaires, journal d'administration | PostgreSQL, volume `pgdata` | PostgreSQL | définitive |
 | Clés privées chiffrées des portefeuilles intégrés | PostgreSQL, colonne `User.walletEncryptedKey` | PostgreSQL | définitive : les ethers et tickets de ces adresses deviennent inaccessibles |
 | Tours, tickets, gagnants, cagnottes | PostgreSQL, tables `LotteryRound` et `Ticket` | smart contract | aucune : reconstruits par l'indexeur |
-| Codes promotionnels importés par les partenaires (`partner:codes:*`), limites de jeu responsable (`user:ticket_limit:*`), préférences et quêtes (`user:prefs:*`, `user:quests:*`) | Redis, volume `redisdata` | Redis | définitive : ces données n'existent pas en base |
+| Codes promotionnels importés par les partenaires (`partner:codes:*`), préférences et quêtes (`user:prefs:*`, `user:quests:*`) | Redis, volume `redisdata` | Redis | définitive : ces données n'existent pas en base |
 | Révocation des sessions (`auth:revoked:*`, `auth:revoked-before:*`) | Redis | Redis | les sessions révoquées redeviennent valides jusqu'à l'expiration de leur JWT (12 h par défaut) |
 | Files de jobs, verrous, idempotence, rate limiting, défis OTP | Redis | Redis | jobs en attente perdus ; le reste se reconstitue |
 | Secrets (`JWT_SECRET`, `ENCRYPTION_KEY`, `RELAYER_PRIVATE_KEY`, `WEBHOOK_SECRET`, `METRICS_TOKEN`) | fichier `.env` racine | ce fichier | `ENCRYPTION_KEY` : toutes les clés de portefeuille et secrets TOTP deviennent indéchiffrables |
@@ -33,7 +33,7 @@ Le RPO (Recovery Point Objective) est la quantité maximale de données qu'on ac
 | Données on-chain en base | 0 | durée de réindexation | indexeur idempotent sur `(tour, numéro de ticket)` |
 | Secrets | 0 | 15 min | copie chiffrée hors de la machine, faite à leur création |
 
-Le RPO de Redis ne protège que d'un crash du processus : si le volume `redisdata` est perdu, tout Redis l'est. Redis porte des données de référence que PostgreSQL n'a pas (codes partenaires, limites de jeu responsable, préférences) et la file `ledger-queue`, dont un job en attente est un mouvement d'EtherPoints non encore écrit. Il doit donc être sauvegardé comme la base.
+Le RPO de Redis ne protège que d'un crash du processus : si le volume `redisdata` est perdu, tout Redis l'est. Redis porte des données de référence que PostgreSQL n'a pas (codes partenaires, préférences, quêtes) et la file `ledger-queue`, dont un job en attente est un mouvement d'EtherPoints non encore écrit. Il doit donc être sauvegardé comme la base.
 
 ## Sauvegarder PostgreSQL
 

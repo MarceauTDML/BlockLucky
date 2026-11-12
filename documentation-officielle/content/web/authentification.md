@@ -1,12 +1,12 @@
 # Authentification et routes protégées
 
-Le frontend web ne gère ni mot de passe ni portefeuille. Il n'utilise pas les routes de compte avec mot de passe ni la connexion Google ou Apple, réservées à l'application mobile (voir [Authentification mobile](../mobile/authentification.md)). Il envoie l'email saisi au backend, qui décide s'il faut un code de vérification, crée le compte et son portefeuille intégré si besoin, puis délivre un jeton de session (JWT). Cette page décrit la partie navigateur du parcours. Les règles côté serveur (expiration, verrouillage, révocation) sont dans [Authentification et 2FA](../securite/authentification.md) et [Sessions](../securite/sessions.md).
+Le frontend web ne gère ni mot de passe ni portefeuille. Il n'utilise pas les routes de compte avec mot de passe ni la connexion Google par jeton d'identité, réservées à l'application mobile (voir [Authentification mobile](../mobile/authentification.md)). Il envoie l'email saisi au backend, qui décide s'il faut un code de vérification, crée le compte et son portefeuille intégré si besoin, puis délivre un jeton de session (JWT). Cette page décrit la partie navigateur du parcours. Les règles côté serveur (expiration, verrouillage, révocation) sont dans [Authentification et 2FA](../securite/authentification.md) et [Sessions](../securite/sessions.md).
 
 Fichiers principaux :
 
 | Fichier | Rôle |
 |---|---|
-| [`frontend-web/src/app/connexion/page.tsx`](src:frontend-web/src/app/connexion/page.tsx) | Formulaire de connexion, majorité, parrainage |
+| [`frontend-web/src/app/connexion/page.tsx`](src:frontend-web/src/app/connexion/page.tsx) | Formulaire de connexion, majorité, acceptation des conditions, parrainage |
 | [`frontend-web/src/app/connexion/verification/page.tsx`](src:frontend-web/src/app/connexion/verification/page.tsx) | Saisie du code à 6 chiffres |
 | [`frontend-web/src/hooks/useAuth.ts`](src:frontend-web/src/hooks/useAuth.ts) | Connexion, vérification, persistance, déconnexion |
 | [`frontend-web/src/store/slices/authSlice.ts`](src:frontend-web/src/store/slices/authSlice.ts) | État `auth` du store |
@@ -23,7 +23,7 @@ sequenceDiagram
   participant W as Page de connexion
   participant A as Backend api auth
   participant M as Boîte mail
-  U->>W: Email, case 18+, tranche d'âge, code de parrainage
+  U->>W: Email, cases 18+ et conditions, tranche d'âge, parrainage
   W->>A: POST /auth/login
   A->>M: Code à 6 chiffres
   A-->>W: requiresTwoFactor, twoFactorMethod EMAIL, userId
@@ -41,21 +41,24 @@ La page `/connexion` collecte :
 
 | Champ | Contrôle côté client | Envoyé comme |
 |---|---|---|
+| Conditions | Case `CheckboxCard` obligatoire « J'accepte les conditions générales d'utilisation et le règlement de participation. », avec des liens vers `/cgu` et `/reglement` ouverts dans un nouvel onglet. Sans elle, le message « Acceptez les conditions générales d'utilisation et le règlement de participation pour continuer. » s'affiche. | `acceptTerms: true` |
 | Majorité | Case `CheckboxCard` et feuille modale « Vérification de majorité » ouverte d'office pour l'espace citoyen. Le bouton « J'ai moins de 18 ans » renvoie vers `/`. | `isAdultConfirmed: true` |
 | Tranche d'âge | `ChoicePills` : `18-25`, `26-35`, `36-50`, `50+` (masqué pour `?espace=pro`) | `ageGroup` |
 | Email | `isValidEmail`, puis passage en minuscules | `email` |
 | Parrainage | Optionnel, prérempli par `/invite/[code]` | `referralCode` |
-| Source | Lue dans `bl.utm.source`, `web_direct` par défaut | `utmSource` |
+| Source | Lue dans `bl.utm.source` seulement si la mesure d'audience est acceptée, `web_direct` sinon | `utmSource` |
 | Fournisseur | Bouton cliqué | `provider`: `GOOGLE` ou `EMAIL` |
 
-Le payload complet est typé `SocialLoginPayload` dans [`frontend-web/src/types/api.types.ts`](src:frontend-web/src/types/api.types.ts) et validé côté serveur par `socialLoginSchema` dans [`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts).
+Le payload complet est typé `SocialLoginPayload` dans [`frontend-web/src/types/api.types.ts`](src:frontend-web/src/types/api.types.ts) et validé côté serveur par `socialLoginSchema` dans [`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts), où `acceptTerms` est facultatif mais doit valoir `true` s'il est présent.
+
+Sous le formulaire, une phrase « En créant un compte, vous reconnaissez avoir lu la politique de confidentialité. » renvoie vers `/confidentialite`, dans les deux espaces. L'ancien lien vers les « conditions de participation » de `/mentions-legales` a disparu.
 
 > [!WARNING]
 > Le bouton « Continuer avec Google » n'ouvre aucune fenêtre Google : il envoie le même email avec `provider: 'GOOGLE'`. Il n'y a pas d'OAuth dans le projet. La preuve de possession de l'adresse vient uniquement du code envoyé par email.
 
 Le carrousel d'introduction (`OnboardingCarousel`) s'affiche avant le formulaire sur mobile tant que `bl.onboarding.done` ne vaut pas `1`, et en colonne gauche sur grand écran. Le premier focus ou le premier clic envoie l'événement `access_started` (voir [Analytique et consentement](analytique-consentement.md)).
 
-Pour l'espace professionnel (`/connexion?espace=pro`), la feuille de majorité n'est pas ouverte d'office, mais la case reste obligatoire. Le backend refuse la requête si `isAdultConfirmed` est faux.
+Pour l'espace professionnel (`/connexion?espace=pro`), la feuille de majorité n'est pas ouverte d'office, mais les cases de majorité et des conditions restent obligatoires ; un lien « Je suis un habitant » ramène à `/connexion`. Le backend refuse la requête si `isAdultConfirmed` est faux.
 
 > [!IMPORTANT]
 > Cette déclaration ne suffit plus pour jouer. L'achat, le cadeau, l'échange de récompense et le ticket à gratter exigent un âge vérifié par la Mairie à partir d'une pièce d'identité. Le citoyen l'envoie depuis `/profil/identite` (voir [Portefeuille et loterie](portefeuille-loterie.md#verification-d-identite)) ou depuis l'application mobile. Tant que le statut n'est pas `VERIFIED`, la billetterie désactive l'achat et le cadeau ; les autres actions de jeu reçoivent `403 Vérifiez votre âge pour jouer.`, affiché dans la feuille d'information générique. Les comptes du seed sont déjà vérifiés.
@@ -77,7 +80,9 @@ L'adresse affichée ensuite partout (en-tête, profil, `WalletCard`) est celle r
 
 ### Page de vérification
 
-`/connexion/verification` lit `pendingTwoFactorUserId`, `pendingTwoFactorMethod` et `pendingTwoFactorEmail` dans le store. Si l'état est hydraté et qu'aucune vérification n'est en attente, la page renvoie vers `/connexion`. Ces trois valeurs ne sont pas persistées : un rechargement de la page oblige à recommencer la connexion.
+`/connexion/verification` lit `pendingTwoFactorUserId`, `pendingTwoFactorMethod`, `pendingTwoFactorEmail` et `pendingLoginTicket` dans le store. Si l'état est hydraté et qu'aucune vérification n'est en attente, la page renvoie vers `/connexion`. Ces valeurs ne sont pas persistées : un rechargement de la page oblige à recommencer la connexion.
+
+`verifyOtpCode(userId, code, loginTicket)` ajoute `loginTicket` au corps de `POST /auth/2fa/verify` quand le store en contient un. Si la réponse demande encore un second facteur (`requiresTwoFactor`, `userId` et `loginTicket`), le hook enregistre ce nouveau ticket par `setPendingTwoFactor` avec la méthode `APP`, la page vide le champ et reste affichée pour le code de l'application.
 
 Le champ ne garde que les chiffres (6 au maximum, `autoComplete="one-time-code"`) et `isValidOtpCode` exige exactement 6 chiffres. Le texte s'adapte à la méthode : code reçu par email ou code de l'application d'authentification.
 
@@ -91,7 +96,20 @@ Un compte peut activer un second facteur depuis `/profil/securite/2fa` ([`page.t
 2. L'utilisateur saisit le code et la page appelle `verifyOtpCode(user.id, code)`, donc `POST /auth/2fa/verify`.
 3. Le backend active la 2FA, révoque toutes les sessions du compte et renvoie un nouveau jeton, que `verifyOtpCode` enregistre.
 
-Avec une 2FA `APP` active, `POST /auth/login` répond `requiresTwoFactor: true` et `twoFactorMethod: 'APP'` sans envoyer d'email ; la page de vérification attend alors le code TOTP.
+Avec une 2FA `APP` active, `POST /auth/login` envoie d'abord le code par email, comme pour tout compte. La vérification de ce code ne délivre pas de session : elle répond `{ verified, requiresTwoFactor: true, twoFactorMethod: 'APP', userId, loginTicket }`. Le ticket (256 bits aléatoires, valable 10 minutes, à usage unique) prouve que le premier facteur a été franchi ; la page attend alors le code TOTP et le renvoie avec ce ticket. Sans ticket valide pour ce compte, ni session du même compte, le backend refuse un code de l'application avec 401 « Connexion expirée ou incomplète : reconnectez-vous avant de saisir le code de votre application. ».
+
+```mermaid
+sequenceDiagram
+  participant W as Page de vérification
+  participant A as Backend api auth
+  W->>A: POST /auth/2fa/verify avec userId et code email
+  A-->>W: requiresTwoFactor, twoFactorMethod APP, userId, loginTicket
+  W->>W: setPendingTwoFactor avec loginTicket
+  W->>A: POST /auth/2fa/verify avec code TOTP et loginTicket
+  A-->>W: token et user
+```
+
+À l'activation depuis `/profil/securite/2fa`, aucun ticket n'est envoyé : le backend accepte le code parce que la requête porte la session du même compte.
 
 La désactivation se fait depuis `/profil/securite`, après une feuille de confirmation. Le client appelle `disable2FA({})` sans code : le backend n'accepte que si la session a moins de 15 minutes. Au-delà, il répond 401 et le message invite à se reconnecter.
 
@@ -163,4 +181,4 @@ Côté backend, la session courante ou toutes les sessions du compte sont révoq
 | Confirmation de suppression RGPD | `signOut` |
 | Réponse 401 avec jeton | nettoyage local seulement, sans appel au backend |
 
-Les autres clés (`bl.pref.*`, `bl.utm.source`, `bl.tracking.optout`, `bl.partner.selected`, `bl.onboarding.done`) survivent volontairement à la déconnexion.
+Les autres clés (`bl.pref.*`, `bl.utm.source`, `bl.consent.choice`, `bl.tracking.optout`, `bl.partner.selected`, `bl.onboarding.done`) survivent volontairement à la déconnexion.

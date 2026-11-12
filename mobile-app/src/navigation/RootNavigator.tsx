@@ -29,6 +29,7 @@ import ChangeEmailScreen from '../screens/settings/ChangeEmailScreen';
 import ChangePasswordScreen from '../screens/settings/ChangePasswordScreen';
 import DisplaySettingsScreen from '../screens/settings/DisplaySettingsScreen';
 import HelpSupportScreen from '../screens/settings/HelpSupportScreen';
+import LegalScreen from '../screens/settings/LegalScreen';
 import NotificationSettingsScreen from '../screens/settings/NotificationSettingsScreen';
 import NotificationsScreen from '../screens/settings/NotificationsScreen';
 import PersonalDataScreen from '../screens/settings/PersonalDataScreen';
@@ -136,6 +137,7 @@ export const RootNavigator: React.FC = () => {
               <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
             </>
           )}
+          <Stack.Screen name="Legal" component={LegalScreen} />
         </Stack.Navigator>
       </NavigationContainer>
 

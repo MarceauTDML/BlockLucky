@@ -1,6 +1,6 @@
 # Authentification et 2FA
 
-Un compte BlockLucky s'ouvre de trois façons : avec une adresse email et un mot de passe, avec un compte Google ou Apple, ou, sur le web, avec un code à usage unique reçu par email. Une fois connecté, le citoyen peut ajouter une double authentification par application TOTP ou par email. Cette page décrit les mécanismes et leurs paramètres tels qu'ils sont codés. Le fonctionnement fonctionnel du module (routes, réponses) est décrit dans [le module Authentification](../backend/modules/auth.md).
+Un compte BlockLucky s'ouvre de trois façons : avec une adresse email et un mot de passe, avec un compte Google, ou, sur le web, avec un code à usage unique reçu par email. Une fois connecté, le citoyen peut ajouter une double authentification par application TOTP ou par email. Cette page décrit les mécanismes et leurs paramètres tels qu'ils sont codés. Le fonctionnement fonctionnel du module (routes, réponses) est décrit dans [le module Authentification](../backend/modules/auth.md).
 
 Fichiers principaux :
 
@@ -8,8 +8,8 @@ Fichiers principaux :
 |---|---|
 | [`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts) | Logique de connexion, d'inscription, de réinitialisation, d'activation et de désactivation de la 2FA |
 | [`backend/src/api/auth/auth.validators.ts`](src:backend/src/api/auth/auth.validators.ts) | Politique de mot de passe et schémas des routes |
-| [`backend/src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) | Vérification des jetons Google et Apple |
-| [`backend/src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) | Codes email : émission, vérification, compteurs d'échecs, anti-rejeu TOTP |
+| [`backend/src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) | Vérification des jetons d'identité Google |
+| [`backend/src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) | Codes email : émission, vérification, compteurs d'échecs, anti-rejeu TOTP, tickets de connexion |
 | [`backend/src/services/totp.service.ts`](src:backend/src/services/totp.service.ts) | Implémentation TOTP (RFC 6238) et génération des codes de secours |
 | [`backend/src/utils/crypto.util.ts`](src:backend/src/utils/crypto.util.ts) | Aléa, bcrypt, HMAC, comparaison en temps constant, chiffrement |
 | [`backend/src/middlewares/rbac.middleware.ts`](src:backend/src/middlewares/rbac.middleware.ts) | 2FA obligatoire pour les administrateurs |
@@ -19,15 +19,15 @@ Fichiers principaux :
 
 | Route | Client | Preuve demandée | Résultat sans 2FA |
 |---|---|---|---|
-| `POST /api/auth/signup` | Mobile | Mot de passe conforme, conditions acceptées, puis code email | Compte créé et session délivrée par `/2fa/verify` |
+| `POST /api/auth/signup` | Mobile | Mot de passe conforme, conditions et règlement acceptés, majorité déclarée, puis code email | Compte créé et session délivrée par `/2fa/verify` |
 | `POST /api/auth/signin` | Mobile | Email et mot de passe | Session immédiate |
 | `POST /api/auth/password/forgot`, `/password/reset` | Mobile | Code email à 6 chiffres | Nouveau mot de passe, toutes les sessions révoquées |
-| `POST /api/auth/oauth/google`, `/oauth/apple` | Mobile | Jeton d'identité signé par le fournisseur | Session immédiate, compte créé au besoin |
-| `POST /api/auth/login` | Web | Code email, avec déclaration de majorité dans la requête | Session délivrée par `/2fa/verify` |
+| `POST /api/auth/oauth/google` | Mobile | Jeton d'identité signé par le fournisseur | Session immédiate, compte créé au besoin |
+| `POST /api/auth/login` | Web | Code email, avec déclaration de majorité et, facultativement, acceptation des conditions dans la requête | Session délivrée par `/2fa/verify` |
 | `POST /api/auth/password/change` | Mobile, compte connecté | Jeton de session, plus le mot de passe actuel s'il en existe un | Nouveau mot de passe, toutes les sessions révoquées, nouvelle session délivrée |
 | `POST /api/auth/email/change`, `/email/confirm` | Mobile, compte connecté | Jeton de session, mot de passe actuel s'il en existe un, puis code envoyé à la nouvelle adresse | Adresse remplacée, sessions conservées |
 
-Quelle que soit la route de connexion, un compte vérifié dont la 2FA est active doit encore fournir son code TOTP ou son code email à `/2fa/verify` avant de recevoir un jeton (`completePrimaryLogin`). `/password/change` fait exception : l'appelant a déjà une session, et le jeton de remplacement est délivré sans nouveau code. Toutes ces routes passent par `authRateLimiter` : 30 requêtes par adresse IP en 10 minutes.
+Quelle que soit la route de connexion, un compte vérifié dont la 2FA est active doit encore fournir son code TOTP ou son code email à `/2fa/verify` avant de recevoir un jeton (`completePrimaryLogin`). Pour la 2FA par application, le code n'est accepté qu'avec le ticket de connexion délivré après le premier facteur (voir [Connexion d'un compte protégé par TOTP](#connexion-d-un-compte-protege-par-totp)). `/password/change` fait exception : l'appelant a déjà une session, et le jeton de remplacement est délivré sans nouveau code. Toutes ces routes passent par `authRateLimiter` : 30 requêtes par adresse IP en 10 minutes.
 
 ## Mot de passe
 
@@ -39,7 +39,7 @@ Quelle que soit la route de connexion, un compte vérifié dont la 2FA est activ
 | Composition | Au moins une lettre (`\p{L}`, accents compris) et un chiffre | `passwordPolicy` |
 | Hachage | bcrypt, coût 12, sel intégré | `hashValue` |
 | Colonne | `User.passwordHash`, `NULL` pour un compte sans mot de passe | [`backend/prisma/schema.prisma`](src:backend/prisma/schema.prisma) |
-| Conditions | `acceptTerms` doit valoir `true` à l'inscription | `signupSchema` |
+| Conditions | `acceptTerms` (conditions générales d'utilisation et règlement de participation) et `isAdultConfirmed` (18 ans ou plus) doivent valoir `true` à l'inscription ; ni l'un ni l'autre n'est enregistré en base | `signupSchema` |
 
 La politique ne vérifie ni les mots de passe compromis (aucune consultation d'une liste de fuites) ni la ressemblance avec l'email. Le mobile affiche les mêmes règles avant l'envoi ([`PasswordRules.tsx`](src:mobile-app/src/components/auth/PasswordRules.tsx)).
 
@@ -73,7 +73,7 @@ Le code suit les paramètres décrits dans [Paramètres du code](#parametres-du-
 
 ### Changement depuis un compte connecté
 
-`POST /api/auth/password/change` exige un jeton de session valide. Si le compte a un mot de passe, `currentPassword` est obligatoire et comparé par bcrypt ; un échec renvoie 401 « Mot de passe actuel incorrect. » et s'ajoute au compteur d'échecs du compte, celui de `/signin` (10 échecs en une heure bloquent le compte pendant une heure). Un compte créé par code email, Google ou Apple peut définir un premier mot de passe sans en fournir d'ancien : la possession de la session suffit.
+`POST /api/auth/password/change` exige un jeton de session valide. Si le compte a un mot de passe, `currentPassword` est obligatoire et comparé par bcrypt ; un échec renvoie 401 « Mot de passe actuel incorrect. » et s'ajoute au compteur d'échecs du compte, celui de `/signin` (10 échecs en une heure bloquent le compte pendant une heure). Un compte créé par code email ou Google peut définir un premier mot de passe sans en fournir d'ancien : la possession de la session suffit.
 
 | Étape | Comportement |
 |---|---|
@@ -95,21 +95,21 @@ Le changement se fait en deux requêtes authentifiées :
 
 Le code envoyé à la nouvelle adresse prouve qu'elle appartient au demandeur ; l'alerte à l'ancienne adresse prévient le titulaire si la demande ne vient pas de lui. Les sessions ne sont pas révoquées par un changement d'adresse. Pour un compte sans mot de passe, la session seule suffit à demander le changement.
 
-## Google et Apple
+## Google
 
-Le mobile obtient un jeton d'identité auprès du fournisseur et l'envoie au backend, qui le vérifie lui-même avant toute création de compte.
+Le mobile obtient un jeton d'identité auprès de Google et l'envoie au backend, qui le vérifie lui-même avant toute création de compte. La connexion avec Apple a été retirée : il n'existe plus de route `/oauth/apple` ni de variable `APPLE_CLIENT_IDS`.
 
-| Contrôle | Google (`/oauth/google`) | Apple (`/oauth/apple`) |
-|---|---|---|
-| Bibliothèque | `google-auth-library`, `verifyIdToken` | `jose`, `jwtVerify` |
-| Clés | Clés publiques de Google, gérées par la bibliothèque | JWKS `https://appleid.apple.com/auth/keys` |
-| Algorithme et émetteur | Contrôlés par la bibliothèque | `RS256` seulement, émetteur `https://appleid.apple.com` |
-| Audience | `GOOGLE_CLIENT_IDS` | `APPLE_CLIENT_IDS` |
-| Email | Obligatoire, `email_verified` doit être vrai | Obligatoire ; `email_verified`, s'il est présent, doit être vrai |
-| Fournisseur non configuré | 503 « Connexion Google non configurée. » | 503 « Connexion Apple non configurée. » |
-| Jeton refusé | 401 | 401 |
+| Contrôle | Google (`/oauth/google`) |
+|---|---|
+| Bibliothèque | `google-auth-library`, `verifyIdToken` |
+| Clés | Clés publiques de Google, gérées par la bibliothèque |
+| Algorithme et émetteur | Contrôlés par la bibliothèque |
+| Audience | `GOOGLE_CLIENT_IDS` |
+| Email | Obligatoire, `email_verified` doit être vrai |
+| Fournisseur non configuré | 503 « Connexion Google non configurée. » |
+| Jeton refusé | 401 |
 
-Les deux listes d'identifiants sont vides par défaut : la connexion sociale reste donc désactivée tant qu'elles ne sont pas renseignées (voir [Variables d'environnement](../backend/variables-environnement.md)).
+La liste d'identifiants est vide par défaut : la connexion Google reste donc désactivée tant qu'elle n'est pas renseignée (voir [Variables d'environnement](../backend/variables-environnement.md)).
 
 ### Rattachement par adresse email
 
@@ -123,7 +123,7 @@ Les deux listes d'identifiants sont vides par défaut : la connexion sociale res
 | Compte anonymisé | Création d'un nouveau compte |
 
 > [!WARNING]
-> Le rattachement repose entièrement sur l'adresse email garantie par le fournisseur. Quiconque contrôle chez Google ou Apple l'adresse d'un compte BlockLucky existant ouvre une session sur ce compte sans connaître son mot de passe. Le niveau de preuve équivaut à celui du code email (la possession de l'adresse), mais la sécurité du compte dépend aussi de celle du compte Google ou Apple. Une adresse relais Apple crée un compte distinct de celui de l'adresse réelle, et un changement d'adresse chez le fournisseur crée un nouveau compte, puisque `sub` n'est pas conservé. Le nom transmis par Apple (`fullName`) est validé puis ignoré.
+> Le rattachement repose entièrement sur l'adresse email garantie par le fournisseur. Quiconque contrôle chez Google l'adresse d'un compte BlockLucky existant ouvre une session sur ce compte sans connaître son mot de passe. Le niveau de preuve équivaut à celui du code email (la possession de l'adresse), mais la sécurité du compte dépend aussi de celle du compte Google. Un changement d'adresse chez le fournisseur crée un nouveau compte, puisque `sub` n'est pas conservé.
 
 ## Connexion par code email
 
@@ -137,7 +137,7 @@ sequenceDiagram
     participant A as API
     participant R as Redis
     participant M as File d'emails
-    C->>A: "POST /api/auth/login (email, walletAddress, isAdultConfirmed)"
+    C->>A: "POST /api/auth/login (email, walletAddress, isAdultConfirmed, acceptTerms)"
     A->>A: "Recherche du compte par adresse puis par email"
     A->>R: "Code haché, tentatives = 0, TTL 10 min"
     A->>M: "Email otp-code"
@@ -147,7 +147,7 @@ sequenceDiagram
     A-->>C: "Jeton JWT et profil"
 ```
 
-`POST /api/auth/login` ne délivre jamais de jeton quand `LOGIN_EMAIL_CODE_REQUIRED` vaut `true`, ce qui est la valeur par défaut et la seule acceptée en production. Le jeton n'est délivré qu'après `POST /api/auth/2fa/verify`.
+`POST /api/auth/login` ne délivre jamais de jeton quand `LOGIN_EMAIL_CODE_REQUIRED` vaut `true`, ce qui est la valeur par défaut et la seule acceptée en production. Le jeton n'est délivré qu'après `POST /api/auth/2fa/verify`. Un compte dont la 2FA est active reçoit toujours ce code email d'abord, quel que soit `LOGIN_EMAIL_CODE_REQUIRED` ; si sa 2FA est par application, la vérification du code email ne délivre pas encore de session mais un ticket de connexion (voir [Connexion d'un compte protégé par TOTP](#connexion-d-un-compte-protege-par-totp)).
 
 Le champ `walletAddress` envoyé par le client sert uniquement à retrouver un compte existant. Il n'est jamais utilisé comme portefeuille : le backend crée le sien (voir [Portefeuilles intégrés](../integration-blockchain/portefeuilles.md)). Comme une adresse de portefeuille est publique sur la chaîne, elle ne prouve rien ; la preuve vient du code reçu par email.
 
@@ -160,7 +160,7 @@ Le champ `walletAddress` envoyé par le client sert uniquement à retrouver un c
 | Durée de validité | 10 minutes | `CODE_TTL_SECONDS` |
 | Essais par code | 5, puis le code est supprimé | `MAX_ATTEMPTS_PER_CODE` |
 | Blocage du compte | 10 échecs en une heure bloquent toute vérification pour ce compte pendant une heure (réponse 429) | `MAX_FAILURES_PER_ACCOUNT`, `FAILURE_WINDOW_SECONDS` |
-| Limite par adresse IP | 30 requêtes en 10 minutes sur chaque route d'authentification (`/login`, `/signup`, `/signin`, `/password/*`, `/oauth/*`, `/2fa/verify`, `/2fa/disable`) | `authRateLimiter` |
+| Limite par adresse IP | 30 requêtes en 10 minutes sur chaque route d'authentification (`/login`, `/signup`, `/signin`, `/password/*`, `/oauth/google`, `/2fa/verify`, `/2fa/disable`) | `authRateLimiter` |
 | Comparaison | `crypto.timingSafeEqual` sur les empreintes | `safeEqual` |
 | Usage | Unique : le code est supprimé dès qu'il est accepté | `consume` |
 
@@ -176,7 +176,7 @@ Un compte n'existe qu'une fois l'email prouvé. Pour une adresse inconnue, le ba
 
 À la vérification, `createVerifiedUser` crée le compte avec `isEmailVerified: true`, son portefeuille chiffré, les 25 EtherPoints de bienvenue et, le cas échéant, le bonus de parrainage. Aucun point n'est donc attribué à une adresse non prouvée. Le test `exige le code envoyé par email avant de créer le compte et de délivrer un jeton` couvre ce comportement.
 
-La case `isAdultConfirmed` doit valoir `true` : le schéma Zod la refuse sinon. Il s'agit d'une déclaration ; la vérification d'âge effective passe par la pièce d'identité (voir [Vérification d'âge](autorisations.md#verification-d-age)). Les routes `/signup`, `/signin` et OAuth ne demandent pas cette déclaration.
+La case `isAdultConfirmed` doit valoir `true` : le schéma Zod la refuse sinon. Il s'agit d'une déclaration ; la vérification d'âge effective passe par la pièce d'identité (voir [Vérification d'âge](autorisations.md#verification-d-age)). `/signup` exige la même déclaration, avec `acceptTerms`. `/login` accepte `acceptTerms`, facultatif, qui doit alors valoir `true` ; le web l'envoie toujours, après la case obligatoire « J'accepte les conditions générales d'utilisation et le règlement de participation ». Aucune de ces déclarations n'est enregistrée en base ; seule `isAdultConfirmed` figure dans les métadonnées analytiques. `/signin` et `/oauth/google` ne les demandent pas.
 
 ### Code visible en développement
 
@@ -190,7 +190,7 @@ Quand `NODE_ENV` vaut `development`, les réponses qui déclenchent un code emai
 2. Le backend génère un secret de 32 caractères base32, soit 160 bits, à partir de `crypto.randomBytes(32)`. Comme 256 est un multiple de 32, l'opération `octet % 32` n'introduit pas de biais.
 3. Il enregistre le secret chiffré (`encryptText`, format `v2:`) et dix codes de secours hachés, avec `isTwoFactorEnabled: false`.
 4. Il renvoie une seule fois le secret, l'URL `otpauth://`, le QR code et les codes de secours en clair.
-5. Le citoyen saisit un premier code TOTP dans `POST /api/auth/2fa/verify`. Ce n'est qu'alors que `isTwoFactorEnabled` passe à `true`.
+5. Le citoyen saisit un premier code TOTP dans `POST /api/auth/2fa/verify`, avec sa session (jeton `Bearer`). Ce n'est qu'alors que `isTwoFactorEnabled` passe à `true`. Sans session, un code présenté pour un compte dont la 2FA n'est pas encore active est refusé en 401.
 6. Toutes les sessions existantes sont révoquées (`revokeAllForUser`), un email d'alerte est envoyé et une nouvelle session est délivrée.
 
 Une 2FA déjà active ne peut pas être reconfigurée directement : `setup` répond 409 et il faut d'abord la désactiver.
@@ -227,7 +227,26 @@ Avec `{ "method": "EMAIL" }`, `setup` envoie un code de type `SETUP`. Sa vérifi
 
 ## Connexion d'un compte protégé par TOTP
 
-Pour un compte dont `twoFactorMethod` vaut `APP` et `isTwoFactorEnabled` vaut `true`, `POST /api/auth/login`, `/signin` et les routes OAuth ne délivrent pas de session et ne génèrent pas de code email. Ils renvoient directement `twoFactorMethod: "APP"` et l'identifiant du compte. Le client envoie ensuite un code TOTP ou un code de secours à `/2fa/verify`.
+Pour un compte dont `twoFactorMethod` vaut `APP` et `isTwoFactorEnabled` vaut `true`, le code de l'application n'est accepté qu'une fois le premier facteur franchi.
+
+| Premier facteur | Réponse |
+|---|---|
+| `POST /api/auth/signin` (mot de passe correct) ou `POST /api/auth/oauth/google` (jeton valide) | `{ requiresTwoFactor: true, twoFactorMethod: "APP", userId, loginTicket }`, sans session |
+| `POST /api/auth/login` | Code email envoyé d'abord (`twoFactorMethod: "EMAIL"`), puis, à sa vérification par `/2fa/verify`, `{ verified: true, requiresTwoFactor: true, twoFactorMethod: "APP", userId, loginTicket }` |
+
+Le client envoie ensuite le code TOTP ou un code de secours à `POST /api/auth/2fa/verify` avec le corps `{ code, userId?, loginTicket? }`.
+
+| Paramètre du ticket | Valeur | Source |
+|---|---|---|
+| Valeur | 32 octets aléatoires (256 bits), encodés en base64url | `issueLoginTicket` |
+| Stockage | Clé Redis `auth:login-ticket:<HMAC du ticket>`, qui contient l'identifiant du compte ; le ticket en clair n'est pas stocké | `loginTicketKey` |
+| Durée de validité | 10 minutes | `LOGIN_TICKET_TTL_SECONDS` |
+| Usage | Unique : supprimé dès que le code est accepté (`revokeLoginTicket`) ; un code faux le laisse valide mais compte un échec sur le compte | `verify2FA` |
+| Format accepté | 32 à 128 caractères parmi `A-Z`, `a-z`, `0-9`, `_` et `-` | `verify2FASchema` |
+
+Un code d'application n'est accepté que dans deux cas : le ticket est valide et appartient au compte visé, ou la requête porte une session (`Bearer`) de ce compte, ce qui sert à l'activation de la 2FA. Un ticket inconnu ou expiré, un ticket d'un autre compte que le `userId` envoyé, ou un code d'application présenté avec le seul `userId` reçoivent 401 « Connexion expirée ou incomplète : reconnectez-vous avant de saisir le code de votre application. ». Quand un ticket est fourni, un éventuel code email en attente pour le compte est ignoré. Les tests `refuse un code de l'application présenté avec le seul identifiant du compte`, `refuse d'activer la 2FA par application sans session authentifiée` et `demande le code de l'application après le mot de passe, avec un ticket de connexion` couvrent ces règles.
+
+Le mobile transmet le ticket à l'écran `Verify2FA` (paramètre `loginTicket`) ; le web le garde dans `pendingLoginTicket` du slice `auth`.
 
 ## Désactivation
 
@@ -259,14 +278,14 @@ Le modèle [`backend/src/templates/emails/security-alert.html`](src:backend/src/
 ## Limites connues
 
 > [!WARNING]
-> Le mot de passe n'est pas un facteur imposé. `POST /api/auth/login` et les routes OAuth restent ouverts à tous les comptes : la possession de la boîte mail, ou du compte Google ou Apple de même adresse, suffit à ouvrir une session sans mot de passe. De plus, `POST /api/auth/2fa/verify` accepte un code TOTP valide accompagné du seul `userId`, sans exiger qu'une connexion par mot de passe ait eu lieu juste avant. Avec la méthode `APP`, le code TOTP peut donc **remplacer** le premier facteur au lieu de s'y ajouter. Avec la méthode `EMAIL` sur `/login`, la connexion est identique à celle d'un compte sans 2FA. Seuls `/signin` et `/oauth/*` suivis d'une 2FA active combinent deux facteurs, et rien n'oblige un attaquant à passer par eux.
+> Le mot de passe n'est pas un facteur imposé. `POST /api/auth/login` et la route Google restent ouverts à tous les comptes : la possession de la boîte mail, ou du compte Google de même adresse, suffit à ouvrir une session sans mot de passe sur un compte sans 2FA. Avec la méthode `APP`, le code TOTP s'ajoute toujours à un premier facteur (mot de passe, jeton Google ou code email), grâce au ticket de connexion. Avec la méthode `EMAIL` sur `/login`, la connexion reste identique à celle d'un compte sans 2FA : un seul code email est demandé.
 
 Autres limites relevées dans le code :
 
 | Limite | Détail |
 |---|---|
 | Revendication `twoFactorVerified` | Elle est toujours écrite à `true` dans le jeton et n'est lue nulle part. Elle ne doit pas servir de contrôle. |
-| Énumération | La réponse de `/login` diffère selon que le compte existe avec TOTP (`twoFactorMethod: "APP"`) ou non. Pour un compte existant, `userId` est l'identifiant réel ; pour une adresse inconnue, c'est un identifiant de défi aléatoire. `/signup` répond 409 pour une adresse déjà vérifiée. `/signin` et `/password/forgot` ne révèlent rien par leur réponse. |
+| Énumération | La réponse de `/login` vaut toujours `twoFactorMethod: "EMAIL"`, mais pour un compte existant, `userId` est l'identifiant réel ; pour une adresse inconnue, c'est un identifiant de défi aléatoire. `/signup` répond 409 pour une adresse déjà vérifiée. `/signin` et `/password/forgot` ne révèlent rien par leur réponse. |
 | Pas de contrôle des mots de passe compromis | La politique se limite à la longueur et à la composition. |
 | Défi non atomique | `consume` lit puis réécrit le défi dans Redis. Deux requêtes simultanées peuvent chacune consommer un essai sans que le compteur reflète les deux. La limite par IP et le blocage par compte bornent l'effet. |
 | Pas de facteur résistant au hameçonnage | WebAuthn et les clés d'accès (passkeys) ne sont pas implémentés. |

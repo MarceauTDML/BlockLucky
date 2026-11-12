@@ -124,8 +124,8 @@ export default function LandingPage() {
       tone: 'bg-peach',
       badge: 'bg-surface text-terracotta',
       body: t(
-        'Réservé aux 18 ans et plus, avec un plafond personnel de tickets réglable à tout moment.',
-        'Adults only (18+), with a personal ticket cap you can change at any time.'
+        'Réservé aux 18 ans et plus, avec un seul ticket par habitant et par tirage.',
+        'Adults only (18+), with a single ticket per resident per draw.'
       ),
     },
   ];

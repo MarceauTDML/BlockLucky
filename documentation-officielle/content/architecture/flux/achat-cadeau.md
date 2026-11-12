@@ -25,7 +25,6 @@ sequenceDiagram
   API->>S: buyTickets(userId, body)
   S->>BL: readCurrentRound via getRound
   S->>DB: upsertRoundFromChain
-  S->>R: user:ticket_limit:userId
   S->>DB: countUserTicketsInRound, 409 si un ticket existe
   S->>G: prepareWallet(user)
   G->>G: ensureWallet puis grantWelcomeEthers ou waitForPendingGrant
@@ -55,13 +54,12 @@ sequenceDiagram
 
 1. `authRepository.findById` : 404 si le compte n'existe plus.
 2. `lotteryGateway.readCurrentRound` lit `currentRoundId` puis `getRound` dans le contrat. `syncRound` recopie l'état du tour dans `LotteryRound` par `lotteryRepository.upsertRoundFromChain` ([`backend/src/api/lottery/lottery.repo.ts`](src:backend/src/api/lottery/lottery.repo.ts)).
-3. **Jeu responsable.** La limite personnelle est lue dans `user:ticket_limit:<userId>` (50 par défaut, modifiable par `PUT /user/responsible-limit`) et comparée au nombre de tickets du citoyen dans ce tour en base. Avec un seul ticket admis, elle ne peut plus être dépassée.
-4. **Ticket unique.** Si le citoyen a déjà un ticket dans ce tour en base, la réponse est `409 Vous avez déjà votre ticket pour ce grand tirage.` avec `contractError: 'PlayerLimitReached'`.
-5. `lotteryGateway.prepareWallet(user)` garantit un portefeuille et une dotation. Si la dotation lancée à l'inscription est encore en cours, `grantWelcomeEthers` trouve le verrou `wallet:grant-lock:<id>` et attend sa fin par `waitForPendingGrant` ([`backend/src/blockchain/wallet.service.ts`](src:backend/src/blockchain/wallet.service.ts)), jusqu'à 30 s.
-6. `lotteryGateway.ticketsOf(tour, adresse)` relit sur le contrat le nombre de tickets du portefeuille. Un ticket acheté directement sur la chaîne et pas encore indexé donne la même réponse 409.
-7. `lotteryGateway.buyTickets(buyer, quantity)` ([`backend/src/blockchain/lottery.gateway.ts`](src:backend/src/blockchain/lottery.gateway.ts)) relit le tour, refuse s'il n'est pas `OPEN` (409), déchiffre la clé du citoyen par `walletService.signerFor`, calcule `value = ticketPriceWei * quantity` et appelle `buyTickets(quantity)` sur le contrat.
-8. `sendAndIndex` attend le reçu par `tx.wait()`, puis appelle `lotteryIndexer.processReceipt(receipt)`. Une erreur `NONCE_EXPIRED` à l'envoi provoque une seule nouvelle tentative.
-9. Le service relit le ticket créé (`findTicketsByIds`), ajoute son numéro sur 5 chiffres (`ticketNumber`), le solde d'EtherPoints et le solde d'ethers du portefeuille (`walletService.balanceOf`), puis répond 201.
+3. **Ticket unique.** Si le citoyen a déjà un ticket dans ce tour en base, la réponse est `409 Vous avez déjà votre ticket pour ce grand tirage.` avec `contractError: 'PlayerLimitReached'`.
+4. `lotteryGateway.prepareWallet(user)` garantit un portefeuille et une dotation. Si la dotation lancée à l'inscription est encore en cours, `grantWelcomeEthers` trouve le verrou `wallet:grant-lock:<id>` et attend sa fin par `waitForPendingGrant` ([`backend/src/blockchain/wallet.service.ts`](src:backend/src/blockchain/wallet.service.ts)), jusqu'à 30 s.
+5. `lotteryGateway.ticketsOf(tour, adresse)` relit sur le contrat le nombre de tickets du portefeuille. Un ticket acheté directement sur la chaîne et pas encore indexé donne la même réponse 409.
+6. `lotteryGateway.buyTickets(buyer, quantity)` ([`backend/src/blockchain/lottery.gateway.ts`](src:backend/src/blockchain/lottery.gateway.ts)) relit le tour, refuse s'il n'est pas `OPEN` (409), déchiffre la clé du citoyen par `walletService.signerFor`, calcule `value = ticketPriceWei * quantity` et appelle `buyTickets(quantity)` sur le contrat.
+7. `sendAndIndex` attend le reçu par `tx.wait()`, puis appelle `lotteryIndexer.processReceipt(receipt)`. Une erreur `NONCE_EXPIRED` à l'envoi provoque une seule nouvelle tentative.
+8. Le service relit le ticket créé (`findTicketsByIds`), ajoute son numéro sur 5 chiffres (`ticketNumber`), le solde d'EtherPoints et le solde d'ethers du portefeuille (`walletService.balanceOf`), puis répond 201.
 
 **Contrat.** `_buyTickets` ([`smart-contract/contracts/BlockLucky.sol`](src:smart-contract/contracts/BlockLucky.sol)) vérifie dans l'ordre : tour `Open`, `endTime` non atteint, quantité non nulle, tickets restants, limite par participant (`maxTicketsPerPlayer`, 1 avec la configuration de déploiement par défaut), montant exact. Il ajoute l'adresse du joueur à `ticketOwners` une fois par ticket, crédite `contributions[roundId][msg.sender]` et émet `TicketsPurchased(roundId, player, payer, quantity, firstTicketIndex, totalTickets, amount)`.
 
@@ -116,14 +114,13 @@ sequenceDiagram
 4. Prépare le portefeuille de l'expéditeur, qui paie le ticket et les frais.
 5. Appelle `lotteryGateway.buyTickets(payer, 1, recipient.walletAddress)`, qui utilise `buyTicketsFor`. Si le contrat répond `PlayerLimitReached`, le message est remplacé par celui du point 3.
 
-Le contrat enregistre la contribution au nom de l'expéditeur : en cas d'annulation du tour, c'est lui qui est remboursé. La limite de jeu responsable n'est pas vérifiée pour un cadeau, mais `maxTicketsPerPlayer` s'applique au destinataire. L'expéditeur peut donc avoir son propre ticket et en offrir d'autres, à des destinataires différents.
+Le contrat enregistre la contribution au nom de l'expéditeur : en cas d'annulation du tour, c'est lui qui est remboursé. `maxTicketsPerPlayer` s'applique au destinataire. L'expéditeur peut donc avoir son propre ticket et en offrir d'autres, à des destinataires différents.
 
 ## Erreurs possibles
 
 | Code | Cause | Origine |
 |---|---|---|
 | 400 | `quantity` différent de 1, email du destinataire invalide | `validate` |
-| 400 | « Jeu Responsable : Limite d'achat atteinte » | `buyOnchain` |
 | 400 | Cadeau à soi-même | `giftOnchain` |
 | 400 | `InvalidQuantity`, `IncorrectPayment` | Contrat |
 | 403 | Âge non vérifié (`AGE_VERIFICATION_REQUIRED`) | `requireAgeVerification` |

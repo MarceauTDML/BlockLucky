@@ -50,7 +50,7 @@ const codeAccount = async (email: string) => {
 };
 
 const passwordAccount = async (email: string, password = PASSWORD) => {
-  const signup = await request(app).post('/api/v1/auth/signup').send({ email, password, acceptTerms: true });
+  const signup = await request(app).post('/api/v1/auth/signup').send({ email, password, acceptTerms: true, isAdultConfirmed: true });
   expect(signup.status).toBe(201);
   const verify = await request(app)
     .post('/api/v1/auth/2fa/verify')

@@ -16,15 +16,14 @@ Le projet utilise un fichier statique `app.json`. Il n'existe ni `app.config.js`
 | `userInterfaceStyle` | `automatic` | Autorise le mode sombre du système ; l'application ne le lit pas (voir [Thème et composants](theme-composants.md#themeprovider)) |
 | `splash` | `splash.png`, `contain`, fond `#F6F7FA` | Écran de lancement, sur le fond clair de la maquette |
 | `scheme` | `blocklucky` | Schéma d'URL de l'application, utilisé par le retour de la connexion Google ; aucun lien profond n'est routé vers un écran (voir [Navigation et écrans](navigation-ecrans.md#ce-que-la-navigation-ne-fait-pas)) |
-| `ios.bundleIdentifier` | `fr.etherbay.blocklucky` | Identifiant iOS, à déclarer dans `APPLE_CLIENT_IDS` du backend pour Sign in with Apple |
+| `ios.bundleIdentifier` | `fr.etherbay.blocklucky` | Identifiant iOS |
 | `ios.supportsTablet` | `true` | Installable sur iPad |
-| `ios.usesAppleSignIn` | `true` | Ajoute la capacité Sign in with Apple au binaire iOS |
 | `ios.config.usesNonExemptEncryption` | `false` | Déclaration d'export : l'application n'utilise que le chiffrement standard du système |
 | `android.package` | `fr.etherbay.blocklucky` | Identifiant Android |
 | `android.adaptiveIcon` | `adaptive-icon.png`, fond `#FFDA38` | Icône adaptative sur le jaune de la charte |
 | `android.allowBackup` | `false` | Pas de sauvegarde des données de l'application par Android |
 | `web` | `favicon.png`, bundler `metro` | Cible web d'Expo ; `react-native-web` et `react-dom` sont installés, la cible n'est pas vérifiée par la CI |
-| `plugins` | `expo-secure-store`, `expo-font`, `expo-status-bar`, `expo-web-browser`, `expo-apple-authentication`, `expo-image-picker` | Modules configurés au prebuild |
+| `plugins` | `expo-secure-store`, `expo-font`, `expo-status-bar`, `expo-web-browser`, `expo-image-picker`, `expo-audio` | Modules configurés au prebuild ; `expo-audio` lit les sons de la roue et du compte à rebours (voir [Thème et composants](theme-composants.md#sons)) |
 
 Le plugin `expo-image-picker` fixe les deux textes affichés par le système quand l'application demande l'accès :
 
@@ -72,10 +71,10 @@ Ces étapes n'ont pas été exécutées dans le projet. Elles utilisent EAS CLI,
 
 1. Créer ou choisir un compte Expo pour la Ville, puis lier le projet (`eas init`), ce qui ajoute `extra.eas.projectId` dans `app.json`.
 2. Installer `expo-dev-client` si le profil `development` doit être utilisé, ou retirer `developmentClient` du profil.
-3. Renseigner les URL de l'API et les identifiants client Google dans `eas.json` ou dans les variables du projet EAS, et déclarer ces identifiants et le bundle iOS dans `GOOGLE_CLIENT_IDS` et `APPLE_CLIENT_IDS` du backend.
+3. Renseigner les URL de l'API et les identifiants client Google dans `eas.json` ou dans les variables du projet EAS, et déclarer ces identifiants dans `GOOGLE_CLIENT_IDS` du backend.
 4. Remplacer les images de `assets/images` (icône, icône adaptative, splash) par des visuels conformes à la maquette ; les couleurs de fond de `app.json` le sont déjà.
 5. Lancer un build de recette, par exemple `eas build --profile preview --platform android`, et l'installer sur un téléphone.
-6. Pour iOS, fournir un compte Apple Developer et activer Sign in with Apple pour l'identifiant `fr.etherbay.blocklucky` : EAS génère alors les certificats et profils de provisionnement.
+6. Pour iOS, fournir un compte Apple Developer pour l'identifiant `fr.etherbay.blocklucky` : EAS génère alors les certificats et profils de provisionnement.
 7. Pour les stores, compléter `submit.production`, puis `eas submit --profile production`.
 
 Avant toute publication, les défauts de l'application doivent être corrigés, en particulier la restauration de session (voir [Authentification et stockage sécurisé](authentification.md)). La liste de contrôle générale est dans [Avant une mise en production](../contribuer/mise-en-production.md).
@@ -88,9 +87,10 @@ Quelques points à préparer, propres à une application de loterie :
 |---|---|
 | Jeux d'argent | Les tickets s'achètent en ethers fictifs sans valeur, mais les règles des stores sur les loteries et les crypto-actifs s'appliquent à la présentation ; voir [Crypto-actifs et MiCA](../juridique/crypto-actifs.md) |
 | Majorité | Vérification sur pièce d'identité par la Mairie avant tout achat ; la classification d'âge des stores devra être cohérente |
-| Données personnelles | Fiche de confidentialité à remplir (email, adresse de portefeuille, identifiant de compte, photos de la pièce d'identité supprimées après décision, identifiant Google ou Apple) ; voir [RGPD](../juridique/rgpd.md) |
-| Connexion tierce | Google et Apple sont proposés tous les deux sur iOS ; les règles de l'App Store sur les connexions tierces sont à vérifier avant la soumission |
-| Autorisations | Appareil photo et photos, avec les textes du plugin `expo-image-picker` |
+| Données personnelles | Fiche de confidentialité à remplir (email, adresse de portefeuille, identifiant de compte, photos de la pièce d'identité supprimées après décision, identifiant Google) ; voir [RGPD](../juridique/rgpd.md) |
+| Connexion tierce | Seul Google est proposé depuis le retrait de Sign in with Apple ; les règles de l'App Store sur les connexions tierces (qui peuvent imposer une option équivalente) sont à vérifier avant la soumission iOS |
+| Autorisations | Appareil photo et photos, avec les textes du plugin `expo-image-picker` ; le plugin `expo-audio` est déclaré sans options, ses autorisations par défaut sont à contrôler dans le binaire généré |
+| Documents légaux | CGU, règlement, confidentialité, traceurs, mentions légales et charte de transparence consultables dans l'application (écran `Legal`, depuis Aide & Support et l'inscription) |
 | Chiffrement | `usesNonExemptEncryption: false` déjà déclaré pour iOS |
 | Suppression de compte | Exigée par les stores, disponible dans l'écran RGPD (anonymisation) |
 

@@ -174,7 +174,7 @@ Voir [Architecture JavaScript](../office-tourisme/architecture.md).
 | Modèles Prisma | PascalCase au singulier, champs en camelCase | `LotteryRound.contractRoundId`, `ClaimedReward.uniqueCode` |
 | Énumérations | Valeurs en majuscules | `Role.ADMIN`, `Status.LOCKED`, `TokenType.ACCOUNT_DELETION` |
 | Variables d'environnement | Majuscules et tirets bas | `BLOCKCHAIN_MODE`, `WELCOME_GRANT_WEI`, `NEXT_PUBLIC_API_URL`, `EXPO_PUBLIC_API_URL` |
-| Clés Redis | Segments séparés par `:`, préfixés automatiquement par `<REDIS_KEY_PREFIX>:<NODE_ENV>:` | `auth:otp:<id>`, `wallet:grant-lock:<id>`, `chain:keeper-lock`, `user:ticket_limit:<id>` |
+| Clés Redis | Segments séparés par `:`, préfixés automatiquement par `<REDIS_KEY_PREFIX>:<NODE_ENV>:` | `auth:otp:<id>`, `wallet:grant-lock:<id>`, `chain:keeper-lock`, `auth:login-ticket:<HMAC>` |
 | Files BullMQ | Nom fixe dans le producteur | `emails-queue`, `ledger-queue`, `chain-actions` |
 | Événements Socket.IO | `domaine:action` | `draw:winner`, `draw:waiting-room`, `chat:message`, `points:awarded` |
 | Classes et singletons | Classe en PascalCase suffixée par la couche, instance exportée en camelCase et par défaut | `export class LotteryService`, `export const lotteryService = new LotteryService()` |

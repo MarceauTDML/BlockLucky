@@ -55,6 +55,7 @@ worker-src 'self' blob:
 | `connect-src` | Seuls l'API et le serveur Socket.IO sont joignables par `fetch` et WebSocket |
 | `object-src 'none'`, `base-uri 'none'` | Pas de plugin, pas de changement de base des URL |
 | `form-action 'self'` | Les formulaires ne peuvent pas être soumis ailleurs |
+| `media-src` absent | Repli sur `default-src 'self'` : seuls les sons servis par le site (`/sounds/*.mp3`) peuvent être lus |
 | `upgrade-insecure-requests` | Ajouté seulement si l'API est en `https:` |
 
 En production, avec `NEXT_PUBLIC_API_URL=https://api.etherbay.tech/api` par exemple, `connect-src` contient `https://api.etherbay.tech` et `wss://api.etherbay.tech`, et `upgrade-insecure-requests` est ajouté.
@@ -90,7 +91,7 @@ Le contrôle d'accès du navigateur (`RequireRole`) n'est pas une barrière de s
 | Jeton JWT | `localStorage` `bl.auth.token` | Élevée : donne accès au compte pendant sa durée de vie (12 h par défaut), révocable par la déconnexion |
 | Profil | `localStorage` `bl.auth.user` | Moyenne : email, adresse, rôle, solde de points |
 | Dernier code obtenu | `localStorage` `bl.marketplace.lastClaim` | Moyenne : code promo utilisable en caisse ; effacé à la déconnexion |
-| Préférences, source UTM, parrainage, opposition, établissement choisi | `localStorage` `bl.*` | Faible |
+| Préférences (dont `bl.pref.sound`), source UTM, parrainage, choix de mesure d'audience (`bl.consent.choice`), établissement choisi | `localStorage` `bl.*` | Faible |
 
 Aucun cookie n'est posé par le frontend. L'absence de cookie supprime le risque CSRF sur l'API, au prix d'une exposition du jeton à une éventuelle XSS. Ce compromis est discuté dans [Sessions](../securite/sessions.md).
 

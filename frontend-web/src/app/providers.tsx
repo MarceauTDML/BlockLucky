@@ -7,11 +7,14 @@ import { hydrateSession } from '@/store/slices/authSlice';
 import ThemeProvider from '@/theme/ThemeProvider';
 import storage, { KEYS } from '@/lib/storage';
 import { captureUtmSource } from '@/lib/analytics';
+import { discardAudienceDataWithoutConsent } from '@/lib/consent';
 import { UserProfile } from '@/types/user.types';
+import ConsentBanner from '@/components/layout/ConsentBanner';
 import GlobalOverlays from '@/components/layout/GlobalOverlays';
 
 const SessionBootstrap: React.FC<{ store: AppStore }> = ({ store }) => {
   useEffect(() => {
+    discardAudienceDataWithoutConsent();
     captureUtmSource(window.location.search);
     store.dispatch(
       hydrateSession({
@@ -31,6 +34,7 @@ export const Providers: React.FC<{ children: React.ReactNode }> = ({ children })
         <SessionBootstrap store={store} />
         {children}
         <GlobalOverlays />
+        <ConsentBanner />
       </ThemeProvider>
     </Provider>
   );

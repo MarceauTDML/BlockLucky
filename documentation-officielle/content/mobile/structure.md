@@ -18,7 +18,7 @@ Les versions viennent de [`mobile-app/package.json`](src:mobile-app/package.json
 | Temps réel | `socket.io-client` | ^4.8.1 |
 | Police Inter | `@expo-google-fonts/inter` | ^0.4.2 |
 | Connexion Google | `expo-auth-session`, `expo-web-browser` | ~58.0.18, ~58.0.8 |
-| Connexion Apple | `expo-apple-authentication` | ~58.0.3 |
+| Sons du grand tirage | `expo-audio` | ~58.0.12 |
 | Photo de la pièce d'identité | `expo-image-picker` | ~58.0.10 |
 | Stockage sécurisé | `expo-secure-store` | ~58.0.2 |
 | Presse-papiers | `expo-clipboard` | ~58.0.4 |
@@ -53,13 +53,15 @@ mobile-app/
 │   ├── animations/          confetti, loading-spinner, roulette-spin (Lottie, inutilisés)
 │   ├── fonts/               Inter Regular, Medium, Bold (non lues)
 │   ├── icons/               42 icônes SVG de la maquette
-│   └── images/              icon, adaptive-icon, splash, favicon
+│   ├── images/              icon, adaptive-icon, splash, favicon
+│   └── sounds/              roue-tirage.mp3 et chrono.mp3, fournis par l'équipe
 ├── src/
 │   ├── App.tsx              point d'entrée, chargement de la police Inter
 │   ├── navigation/          RootNavigator, AuthStack, MainTabs, hooks typés
-│   ├── screens/             31 écrans : auth, lottery, marketplace, settings, sponsors
+│   ├── content/             legal.ts : textes des six documents légaux, copie du fichier du web
+│   ├── screens/             32 écrans : auth, lottery, marketplace, settings, sponsors
 │   ├── components/
-│   │   ├── auth/            formulaires d'authentification, boutons Google et Apple
+│   │   ├── auth/            formulaires d'authentification, bouton Google
 │   │   ├── draw/            roue, salle d'attente, discussion, résultats
 │   │   ├── lottery/         carte d'échéance, paliers, offres à gratter, formats
 │   │   ├── marketplace/     zone à gratter, cartes d'offres et de codes
@@ -67,7 +69,7 @@ mobile-app/
 │   │   ├── settings/        cartes de l'accueil des paramètres, nom affiché, enregistrement des préférences
 │   │   ├── ui/              composants de base et icônes SVG
 │   │   └── web3/            IntegratedWalletCard, IntegratedWalletButton, ExplorerLink (inutilisés)
-│   ├── hooks/               useAuth, useCitizenWallet, useSocket, usePoints, usePushNotifications, useAppTheme
+│   ├── hooks/               useAuth, useCitizenWallet, useSocket, usePoints, usePushNotifications, useAppTheme, useSound
 │   ├── services/            api.client, secureStorage, socket.client, sentry.client
 │   ├── store/               store Redux, RTK Query (api/) et slices
 │   ├── theme/               ThemeProvider, colors, spacing, typography
@@ -135,7 +137,7 @@ Trois autres variables, listées vides, sont lues par [`SocialAuthButtons.tsx`](
 | `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` | Identifiant client OAuth Google utilisé sur Android |
 | `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | Identifiant client OAuth Google utilisé sur la cible web |
 
-Sans la variable de la plateforme courante, le bouton « Continuer avec Google » reste affiché mais désactivé, avec le message « Connexion Google non configurée sur cette application. ». Les identifiants doivent aussi figurer dans `GOOGLE_CLIENT_IDS` côté backend (voir [Authentification et stockage sécurisé](authentification.md#google-et-apple)).
+Sans la variable de la plateforme courante, le bouton « Continuer avec Google » reste affiché mais désactivé, avec le message « Connexion Google non configurée sur cette application. ». Les identifiants doivent aussi figurer dans `GOOGLE_CLIENT_IDS` côté backend (voir [Authentification et stockage sécurisé](authentification.md#google)).
 
 > [!IMPORTANT]
 > `localhost` désigne le téléphone lui-même. Sur un appareil physique ou un émulateur Android, l'URL doit pointer vers l'adresse IP de la machine qui fait tourner le backend. La procédure est dans [Tester sur un téléphone](telephone-physique.md).
@@ -149,7 +151,7 @@ L'ancien README mentionne `EXPO_PUBLIC_CHAIN_ID=11155111` : aucune ligne du code
 | `npm start` | `expo start` : serveur Metro et QR code |
 | `npm run android` | `expo start --android` |
 | `npm run ios` | `expo start --ios` |
-| `npm run web` | `expo start --web` ; `react-dom` et `react-native-web` sont désormais installés, mais la cible web n'est vérifiée ni par la CI ni par un test, et la connexion Apple n'y est jamais proposée |
+| `npm run web` | `expo start --web` ; `react-dom` et `react-native-web` sont désormais installés, mais la cible web n'est vérifiée ni par la CI ni par un test |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint avec `universe/native` et `universe/shared/typescript-analysis` |
 
@@ -165,7 +167,7 @@ Il reste du code sans appelant :
 |---|---|
 | `IntegratedWalletCard`, `IntegratedWalletButton` | Plus aucun écran ne les importe ; `ExplorerLink` n'est plus utilisé que par `IntegratedWalletCard` |
 | `generateDeterministicWallet` de `useCitizenWallet` | Plus appelée depuis la suppression de l'écran de connexion par email |
-| `getOnboarding`, `setResponsibleLimit` de `authApi` | Déclarés, aucun écran ne les appelle |
+| `getOnboarding` de `authApi` | Déclaré, aucun écran ne l'appelle |
 | `triggerSimulatedOsPush` de `usePushNotifications` | Plus aucun écran ne l'appelle : le bandeau de notification simulé ne s'affiche plus |
 | `notificationDrawerOpen` du slice `ui` | Le tiroir a été remplacé par l'écran `Notifications` |
 | Composants `ScratchOfferCard` | Deux composants du même nom, l'un dans `components/lottery` (accueil), l'autre dans `components/marketplace` (choix du ticket à gratter) |

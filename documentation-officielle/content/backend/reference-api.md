@@ -73,7 +73,7 @@ Le corps de la requête ne fait pas partie de la clé : la même clé avec un au
 | Limiteur | Portée | Limite |
 |---|---|---|
 | `globalRateLimiter` | toutes les routes après la maintenance, sauf sondes, `/api/config` et `/metrics` | 300 requêtes par 15 minutes et par IP |
-| `authRateLimiter` | `/auth/login`, `/signup`, `/signin`, `/password/forgot`, `/password/reset`, `/password/change`, `/email/change`, `/email/confirm`, `/oauth/google`, `/oauth/apple`, `/2fa/verify`, `/2fa/disable` | 30 requêtes par 10 minutes et par IP pour l'ensemble de ces routes, en plus de la limite globale |
+| `authRateLimiter` | `/auth/login`, `/signup`, `/signin`, `/password/forgot`, `/password/reset`, `/password/change`, `/email/change`, `/email/confirm`, `/oauth/google`, `/2fa/verify`, `/2fa/disable` | 30 requêtes par 10 minutes et par IP pour l'ensemble de ces routes, en plus de la limite globale |
 | `identityUploadRateLimiter` | `POST /user/identity` | 10 requêtes par heure et par IP, en plus de la limite globale |
 | `supportRateLimiter` | `POST /user/support` | 5 messages par heure et par compte (par IP à défaut), en plus de la limite globale |
 
@@ -90,9 +90,9 @@ La colonne « Résumé » du tableau reprend le `summary` du bloc `@openapi` pla
 | Route | Nuance |
 |---|---|
 | `POST /auth/login` | La déclaration de majorité est déclarative ; l'achat exige en plus la vérification d'âge par pièce d'identité. |
-| `POST /auth/oauth/google`, `/oauth/apple` | Répondent 503 tant que `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` est vide, ce qui est le cas par défaut. |
+| `POST /auth/2fa/verify` | Un code d'application n'est accepté qu'avec le `loginTicket` reçu après le premier facteur ou avec une session du compte. |
+| `POST /auth/oauth/google` | Répond 503 tant que `GOOGLE_CLIENT_IDS` est vide, ce qui est le cas par défaut. |
 | `POST /lottery/gift` | Le destinataire est désigné par son email, mais aucun email ne lui est envoyé ; seul l'âge de l'expéditeur est vérifié. |
-| `PUT /user/responsible-limit` | La limite est enregistrée mais sans effet avec un ticket par participant. |
 | `POST /lottery/refund` | En mode simulé, seul le statut du tour change ; le remboursement réel n'existe qu'en mode onchain. |
 | `GET /lottery/my-tickets` | En mode simulé, les badges POAP sont fictifs. |
 | `POST /partners/offers` | La date d'expiration est enregistrée dans Redis mais n'est jamais appliquée. |

@@ -97,10 +97,10 @@ Si le gaz alloué était insuffisant, l'appel au consommateur échouerait, le co
 |---|---|---|
 | Coordinateur | `VRFCoordinatorV2_5Mock` déployé par le script | `0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B`, remplaçable par `SEPOLIA_VRF_COORDINATOR` |
 | Key hash | `0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae` | Même valeur par défaut, remplaçable par `SEPOLIA_VRF_KEY_HASH` ; vérifiée par `s_provingKeys` |
-| Abonnement | Créé par `createSubscription`, financé de 10 000 unités simulées | `SEPOLIA_VRF_SUBSCRIPTION_ID`, créé à la main |
+| Abonnement | Créé par `createSubscription`, financé de 10 000 unités simulées | Créé par `npm run vrf:sepolia` et enregistré dans `deployments/sepolia-vrf.json`, ou fourni par `SEPOLIA_VRF_SUBSCRIPTION_ID` |
 | `requestConfirmations` | 1 | 3 |
 | `callbackGasLimit` | 500 000 | 500 000 |
-| `nativePayment` | `false` | `true` si l'abonnement n'a aucun LINK, `false` sinon |
+| `nativePayment` | `false` | `true` si l'abonnement a un solde en ETH, `false` sinon ; forçable par `VRF_NATIVE_PAYMENT` |
 | `drawTimeout` | 10 minutes | 24 heures |
 
 Le mock est construit avec trois paramètres de tarification : frais de base de 0,1 unité, prix du gaz de 1 gwei, et 4 × 10¹⁵ wei par LINK. Le mock ne vérifie pas la key hash.
@@ -111,8 +111,8 @@ VRF v2.5 fonctionne par abonnement : un compte crée un abonnement, le finance, 
 
 | Étape | En local | Sur Sepolia |
 |---|---|---|
-| Création | `coordinator.createSubscription()` dans le script | Sur le gestionnaire d'abonnements Chainlink, réseau Sepolia |
-| Financement | `fundSubscription(subId, 10000 ether)` | LINK de test ou ETH Sepolia ; le script refuse un abonnement sans aucun solde |
+| Création | `coordinator.createSubscription()` dans le script | `createSubscription()` par [`setup-vrf-sepolia.ts`](src:smart-contract/scripts/setup-vrf-sepolia.ts) (`npm run vrf:sepolia`), ou à la main sur le gestionnaire d'abonnements Chainlink |
+| Financement | `fundSubscription(subId, 10000 ether)` | `fundSubscriptionWithNative` de `VRF_FUND_ETH` ETH Sepolia (0,5 par défaut), ou LINK de test à la main ; le script de déploiement refuse un abonnement sans aucun solde |
 | Ajout du consommateur | `coordinator.addConsumer(subId, lottery)` | Par le script si le déployeur est le propriétaire de l'abonnement, sinon à la main |
 
 Un contrat non ajouté comme consommateur fait échouer `requestDraw` : la transaction est annulée et le tour reste `Open`. Un abonnement vidé laisse les requêtes en attente jusqu'à son réapprovisionnement ; si l'attente dépasse `drawTimeout`, l'opérateur peut relancer. Le pas à pas est sur la page [Déploiement sur Sepolia](sepolia.md).

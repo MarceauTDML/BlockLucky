@@ -90,8 +90,8 @@ Le kickoff demande de répondre à l'appel à projet en moins de 48 heures, en c
 |---|---|
 | 1. Configuration de l'environnement | Projet Hardhat 3, nœud local en conteneur (service `blockchain` de [`docker-compose.yml`](src:docker-compose.yml)) |
 | 2. Création du smart contract | `BlockLucky.sol` et `BlockLuckyPOAP.sol` |
-| 3. Test du smart contract | 47 tests dont 4 de fuzzing, 100 % des lignes couvertes, Slither en CI |
-| 4. Déploiement | Déploiement local automatique ; script Sepolia [`smart-contract/scripts/deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) prêt mais non exécuté |
+| 3. Test du smart contract | 54 tests dont 4 de fuzzing, 100 % des lignes couvertes, Slither en CI |
+| 4. Déploiement | Déploiement local automatique avec rôles séparés ; scripts Sepolia ([`smart-contract/scripts/deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts), abonnement VRF, Automation, vérification Etherscan) prêts mais non exécutés, faute des clés et des fonds de l'équipe |
 | 5. Soutenance | Préparée avec [ce guide](../guides/soutenance.md) |
 
 L'historique Git montre que le travail a dépassé le cadre strict des 48 heures et du seul contrat : le dépôt contient aussi le backend, le web, le mobile et un site vitrine, développés entre le 2 et le 11 novembre 2026. Voir [Historique et feuille de route](historique.md).
