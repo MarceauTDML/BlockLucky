@@ -5,20 +5,21 @@ import React from 'react';
 import { cn } from '@/lib/cn';
 import Spinner from './Spinner';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'soft';
 export type ButtonSize = 'md' | 'sm';
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'bg-primary text-on-primary hover:bg-primary-light',
-  secondary: 'bg-secondary text-on-primary hover:opacity-90',
-  danger: 'bg-error text-on-primary hover:opacity-90',
-  outline: 'border border-line bg-transparent text-fg hover:bg-surface-elevated',
+  primary: 'bg-sun text-on-sun shadow-[0_6px_16px_rgba(172,141,10,0.18)] hover:bg-sun-light',
+  secondary: 'bg-primary text-on-primary hover:bg-primary-light',
+  danger: 'border border-line bg-surface text-error hover:bg-peach',
+  outline: 'border border-line bg-surface text-fg hover:bg-surface-elevated',
   ghost: 'bg-transparent text-fg-secondary hover:bg-surface-elevated hover:text-fg',
+  soft: 'bg-lavender text-violet hover:opacity-90',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  md: 'min-h-12 px-[18px] py-[13px] text-body rounded-md',
-  sm: 'min-h-9 px-3.5 py-2 text-caption rounded-md',
+  md: 'min-h-[52px] px-5 py-3 text-body rounded-[16px]',
+  sm: 'min-h-10 px-3.5 py-2 text-caption rounded-[12px]',
 };
 
 export const buttonClasses = (
@@ -28,7 +29,7 @@ export const buttonClasses = (
   fullWidth = false
 ): string =>
   cn(
-    'inline-flex items-center justify-center gap-2 text-center font-medium transition-colors duration-150 select-none',
+    'inline-flex items-center justify-center gap-2 text-center font-semibold transition-colors duration-150 select-none',
     sizeClasses[size],
     disabled ? 'bg-surface-elevated text-fg-muted border-0 cursor-not-allowed' : variantClasses[variant],
     fullWidth && 'w-full'

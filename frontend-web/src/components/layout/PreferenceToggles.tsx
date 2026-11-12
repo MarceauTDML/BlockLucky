@@ -7,7 +7,7 @@ import { useAppTheme } from '@/theme/ThemeProvider';
 export const PreferenceToggles: React.FC<{ compact?: boolean; className?: string }> = ({ compact, className }) => {
   const { mode, language, toggleTheme, setLanguage, t } = useAppTheme();
   const pill =
-    'rounded-sm border border-line bg-surface-elevated px-2.5 py-1 text-caption font-semibold text-fg hover:border-fg-muted transition-colors';
+    'rounded-full border border-line bg-surface px-3 py-1.5 text-caption font-semibold text-fg hover:border-fg-muted transition-colors';
   return (
     <div className={cn('flex items-center gap-2', className)}>
       <button

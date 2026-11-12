@@ -9,10 +9,10 @@ import { useAppTheme } from '@/theme/ThemeProvider';
 export default function PartenaireLayout({ children }: { children: React.ReactNode }) {
   const { t } = useAppTheme();
   const nav: NavItem[] = [
-    { href: '/partenaire', label: t('Tableau de bord', 'Dashboard') },
-    { href: '/partenaire/offres', label: t('Mes offres', 'My offers') },
-    { href: '/partenaire/codes', label: t('Codes promo', 'Promo codes') },
-    { href: '/partenaire/validation', label: t('Validation', 'Redeem') },
+    { href: '/partenaire', label: t('Tableau de bord', 'Dashboard'), icon: 'tabHome' },
+    { href: '/partenaire/offres', label: t('Mes offres', 'My offers'), icon: 'gift' },
+    { href: '/partenaire/codes', label: t('Codes promo', 'Promo codes'), icon: 'giftTicket' },
+    { href: '/partenaire/validation', label: t('Validation', 'Redeem'), icon: 'check' },
   ];
 
   return (

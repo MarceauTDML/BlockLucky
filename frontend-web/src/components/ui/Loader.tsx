@@ -8,7 +8,7 @@ import Spinner from './Spinner';
 export const Skeleton: React.FC<{ className?: string }> = ({ className }) => (
   <div
     aria-hidden
-    className={cn('rounded-md bg-surface-elevated animate-bl-shimmer', className || 'h-[52px] w-full')}
+    className={cn('rounded-[16px] bg-surface-elevated animate-bl-shimmer', className || 'h-[52px] w-full')}
   />
 );
 
@@ -20,7 +20,7 @@ export const Loader: React.FC<{ message?: string; skeletonRows?: number; classNa
   const { t } = useAppTheme();
   return (
     <div className={cn('flex flex-col items-center justify-center py-5', className)} aria-live="polite">
-      <Spinner className="h-5 w-5 text-primary" />
+      <Spinner className="h-5 w-5 text-fg" />
       <p className="mt-2 mb-3.5 text-center text-caption text-fg-secondary">
         {message || t('Chargement...', 'Loading...')}
       </p>

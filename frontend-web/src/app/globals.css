@@ -3,40 +3,70 @@
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 :root {
-  --bg: #f7f6f2;
+  --bg: #f6f7fa;
   --surface: #ffffff;
-  --surface-elevated: #efece6;
-  --primary: #253d2c;
-  --primary-light: #3b5e46;
-  --secondary: #c86d51;
-  --text: #18181b;
-  --text-secondary: #52525b;
-  --text-muted: #8e8e93;
-  --border: #e4e2dd;
-  --success: #2e6f40;
-  --warning: #b45309;
-  --error: #b91c1c;
-  --on-primary: #f7f6f2;
-  --overlay: rgba(20, 20, 19, 0.48);
+  --surface-elevated: #f0f2f6;
+  --surface-muted: #f5f6f9;
+  --primary: #1d2637;
+  --primary-light: #2c3a52;
+  --secondary: #a95837;
+  --text: #1d2637;
+  --text-secondary: #657084;
+  --text-muted: #8a93a5;
+  --border: #e2e5eb;
+  --success: #356c58;
+  --warning: #a95837;
+  --error: #b4472b;
+  --on-primary: #ffffff;
+  --overlay: rgba(15, 23, 38, 0.5);
+  --sun: #ffda38;
+  --sun-light: #ffe979;
+  --sun-soft: #fff4b8;
+  --sun-chip: #fff7d3;
+  --sun-nav: #fff3b5;
+  --on-sun: #1d2637;
+  --on-sun-muted: #4a5263;
+  --on-sun-nav: #1d2637;
+  --lavender: #eee9ff;
+  --violet: #7357b1;
+  --mint: #e6efea;
+  --green: #356c58;
+  --peach: #ffe5d8;
+  --terracotta: #a95837;
+  --coral: #e87f69;
+  --card-shadow: 0 8px 24px rgba(29, 38, 55, 0.06);
+  --card-border: transparent;
   color-scheme: light;
 }
 
 [data-theme='dark'] {
-  --bg: #141413;
-  --surface: #1e1e1c;
-  --surface-elevated: #282826;
-  --primary: #4e7a5b;
-  --primary-light: #6b9b79;
-  --secondary: #c86d51;
-  --text: #f5f4f0;
-  --text-secondary: #a1a09a;
-  --text-muted: #6e6d68;
-  --border: #2e2e2b;
-  --success: #4e7a5b;
-  --warning: #d97706;
-  --error: #dc2626;
-  --on-primary: #f7f6f2;
+  --bg: #0f1626;
+  --surface: #1a2333;
+  --surface-elevated: #222c3e;
+  --surface-muted: #222c3e;
+  --primary: #f3f5f9;
+  --primary-light: #d5dae3;
+  --secondary: #f0a07f;
+  --text: #f3f5f9;
+  --text-secondary: #a3acbd;
+  --text-muted: #7d879a;
+  --border: #2c3649;
+  --success: #7fc4a6;
+  --warning: #f0a07f;
+  --error: #f0a07f;
+  --on-primary: #1d2637;
   --overlay: rgba(0, 0, 0, 0.6);
+  --sun-nav: #3a3420;
+  --on-sun-nav: #ffe979;
+  --lavender: #2a2546;
+  --violet: #b9a6f0;
+  --mint: #1e3329;
+  --green: #7fc4a6;
+  --peach: #3d2a22;
+  --terracotta: #f0a07f;
+  --sun-chip: #3a3420;
+  --card-shadow: none;
+  --card-border: #2c3649;
   color-scheme: dark;
 }
 
@@ -55,11 +85,28 @@
   --color-warning: var(--warning);
   --color-error: var(--error);
   --color-on-primary: var(--on-primary);
+  --color-surface-muted: var(--surface-muted);
+  --color-sun: var(--sun);
+  --color-sun-light: var(--sun-light);
+  --color-sun-soft: var(--sun-soft);
+  --color-sun-chip: var(--sun-chip);
+  --color-sun-nav: var(--sun-nav);
+  --color-on-sun: var(--on-sun);
+  --color-on-sun-muted: var(--on-sun-muted);
+  --color-on-sun-nav: var(--on-sun-nav);
+  --color-lavender: var(--lavender);
+  --color-violet: var(--violet);
+  --color-mint: var(--mint);
+  --color-green: var(--green);
+  --color-peach: var(--peach);
+  --color-terracotta: var(--terracotta);
+  --color-coral: var(--coral);
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 28px;
 
   --text-caption: 12px;
   --text-caption--line-height: 16px;
@@ -78,7 +125,7 @@
   --text-display: 44px;
   --text-display--line-height: 52px;
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
@@ -93,15 +140,15 @@
     font-family: var(--font-sans);
     font-size: 15px;
     line-height: 22px;
-    letter-spacing: -0.15px;
+    letter-spacing: -0.1px;
     -webkit-font-smoothing: antialiased;
   }
   ::selection {
-    background: var(--primary);
-    color: var(--on-primary);
+    background: var(--sun);
+    color: var(--on-sun);
   }
   :focus-visible {
-    outline: 2px solid var(--secondary);
+    outline: 2px solid var(--violet);
     outline-offset: 2px;
   }
   button:not(:disabled),
@@ -117,8 +164,9 @@
 
 @utility card {
   background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  box-shadow: var(--card-shadow);
 }
 
 @utility tabular {

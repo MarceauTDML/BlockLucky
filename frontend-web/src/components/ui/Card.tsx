@@ -1,7 +1,18 @@
 import React from 'react';
 import { cn } from '@/lib/cn';
 
-type CardTone = 'surface' | 'elevated';
+type CardTone = 'surface' | 'elevated' | 'sun' | 'sunSoft' | 'lavender' | 'mint' | 'peach' | 'ink';
+
+const toneClasses: Record<CardTone, string> = {
+  surface: 'bg-surface border border-[var(--card-border)] shadow-[var(--card-shadow)]',
+  elevated: 'bg-surface-elevated',
+  sun: 'bg-sun text-on-sun',
+  sunSoft: 'bg-sun-soft text-on-sun',
+  lavender: 'bg-lavender',
+  mint: 'bg-mint',
+  peach: 'bg-peach',
+  ink: 'bg-[#1d2637] text-white',
+};
 
 export interface CardProps extends React.HTMLAttributes<HTMLElement> {
   as?: 'div' | 'section' | 'article' | 'aside' | 'li';
@@ -9,7 +20,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLElement> {
   padding?: 'sm' | 'md' | 'lg';
 }
 
-const paddingClasses = { sm: 'p-3.5', md: 'p-4', lg: 'p-[18px] md:p-5' };
+const paddingClasses = { sm: 'p-4', md: 'p-[18px]', lg: 'p-5 md:p-6' };
 
 export const Card: React.FC<CardProps> = ({
   as: Tag = 'div',
@@ -21,8 +32,8 @@ export const Card: React.FC<CardProps> = ({
 }) => (
   <Tag
     className={cn(
-      'rounded-lg border border-line',
-      tone === 'surface' ? 'bg-surface' : 'bg-surface-elevated',
+      'rounded-[24px]',
+      toneClasses[tone],
       paddingClasses[padding],
       className
     )}

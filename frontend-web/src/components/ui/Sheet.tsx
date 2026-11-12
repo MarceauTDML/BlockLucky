@@ -4,6 +4,7 @@ import React, { useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '@/lib/cn';
 import useIsClient from '@/hooks/useIsClient';
+import Icon from './Icon';
 import { useAppTheme } from '@/theme/ThemeProvider';
 
 export interface SheetProps {
@@ -90,10 +91,10 @@ export const Sheet: React.FC<SheetProps> = ({
         aria-labelledby={titleId}
         tabIndex={-1}
         className={cn(
-          'flex max-h-[85vh] w-full flex-col border border-line bg-surface px-5 pt-3 pb-[max(20px,env(safe-area-inset-bottom))] animate-bl-slide-up focus:outline-none',
-          'rounded-t-xl md:rounded-xl md:pb-5 md:pt-5',
+          'flex max-h-[85vh] w-full flex-col border border-[var(--card-border)] bg-surface px-5 pt-3 pb-[max(20px,env(safe-area-inset-bottom))] shadow-[0_24px_48px_rgba(17,24,39,0.18)] animate-bl-slide-up focus:outline-none',
+          'rounded-t-[28px] md:rounded-[28px] md:px-6 md:pb-6 md:pt-6',
           size === 'lg' ? 'md:max-w-2xl' : 'md:max-w-md',
-          tone === 'danger' && 'border-error'
+          tone === 'danger' && 'border-t-4 border-t-error'
         )}
       >
         <div className="mx-auto mb-3 h-1 w-9 rounded-full bg-line md:hidden" aria-hidden />
@@ -102,8 +103,8 @@ export const Sheet: React.FC<SheetProps> = ({
             {eyebrow ? (
               <p
                 className={cn(
-                  'text-caption font-medium',
-                  tone === 'danger' ? 'text-error' : 'text-secondary'
+                  'mb-1 text-caption font-semibold',
+                  tone === 'danger' ? 'text-error' : 'text-violet'
                 )}
               >
                 {eyebrow}
@@ -117,9 +118,10 @@ export const Sheet: React.FC<SheetProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-sm px-1.5 py-1 text-caption font-medium text-fg-secondary hover:bg-surface-elevated"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-elevated text-fg hover:bg-line"
+              aria-label={t('Fermer', 'Close')}
             >
-              {t('Fermer', 'Close')}
+              <Icon name="close" size={16} />
             </button>
           ) : null}
         </div>

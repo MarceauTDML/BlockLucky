@@ -5,8 +5,8 @@ import { cn } from '@/lib/cn';
 
 const fieldClasses = (hasError: boolean) =>
   cn(
-    'w-full rounded-md border bg-surface px-3.5 py-[11px] text-body text-fg placeholder:text-fg-muted',
-    'transition-colors focus:outline-none focus:border-primary focus-visible:outline-none',
+    'w-full rounded-[14px] border bg-surface px-4 py-[13px] text-body text-fg placeholder:text-fg-muted',
+    'transition-colors focus:outline-none focus:border-fg focus:ring-4 focus:ring-sun/30 focus-visible:outline-none',
     hasError ? 'border-error' : 'border-line'
   );
 
@@ -21,7 +21,7 @@ interface FieldWrapperProps {
 const FieldWrapper: React.FC<FieldWrapperProps> = ({ id, label, hint, errorText, children }) => (
   <div className="mb-3">
     {label ? (
-      <label htmlFor={id} className="mb-[5px] block text-caption font-medium text-fg-secondary">
+      <label htmlFor={id} className="mb-1.5 block text-caption font-semibold text-fg">
         {label}
       </label>
     ) : null}
