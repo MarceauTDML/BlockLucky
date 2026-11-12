@@ -11,7 +11,12 @@ import { AppError } from '../../utils/response.util';
 import { businessEventsTotal } from '../../observability/metrics';
 import { Milestone } from '../../types/api.types';
 import chainClient from '../../blockchain/chain.client';
-import lotteryGateway, { OnchainRound } from '../../blockchain/lottery.gateway';
+import lotteryGateway, {
+  GIFT_PLAYER_LIMIT_MESSAGE,
+  OnchainRound,
+  PLAYER_LIMIT_MESSAGE,
+} from '../../blockchain/lottery.gateway';
+import { markDrawReady, readDrawReadyAt, readyCandidate, revealAtFrom } from '../../blockchain/draw-reveal';
 import walletService from '../../blockchain/wallet.service';
 import { POINTS_PER_TICKET as ONCHAIN_POINTS_PER_TICKET } from '../../blockchain/lottery.indexer';
 import { formatEther } from 'ethers';
@@ -20,29 +25,59 @@ const TARGET_PARTICIPANTS = 10000;
 const TICKET_PRICE_ETH = 0.01;
 const POINTS_PER_TICKET = 50;
 const POINTS_PER_GIFT = 75;
+const SIMULATED_ROUND_DURATION_MS = 48 * 60 * 60 * 1000;
+
+export type RoundPhase = 'OPEN' | 'WAITING_ROOM' | 'DRAWING' | 'COMPLETED' | 'CANCELLED';
+
+export const formatTicketNumber = (ticketIndex: number | null | undefined): string | null =>
+  ticketIndex === null || ticketIndex === undefined ? null : String(ticketIndex + 1).padStart(5, '0');
+
+const withTicketNumber = <T extends { ticketIndex?: number | null }>(ticket: T) => ({
+  ...ticket,
+  ticketNumber: formatTicketNumber(ticket.ticketIndex),
+});
+
+const phaseOf = (status: string, purchasesClosed: boolean): RoundPhase => {
+  if (status === 'LOCKED') return 'DRAWING';
+  if (status === 'COMPLETED') return 'COMPLETED';
+  if (status === 'CANCELLED') return 'CANCELLED';
+  return purchasesClosed ? 'WAITING_ROOM' : 'OPEN';
+};
+
+const playerLimitError = (message = PLAYER_LIMIT_MESSAGE) =>
+  new AppError(message, 409, { contractError: 'PlayerLimitReached' });
+
+const isPlayerLimitError = (error: unknown): boolean =>
+  error instanceof AppError &&
+  (error.details as { contractError?: string } | undefined)?.contractError === 'PlayerLimitReached';
+
+const toIso = (ms: number | null): string | null => (ms === null ? null : new Date(ms).toISOString());
 
 export class LotteryService {
   private buildMilestones(currentCount: number): Milestone[] {
-    return [
-      {
-        target: 1000,
-        title: 'Palier Quartier Innovant (1 000 participants)',
-        rewardDescription: "+10% de cagnotte bonus abondée par la Mairie d'EtherBay",
-        unlocked: currentCount >= 1000,
-      },
+    const steps = [
       {
         target: 5000,
-        title: 'Palier Ville Connectée (5 000 participants)',
-        rewardDescription: 'Déblocage des offres exclusives chez 25 commerçants partenaires',
-        unlocked: currentCount >= 5000,
+        title: 'Coulisses dévoilées',
+        rewardDescription: 'Les coulisses du grand tirage et des lots des commerçants sont dévoilées.',
+      },
+      {
+        target: 7500,
+        title: 'Offre spéciale ouverte',
+        rewardDescription: 'Une offre spéciale des commerçants partenaires est ouverte à tous les participants.',
+      },
+      {
+        target: 9000,
+        title: 'Jeu bonus débloqué',
+        rewardDescription: 'Un jeu bonus est débloqué pour tous les participants du tirage.',
       },
       {
         target: 10000,
-        title: 'Grand Objectif EtherBay (10 000 participants)',
-        rewardDescription: 'Double tirage exceptionnel + Badge POAP Collector Or pour tous',
-        unlocked: currentCount >= 10000,
+        title: 'Ouverture de la salle',
+        rewardDescription: "Les achats sont clos et la salle d'attente du tirage ouvre.",
       },
     ];
+    return steps.map((step) => ({ ...step, unlocked: currentCount >= step.target }));
   }
 
   private txUrl(transactionHash: string | null | undefined): string | null {
@@ -56,9 +91,10 @@ export class LotteryService {
     const distinctParticipants = await lotteryRepository.countDistinctParticipants(round.id);
     const networkStatus = await blockchainService.getNetworkStatus();
 
-    const drawTargetTime = new Date(round.startedAt.getTime() + 48 * 60 * 60 * 1000);
+    const drawTargetTime = new Date(round.startedAt.getTime() + SIMULATED_ROUND_DURATION_MS);
     const remainingSeconds = Math.max(0, Math.floor((drawTargetTime.getTime() - Date.now()) / 1000));
     const inWaitingRoom = remainingSeconds <= 600 && round.status === 'OPEN';
+    const phase = phaseOf(round.status, remainingSeconds === 0);
 
     const fomoPercentage = Math.min(100, Number(((ticketsSold / TARGET_PARTICIPANTS) * 100).toFixed(2)));
 
@@ -76,6 +112,14 @@ export class LotteryService {
         drawTargetTime: drawTargetTime.toISOString(),
         remainingSeconds,
         inWaitingRoom,
+        phase,
+        waitingRoomOpensAt: drawTargetTime.toISOString(),
+        revealAt:
+          phase === 'WAITING_ROOM' || phase === 'DRAWING'
+            ? toIso(revealAtFrom(drawTargetTime.getTime()))
+            : null,
+        participants: distinctParticipants,
+        maxParticipants: TARGET_PARTICIPANTS,
       },
       progression: {
         ticketsSold,
@@ -113,10 +157,14 @@ export class LotteryService {
     }
 
     const quantity = input.quantity ?? 1;
+    if (round.startedAt.getTime() + SIMULATED_ROUND_DURATION_MS <= Date.now()) {
+      throw new AppError('Ce tour est terminé, le tirage va être lancé.', 409);
+    }
 
     const limitStr = await redis.get(`user:ticket_limit:${userId}`);
     const maxTicketsAllowed = limitStr ? Number(limitStr) : 50;
     const currentTicketsCount = await lotteryRepository.countUserTicketsInRound(userId, round.id);
+    if (currentTicketsCount > 0) throw playerLimitError();
 
     if (currentTicketsCount + quantity > maxTicketsAllowed) {
       throw new AppError(
@@ -152,10 +200,11 @@ export class LotteryService {
         transactionHash: relayed.transactionHash,
         blockNumber: relayed.blockNumber,
         ticketPriceEth: TICKET_PRICE_ETH,
+        ticketIndex: await lotteryRepository.countTicketsInRound(round.id),
       });
 
       createdTickets.push({
-        ...ticket,
+        ...withTicketNumber(ticket),
         etherscanUrl: this.txUrl(ticket.transactionHash),
       });
       totalPointsEarned += POINTS_PER_TICKET;
@@ -205,7 +254,11 @@ export class LotteryService {
     }
 
     const emailLower = input.recipientEmail.toLowerCase();
+    if (sender.email === emailLower) throw new AppError('Vous ne pouvez pas vous offrir un ticket à vous-même.', 400);
     let recipient = await authRepository.findByEmail(emailLower);
+    if (recipient && (await lotteryRepository.countUserTicketsInRound(recipient.id, round.id)) > 0) {
+      throw playerLimitError(GIFT_PLAYER_LIMIT_MESSAGE);
+    }
 
     if (!recipient) {
       const generatedWallet =
@@ -229,6 +282,7 @@ export class LotteryService {
       transactionHash: relayed.transactionHash,
       blockNumber: relayed.blockNumber,
       ticketPriceEth: TICKET_PRICE_ETH,
+      ticketIndex: await lotteryRepository.countTicketsInRound(round.id),
     });
 
     const senderLedger = await ledgerService.creditPoints(
@@ -240,7 +294,7 @@ export class LotteryService {
 
     return {
       ticket: {
-        ...ticket,
+        ...withTicketNumber(ticket),
         recipientEmail: emailLower,
         recipientWallet: recipient.walletAddress,
         etherscanUrl: this.txUrl(ticket.transactionHash),
@@ -281,8 +335,11 @@ export class LotteryService {
       participants
     );
 
+    const winningTicket =
+      fullRound.tickets.find((t) => t.user.walletAddress === vrfResult.winnerWallet)?.ticketIndex ?? null;
     const completedRound = await lotteryRepository.updateRoundStatus(fullRound.id, {
       status: 'COMPLETED',
+      winningTicket,
       winnerWallet: vrfResult.winnerWallet,
       chainlinkRequestId: vrfResult.chainlinkRequestId,
       drawnAt: new Date(),
@@ -347,17 +404,35 @@ export class LotteryService {
     const skip = (page - 1) * limit;
     const { tickets, total } = await lotteryRepository.getUserTickets(userId, skip, limit);
     const user = await authRepository.findById(userId);
+    const wallet = user?.walletAddress.toLowerCase() ?? null;
 
-    const enrichedTickets = tickets.map((t) => ({
-      id: t.id,
-      transactionHash: t.transactionHash,
-      blockNumber: t.blockNumber,
-      purchasedAt: t.purchasedAt,
-      roundId: t.lottery.id,
-      contractRoundId: t.lottery.contractRoundId,
-      roundStatus: t.lottery.status,
-      etherscanUrl: this.txUrl(t.transactionHash),
-    }));
+    const enrichedTickets = tickets.map((t) => {
+      const round = t.lottery;
+      const completed = round.status === 'COMPLETED';
+      const winningTicket = round.winningTicket ?? null;
+      const ticketIndex = t.ticketIndex ?? null;
+      const isWinner =
+        completed &&
+        (winningTicket !== null && ticketIndex !== null
+          ? winningTicket === ticketIndex
+          : Boolean(wallet && round.winnerWallet?.toLowerCase() === wallet));
+      return {
+        id: t.id,
+        ticketIndex,
+        ticketNumber: formatTicketNumber(ticketIndex),
+        transactionHash: t.transactionHash,
+        blockNumber: t.blockNumber,
+        purchasedAt: t.purchasedAt,
+        roundId: round.id,
+        contractRoundId: round.contractRoundId,
+        roundStatus: round.status,
+        isWinner,
+        winningTicketNumber: completed ? formatTicketNumber(winningTicket) : null,
+        prizeEth: round.prizeWei ? Number(formatEther(round.prizeWei)) : Number(round.prizePool.toFixed(4)),
+        drawnAt: round.drawnAt,
+        etherscanUrl: this.txUrl(t.transactionHash),
+      };
+    });
 
     if (chainClient.isOnchain) {
       return {
@@ -405,8 +480,16 @@ export class LotteryService {
     const round = await this.syncRound(onchain);
     const distinctParticipants = await lotteryRepository.countDistinctParticipants(round.id);
     const networkStatus = await blockchainService.getNetworkStatus();
-    const remainingSeconds = Math.max(0, Math.floor((onchain.endTime.getTime() - Date.now()) / 1000));
+    const now = Date.now();
+    const remainingSeconds = Math.max(0, Math.floor((onchain.endTime.getTime() - now) / 1000));
     const ticketsSold = onchain.ticketCount;
+    const purchasesClosed = ticketsSold >= onchain.maxTickets || now >= onchain.endTime.getTime();
+    const drawReady = onchain.status === 'OPEN' && purchasesClosed && ticketsSold >= onchain.minTicketsToDraw;
+    const readyAt = drawReady
+      ? await markDrawReady(onchain.contractRoundId, readyCandidate(onchain.endTime, now))
+      : await readDrawReadyAt(onchain.contractRoundId);
+    const phase = phaseOf(onchain.status, purchasesClosed);
+    const onePerPlayer = onchain.maxTicketsPerPlayer === 1;
 
     return {
       round: {
@@ -423,6 +506,12 @@ export class LotteryService {
         remainingSeconds,
         inWaitingRoom: remainingSeconds <= 600 && onchain.status === 'OPEN',
         maxTicketsPerPlayer: onchain.maxTicketsPerPlayer,
+        phase,
+        waitingRoomOpensAt: toIso(readyAt ?? onchain.endTime.getTime()),
+        revealAt:
+          readyAt !== null && (phase === 'WAITING_ROOM' || phase === 'DRAWING') ? toIso(revealAtFrom(readyAt)) : null,
+        participants: onePerPlayer ? ticketsSold : distinctParticipants,
+        maxParticipants: onchain.maxTickets,
       },
       progression: {
         ticketsSold,
@@ -461,7 +550,12 @@ export class LotteryService {
       );
     }
 
+    if (currentTicketsCount > 0) throw playerLimitError();
+
     const buyer = await lotteryGateway.prepareWallet(user);
+    if ((await lotteryGateway.ticketsOf(onchain.contractRoundId, buyer.walletAddress)) > 0) {
+      throw playerLimitError();
+    }
     const { receipt, purchase } = await lotteryGateway.buyTickets(buyer, quantity);
     const tickets = await lotteryRepository.findTicketsByIds(purchase.ticketIds);
     const refreshed = await authRepository.findById(userId);
@@ -469,7 +563,7 @@ export class LotteryService {
     businessEventsTotal.inc({ event: 'ticket_purchased' }, quantity);
 
     return {
-      tickets: tickets.map((ticket) => ({ ...ticket, etherscanUrl: this.txUrl(ticket.transactionHash) })),
+      tickets: tickets.map((ticket) => ({ ...withTicketNumber(ticket), etherscanUrl: this.txUrl(ticket.transactionHash) })),
       pointsAwarded: ONCHAIN_POINTS_PER_TICKET * quantity,
       newPointsBalance: refreshed?.pointsBalance ?? user.pointsBalance,
       poapBadge: {
@@ -504,14 +598,23 @@ export class LotteryService {
       recipient = await walletService.ensureWallet(recipient);
     }
 
+    const onchain = await lotteryGateway.readCurrentRound();
+    if ((await lotteryGateway.ticketsOf(onchain.contractRoundId, recipient.walletAddress)) > 0) {
+      throw playerLimitError(GIFT_PLAYER_LIMIT_MESSAGE);
+    }
+
     const payer = await lotteryGateway.prepareWallet(sender);
-    const { receipt, purchase } = await lotteryGateway.buyTickets(payer, 1, recipient.walletAddress);
+    const { receipt, purchase } = await lotteryGateway
+      .buyTickets(payer, 1, recipient.walletAddress)
+      .catch((error: unknown) => {
+        throw isPlayerLimitError(error) ? playerLimitError(GIFT_PLAYER_LIMIT_MESSAGE) : error;
+      });
     const [ticket] = await lotteryRepository.findTicketsByIds(purchase.ticketIds);
     const refreshedSender = await authRepository.findById(senderId);
 
     return {
       ticket: {
-        ...ticket,
+        ...(ticket ? withTicketNumber(ticket) : {}),
         recipientEmail: emailLower,
         recipientWallet: recipient.walletAddress,
         etherscanUrl: this.txUrl(receipt.hash),

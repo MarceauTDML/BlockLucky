@@ -4,6 +4,7 @@ import { authenticate } from '../../middlewares/auth.middleware';
 import { requireRoles } from '../../middlewares/rbac.middleware';
 import { validate } from '../../middlewares/validate.middleware';
 import { idempotency } from '../../middlewares/idempotency.middleware';
+import { requireAgeVerification } from '../../middlewares/age-verification.middleware';
 import { buyTicketSchema, claimPrizeSchema, giftTicketSchema, triggerDrawSchema } from './lottery.validators';
 
 const router = Router();
@@ -51,11 +52,12 @@ router.get('/poap/:file', (req, res, next) => lotteryController.getPoapMetadata(
  * /api/lottery/buy:
  *   post:
  *     tags: [Lottery]
- *     summary: Acheter un ou plusieurs tickets en 1 clic, transaction signée par le portefeuille intégré du citoyen, et gagner 50 EtherPoints par ticket
+ *     summary: Acheter son ticket unique du grand tirage en 1 clic (âge vérifié requis), transaction signée par le portefeuille intégré du citoyen, et gagner 50 EtherPoints
  */
 router.post(
   '/buy',
   authenticate,
+  requireAgeVerification,
   idempotency,
   validate(buyTicketSchema),
   (req, res, next) => lotteryController.buyTicket(req, res, next)
@@ -66,11 +68,12 @@ router.post(
  * /api/lottery/gift:
  *   post:
  *     tags: [Lottery]
- *     summary: Offrir un ticket à un proche désigné par son email, acheté pour son portefeuille intégré (Cadeau viral)
+ *     summary: Offrir un ticket à un proche désigné par son email, acheté pour son portefeuille intégré (âge vérifié requis, un ticket par participant)
  */
 router.post(
   '/gift',
   authenticate,
+  requireAgeVerification,
   idempotency,
   validate(giftTicketSchema),
   (req, res, next) => lotteryController.giftTicket(req, res, next)

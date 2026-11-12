@@ -89,12 +89,17 @@ export class LotteryRepository {
     });
   }
 
+  public async countTicketsInRound(lotteryId: string): Promise<number> {
+    return prisma.ticket.count({ where: { lotteryId } });
+  }
+
   public async createTicketWithPrizeIncrement(data: {
     userId: string;
     lotteryId: string;
     transactionHash: string;
     blockNumber: number;
     ticketPriceEth: number;
+    ticketIndex?: number;
   }) {
     const [ticket, updatedRound] = await prisma.$transaction([
       prisma.ticket.create({
@@ -103,6 +108,7 @@ export class LotteryRepository {
           lotteryId: data.lotteryId,
           transactionHash: data.transactionHash,
           blockNumber: data.blockNumber,
+          ...(data.ticketIndex !== undefined ? { ticketIndex: data.ticketIndex } : {}),
         },
       }),
       prisma.lotteryRound.update({
@@ -138,6 +144,7 @@ export class LotteryRepository {
       winnerWallet?: string | null;
       chainlinkRequestId?: string | null;
       drawnAt?: Date | null;
+      winningTicket?: number | null;
     }
   ) {
     return prisma.lotteryRound.update({
