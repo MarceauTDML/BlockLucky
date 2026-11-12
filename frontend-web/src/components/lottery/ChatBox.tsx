@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Icon from '@/components/ui/Icon';
 import { cn } from '@/lib/cn';
 import { useAppTheme } from '@/theme/ThemeProvider';
 import { LiveChatMessage } from '@/store/slices/lotterySlice';
@@ -33,10 +34,20 @@ export const ChatBox: React.FC<{
   };
 
   return (
-    <section className={cn('card flex flex-col p-4', className)} aria-label={t('Discussion en direct', 'Live Chat')}>
-      <div className="mb-2.5 flex items-center justify-between">
-        <h2 className="text-body font-bold">{t('Discussion en direct', 'Live Chat')}</h2>
-        <span className="inline-flex items-center gap-1.5 text-caption text-secondary">
+    <section className={cn('card flex flex-col p-5', className)} aria-label={t('Discussion en direct', 'Live Chat')}>
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-3">
+          <span aria-hidden className="flex h-10 w-10 items-center justify-center rounded-full bg-sun-soft text-on-sun">
+            <Icon name="chat" size={20} />
+          </span>
+          <h2 className="text-subtitle font-bold">{t('Discussion en direct', 'Live Chat')}</h2>
+        </div>
+        <span
+          className={cn(
+            'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-caption font-semibold',
+            connected ? 'bg-mint text-green' : 'bg-surface-elevated text-fg-muted'
+          )}
+        >
           <span
             aria-hidden
             className={cn('h-1.5 w-1.5 rounded-full', connected ? 'bg-success' : 'bg-fg-muted')}
@@ -49,7 +60,7 @@ export const ChatBox: React.FC<{
         ref={listRef}
         role="log"
         aria-live="polite"
-        className="mb-3 flex max-h-72 min-h-24 flex-1 flex-col gap-1.5 overflow-y-auto lg:max-h-none"
+        className="mb-3 flex max-h-72 min-h-24 flex-1 flex-col gap-2 overflow-y-auto rounded-[18px] bg-surface-elevated p-3 lg:max-h-none"
       >
         {visibleMessages.length === 0 ? (
           <p className="text-caption text-fg-muted">
@@ -57,7 +68,7 @@ export const ChatBox: React.FC<{
           </p>
         ) : (
           visibleMessages.map((item) => (
-            <p key={item.id} className="text-caption">
+            <p key={item.id} className="self-start rounded-[14px] bg-surface px-3 py-2 text-caption shadow-[var(--card-shadow)]">
               <span className="font-mono font-bold text-fg-secondary">{item.senderWallet} </span>
               <span className="text-fg">
                 {item.emoji ? `[${item.emoji}] ` : ''}
@@ -76,8 +87,8 @@ export const ChatBox: React.FC<{
             aria-pressed={selectedTag === tag}
             onClick={() => setSelectedTag(tag === selectedTag ? undefined : tag)}
             className={cn(
-              'rounded-sm px-2.5 py-[5px] text-caption font-medium transition-colors',
-              selectedTag === tag ? 'bg-primary text-on-primary' : 'bg-surface-elevated text-fg-secondary hover:text-fg'
+              'rounded-full px-3 py-1.5 text-caption font-semibold transition-colors',
+              selectedTag === tag ? 'bg-sun text-on-sun' : 'bg-surface-elevated text-fg-secondary hover:text-fg'
             )}
           >
             {tag}
@@ -95,13 +106,14 @@ export const ChatBox: React.FC<{
           maxLength={280}
           onChange={(e) => setInputText(e.target.value)}
           placeholder={t('Écrire un message...', 'Write a message...')}
-          className="min-w-0 flex-1 rounded-md bg-surface-elevated px-3 py-[9px] text-small text-fg placeholder:text-fg-muted focus:outline-none focus-visible:outline-2 focus-visible:outline-secondary"
+          className="min-w-0 flex-1 rounded-full border border-line bg-surface px-4 py-2.5 text-caption text-fg placeholder:text-fg-muted focus:border-fg focus:outline-none focus:ring-4 focus:ring-sun/30"
         />
         <button
           type="submit"
-          className="rounded-md bg-primary px-3.5 text-caption font-medium text-on-primary hover:bg-primary-light"
+          className="inline-flex items-center gap-1.5 rounded-full bg-sun px-4 text-caption font-semibold text-on-sun hover:bg-sun-light"
         >
           {t('Envoyer', 'Send')}
+          <Icon name="arrowSend" size={16} />
         </button>
       </form>
     </section>

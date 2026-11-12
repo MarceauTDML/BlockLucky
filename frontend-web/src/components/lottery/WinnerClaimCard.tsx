@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import { Alert } from '@/components/ui/Misc';
 import useBlockLuckyWallet, { ClaimPrizeOutcome } from '@/hooks/useBlockLuckyWallet';
 import { cn } from '@/lib/cn';
@@ -45,15 +46,22 @@ export const WinnerClaimCard: React.FC<{ status?: LotteryStatusResponse; classNa
   };
 
   return (
-    <section className={cn('card flex flex-col gap-2 p-[18px]', className)} aria-live="polite">
-      <p className="text-caption font-semibold text-primary">{t('Félicitations', 'Congratulations')}</p>
-      <h2 className="text-subtitle font-bold">
+    <section className={cn('flex flex-col gap-2.5 rounded-[24px] bg-mint p-5', className)} aria-live="polite">
+      <div className="flex items-center gap-3">
+        <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-green">
+          <Icon name="trophy" size={20} />
+        </span>
+        <p className="rounded-full bg-surface px-3 py-1 text-caption font-semibold text-green">
+          {t('Félicitations', 'Congratulations')}
+        </p>
+      </div>
+      <h2 className="text-heading font-bold">
         {t(
           `Votre portefeuille a remporté le tirage #${win.contractRoundId}`,
           `Your wallet won draw #${win.contractRoundId}`
         )}
       </h2>
-      <p className="text-caption text-fg-secondary tabular">
+      <p className="text-body font-semibold text-green tabular">
         {t(
           `Cagnotte : ${Number(win.prizePool || 0).toFixed(4)} ethers fictifs`,
           `Prize pool: ${Number(win.prizePool || 0).toFixed(4)} test ethers`
