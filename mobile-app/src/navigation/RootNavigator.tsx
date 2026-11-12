@@ -16,6 +16,8 @@ import useCitizenWallet from '../hooks/useCitizenWallet';
 import usePushNotifications from '../hooks/usePushNotifications';
 import Setup2FAScreen from '../screens/auth/Setup2FAScreen';
 import BuyTicketScreen from '../screens/lottery/BuyTicketScreen';
+import GiftTicketScreen from '../screens/lottery/GiftTicketScreen';
+import HowItWorksScreen from '../screens/lottery/HowItWorksScreen';
 import LiveDrawScreen from '../screens/lottery/LiveDrawScreen';
 import TransactionHistoryScreen from '../screens/lottery/TransactionHistoryScreen';
 import MyCodesScreen from '../screens/marketplace/MyCodesScreen';
@@ -24,6 +26,7 @@ import RewardsCatalogScreen from '../screens/marketplace/RewardsCatalogScreen';
 import ScratchCardScreen from '../screens/marketplace/ScratchCardScreen';
 import GDPRScreen from '../screens/settings/GDPRScreen';
 import HelpSupportScreen from '../screens/settings/HelpSupportScreen';
+import NotificationsScreen from '../screens/settings/NotificationsScreen';
 import SecurityScreen from '../screens/settings/SecurityScreen';
 import VerifyAgeScreen from '../screens/settings/VerifyAgeScreen';
 import { useAppDispatch, useAppSelector } from '../store';
@@ -105,8 +108,11 @@ export const RootNavigator: React.FC = () => {
             <>
               <Stack.Screen name="Main" component={MainTabs} />
               <Stack.Screen name="BuyTicket" component={BuyTicketScreen} />
+              <Stack.Screen name="GiftTicket" component={GiftTicketScreen} />
               <Stack.Screen name="LiveDraw" component={LiveDrawScreen} />
               <Stack.Screen name="TransactionHistory" component={TransactionHistoryScreen} />
+              <Stack.Screen name="Notifications" component={NotificationsScreen} />
+              <Stack.Screen name="HowItWorks" component={HowItWorksScreen} />
               <Stack.Screen name="RewardsCatalog" component={RewardsCatalogScreen} />
               <Stack.Screen name="RewardDetail" component={RewardDetailScreen} />
               <Stack.Screen name="ScratchCard" component={ScratchCardScreen} />
