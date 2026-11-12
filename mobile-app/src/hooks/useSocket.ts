@@ -1,5 +1,8 @@
 import { useEffect, useCallback } from 'react';
+
+import socketClient from '../services/socket.client';
 import { useAppDispatch, useAppSelector } from '../store';
+import { baseApi } from '../store/api/baseApi';
 import {
   setWaitingRoomOnlineCount,
   addLiveChatMessage,
@@ -8,8 +11,6 @@ import {
   LiveWinnerAnnouncement,
 } from '../store/slices/lotterySlice';
 import { showPointsPopup } from '../store/slices/uiSlice';
-import { baseApi } from '../store/api/baseApi';
-import socketClient from '../services/socket.client';
 
 export const useSocket = (roundId?: string) => {
   const dispatch = useAppDispatch();
@@ -18,43 +19,48 @@ export const useSocket = (roundId?: string) => {
   useEffect(() => {
     let mounted = true;
 
+    const onWaitingRoom = (payload: { active: boolean; onlineUsers: number }) => {
+      dispatch(setWaitingRoomOnlineCount(payload.onlineUsers));
+    };
+
+    const onChatMessage = (msg: LiveChatMessage) => {
+      dispatch(addLiveChatMessage(msg));
+    };
+
+    const onWinner = (winner: LiveWinnerAnnouncement) => {
+      dispatch(setWinnerAnnouncement(winner));
+      dispatch(baseApi.util.invalidateTags(['Lottery', 'Wallet']));
+    };
+
+    const onPointsAwarded = (event: { userId: string; amount: number; reason: string }) => {
+      if (currentUserId && event.userId === currentUserId) {
+        dispatch(
+          showPointsPopup({
+            amount: event.amount,
+            reason: `Attribution dynamique : +${event.amount} EtherPoints`,
+          }),
+        );
+      }
+    };
+
+    const joinRoom = () => {
+      const socket = socketClient.getSocket();
+      if (socket && roundId) {
+        socket.emit('draw:join', roundId);
+      }
+    };
+
     const setup = async () => {
       const socket = await socketClient.connect();
       if (!mounted) return;
 
-      if (roundId) {
-        socket.emit('draw:join', roundId);
-      }
+      socket.on('connect', joinRoom);
+      if (socket.connected) joinRoom();
 
-      socket.on(
-        'draw:waiting-room',
-        (payload: { active: boolean; onlineUsers: number }) => {
-          dispatch(setWaitingRoomOnlineCount(payload.onlineUsers));
-        }
-      );
-
-      socket.on('chat:message', (msg: LiveChatMessage) => {
-        dispatch(addLiveChatMessage(msg));
-      });
-
-      socket.on('draw:winner', (winner: LiveWinnerAnnouncement) => {
-        dispatch(setWinnerAnnouncement(winner));
-        dispatch(baseApi.util.invalidateTags(['Lottery', 'Wallet']));
-      });
-
-      socket.on(
-        'points:awarded',
-        (event: { userId: string; amount: number; reason: string }) => {
-          if (currentUserId && event.userId === currentUserId) {
-            dispatch(
-              showPointsPopup({
-                amount: event.amount,
-                reason: `Attribution dynamique : +${event.amount} EtherPoints`,
-              })
-            );
-          }
-        }
-      );
+      socket.on('draw:waiting-room', onWaitingRoom);
+      socket.on('chat:message', onChatMessage);
+      socket.on('draw:winner', onWinner);
+      socket.on('points:awarded', onPointsAwarded);
     };
 
     setup();
@@ -62,28 +68,24 @@ export const useSocket = (roundId?: string) => {
     return () => {
       mounted = false;
       const socket = socketClient.getSocket();
-      if (socket && roundId) {
+      if (!socket) return;
+      socket.off('connect', joinRoom);
+      socket.off('draw:waiting-room', onWaitingRoom);
+      socket.off('chat:message', onChatMessage);
+      socket.off('draw:winner', onWinner);
+      socket.off('points:awarded', onPointsAwarded);
+      if (roundId) {
         socket.emit('draw:leave', roundId);
       }
     };
   }, [currentUserId, dispatch, roundId]);
 
-  const sendChatMessage = useCallback((message: string, emoji?: string) => {
+  const sendChatMessage = useCallback((message: string, emoji?: string): boolean => {
     const socket = socketClient.getSocket();
-    if (socket && socket.connected) {
-      socket.emit('chat:send', { message, emoji });
-    } else {
-      dispatch(
-        addLiveChatMessage({
-          id: `local-${Date.now()}`,
-          senderWallet: 'Vous (Citoyen)',
-          message,
-          emoji,
-          timestamp: new Date().toISOString(),
-        })
-      );
-    }
-  }, [dispatch]);
+    if (!socket || !socket.connected) return false;
+    socket.emit('chat:send', emoji ? { message, emoji } : { message });
+    return true;
+  }, []);
 
   const sendReaction = useCallback((emoji: string) => {
     const socket = socketClient.getSocket();

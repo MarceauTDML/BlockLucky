@@ -33,7 +33,7 @@ flowchart TD
 | Type d'écran | Où l'enregistrer | Type de navigation |
 | --- | --- | --- |
 | Onglet principal | [`MainTabs.tsx`](src:mobile-app/src/navigation/MainTabs.tsx) | `MainTabsParamList` |
-| Écran de réglages, avec la barre d'onglets visible | [`SettingsStack.tsx`](src:mobile-app/src/navigation/SettingsStack.tsx) | `SettingsStackParamList` |
+| Écran de réglages, avec la barre d'onglets visible | [`RootNavigator.tsx`](src:mobile-app/src/navigation/RootNavigator.tsx) | `RootStackParamList` |
 | Écran plein écran, accessible de partout une fois connecté | [`RootNavigator.tsx`](src:mobile-app/src/navigation/RootNavigator.tsx) | `RootStackParamList` |
 | Écran avant connexion | [`AuthStack.tsx`](src:mobile-app/src/navigation/AuthStack.tsx) | `AuthStackParamList` |
 

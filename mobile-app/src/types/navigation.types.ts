@@ -1,41 +1,55 @@
+import { NavigatorScreenParams } from '@react-navigation/native';
+
 import { ClaimedRewardCode } from './api.types';
 
 export type AuthStackParamList = {
   Onboarding: undefined;
-  Login: undefined;
+  SignIn: undefined;
+  SignUp: { referralCode?: string } | undefined;
   Verify2FA: {
     userId: string;
     method: 'APP' | 'EMAIL';
     email?: string | null;
+    purpose?: 'signin' | 'signup';
+    devOtpPreview?: string;
   };
+  ForgotPassword: { email?: string } | undefined;
+  ResetPassword: { email: string; devOtpPreview?: string };
   Setup2FA: undefined;
-};
-
-export type SettingsStackParamList = {
-  ProfileMain: undefined;
-  Security: undefined;
-  Setup2FA: undefined;
-  GDPR: undefined;
-  HelpSupport: undefined;
 };
 
 export type MainTabsParamList = {
   HomeTab: undefined;
-  BuyTicketTab: undefined;
-  LiveDrawTab: undefined;
-  MarketplaceTab: undefined;
-  SettingsTab: undefined;
+  TicketsTab: undefined;
+  SponsorsTab: undefined;
+  ProfileTab: undefined;
 };
 
 export type RootStackParamList = {
-  Auth: undefined;
-  Main: undefined;
-  BuyTicket: { giftMode?: boolean } | undefined;
-  LiveDraw: undefined;
+  Auth: NavigatorScreenParams<AuthStackParamList> | undefined;
+  Main: NavigatorScreenParams<MainTabsParamList> | undefined;
+  BuyTicket: undefined;
+  GiftTicket: { ticketId?: string } | undefined;
+  WaitingRoom: undefined;
+  LiveDraw:
+    | {
+        contractRoundId?: number;
+        participants?: number | null;
+        maxParticipants?: number | null;
+        prizePool?: number | null;
+      }
+    | undefined;
   TransactionHistory: undefined;
+  Notifications: undefined;
+  HowItWorks: undefined;
   RewardsCatalog: undefined;
   RewardDetail: { rewardId: string };
-  ScratchCard: { claim: ClaimedRewardCode };
+  ScratchCard: { claim?: ClaimedRewardCode; offer?: 'violet' | 'lucky' };
   MyCodes: undefined;
+  VerifyAge: undefined;
+  Settings: undefined;
+  Security: undefined;
   Setup2FA: undefined;
+  GDPR: undefined;
+  HelpSupport: undefined;
 };

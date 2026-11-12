@@ -2,8 +2,12 @@ import { baseApi } from './baseApi';
 import {
   ApiResponse,
   OnboardingSlide,
-  SocialLoginPayload,
-  SocialLoginResponse,
+  AuthSessionResponse,
+  SignInPayload,
+  SignUpPayload,
+  AppleSignInPayload,
+  ResetPasswordPayload,
+  IdentitySubmitPayload,
   Setup2FAResponse,
   Verify2FAResponse,
   UserProfile,
@@ -12,19 +16,75 @@ import {
   PushNotificationItem,
   GdprExportResponse,
 } from '../../types/api.types';
+import { AgeVerificationStatus, IdentityVerificationState } from '../../types/user.types';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOnboarding: builder.query<ApiResponse<{ slides: OnboardingSlide[] }>, void>({
       query: () => '/auth/onboarding',
     }),
-    socialLogin: builder.mutation<ApiResponse<SocialLoginResponse>, SocialLoginPayload>({
+    signIn: builder.mutation<ApiResponse<AuthSessionResponse>, SignInPayload>({
       query: (body) => ({
-        url: '/auth/login',
+        url: '/auth/signin',
         method: 'POST',
         body,
       }),
       invalidatesTags: ['User', 'Points'],
+    }),
+    signUp: builder.mutation<ApiResponse<AuthSessionResponse>, SignUpPayload>({
+      query: (body) => ({
+        url: '/auth/signup',
+        method: 'POST',
+        body,
+      }),
+    }),
+    googleSignIn: builder.mutation<ApiResponse<AuthSessionResponse>, { idToken: string }>({
+      query: (body) => ({
+        url: '/auth/oauth/google',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User', 'Points'],
+    }),
+    appleSignIn: builder.mutation<ApiResponse<AuthSessionResponse>, AppleSignInPayload>({
+      query: (body) => ({
+        url: '/auth/oauth/apple',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User', 'Points'],
+    }),
+    forgotPassword: builder.mutation<
+      ApiResponse<{ sent: boolean; devOtpPreview?: string }>,
+      { email: string }
+    >({
+      query: (body) => ({
+        url: '/auth/password/forgot',
+        method: 'POST',
+        body,
+      }),
+    }),
+    resetPassword: builder.mutation<ApiResponse<{ reset: boolean }>, ResetPasswordPayload>({
+      query: (body) => ({
+        url: '/auth/password/reset',
+        method: 'POST',
+        body,
+      }),
+    }),
+    getIdentityStatus: builder.query<ApiResponse<IdentityVerificationState>, void>({
+      query: () => '/user/identity',
+      providesTags: ['User'],
+    }),
+    submitIdentity: builder.mutation<
+      ApiResponse<{ status: AgeVerificationStatus; submittedAt: string }>,
+      IdentitySubmitPayload
+    >({
+      query: (body) => ({
+        url: '/user/identity',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
     }),
     setup2FA: builder.mutation<ApiResponse<Setup2FAResponse>, { method: 'APP' | 'EMAIL' }>({
       query: (body) => ({
@@ -91,7 +151,9 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ['User'],
     }),
     updatePreferences: builder.mutation<
-      ApiResponse<{ preferences: { theme: string; language: string; pushNotificationsEnabled: boolean } }>,
+      ApiResponse<{
+        preferences: { theme: string; language: string; pushNotificationsEnabled: boolean };
+      }>,
       { theme?: 'DARK' | 'LIGHT'; language?: 'FR' | 'EN'; pushNotificationsEnabled?: boolean }
     >({
       query: (body) => ({
@@ -112,7 +174,12 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
     requestGdprDeletion: builder.mutation<
-      ApiResponse<{ confirmationRequired: boolean; emailSent: boolean; message: string; confirmationToken?: string }>,
+      ApiResponse<{
+        confirmationRequired: boolean;
+        emailSent: boolean;
+        message: string;
+        confirmationToken?: string;
+      }>,
       void
     >({
       query: () => ({
@@ -135,7 +202,14 @@ export const authApi = baseApi.injectEndpoints({
 
 export const {
   useGetOnboardingQuery,
-  useSocialLoginMutation,
+  useSignInMutation,
+  useSignUpMutation,
+  useGoogleSignInMutation,
+  useAppleSignInMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+  useGetIdentityStatusQuery,
+  useSubmitIdentityMutation,
   useSetup2FAMutation,
   useVerify2FAMutation,
   useDisable2FAMutation,

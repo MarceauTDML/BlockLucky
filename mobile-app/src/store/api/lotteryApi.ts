@@ -66,10 +66,7 @@ export const lotteryApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Lottery', 'User', 'Points', 'Wallet'],
     }),
-    claimPrize: builder.mutation<
-      ApiResponse<ClaimPrizeResponse>,
-      { contractRoundId: number }
-    >({
+    claimPrize: builder.mutation<ApiResponse<ClaimPrizeResponse>, { contractRoundId: number }>({
       query: (body) => ({
         url: '/lottery/claim-prize',
         method: 'POST',

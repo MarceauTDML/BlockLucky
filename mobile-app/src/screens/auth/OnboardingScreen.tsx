@@ -1,214 +1,217 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { AuthStackParamList } from '../../types/navigation.types';
+import { Pressable, StyleSheet, View } from 'react-native';
+
+import TextLink from '../../components/auth/TextLink';
+import AppButton from '../../components/ui/AppButton';
+import AppText from '../../components/ui/AppText';
+import BrandLogo from '../../components/ui/BrandLogo';
+import Card, { CardTone } from '../../components/ui/Card';
+import Pill from '../../components/ui/Pill';
+import Screen from '../../components/ui/Screen';
+import SecurityFooter from '../../components/ui/SecurityFooter';
+import Icon, { IconName } from '../../components/ui/icons/Icon';
 import useAppTheme from '../../hooks/useAppTheme';
 import useAuth from '../../hooks/useAuth';
-import AppText from '../../components/ui/AppText';
-import AppButton from '../../components/ui/AppButton';
+import { useAuthNavigation } from '../../navigation/hooks';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>;
+interface Slide {
+  key: string;
+  icon: IconName;
+  tone: CardTone;
+  badge: 'sunSoft' | 'surface';
+  colored: boolean;
+  title: string;
+  description: string;
+}
 
-export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
-  const { colors, borderRadius, spacing, language, setLanguage, t } =
-    useAppTheme();
+const OnboardingScreen: React.FC = () => {
+  const { colors, language, setLanguage, t } = useAppTheme();
+  const navigation = useAuthNavigation();
   const { markOnboardingComplete } = useAuth();
+  const [index, setIndex] = useState(0);
 
-  const slides = [
+  const slides: Slide[] = [
     {
-      step: 1,
-      title: t('Loterie citoyenne d EtherBay', 'EtherBay Community Lottery'),
+      key: 'draw',
+      icon: 'ticket',
+      tone: 'sun',
+      badge: 'sunSoft',
+      colored: false,
+      title: t('La loterie citoyenne d’EtherBay', 'The EtherBay community lottery'),
       description: t(
-        'Participez au tirage municipal de fin d année. Chaque participation est vérifiable et transparente sur la blockchain.',
-        'Take part in the year-end city draw. Every entry is verifiable and transparent on the blockchain.'
+        'Un ticket par habitant pour le grand tirage de la ville, enregistré et vérifiable sur la blockchain.',
+        'One ticket per resident for the city’s big draw, recorded and verifiable on the blockchain.',
       ),
     },
     {
-      step: 2,
-      title: t('Votre portefeuille BlockLucky intégré', 'Your integrated BlockLucky wallet'),
+      key: 'live',
+      icon: 'wheel',
+      tone: 'lavender',
+      badge: 'surface',
+      colored: true,
+      title: t('Un tirage en direct, sans trucage', 'A live, fair draw'),
       description: t(
-        'Un portefeuille est créé pour vous et crédité d ethers fictifs par la Mairie. Il signe vos achats et règle le prix des tickets ainsi que les frais de réseau. En cas d annulation, le remboursement est automatique.',
-        'A wallet is created for you and credited with fictitious ETH by the City Hall. It signs your purchases and pays ticket prices and network fees. If the draw is cancelled, the refund is automatic.'
+        'Rejoignez la salle d’attente, suivez la roulette et découvrez le ticket gagnant en même temps que tout le monde.',
+        'Join the waiting room, watch the wheel and discover the winning ticket at the same time as everyone else.',
       ),
     },
     {
-      step: 3,
-      title: t('EtherPoints et économie locale', 'EtherPoints & Local Rewards'),
+      key: 'wallet',
+      icon: 'gift',
+      tone: 'mint',
+      badge: 'surface',
+      colored: false,
+      title: t('Un portefeuille déjà prêt', 'A ready-made wallet'),
       description: t(
-        'Cumulez des points à chaque participation et échangez-les contre des réductions chez les commerçants d EtherBay.',
-        'Earn points with every entry and redeem them for discounts at local EtherBay merchants.'
-      ),
-    },
-    {
-      step: 4,
-      title: t('Tirage en direct', 'Live Draw'),
-      description: t(
-        'Rejoignez la salle d attente 10 minutes avant l échéance et recevez votre badge commémoratif POAP.',
-        'Join the waiting room 10 minutes before the draw and collect your commemorative POAP badge.'
+        'La Mairie vous offre des ETH fictifs pour jouer. Aucun argent réel, et l’accès est réservé aux 18 ans et plus.',
+        'The City Hall gives you fictitious ETH to play. No real money, and access is reserved for people aged 18 and over.',
       ),
     },
   ];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const currentSlide = slides[currentIndex] || slides[0];
+  const slide = slides[index];
+  const isLast = index === slides.length - 1;
 
-  const handleNext = () => {
-    if (currentIndex < slides.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
-    } else {
-      markOnboardingComplete();
-      navigation.replace('Login');
-    }
-  };
-
-  const handleSkip = () => {
+  const finish = (target: 'SignIn' | 'SignUp') => {
     markOnboardingComplete();
-    navigation.replace('Login');
+    navigation.replace(target);
   };
 
   return (
-    <SafeAreaView
-      edges={['top', 'bottom', 'left', 'right']}
-      style={[styles.safeArea, { backgroundColor: colors.background }]}
-    >
-      <View style={[styles.container, { padding: spacing.lg }]}>
-        <View style={styles.topBar}>
-          <TouchableOpacity
-            onPress={() => setLanguage(language === 'FR' ? 'EN' : 'FR')}
-            style={[
-              styles.langPill,
-              {
-                backgroundColor: colors.surfaceElevated,
-                borderRadius: borderRadius.sm,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <AppText variant="caption" weight="semibold" color={colors.textPrimary}>
-              {language === 'FR' ? 'FR / EN' : 'EN / FR'}
-            </AppText>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleSkip}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <AppText variant="caption" weight="medium" color={colors.textMuted}>
-              {t('Passer', 'Skip')}
-            </AppText>
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: colors.surface,
-              borderRadius: borderRadius.lg,
-              borderColor: colors.border,
-              padding: spacing.xl,
-            },
-          ]}
+    <Screen scroll={false} edges={['top', 'left', 'right', 'bottom']} contentStyle={styles.content}>
+      <View style={styles.topBar}>
+        <BrandLogo />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('Passer en anglais', 'Switch to French')}
+          onPress={() => setLanguage(language === 'FR' ? 'EN' : 'FR')}
+          hitSlop={8}
+          style={[styles.lang, { backgroundColor: colors.surface }]}
         >
+          <Icon name="globe" size={16} color={colors.ink} />
+          <AppText size={11} weight="semibold">
+            {language === 'FR' ? 'FR' : 'EN'}
+          </AppText>
+        </Pressable>
+      </View>
+
+      <View style={styles.body}>
+        <Card tone={slide.tone} radius={32} padding={0} style={styles.visual}>
           <View
             style={[
-              styles.stepTag,
-              {
-                backgroundColor: colors.surfaceElevated,
-                borderRadius: borderRadius.sm,
-              },
+              styles.iconHalo,
+              { backgroundColor: slide.badge === 'sunSoft' ? colors.sunSoft : colors.surface },
             ]}
           >
-            <AppText variant="caption" weight="bold" color={colors.secondary}>
-              {t(
-                `Étape ${currentSlide.step} / ${slides.length}`,
-                `Step ${currentSlide.step} / ${slides.length}`
-              )}
-            </AppText>
+            <Icon name={slide.icon} size={72} color={slide.colored ? undefined : colors.onSun} />
           </View>
+        </Card>
 
-          <AppText variant="title" weight="bold" style={styles.slideTitle}>
-            {currentSlide.title}
-          </AppText>
+        <Pill
+          label={t(
+            `Étape ${index + 1} sur ${slides.length}`,
+            `Step ${index + 1} of ${slides.length}`,
+          )}
+          tone="surface"
+          uppercase={false}
+        />
+        <AppText size={28} weight="bold" accessibilityRole="header" style={styles.title}>
+          {slide.title}
+        </AppText>
+        <AppText size={13} color={colors.inkMuted}>
+          {slide.description}
+        </AppText>
 
-          <AppText variant="body" color={colors.textSecondary}>
-            {currentSlide.description}
-          </AppText>
-        </View>
-
-        <View style={styles.footer}>
-          <View style={styles.dotsRow}>
-            {slides.map((s, idx) => (
-              <View
-                key={s.step}
-                style={[
-                  styles.dot,
-                  {
-                    backgroundColor:
-                      idx === currentIndex ? colors.primary : colors.border,
-                    width: idx === currentIndex ? 22 : 8,
-                  },
-                ]}
-              />
-            ))}
-          </View>
-
-          <AppButton
-            title={
-              currentIndex < slides.length - 1
-                ? t('Suivant', 'Next')
-                : t('Accéder à la connexion', 'Proceed to Sign In')
-            }
-            onPress={handleNext}
-          />
+        <View
+          style={styles.dots}
+          accessible
+          accessibilityLabel={t(
+            `Étape ${index + 1} sur ${slides.length}`,
+            `Step ${index + 1} of ${slides.length}`,
+          )}
+        >
+          {slides.map((item, position) => (
+            <View
+              key={item.key}
+              style={[
+                styles.dot,
+                {
+                  width: position === index ? 24 : 8,
+                  backgroundColor: position === index ? colors.ink : colors.separator,
+                },
+              ]}
+            />
+          ))}
         </View>
       </View>
-    </SafeAreaView>
+
+      <View style={styles.footer}>
+        <AppButton
+          title={isLast ? t('Créer mon compte', 'Create my account') : t('Suivant', 'Next')}
+          rightIcon={isLast ? undefined : 'arrowRight'}
+          onPress={() => (isLast ? finish('SignUp') : setIndex(index + 1))}
+        />
+        <TextLink
+          label={t('J’ai déjà un compte', 'I already have an account')}
+          onPress={() => finish('SignIn')}
+        />
+        <SecurityFooter />
+      </View>
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
+  content: {
     justifyContent: 'space-between',
+    paddingBottom: 8,
   },
   topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  langPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderWidth: 1,
+  lang: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    minHeight: 36,
+    paddingHorizontal: 12,
+    borderRadius: 18,
   },
-  card: {
-    borderWidth: 1,
+  body: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingVertical: 20,
   },
-  stepTag: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    marginBottom: 14,
+  visual: {
+    height: 220,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 28,
   },
-  slideTitle: {
+  iconHalo: {
+    width: 132,
+    height: 132,
+    borderRadius: 66,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    marginTop: 14,
     marginBottom: 10,
   },
-  footer: {
-    gap: 18,
-  },
-  dotsRow: {
+  dots: {
     flexDirection: 'row',
-    justifyContent: 'center',
     gap: 6,
+    marginTop: 24,
   },
   dot: {
-    height: 6,
-    borderRadius: 3,
+    height: 8,
+    borderRadius: 4,
+  },
+  footer: {
+    gap: 6,
   },
 });
 

@@ -1,13 +1,31 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { RootStackParamList } from '../types/navigation.types';
+
+import AuthStack from './AuthStack';
+import MainTabs from './MainTabs';
+import DialogSummary from '../components/lottery/DialogSummary';
+import AppText from '../components/ui/AppText';
+import ResultDialog from '../components/ui/ResultDialog';
+import Icon from '../components/ui/icons/Icon';
 import useAppTheme from '../hooks/useAppTheme';
 import useAuth from '../hooks/useAuth';
 import useCitizenWallet from '../hooks/useCitizenWallet';
 import usePushNotifications from '../hooks/usePushNotifications';
+import Setup2FAScreen from '../screens/auth/Setup2FAScreen';
+import BuyTicketScreen from '../screens/lottery/BuyTicketScreen';
+import LiveDrawScreen from '../screens/lottery/LiveDrawScreen';
+import TransactionHistoryScreen from '../screens/lottery/TransactionHistoryScreen';
+import MyCodesScreen from '../screens/marketplace/MyCodesScreen';
+import RewardDetailScreen from '../screens/marketplace/RewardDetailScreen';
+import RewardsCatalogScreen from '../screens/marketplace/RewardsCatalogScreen';
+import ScratchCardScreen from '../screens/marketplace/ScratchCardScreen';
+import GDPRScreen from '../screens/settings/GDPRScreen';
+import HelpSupportScreen from '../screens/settings/HelpSupportScreen';
+import SecurityScreen from '../screens/settings/SecurityScreen';
+import VerifyAgeScreen from '../screens/settings/VerifyAgeScreen';
 import { useAppDispatch, useAppSelector } from '../store';
 import {
   hidePointsPopup,
@@ -15,61 +33,71 @@ import {
   hideQueueModal,
   hideSentryModal,
 } from '../store/slices/uiSlice';
-import AuthStack from './AuthStack';
-import MainTabs from './MainTabs';
-import BuyTicketScreen from '../screens/lottery/BuyTicketScreen';
-import LiveDrawScreen from '../screens/lottery/LiveDrawScreen';
-import TransactionHistoryScreen from '../screens/lottery/TransactionHistoryScreen';
-import RewardsCatalogScreen from '../screens/marketplace/RewardsCatalogScreen';
-import RewardDetailScreen from '../screens/marketplace/RewardDetailScreen';
-import ScratchCardScreen from '../screens/marketplace/ScratchCardScreen';
-import MyCodesScreen from '../screens/marketplace/MyCodesScreen';
-import Setup2FAScreen from '../screens/auth/Setup2FAScreen';
-import BottomSheet from '../components/ui/BottomSheet';
-import AppText from '../components/ui/AppText';
-import AppButton from '../components/ui/AppButton';
-import { formatDateShort } from '../utils/date.util';
+import { RootStackParamList } from '../types/navigation.types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 export const RootNavigator: React.FC = () => {
-  const { colors, borderRadius, t } = useAppTheme();
+  const { colors, t } = useAppTheme();
   const insets = useSafeAreaInsets();
-  const { isAuthenticated } = useAuth();
-  const { purchaseTickets } = useCitizenWallet();
-  const { notifications, drawerOpen, closeDrawer, osPushBanner } =
-    usePushNotifications();
+  const { isAuthenticated, ageVerificationStatus } = useAuth();
+  const agePromptShown = useRef(false);
+
+  const promptAgeVerification = useCallback(() => {
+    if (!isAuthenticated || agePromptShown.current || !navigationRef.isReady()) return;
+    if (ageVerificationStatus !== 'NONE' && ageVerificationStatus !== 'REJECTED') return;
+    agePromptShown.current = true;
+    navigationRef.navigate('VerifyAge');
+  }, [isAuthenticated, ageVerificationStatus]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      agePromptShown.current = false;
+      return;
+    }
+    const timer = setTimeout(promptAgeVerification, 400);
+    return () => clearTimeout(timer);
+  }, [isAuthenticated, promptAgeVerification]);
+  const { retryPurchaseFromQueue } = useCitizenWallet();
+  const { osPushBanner } = usePushNotifications();
   const dispatch = useAppDispatch();
 
-  const { pointsPopup, retryModal, queueModal, sentryModal } = useAppSelector(
-    (state) => state.ui
-  );
+  const { pointsPopup, retryModal, queueModal, sentryModal } = useAppSelector((state) => state.ui);
 
   return (
     <View style={[styles.rootWrapper, { backgroundColor: colors.background }]}>
       {osPushBanner.visible ? (
         <View
+          accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
           style={[
             styles.osPushBanner,
             {
               top: Math.max(insets.top + 8, 16),
               backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: borderRadius.lg,
+              shadowColor: colors.shadowModal,
             },
           ]}
         >
-          <AppText variant="overline" weight="semibold" color={colors.secondary}>
-            {t('Notification EtherBay', 'EtherBay Notification')}
-          </AppText>
-          <AppText weight="semibold">{osPushBanner.title}</AppText>
-          <AppText variant="caption" color={colors.textSecondary}>
-            {osPushBanner.body}
-          </AppText>
+          <View style={[styles.bannerIcon, { backgroundColor: colors.sun }]}>
+            <Icon name="bell" size={19} color={colors.onSun} />
+          </View>
+          <View style={styles.bannerText}>
+            <AppText variant="overline" color={colors.inkMuted}>
+              {t('Notification EtherBay', 'EtherBay notification')}
+            </AppText>
+            <AppText size={13} weight="semibold">
+              {osPushBanner.title}
+            </AppText>
+            <AppText size={11} color={colors.inkMuted}>
+              {osPushBanner.body}
+            </AppText>
+          </View>
         </View>
       ) : null}
 
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef} onReady={promptAgeVerification}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {!isAuthenticated ? (
             <Stack.Screen name="Auth" component={AuthStack} />
@@ -78,153 +106,83 @@ export const RootNavigator: React.FC = () => {
               <Stack.Screen name="Main" component={MainTabs} />
               <Stack.Screen name="BuyTicket" component={BuyTicketScreen} />
               <Stack.Screen name="LiveDraw" component={LiveDrawScreen} />
-              <Stack.Screen
-                name="TransactionHistory"
-                component={TransactionHistoryScreen}
-              />
-              <Stack.Screen
-                name="RewardsCatalog"
-                component={RewardsCatalogScreen}
-              />
-              <Stack.Screen
-                name="RewardDetail"
-                component={RewardDetailScreen}
-              />
+              <Stack.Screen name="TransactionHistory" component={TransactionHistoryScreen} />
+              <Stack.Screen name="RewardsCatalog" component={RewardsCatalogScreen} />
+              <Stack.Screen name="RewardDetail" component={RewardDetailScreen} />
               <Stack.Screen name="ScratchCard" component={ScratchCardScreen} />
               <Stack.Screen name="MyCodes" component={MyCodesScreen} />
+              <Stack.Screen name="VerifyAge" component={VerifyAgeScreen} />
+              <Stack.Screen name="Security" component={SecurityScreen} />
               <Stack.Screen name="Setup2FA" component={Setup2FAScreen} />
+              <Stack.Screen name="GDPR" component={GDPRScreen} />
+              <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
             </>
           )}
         </Stack.Navigator>
       </NavigationContainer>
 
-      <BottomSheet
+      <ResultDialog
         visible={pointsPopup.visible}
-        title={t('Points crédités', 'Points Credited')}
-        onClose={() => dispatch(hidePointsPopup())}
-      >
-        <View style={styles.modalContent}>
-          <AppText
-            variant="hero"
-            weight="bold"
-            color={colors.primary}
-            align="center"
-          >
-            +{pointsPopup.amount} pts
-          </AppText>
-          <AppText variant="body" color={colors.textSecondary} align="center">
-            {pointsPopup.reason}
-          </AppText>
-          <AppButton
-            title={t('Continuer', 'Continue')}
-            onPress={() => dispatch(hidePointsPopup())}
-          />
-        </View>
-      </BottomSheet>
+        status="success"
+        title={t(`+${pointsPopup.amount} EtherPoints`, `+${pointsPopup.amount} EtherPoints`)}
+        message={pointsPopup.reason}
+        note={t(
+          'À échanger contre des réductions chez les commerçants d’EtherBay.',
+          'Redeem them for discounts at EtherBay shops.',
+        )}
+        primaryLabel={t('Continuer', 'Continue')}
+        onPrimary={() => dispatch(hidePointsPopup())}
+      />
 
-      <BottomSheet
+      <ResultDialog
         visible={retryModal.visible}
-        title={t('Réseau encombré', 'Network Busy')}
-        onClose={() => dispatch(hideRetryModal())}
-      >
-        <View style={styles.modalContent}>
-          <AppText variant="body" color={colors.textSecondary}>
-            {retryModal.message}
-          </AppText>
-          <AppButton
-            title={t("Réessayer l'achat", 'Retry Purchase')}
-            onPress={async () => {
-              dispatch(hideRetryModal());
-              await purchaseTickets(1, retryModal.retryAttempt);
-            }}
-          />
-        </View>
-      </BottomSheet>
+        status="error"
+        title={t('Réseau encombré', 'Network busy')}
+        message={retryModal.message}
+        note={t(
+          'Aucun ticket créé, aucun ETH fictif débité.',
+          'No ticket created, no fictional ETH charged.',
+        )}
+        primaryLabel={t('Réessayer l’achat', 'Retry purchase')}
+        onPrimary={() => {
+          dispatch(hideRetryModal());
+          retryPurchaseFromQueue(retryModal.retryAttempt);
+        }}
+        secondaryLabel={t('Revenir plus tard', 'Come back later')}
+        onSecondary={() => dispatch(hideRetryModal())}
+      />
 
-      <BottomSheet
+      <ResultDialog
         visible={queueModal.visible}
-        title={t('File d attente active', 'Queue Active')}
-        onClose={() => dispatch(hideQueueModal())}
+        status="info"
+        title={t('Forte affluence', 'High traffic')}
+        message={t(
+          'Beaucoup de participants achètent en même temps. Votre demande est mise en file d’attente sécurisée.',
+          'Many participants are buying at the same time. Your request is safely queued.',
+        )}
+        primaryLabel={t('Patienter', 'Wait')}
+        onPrimary={() => dispatch(hideQueueModal())}
       >
-        <View style={styles.modalContent}>
-          <AppText
-            variant="subtitle"
-            weight="semibold"
-            color={colors.secondary}
-            align="center"
-          >
-            {t(
-              `Position dans la file : ${queueModal.position}`,
-              `Queue position: #${queueModal.position}`
-            )}
-          </AppText>
-          <AppText variant="body" color={colors.textSecondary} align="center">
-            {t(
-              'Forte affluence en cours. Votre transaction est mise en file d attente sécurisée.',
-              'High traffic detected. Your transaction is safely queued.'
-            )}
-          </AppText>
-          <AppButton
-            title={t('Patienter', 'Wait in Queue')}
-            onPress={() => dispatch(hideQueueModal())}
-          />
-        </View>
-      </BottomSheet>
-
-      <BottomSheet
-        visible={sentryModal.visible}
-        title={sentryModal.title || t('Information réseau', 'Network Notice')}
-        onClose={() => dispatch(hideSentryModal())}
-      >
-        <View style={styles.modalContent}>
-          <AppText variant="body" color={colors.textSecondary}>
-            {sentryModal.message}
-          </AppText>
-          <AppButton
-            title={t('Fermer', 'Close')}
-            variant="secondary"
-            onPress={() => dispatch(hideSentryModal())}
-          />
-        </View>
-      </BottomSheet>
-
-      <BottomSheet
-        visible={drawerOpen}
-        title={t('Notifications', 'Notifications')}
-        onClose={closeDrawer}
-      >
-        <View style={styles.modalContent}>
-          {notifications.length === 0 ? (
-            <AppText variant="caption" color={colors.textMuted}>
-              {t('Aucune notification pour le moment.', 'No notifications yet.')}
-            </AppText>
-          ) : (
-            notifications.map((n) => (
-              <View
-                key={n.id}
-                style={[
-                  styles.notifCard,
-                  {
-                    backgroundColor: colors.surfaceElevated,
-                    borderRadius: borderRadius.md,
-                    borderColor: n.read ? colors.border : colors.primary,
-                  },
-                ]}
-              >
-                <AppText weight="semibold" color={colors.text}>
-                  {n.title}
-                </AppText>
-                <AppText variant="caption" color={colors.textSecondary}>
-                  {n.body}
-                </AppText>
-                <AppText variant="caption" color={colors.textMuted}>
-                  {formatDateShort(n.createdAt)}
-                </AppText>
-              </View>
-            ))
+        <DialogSummary
+          title={t(
+            `Position dans la file : ${queueModal.position}`,
+            `Queue position: ${queueModal.position}`,
           )}
-        </View>
-      </BottomSheet>
+          detail={t(
+            'Un seul ticket par participant et par grand tirage.',
+            'Only one ticket per participant per grand draw.',
+          )}
+        />
+      </ResultDialog>
+
+      <ResultDialog
+        visible={sentryModal.visible}
+        status="error"
+        title={sentryModal.title || t('Information réseau', 'Network notice')}
+        message={sentryModal.message}
+        primaryLabel={t('Compris', 'Got it')}
+        onPrimary={() => dispatch(hideSentryModal())}
+      />
     </View>
   );
 };
@@ -238,18 +196,26 @@ const styles = StyleSheet.create({
     left: 16,
     right: 16,
     zIndex: 9999,
+    elevation: 12,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
     padding: 14,
-    borderWidth: 1,
+    borderRadius: 20,
+    shadowOpacity: 1,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 10 },
+  },
+  bannerIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bannerText: {
+    flex: 1,
     gap: 2,
-  },
-  modalContent: {
-    gap: 14,
-    paddingBottom: 8,
-  },
-  notifCard: {
-    padding: 12,
-    borderWidth: 1,
-    gap: 4,
   },
 });
 

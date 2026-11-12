@@ -1,140 +1,174 @@
+import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
-import {
-  View,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { AuthStackParamList } from '../../types/navigation.types';
+import { StyleSheet } from 'react-native';
+
+import DevOtpHint from '../../components/auth/DevOtpHint';
+import FormMessage from '../../components/auth/FormMessage';
+import HighlightCard from '../../components/auth/HighlightCard';
+import TextLink from '../../components/auth/TextLink';
+import { getErrorMessage } from '../../components/auth/authErrors';
+import AppButton from '../../components/ui/AppButton';
+import AppInput from '../../components/ui/AppInput';
+import Screen from '../../components/ui/Screen';
+import ScreenHeader from '../../components/ui/ScreenHeader';
+import Icon from '../../components/ui/icons/Icon';
 import useAppTheme from '../../hooks/useAppTheme';
 import useAuth from '../../hooks/useAuth';
-import AppText from '../../components/ui/AppText';
-import AppInput from '../../components/ui/AppInput';
-import AppButton from '../../components/ui/AppButton';
-import BackButton from '../../components/ui/BackButton';
+import { useAuthNavigation } from '../../navigation/hooks';
+import { AuthStackParamList } from '../../types/navigation.types';
 import { isValidOtpCode } from '../../utils/validators.util';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Verify2FA'>;
-
-export const Verify2FAScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { userId, method, email } = route.params;
-  const { colors, borderRadius, spacing, t } = useAppTheme();
+const Verify2FAScreen: React.FC = () => {
+  const { colors, t } = useAppTheme();
+  const navigation = useAuthNavigation();
+  const { params } = useRoute<RouteProp<AuthStackParamList, 'Verify2FA'>>();
+  const { userId, method, email, purpose = 'signin', devOtpPreview } = params;
   const { verifyOtpCode, isVerifying2FA } = useAuth();
 
-  const [otpCode, setOtpCode] = useState('');
-  const [errorText, setErrorText] = useState('');
+  const [code, setCode] = useState('');
+  const [codeError, setCodeError] = useState('');
+  const [formError, setFormError] = useState('');
+  const [useBackup, setUseBackup] = useState(false);
+
+  const isEmail = method === 'EMAIL';
+  const isSignUp = purpose === 'signup';
+  const destination = email ?? t('votre adresse e-mail', 'your email address');
 
   const handleVerify = async () => {
-    setErrorText('');
-    if (!isValidOtpCode(otpCode)) {
-      setErrorText(
-        t('Le code doit contenir 6 chiffres.', 'Code must be 6 digits.')
+    setFormError('');
+    const trimmed = code.trim();
+    if (useBackup ? trimmed.replace(/[^A-Za-z0-9]/g, '').length < 6 : !isValidOtpCode(trimmed)) {
+      setCodeError(
+        useBackup
+          ? t('Saisissez un code de secours complet.', 'Enter a full backup code.')
+          : t('Le code contient 6 chiffres.', 'The code has 6 digits.'),
       );
       return;
     }
-
     try {
-      await verifyOtpCode(userId, otpCode.trim());
-    } catch (err: any) {
-      setErrorText(
-        err?.data?.message || t('Code invalide ou expiré.', 'Invalid or expired code.')
+      await verifyOtpCode(userId, trimmed);
+    } catch (error) {
+      setFormError(
+        getErrorMessage(error, t('Code invalide ou expiré.', 'Invalid or expired code.')),
       );
     }
   };
 
   return (
-    <SafeAreaView
-      edges={['top', 'bottom', 'left', 'right']}
-      style={[styles.safeArea, { backgroundColor: colors.background }]}
-    >
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 12 : 24}
-      >
-        <ScrollView
-          contentContainerStyle={[styles.container, { padding: spacing.lg }]}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <BackButton onPress={() => navigation.goBack()} />
+    <Screen showSecurityFooter edges={['top', 'left', 'right', 'bottom']}>
+      <ScreenHeader
+        title={
+          isEmail
+            ? t('Vérifier mon e-mail', 'Verify my email')
+            : t('Double authentification', 'Two-factor authentication')
+        }
+        subtitle={
+          isSignUp
+            ? t('Inscription · Étape 1 sur 2', 'Sign-up · Step 1 of 2')
+            : t('Connexion sécurisée', 'Secure sign-in')
+        }
+        onBack={() => navigation.goBack()}
+      />
 
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor: colors.surface,
-                borderRadius: borderRadius.lg,
-                borderColor: colors.border,
-                padding: spacing.lg,
-              },
-            ]}
-          >
-            <AppText variant="caption" color={colors.secondary}>
-              {t(
-                `Double authentification (${method})`,
-                `Two-Factor Authentication (${method})`
-              )}
-            </AppText>
-            <AppText variant="title" weight="bold" style={styles.title}>
-              {t('Vérification 2FA', '2FA Verification')}
-            </AppText>
-            <AppText variant="body" color={colors.textSecondary} style={styles.subtitle}>
-              {method === 'EMAIL'
-                ? t(
-                    `Saisissez le code à 6 chiffres envoyé à ${email || 'votre adresse email'}.`,
-                    `Enter the 6-digit code sent to ${email || 'your email address'}.`
-                  )
-                : t(
-                    'Saisissez le code à 6 chiffres généré par votre application d authentification.',
-                    'Enter the 6-digit code from your authenticator app.'
-                  )}
-            </AppText>
+      <HighlightCard
+        badge={<Icon name={isEmail ? 'envelope' : 'shield'} size={30} color={colors.onSun} />}
+        title={isEmail ? t('Code envoyé', 'Code sent') : t('Code de sécurité', 'Security code')}
+        message={
+          isEmail
+            ? t(
+                `Saisissez le code à 6 chiffres envoyé à ${destination}. Il est valable quelques minutes.`,
+                `Enter the 6-digit code sent to ${destination}. It is valid for a few minutes.`,
+              )
+            : t(
+                'Saisissez le code à 6 chiffres affiché dans votre application d’authentification.',
+                'Enter the 6-digit code shown in your authenticator app.',
+              )
+        }
+      />
 
-            <AppInput
-              label={t('Code à 6 chiffres', '6-digit code')}
-              value={otpCode}
-              onChangeText={setOtpCode}
-              keyboardType="number-pad"
-              maxLength={6}
-              placeholder="000000"
-              errorText={errorText}
-            />
+      <DevOtpHint code={devOtpPreview} onUse={setCode} />
 
-            <AppButton
-              title={t('Valider', 'Verify')}
-              onPress={handleVerify}
-              loading={isVerifying2FA}
-            />
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      <AppInput
+        label={
+          useBackup ? t('Code de secours', 'Backup code') : t('Code à 6 chiffres', '6-digit code')
+        }
+        icon="lock"
+        value={code}
+        onChangeText={(value) => {
+          setCode(useBackup ? value.toUpperCase() : value.replace(/\D/g, ''));
+          if (codeError) setCodeError('');
+        }}
+        placeholder={useBackup ? 'XXXXX-XXXXX' : '000000'}
+        keyboardType={useBackup ? 'default' : 'number-pad'}
+        autoCapitalize={useBackup ? 'characters' : 'none'}
+        autoCorrect={false}
+        maxLength={useBackup ? 16 : 6}
+        autoComplete={useBackup ? 'off' : 'one-time-code'}
+        textContentType={useBackup ? 'none' : 'oneTimeCode'}
+        returnKeyType="done"
+        onSubmitEditing={handleVerify}
+        errorText={codeError}
+        style={useBackup ? undefined : styles.codeInput}
+      />
+
+      {formError ? <FormMessage message={formError} /> : null}
+
+      <AppButton
+        title={
+          isSignUp
+            ? t('Valider et créer mon compte', 'Verify and create my account')
+            : t('Valider', 'Verify')
+        }
+        loading={isVerifying2FA}
+        disabled={useBackup ? code.trim().length < 6 : code.trim().length !== 6}
+        onPress={handleVerify}
+      />
+
+      {isEmail ? (
+        <TextLink
+          label={t(
+            'Pas reçu ? Vérifiez vos courriers indésirables ou',
+            'Nothing received? Check your spam folder or',
+          )}
+          emphasis={
+            isSignUp
+              ? t('modifiez l’adresse', 'change the address')
+              : t('recommencez', 'start again')
+          }
+          onPress={() => navigation.goBack()}
+          style={styles.link}
+        />
+      ) : (
+        <TextLink
+          label={
+            useBackup
+              ? t('Application retrouvée ?', 'Found your app?')
+              : t('Application perdue ?', 'Lost your app?')
+          }
+          emphasis={
+            useBackup
+              ? t('Saisir le code à 6 chiffres', 'Enter the 6-digit code')
+              : t('Utiliser un code de secours', 'Use a backup code')
+          }
+          onPress={() => {
+            setUseBackup((value) => !value);
+            setCode('');
+            setCodeError('');
+            setFormError('');
+          }}
+          style={styles.link}
+        />
+      )}
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
+  codeInput: {
+    letterSpacing: 6,
   },
-  flex: {
-    flex: 1,
-  },
-  container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  card: {
-    borderWidth: 1,
-  },
-  title: {
-    marginVertical: 6,
-  },
-  subtitle: {
-    marginBottom: 18,
+  link: {
+    marginTop: 12,
   },
 });
 
