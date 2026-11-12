@@ -18,8 +18,9 @@ Cette page recense les textes susceptibles de s'appliquer à BlockLucky et leur 
 | Est-ce une loterie prohibée ? | A priori non : sans sacrifice financier réel ni gain ayant une valeur, l'opération ne réunit pas les éléments de la définition légale de la loterie | Oui en principe : loterie prohibée sauf exceptions étroites, monopole de la Française des Jeux pour les loteries publiques |
 | Faut-il une autorisation de l'Autorité nationale des jeux (ANJ) ? | Non | Oui, ou exploitation impossible hors des exceptions légales |
 | Le portefeuille intégré est-il une activité réglementée ? | Non tant que les actifs n'ont pas de valeur marchande | Oui : la conservation de crypto-actifs pour le compte de tiers relève du règlement MiCA |
-| Le RGPD s'applique-t-il ? | Oui : email, adresse de portefeuille, historique de participation | Idem, avec en plus des obligations de lutte contre le blanchiment |
-| Les mineurs peuvent-ils jouer ? | L'inscription exige une déclaration de majorité (`isAdultConfirmed`) | Contrôle d'âge effectif obligatoire |
+| Le RGPD s'applique-t-il ? | Oui : email, adresse de portefeuille, historique de participation, photos de pièce d'identité jusqu'à la décision de la Mairie | Idem, avec en plus des obligations de lutte contre le blanchiment |
+| Les mineurs peuvent-ils jouer ? | Non : l'achat exige une pièce d'identité validée par la Mairie (`AGE_VERIFICATION_REQUIRED`) | Contrôle d'âge effectif obligatoire, probablement plus robuste qu'un examen sur photo |
+| Le ticket à gratter est-il un jeu de hasard ? | Il attribue au hasard une offre de commerçant contre des EtherPoints : à faire qualifier | Loterie à mise si les points avaient une valeur |
 | Des cookies sont-ils déposés ? | Le web n'en dépose pas ; le site de l'Office de Tourisme utilise le `localStorage` | Bandeau et preuve de consentement si une mesure d'audience est ajoutée |
 | L'accessibilité est-elle obligatoire ? | Oui pour un service public en ligne d'une commune | Idem |
 
@@ -45,7 +46,7 @@ La définition légale repose sur quatre éléments cumulatifs.
 | Élément | Situation de BlockLucky | Preuve dans le dépôt |
 |---|---|---|
 | Offre au public | Oui : tous les habitants d'EtherBay | |
-| Espérance d'un gain | La cagnotte est en ethers de réseau de test, sans valeur marchande. Les EtherPoints et les offres des partenaires s'obtiennent par la participation, pas par le hasard. | Conditions de participation, voir [Cookies, mentions et CGU](cookies-mentions.md) |
+| Espérance d'un gain | La cagnotte est en ethers de réseau de test, sans valeur marchande. Les EtherPoints s'obtiennent par la participation. Les offres des partenaires s'obtiennent soit par un échange direct, soit par un ticket à gratter qui tire l'offre au hasard. | Conditions de participation, voir [Cookies, mentions et CGU](cookies-mentions.md) |
 | Hasard | Oui : tirage Chainlink VRF | [`smart-contract/contracts/BlockLucky.sol`](src:smart-contract/contracts/BlockLucky.sol) |
 | Sacrifice financier | Non : les ethers utilisés sont une dotation gratuite de la Mairie ; le citoyen ne paie rien | `grantWelcomeEthers` de [`backend/src/blockchain/wallet.service.ts`](src:backend/src/blockchain/wallet.service.ts) |
 
@@ -55,7 +56,10 @@ Sans sacrifice financier ni gain de valeur, l'opération relèverait d'un dispos
 
 1. Ne jamais vendre d'ethers fictifs, ni échanger la cagnotte contre des euros, des biens ou des services.
 2. Ne pas déployer le contrat sur le réseau Ethereum principal et ne pas l'alimenter en ethers réels. Le script [`smart-contract/scripts/deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) refuse tout réseau dont l'identifiant n'est pas celui de Sepolia.
-3. Garder les avantages des commerces partenaires indépendants du tirage. La « carte à gratter » du catalogue est une animation qui révèle la récompense choisie et payée en EtherPoints ; elle ne doit jamais devenir un tirage aléatoire, sinon elle recréerait une loterie à mise.
+3. Garder les avantages des commerces partenaires indépendants du tirage de la cagnotte.
+
+> [!WARNING]
+> Le ticket à gratter ne respecte plus la condition qui figurait dans la version précédente de cette veille. `POST /api/marketplace/scratch` débite 50 EtherPoints (offre « violet », `SCRATCH_COST_VIOLET`) ou 100 (offre « lucky », `SCRATCH_COST_LUCKY`), puis choisit l'offre par `crypto.randomInt` parmi les offres en stock ([`backend/src/api/marketplace/marketplace.services.ts`](src:backend/src/api/marketplace/marketplace.services.ts)) : c'est un tirage au sort payé en points. Tant que les EtherPoints sont gratuits, non achetables et sans valeur monétaire, le sacrifice financier fait défaut ; mais les offres gagnées ont une valeur réelle chez les commerçants, et les points se gagnent aussi en achetant des tickets. La qualification est à faire valider (point JUR-4 de [Points à valider](points-a-valider.md)). L'achat est réservé aux comptes dont l'âge est vérifié.
 4. L'afficher clairement dans l'interface (charte de transparence, bandeau de démonstration) et dans les conditions de participation.
 
 ### Si la Mairie voulait une vraie loterie
@@ -110,11 +114,11 @@ L'état réel est décrit dans [Accessibilité numérique](accessibilite.md).
 
 ## Éthique et jeu responsable
 
-- Public visé : les 18 à 35 ans d'EtherBay. L'accès est réservé aux majeurs, sur déclaration à l'inscription.
-- Plafonds : par participant et par tour dans le contrat (`maxTicketsPerPlayer`), et limite de jeu responsable de 1 à 500 tickets réglable par le citoyen (`PUT /api/user/responsible-limit`).
+- Public visé : les 18 à 35 ans d'EtherBay. Le jeu est réservé aux majeurs dont la pièce d'identité a été validée par la Mairie.
+- Plafonds : un seul ticket par participant et par grand tirage, imposé par le schéma de `POST /api/lottery/buy`, par le service (409 « Vous avez déjà votre ticket pour ce grand tirage. ») et par le contrat (`maxTicketsPerPlayer`, 1 par défaut dans [`smart-contract/scripts/lib/deployment.ts`](src:smart-contract/scripts/lib/deployment.ts)). La limite de jeu responsable de 1 à 500 tickets (`PUT /api/user/responsible-limit`) existe toujours côté serveur, mais elle n'a plus d'effet pratique et l'application mobile ne la propose plus.
 - Transparence : code du contrat vérifiable sur Etherscan après déploiement sur Sepolia, preuve VRF consultable, commission de la Mairie plafonnée à 20 % dans le contrat (`MAX_FEE_BPS = 2000`), remboursement intégral si le tour est annulé.
 - Les conditions de participation rappellent le numéro de Joueurs Info Service (09 74 75 13 13).
-- Les mécaniques d'engagement (compte à rebours, cadeaux, parrainage, quêtes) doivent rester mesurées. Aucune incitation à racheter des ethers ne doit exister, puisqu'aucun achat n'est possible.
+- Les mécaniques d'engagement (compte à rebours, salle d'attente, cadeaux, parrainage, quêtes, tickets à gratter) doivent rester mesurées. Aucune incitation à racheter des ethers ne doit exister, puisqu'aucun achat n'est possible.
 
 ## Suivi de la veille
 

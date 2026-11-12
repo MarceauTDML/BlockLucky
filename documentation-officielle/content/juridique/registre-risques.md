@@ -65,17 +65,20 @@ Corrections apportées :
 | N° | Risque | P | I | Mesures en place | P résid. | I résid. | Responsable |
 |---|---|---|---|---|---|---|---|
 | J1 | Requalification en loterie prohibée | 2 | 4 | Ethers fictifs gratuits, aucune vente ni conversion, réseau de test uniquement, [veille juridique](veille-juridique.md) à faire valider | 1 | 4 | Mairie |
-| J2 | Participation de mineurs | 2 | 3 | Déclaration de majorité obligatoire à l'inscription | 2 | 2 | Mairie |
+| J2 | Participation de mineurs | 2 | 3 | Pièce d'identité examinée par la Mairie avant tout achat, cadeau ou échange (`AGE_VERIFICATION_REQUIRED`, obligatoire en production), envoyée depuis `/profil/identite` sur le web ou depuis le mobile ; déclaration de majorité à la connexion web | 1 | 2 | Mairie |
 | J3 | Non-conformité RGPD liée à l'immutabilité de la chaîne | 2 | 3 | Aucune donnée personnelle directe sur la chaîne, suppression de l'email et de la clé, registre des traitements | 1 | 2 | DPO |
 | J4 | Incitation excessive au jeu | 2 | 2 | Plafonds par participant dans le contrat et le backend, aucun achat d'ethers possible | 1 | 2 | Mairie |
 | J5 | Perte de confiance si une transaction « disparaît » de l'explorateur | 2 | 3 | Liens vers l'explorateur uniquement pour de vraies transactions, mode démonstration affiché quand la blockchain est simulée | 1 | 2 | Équipe front |
-| J6 | Nouveau. Création d'un compte pour le bénéficiaire d'un cadeau sans démarche de sa part ni confirmation de majorité | 3 | 2 | Aucune | 3 | 2 | DPO |
-| J7 | Nouveau. Non-conformité à l'obligation d'accessibilité d'un service public | 3 | 2 | Mesures de base sur le web et le site de l'Office de Tourisme ; aucune sur le mobile ; aucune déclaration | 3 | 2 | Mairie |
+| J6 | Nouveau. Création d'un compte pour le bénéficiaire d'un cadeau sans démarche de sa part ni vérification de majorité | 3 | 2 | Le bénéficiaire doit faire vérifier son âge pour acheter, offrir ou échanger, mais il détient le ticket reçu | 3 | 2 | DPO |
+| J7 | Nouveau. Non-conformité à l'obligation d'accessibilité d'un service public | 3 | 2 | Mesures de base sur le web, le site de l'Office de Tourisme et les composants principaux du mobile ; aucun audit ni déclaration | 3 | 2 | Mairie |
 | J8 | Nouveau. Absence de licence du dépôt et mentions incomplètes (LCEN, police mobile sans fichier OFL) | 2 | 2 | Licences des dépendances permissives | 2 | 2 | Équipe |
 | J9 | Nouveau. Purges non implémentées : conservation au-delà des durées annoncées | 3 | 2 | Durées documentées dans le registre des traitements | 3 | 2 | DPO |
+| J10 | Nouveau. Fuite ou consultation abusive des pièces d'identité | 2 | 4 | Chiffrement AES-256-GCM, accès ADMIN avec 2FA, consultation journalisée, images effacées à la décision | 1 | 4 | DSI |
+| J11 | Nouveau. Ticket à gratter payé en EtherPoints avec un lot tiré au hasard, perçu comme un jeu de hasard | 2 | 3 | Points gratuits, non achetables ; achat réservé aux âges vérifiés | 2 | 3 | Mairie |
 
 Correction apportée :
 
+- **J2.** La déclaration de majorité est remplacée, pour jouer, par une vérification de la pièce d'identité. La probabilité résiduelle baisse, sans tomber à zéro : la pièce est jugée sur photo, sans contrôle de correspondance avec la personne, et un achat direct sur le contrat échappe au contrôle.
 - **J3.** L'anonymisation laisse `payerWallet` et `transactionHash` dans la table `Ticket`, ce qui maintient en base le lien entre l'identifiant du compte et l'ancienne adresse (voir [Blockchain et données personnelles](blockchain-donnees.md)). La cotation résiduelle reste faible tant que l'email est supprimé, mais la mesure « effacement du lien entre compte et adresse » du registre initial est incomplète.
 
 ## Risques à traiter en priorité
@@ -83,7 +86,8 @@ Correction apportée :
 | N° | Criticité résiduelle | Pourquoi |
 |---|---|---|
 | SC8 | 8 | Seul risque qui permette de truquer un tirage ; se traite par un simple transfert de propriété |
-| J6, J7, J9 | 6 | Écarts de conformité d'un service public |
+| J6, J7, J9, J11 | 6 | Écarts de conformité d'un service public, qualification du ticket à gratter |
+| J10 | 4 | Impact maximal en cas de fuite : identité civile des citoyens |
 | P5 | 6 | Le compte ADMIN pilote le tirage, la trésorerie et le disjoncteur |
 
 Les risques résiduels SC1, SC2 et SC6 (criticité 4) et J1 (criticité 4) sont acceptés pour une démonstration sur réseau de test. Ils deviendraient bloquants pour une exploitation avec des fonds réels, tout comme SC8.

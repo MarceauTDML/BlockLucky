@@ -7,9 +7,9 @@ Cette page retrace les grandes étapes du projet, reconstituées à partir de l'
 | Indicateur | Valeur |
 |---|---|
 | Premier commit | 2 novembre 2026, 18 h 23 |
-| Dernier commit | 11 novembre 2026, 21 h 21 |
-| Commits sur la branche `marceau` | 331, dont 181 hors fusions |
-| Pull requests fusionnées | 150, numérotées jusqu'à la n° 163 |
+| Dernier commit | 11 novembre 2026, 23 h 39 |
+| Commits sur la branche `marceau` | 381, dont 204 hors fusions |
+| Pull requests fusionnées | 177, numérotées jusqu'à la n° 193 |
 | Jours actifs | 2, 3, 9, 10 et 11 novembre |
 
 Le travail s'est fait sur une branche d'intégration (`marceau`), fusionnée dans `main` par pull request à chaque étape, presque toujours après un seul commit. Les livrables UX, marketing et budget de l'équipe, hors dépôt, sont datés du 6 novembre, pendant la pause du code.
@@ -20,6 +20,7 @@ flowchart LR
     B --> C["9 nov : web et Office de Tourisme"]
     C --> D["10 nov : industrialisation et sécurité"]
     D --> E["11 nov : smart contracts et intégration on-chain"]
+    E --> F["12 nov : comptes, vérification d'âge et refonte mobile"]
 ```
 
 ## Les étapes
@@ -71,6 +72,17 @@ De 16 h 19 à 17 h 35, le livrable central du rush est écrit :
 4. côté backend : configuration blockchain et schéma on-chain, portefeuille intégré par citoyen, indexeur, keeper et file d'actions, loterie branchée sur le contrat, disjoncteur et commission on-chain, tests sur une vraie chaîne.
 
 Le soir, l'intégration se termine : effacement de la clé du portefeuille à la suppression RGPD, blockchain locale dans Docker Compose, portefeuille intégré et annonce du gagnant sur le web et le mobile, CI des contrats et de l'intégration, puis la documentation des contrats, du backend on-chain, l'ADR 0004, la veille juridique, la reformulation des besoins et le registre des risques.
+
+### 12 novembre : comptes, vérification d'âge et refonte mobile
+
+La migration `20261112090000_password_accounts_identity_verification` marque l'étape suivante, postérieure au dernier commit indiqué dans les repères :
+
+1. comptes avec mot de passe, réinitialisation par code et connexion Google et Apple ;
+2. vérification d'âge par pièce d'identité chiffrée, examinée depuis la page Mairie `/mairie/identites`, et refus des achats tant que l'âge n'est pas vérifié ;
+3. un seul ticket par participant et par grand tirage, numéros de ticket à cinq chiffres, phases du tour et délai de révélation géré par le keeper ;
+4. ticket à gratter acheté en EtherPoints et nouveaux paliers de la jauge ;
+5. refonte complète de l'application mobile sur la maquette Figma : police Inter, nouveaux jetons de couleur, quatre onglets et douze nouveaux écrans ;
+6. alignement du frontend web sur cette charte : mêmes couleurs, police et icônes, pages restylées sur les écrans mobiles.
 
 ## Ce que l'historique explique
 

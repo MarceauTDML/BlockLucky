@@ -200,7 +200,7 @@
 </tr>
 <tr>
 <td>Tickets maximum par participant</td>
-<td>100</td>
+<td>1</td>
 </tr>
 <tr>
 <td>Durée d&#39;un tour</td>
@@ -215,7 +215,7 @@
 <td>10 minutes</td>
 </tr>
 </tbody></table></div>
-<p>Ces valeurs viennent de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/deploy-local.ts" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/scripts/deploy-local.ts</code></a> et des variables <code>TICKET_PRICE_WEI</code>, <code>MAX_TICKETS</code>, <code>MIN_TICKETS_TO_DRAW</code>, <code>MAX_TICKETS_PER_PLAYER</code>, <code>ROUND_DURATION_SECONDS</code> et <code>MUNICIPALITY_FEE_BPS</code>. Le service Compose ne transmet pas ces variables au conteneur : pour les changer, lancer le nœud hors Docker (voir plus bas) ou ajouter les variables dans la section <code>environment</code> du service. Avec une durée de 30 minutes et deux tickets minimum, un tour local se tire automatiquement 30 minutes après son ouverture, dès que deux tickets ont été achetés.</p>
+<p>Ces valeurs viennent de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/deploy-local.ts" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/scripts/deploy-local.ts</code></a> et des variables <code>TICKET_PRICE_WEI</code>, <code>MAX_TICKETS</code>, <code>MIN_TICKETS_TO_DRAW</code>, <code>MAX_TICKETS_PER_PLAYER</code>, <code>ROUND_DURATION_SECONDS</code> et <code>MUNICIPALITY_FEE_BPS</code>. Le service Compose ne transmet pas ces variables au conteneur : pour les changer, lancer le nœud hors Docker (voir plus bas) ou ajouter les variables dans la section <code>environment</code> du service. Avec une durée de 30 minutes et deux tickets minimum, un tour local entre en salle d&#39;attente 30 minutes après son ouverture si deux participants au moins ont pris leur ticket, puis le keeper le tire <code>DRAW_REVEAL_DELAY_SECONDS</code> plus tard (10 minutes par défaut). Le fichier versionné <code>smart-contract/deployments/localhost.json</code> indique encore 100 tickets par participant : il est réécrit à chaque déploiement, et le nœud Docker redéploie les contrats à chaque démarrage.</p>
 <h4 id="pas-de-persistance"><a class="anchor" href="#pas-de-persistance" aria-hidden="true" tabindex="-1">#</a>Pas de persistance</h4>
 <p>Le nœud Hardhat garde la chaîne en mémoire. Tout arrêt ou redémarrage du conteneur repart d&#39;une chaîne vierge : les contrats sont redéployés aux mêmes adresses, mais tous les tickets, tours et soldes ont disparu. La base PostgreSQL, elle, a gardé les données de l&#39;ancienne chaîne.</p>
 <div class="hint hint-important"><p class="hint-title">Important</p>

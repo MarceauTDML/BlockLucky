@@ -67,7 +67,12 @@ Le choix d'une licence revient aux auteurs et, le cas échéant, à l'école et 
 | `react-redux` | 9.3.1 | MIT |
 | `socket.io-client` | 4.8.4 | MIT |
 
-Le web n'embarque aucune police : il utilise la pile de polices du système.
+Ressources embarquées :
+
+| Ressource | Licence |
+|---|---|
+| Police Inter (400, 500, 600, 700, 700 italique) dans `frontend-web/src/app/fonts`, recopiée depuis `@expo-google-fonts/inter` | SIL Open Font License 1.1, [`frontend-web/src/app/fonts/LICENSE-inter.txt`](src:frontend-web/src/app/fonts/LICENSE-inter.txt) |
+| Icônes SVG et logo de [`iconData.ts`](src:frontend-web/src/components/ui/iconData.ts) et [`icon.svg`](src:frontend-web/src/app/icon.svg) | Copie des icônes de la maquette de l'application mobile (`mobile-app/assets/icons`), même origine |
 
 ## Application mobile
 

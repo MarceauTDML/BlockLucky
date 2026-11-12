@@ -1,6 +1,6 @@
 # Ajouter un email
 
-Le backend envoie cinq emails transactionnels : code de connexion ou de 2FA (`otp-code`), alerte de sécurité (`security-alert`), bienvenue (`welcome`), code promo d'une récompense (`reward-claim`) et confirmation de suppression RGPD (`gdpr-deletion`). Ce guide en ajoute un sixième, `ticket-gift`, qui prévient le destinataire d'un ticket offert. Aujourd'hui, `POST /api/v1/lottery/gift` crée si besoin le compte du destinataire et achète le ticket pour lui, mais ne lui écrit pas.
+Le backend envoie six emails transactionnels : code de connexion, d'inscription, de réinitialisation du mot de passe ou de 2FA (`otp-code`), alerte de sécurité (`security-alert`), bienvenue (`welcome`), code promo d'une récompense (`reward-claim`), confirmation de suppression RGPD (`gdpr-deletion`) et décision de la Mairie sur la vérification d'âge (`identity-decision`). Ce guide en ajoute un septième, `ticket-gift`, qui prévient le destinataire d'un ticket offert. Aujourd'hui, `POST /api/v1/lottery/gift` crée si besoin le compte du destinataire et achète le ticket pour lui, mais ne lui écrit pas.
 
 ## Fichiers à toucher
 
@@ -64,7 +64,7 @@ Créer `backend/src/templates/emails/ticket-gift.html`, sur le modèle de [`welc
     <p style="color: #555555; font-size: 15px;">Un habitant d'EtherBay vous a offert un ticket pour le tour n°{{ROUND_ID}}.</p>
     <p style="color: #555555; font-size: 15px;">Il est déjà inscrit sur votre portefeuille BlockLucky <code>{{WALLET_ADDRESS}}</code>.</p>
     <p style="margin: 24px 0;">
-      <a href="{{LOGIN_URL}}" style="background-color: #253d2c; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px;">Voir mon ticket</a>
+      <a href="{{LOGIN_URL}}" style="background-color: #1d2637; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px;">Voir mon ticket</a>
     </p>
     <p style="color: #777777; font-size: 13px;">Les ethers utilisés sont fictifs et n'ont aucune valeur. Participation réservée aux personnes majeures.</p>
   </div>
@@ -83,7 +83,7 @@ Créer `backend/src/templates/emails/ticket-gift.html`, sur le modèle de [`welc
 Une variable fournie mais absente du gabarit est ignorée ; une variable du gabarit non fournie reste affichée telle quelle (`{{ROUND_ID}}`). Si le fichier est introuvable, le service journalise un avertissement et envoie à la place le JSON des variables dans un paragraphe : vérifier le nom du fichier.
 
 > [!NOTE]
-> Les gabarits existants utilisent encore un violet `#4a154b` qui n'est pas celui de la charte EtherBay (vert `#253D2C`, terracotta `#C86D51`). Un nouveau gabarit peut utiliser le vert pour ses boutons, comme ci-dessus.
+> Les gabarits existants utilisent encore un violet `#4a154b` qui n'est pas celui de la charte BlockLucky, commune au web et au mobile (encre `#1D2637`, jaune `#FFDA38`). Un nouveau gabarit peut utiliser l'encre pour ses boutons, comme ci-dessus.
 
 ## 2. Déclarer le gabarit
 
@@ -96,6 +96,7 @@ export type EmailTemplateName =
   | 'reward-claim'
   | 'welcome'
   | 'security-alert'
+  | 'identity-decision'
   | 'ticket-gift';
 ```
 

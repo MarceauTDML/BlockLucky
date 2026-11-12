@@ -9,7 +9,7 @@ flowchart TD
     A["requestContextMiddleware : X-Request-Id"] --> B["httpMetricsMiddleware"]
     B --> C["helmet : en-têtes de sécurité"]
     C --> D["cors"]
-    D --> E["express.json 1 Mo, corps brut des webhooks"]
+    D --> E["globalJsonParser 1 Mo, corps brut des webhooks, sauf envoi de pièce d'identité"]
     E --> F["Routes système : /health, /metrics"]
     F --> G["Mode maintenance"]
     G --> H["globalRateLimiter"]
@@ -31,18 +31,19 @@ Deux conséquences de cet ordre :
 | Limiteur | Fenêtre | Requêtes par adresse IP | Portée |
 |---|---|---|---|
 | `globalRateLimiter` | 15 minutes | 300 | Toute l'API sous `/api` |
-| `authRateLimiter` | 10 minutes | 30 | `POST /api/auth/login`, `/2fa/verify`, `/2fa/disable` |
+| `authRateLimiter` | 10 minutes | 30 | `POST /api/auth/signup`, `/signin`, `/password/forgot`, `/password/reset`, `/oauth/google`, `/oauth/apple`, `/login`, `/2fa/verify`, `/2fa/disable` |
+| `identityUploadRateLimiter` | 1 heure | 10 | `POST /api/user/identity` |
 
-En environnement `test`, les deux limites passent à 10 000 pour ne pas gêner les suites de tests.
+En environnement `test`, les trois limites passent à 10 000 pour ne pas gêner les suites de tests.
 
 | Paramètre | Valeur | Effet |
 |---|---|---|
 | `standardHeaders: 'draft-7'` | En-têtes `RateLimit` et `RateLimit-Policy` | Le client connaît son quota restant |
 | `legacyHeaders: false` | Pas de `X-RateLimit-*` | |
-| Préfixe Redis | `<REDIS_KEY_PREFIX>:<NODE_ENV>:ratelimit:<global ou auth>:` | Compteurs partagés entre toutes les instances de l'API |
+| Préfixe Redis | `<REDIS_KEY_PREFIX>:<NODE_ENV>:ratelimit:<global, auth ou identity>:` | Compteurs partagés entre toutes les instances de l'API |
 | `passOnStoreError: true` | Si Redis échoue, la requête passe | L'API reste disponible pendant une panne de Redis |
 
-Le compteur d'échecs de code par compte, décrit dans [Authentification](authentification.md#parametres-du-code), complète la limite par IP : il ne dépend pas de l'adresse de l'attaquant.
+Le limiteur des pièces d'identité est placé avant `authenticate` et avant l'analyse du corps de 12 Mo : un client qui dépasse son quota est refusé sans que le serveur lise le corps. Le compteur d'échecs de code et de mot de passe par compte, décrit dans [Authentification](authentification.md#parametres-du-code), complète la limite par IP : il ne dépend pas de l'adresse de l'attaquant.
 
 > [!NOTE]
 > Le choix `passOnStoreError: true` privilégie la disponibilité. Pendant une panne de Redis, la seule limite restante sur les codes est le blocage par compte, lui-même tenu dans le repli mémoire propre à chaque processus. Voir l'[ADR 0002](../architecture/adr/0002-redis-files-et-repli-memoire.md).
@@ -70,6 +71,7 @@ Avec `false` derrière un proxy, toutes les requêtes semblent venir de la même
 | `POST /api/lottery/gift` | Double cadeau |
 | `POST /api/lottery/claim-prize` | Double demande de retrait |
 | `POST /api/marketplace/claim` | Double dépense d'EtherPoints |
+| `POST /api/marketplace/scratch` | Double achat d'un ticket à gratter |
 
 Fonctionnement :
 
@@ -100,7 +102,7 @@ x-webhook-signature: t=1762867200,v1=5f0c...64 caractères hexadécimaux
 {"eventType":"WINNER_PICKED","payload":{"contractRoundId":3,"winnerWallet":"0x..."}}
 ```
 
-`v1` vaut `HMAC-SHA-256(WEBHOOK_SECRET, "<t>.<corps brut>")` en hexadécimal. Le corps brut est capturé par l'option `verify` de `express.json`, uniquement pour les chemins `/api/webhooks/` et `/api/v1/webhooks/`, afin que la signature porte sur les octets reçus et non sur un JSON reformaté.
+`v1` vaut `HMAC-SHA-256(WEBHOOK_SECRET, "<t>.<corps brut>")` en hexadécimal. Le corps brut est capturé par l'option `verify` du `globalJsonParser`, uniquement pour les chemins `/api/webhooks/` et `/api/v1/webhooks/`, afin que la signature porte sur les octets reçus et non sur un JSON reformaté.
 
 ### Contrôles
 
@@ -151,7 +153,7 @@ Chaque réponse porte `X-Request-Id`, repris de l'en-tête entrant s'il est vali
 | Keep-alive | 65 secondes, en-têtes à 66 secondes | `HTTP_KEEP_ALIVE_TIMEOUT_MS` |
 | Délai d'une requête SQL | 15 secondes, réponse 503 au-delà | `DB_STATEMENT_TIMEOUT_MS` |
 | Commande Redis de cache | 500 millisecondes, puis repli mémoire | Constante de [`backend/src/config/redis.config.ts`](src:backend/src/config/redis.config.ts) |
-| Corps de requête | 1 Mo | `express.json` |
+| Corps de requête | 1 Mo, 12 Mo pour l'envoi d'une pièce d'identité | [`body-parser.middleware.ts`](src:backend/src/middlewares/body-parser.middleware.ts) |
 
 Ces délais limitent l'effet des clients lents (attaque de type Slowloris) et des dépendances qui ne répondent plus. Ils sont fixés dans [`backend/src/server.ts`](src:backend/src/server.ts).
 
@@ -161,5 +163,5 @@ Ces délais limitent l'effet des clients lents (attaque de type Slowloris) et de
 |---|---|
 | Pas de WAF ni de protection DDoS | À fournir par l'hébergement ou un service en amont. |
 | Socket.IO sans limite de débit | Un client, même anonyme, peut diffuser des messages de chat à tous les connectés sans quota. |
-| Idempotence facultative et inutilisée par les clients | Une requête sans `Idempotency-Key` n'est pas protégée et le serveur ne l'exige pas. Ni le web ni le mobile n'envoient cet en-tête aujourd'hui : la protection ne joue que pour un client qui la demande explicitement. |
+| Idempotence facultative et inutilisée par les clients | Une requête sans `Idempotency-Key` n'est pas protégée et le serveur ne l'exige pas. Ni le web ni le mobile n'envoient cet en-tête aujourd'hui : la protection ne joue que pour un client qui la demande explicitement. Sur mobile, une nouvelle tentative d'achat de ticket à gratter peut ainsi débiter deux fois les EtherPoints. |
 | Swagger UI public | Voir [Autorisations](autorisations.md#limites-connues). |

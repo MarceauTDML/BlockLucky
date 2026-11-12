@@ -113,6 +113,10 @@
 <td>ne peut pas être <code>false</code> : tout compte <code>ADMIN</code> doit activer la 2FA</td>
 </tr>
 <tr>
+<td><code>AGE_VERIFICATION_REQUIRED</code></td>
+<td>ne peut pas être <code>false</code> : achat, cadeau, échange et ticket à gratter exigent un âge vérifié</td>
+</tr>
+<tr>
 <td><code>BLOCKCHAIN_MODE</code></td>
 <td>doit valoir <code>onchain</code> : la simulation est refusée</td>
 </tr>
@@ -137,6 +141,10 @@
 <li><input disabled="" type="checkbox"> <code>EXPO_PUBLIC_API_URL</code> et <code>EXPO_PUBLIC_WS_URL</code> pointent vers l&#39;API publique dans le build mobile.</li>
 <li><input disabled="" type="checkbox"> <code>SITE.lotteryAppUrl</code> de l&#39;Office de Tourisme ne vaut plus <code>http://localhost:3000</code> (voir <a href="../office-tourisme/deploiement.html#avant-une-mise-en-ligne">Servir et déployer</a>).</li>
 <li><input disabled="" type="checkbox"> <code>MAINTENANCE_MODE=false</code>.</li>
+<li><input disabled="" type="checkbox"> <code>DRAW_REVEAL_DELAY_SECONDS</code> est validé avec le responsable événementiel (600 secondes par défaut).</li>
+<li><input disabled="" type="checkbox"> Pour la connexion Google et Apple, <code>GOOGLE_CLIENT_IDS</code> et <code>APPLE_CLIENT_IDS</code> listent les identifiants client des applications publiées, et le build mobile reçoit les <code>EXPO_PUBLIC_GOOGLE_*_CLIENT_ID</code> correspondants. Vides, les deux routes répondent 503.</li>
+<li><input disabled="" type="checkbox"> La procédure d&#39;examen des pièces d&#39;identité est confiée à des agents habilités, avec un délai de traitement annoncé aux citoyens (voir <a href="../juridique/points-a-valider.html">Points à valider</a>).</li>
+<li><input disabled="" type="checkbox"> <code>SCRATCH_COST_VIOLET</code> et <code>SCRATCH_COST_LUCKY</code> sont validés ; le mobile affiche les prix par défaut, écrits dans son code.</li>
 </ul>
 <p>Toutes les variables sont décrites dans <a href="../backend/variables-environnement.html">Variables d&#39;environnement</a>.</p>
 <h2 id="3-base-de-donnees-et-migrations"><a class="anchor" href="#3-base-de-donnees-et-migrations" aria-hidden="true" tabindex="-1">#</a>3. Base de données et migrations</h2>
@@ -199,7 +207,7 @@
 <li><input disabled="" type="checkbox"> <code>CHAIN_START_BLOCK</code> vaut le <code>deploymentBlock</code> du fichier de déploiement : l&#39;indexeur ne parcourt pas tout l&#39;historique de Sepolia.</li>
 <li><input disabled="" type="checkbox"> <code>CHAIN_CONFIRMATIONS=2</code> au moins, pour ne pas indexer un bloc qui serait réorganisé.</li>
 <li><input disabled="" type="checkbox"> <code>EXPLORER_URL=https://sepolia.etherscan.io</code>, pour les liens de transparence.</li>
-<li><input disabled="" type="checkbox"> Le compte opérateur est approvisionné : chaque inscription coûte <code>WELCOME_GRANT_WEI</code> (0,1 ETH par défaut) plus le gas, le premier achat d&#39;un participant dans un tour déclenche la frappe de son badge POAP, payée par l&#39;opérateur, et le keeper paie le gas de <code>requestDraw</code>. Prévoir le solde pour le nombre d&#39;inscriptions attendu.</li>
+<li><input disabled="" type="checkbox"> Le compte opérateur est approvisionné : chaque inscription coûte <code>WELCOME_GRANT_WEI</code> (0,5 ETH par défaut) plus le gas, le premier achat d&#39;un participant dans un tour déclenche la frappe de son badge POAP, payée par l&#39;opérateur, et le keeper paie le gas de <code>requestDraw</code>. Prévoir le solde pour le nombre d&#39;inscriptions attendu.</li>
 <li><input disabled="" type="checkbox"> Un achat de test, un tirage et un versement de cagnotte ont été observés de bout en bout sur l&#39;explorateur.</li>
 </ul>
 <p>Voir <a href="../integration-blockchain/modes.html">Mode onchain ou simulé</a> et <a href="../integration-blockchain/client-rpc.html">Client RPC et compte opérateur</a>.</p>

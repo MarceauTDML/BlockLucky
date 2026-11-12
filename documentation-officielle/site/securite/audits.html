@@ -128,14 +128,29 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>Hachage et politique de mot de passe, mots de passe compromis</td>
-<td>sans objet</td>
-<td>Aucun mot de passe ; connexion par code email</td>
+<td>Hachage et politique de mot de passe</td>
+<td>fait</td>
+<td>bcrypt coût 12, 10 à 128 caractères avec une lettre et un chiffre, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.validators.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.validators.ts</code></a></td>
+</tr>
+<tr>
+<td>Mots de passe compromis</td>
+<td>absent</td>
+<td>Aucune vérification contre une liste de fuites</td>
+</tr>
+<tr>
+<td>Réinitialisation du mot de passe</td>
+<td>fait</td>
+<td>Code email à usage unique, réponse identique pour une adresse inconnue, révocation de toutes les sessions, alerte par email</td>
+</tr>
+<tr>
+<td>Connexion par fournisseur d&#39;identité</td>
+<td>fait</td>
+<td>Jetons Google et Apple vérifiés côté serveur (signature, émetteur, audience, email vérifié), <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/oauth-verifier.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/oauth-verifier.service.ts</code></a> ; rattachement par adresse email</td>
 </tr>
 <tr>
 <td>Limitation des tentatives</td>
 <td>fait</td>
-<td>30 requêtes par IP en 10 minutes, 10 échecs par compte en une heure, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/otp-challenge.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/otp-challenge.service.ts</code></a></td>
+<td>30 requêtes par IP en 10 minutes, 10 échecs par compte ou par adresse inconnue en une heure, mots de passe compris, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/otp-challenge.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/otp-challenge.service.ts</code></a></td>
 </tr>
 <tr>
 <td>TOTP conforme RFC 6238, secret de 160 bits chiffré, anti-rejeu</td>
@@ -150,7 +165,7 @@
 <tr>
 <td>MFA obligatoire pour les administrateurs</td>
 <td>partiel</td>
-<td>Imposée par <code>requireRoles</code>, mais la méthode email n&#39;ajoute pas de facteur ; voir <a href="authentification.html#limites-connues">Limites</a></td>
+<td>Imposée par <code>requireRoles</code>, mais les connexions par code email ou par TOTP seul restent possibles sans mot de passe ; voir <a href="authentification.html#limites-connues">Limites</a></td>
 </tr>
 <tr>
 <td>Comparaison en temps constant</td>
@@ -175,7 +190,7 @@
 <tr>
 <td>Anti-énumération</td>
 <td>partiel</td>
-<td>Réponse de <code>/login</code> différente pour un compte TOTP</td>
+<td>Message unique et temps égalisé sur <code>/signin</code>, réponse identique de <code>/password/forgot</code> ; réponse de <code>/login</code> différente pour un compte TOTP, 409 de <code>/signup</code> pour une adresse inscrite</td>
 </tr>
 <tr>
 <td>Passkeys et WebAuthn, MFA résistant au hameçonnage</td>
@@ -517,7 +532,7 @@
 <tr>
 <td>Journal des actions d&#39;administration</td>
 <td>partiel</td>
-<td>Disjoncteur, trésorerie, statut des partenaires, exports ; pas le tirage ni l&#39;annulation manuels</td>
+<td>Disjoncteur, trésorerie, statut des partenaires, exports, consultation des pièces d&#39;identité et décisions sur l&#39;âge ; pas le tirage ni l&#39;annulation manuels</td>
 </tr>
 <tr>
 <td>Plan de réponse aux incidents, notification CNIL</td>
@@ -552,7 +567,12 @@
 <tr>
 <td>Pas de secret dans le binaire</td>
 <td>fait</td>
-<td>Variables <code>EXPO_PUBLIC_*</code> limitées à des URL</td>
+<td>Variables <code>EXPO_PUBLIC_*</code> limitées à des URL et à des identifiants client publics</td>
+</tr>
+<tr>
+<td>Autorisations minimales</td>
+<td>fait</td>
+<td>Appareil photo et photos seulement, demandées au moment de l&#39;envoi de la pièce d&#39;identité, avec un texte d&#39;explication</td>
 </tr>
 <tr>
 <td>Sauvegarde système exclue</td>
@@ -582,7 +602,12 @@
 <tr>
 <td>Bornes des valeurs métier</td>
 <td>fait</td>
-<td>Quantité de 1 à 10, plafond par joueur dans le contrat, limite de jeu responsable</td>
+<td>Un ticket par participant et par grand tirage (schéma, service et <code>maxTicketsPerPlayer</code> du contrat, 1 par défaut), coût du ticket à gratter fixé par le serveur, limite de jeu responsable</td>
+</tr>
+<tr>
+<td>Contrôle d&#39;âge</td>
+<td>partiel</td>
+<td>Pièce d&#39;identité examinée par la Mairie, statut relu en base à chaque achat (<a href="autorisations.html#verification-d-age">Autorisations</a>) ; pas de contrôle de correspondance entre la personne et la pièce</td>
 </tr>
 <tr>
 <td>Machine à états</td>
@@ -686,8 +711,18 @@
 </tr>
 <tr>
 <td>Moyenne</td>
-<td>La 2FA par email n&#39;ajoute pas de facteur ; le TOTP remplace le code email</td>
+<td>La 2FA par email n&#39;ajoute pas de facteur ; <code>/2fa/verify</code> accepte un code TOTP avec le seul <code>userId</code>, et la connexion par code email reste ouverte aux comptes à mot de passe</td>
 <td><a href="authentification.html#limites-connues">Authentification</a></td>
+</tr>
+<tr>
+<td>Moyenne</td>
+<td>Rattachement d&#39;une connexion Google ou Apple à un compte existant par la seule adresse email</td>
+<td><a href="authentification.html#rattachement-par-adresse-email">Authentification</a></td>
+</tr>
+<tr>
+<td>Moyenne</td>
+<td>Pièce d&#39;identité en attente conservée sans limite de durée et lisible par tout ADMIN</td>
+<td><a href="autorisations.html#verification-d-age">Autorisations</a></td>
 </tr>
 <tr>
 <td>Moyenne</td>
@@ -713,6 +748,11 @@
 <td>Basse</td>
 <td>Validation d&#39;un code promo non atomique</td>
 <td><a href="autorisations.html#limites-connues">Autorisations</a></td>
+</tr>
+<tr>
+<td>Basse</td>
+<td><code>bcryptjs</code> en JavaScript pur : coût processeur des tentatives de connexion</td>
+<td><a href="cryptographie-secrets.html#hachage">Cryptographie et secrets</a></td>
 </tr>
 </tbody></table></div>
 <p>Pour reprendre un audit, dupliquer la grille, renseigner la colonne Preuve avec un lien vers le fichier ou le test, et ne marquer « Fait » qu&#39;une mesure prouvée.</p>

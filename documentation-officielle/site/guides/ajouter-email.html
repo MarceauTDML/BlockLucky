@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ajouter un email | Documentation BlockLucky</title>
-<meta name="description" content="Le backend envoie cinq emails transactionnels : code de connexion ou de 2FA (otp-code), alerte de sécurité (security-alert), bienvenue (welcome), code promo d&#39;u">
+<meta name="description" content="Le backend envoie six emails transactionnels : code de connexion, d&#39;inscription, de réinitialisation du mot de passe ou de 2FA (otp-code), alerte de sécurité (s">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>15. Guides pratiques</span></div>
     <article class="markdown">
 <h1>Ajouter un email</h1>
-<p>Le backend envoie cinq emails transactionnels : code de connexion ou de 2FA (<code>otp-code</code>), alerte de sécurité (<code>security-alert</code>), bienvenue (<code>welcome</code>), code promo d&#39;une récompense (<code>reward-claim</code>) et confirmation de suppression RGPD (<code>gdpr-deletion</code>). Ce guide en ajoute un sixième, <code>ticket-gift</code>, qui prévient le destinataire d&#39;un ticket offert. Aujourd&#39;hui, <code>POST /api/v1/lottery/gift</code> crée si besoin le compte du destinataire et achète le ticket pour lui, mais ne lui écrit pas.</p>
+<p>Le backend envoie six emails transactionnels : code de connexion, d&#39;inscription, de réinitialisation du mot de passe ou de 2FA (<code>otp-code</code>), alerte de sécurité (<code>security-alert</code>), bienvenue (<code>welcome</code>), code promo d&#39;une récompense (<code>reward-claim</code>), confirmation de suppression RGPD (<code>gdpr-deletion</code>) et décision de la Mairie sur la vérification d&#39;âge (<code>identity-decision</code>). Ce guide en ajoute un septième, <code>ticket-gift</code>, qui prévient le destinataire d&#39;un ticket offert. Aujourd&#39;hui, <code>POST /api/v1/lottery/gift</code> crée si besoin le compte du destinataire et achète le ticket pour lui, mais ne lui écrit pas.</p>
 <h2 id="fichiers-a-toucher"><a class="anchor" href="#fichiers-a-toucher" aria-hidden="true" tabindex="-1">#</a>Fichiers à toucher</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -137,7 +137,7 @@
     &lt;p style=&quot;color: #555555; font-size: 15px;&quot;&gt;Un habitant d&#x27;EtherBay vous a offert un ticket pour le tour n°{{ROUND_ID}}.&lt;/p&gt;
     &lt;p style=&quot;color: #555555; font-size: 15px;&quot;&gt;Il est déjà inscrit sur votre portefeuille BlockLucky &lt;code&gt;{{WALLET_ADDRESS}}&lt;/code&gt;.&lt;/p&gt;
     &lt;p style=&quot;margin: 24px 0;&quot;&gt;
-      &lt;a href=&quot;{{LOGIN_URL}}&quot; style=&quot;background-color: #253d2c; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px;&quot;&gt;Voir mon ticket&lt;/a&gt;
+      &lt;a href=&quot;{{LOGIN_URL}}&quot; style=&quot;background-color: #1d2637; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px;&quot;&gt;Voir mon ticket&lt;/a&gt;
     &lt;/p&gt;
     &lt;p style=&quot;color: #777777; font-size: 13px;&quot;&gt;Les ethers utilisés sont fictifs et n&#x27;ont aucune valeur. Participation réservée aux personnes majeures.&lt;/p&gt;
   &lt;/div&gt;
@@ -173,7 +173,7 @@
 </tbody></table></div>
 <p>Une variable fournie mais absente du gabarit est ignorée ; une variable du gabarit non fournie reste affichée telle quelle (<code>{{ROUND_ID}}</code>). Si le fichier est introuvable, le service journalise un avertissement et envoie à la place le JSON des variables dans un paragraphe : vérifier le nom du fichier.</p>
 <div class="hint hint-note"><p class="hint-title">À savoir</p>
-<p>Les gabarits existants utilisent encore un violet <code>#4a154b</code> qui n&#39;est pas celui de la charte EtherBay (vert <code>#253D2C</code>, terracotta <code>#C86D51</code>). Un nouveau gabarit peut utiliser le vert pour ses boutons, comme ci-dessus.</p>
+<p>Les gabarits existants utilisent encore un violet <code>#4a154b</code> qui n&#39;est pas celui de la charte BlockLucky, commune au web et au mobile (encre <code>#1D2637</code>, jaune <code>#FFDA38</code>). Un nouveau gabarit peut utiliser l&#39;encre pour ses boutons, comme ci-dessus.</p>
 </div>
 <h2 id="2-declarer-le-gabarit"><a class="anchor" href="#2-declarer-le-gabarit" aria-hidden="true" tabindex="-1">#</a>2. Déclarer le gabarit</h2>
 <p>Dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/email.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>email.service.ts</code></a>, ajouter le nom au type union. TypeScript refuse ensuite toute faute de frappe dans <code>templateName</code> :</p>
@@ -183,6 +183,7 @@
   | <span class="hljs-string">&#x27;reward-claim&#x27;</span>
   | <span class="hljs-string">&#x27;welcome&#x27;</span>
   | <span class="hljs-string">&#x27;security-alert&#x27;</span>
+  | <span class="hljs-string">&#x27;identity-decision&#x27;</span>
   | <span class="hljs-string">&#x27;ticket-gift&#x27;</span>;</code></pre></div>
 <p>Une méthode dédiée (<code>sendTicketGiftEmail</code>) n&#39;est pas nécessaire : les services métier appellent tous <code>enqueueEmail</code>, et les méthodes <code>send*Email</code> existantes ne sont utilisées par aucun service.</p>
 <h2 id="3-mettre-l-envoi-en-file"><a class="anchor" href="#3-mettre-l-envoi-en-file" aria-hidden="true" tabindex="-1">#</a>3. Mettre l&#39;envoi en file</h2>

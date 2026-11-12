@@ -115,7 +115,7 @@
 </tbody></table></div>
 <p>Le test <code>refuse un jeton signé avec un autre algorithme ou sans émetteur</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/api/auth-security.test.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/api/auth-security.test.ts</code></a> vérifie ces règles.</p>
 <h2 id="duree"><a class="anchor" href="#duree" aria-hidden="true" tabindex="-1">#</a>Durée</h2>
-<p>La durée vient de <code>JWT_EXPIRES_IN</code>, au format <code>&lt;nombre&gt;&lt;s|m|h|d&gt;</code>, par défaut <code>12h</code>. Il n&#39;y a pas de jeton de rafraîchissement : à l&#39;expiration, l&#39;utilisateur se reconnecte avec un nouveau code. Ce choix simplifie le modèle (pas de rotation de jetons à gérer) au prix d&#39;une reconnexion deux fois par jour au plus.</p>
+<p>La durée vient de <code>JWT_EXPIRES_IN</code>, au format <code>&lt;nombre&gt;&lt;s|m|h|d&gt;</code>, par défaut <code>12h</code>. Il n&#39;y a pas de jeton de rafraîchissement : à l&#39;expiration, l&#39;utilisateur se reconnecte avec son mot de passe, un compte Google ou Apple, ou un nouveau code. Ce choix simplifie le modèle (pas de rotation de jetons à gérer) au prix d&#39;une reconnexion deux fois par jour au plus.</p>
 <h2 id="revocation"><a class="anchor" href="#revocation" aria-hidden="true" tabindex="-1">#</a>Révocation</h2>
 <div class="diagram"><pre class="mermaid">flowchart TD
     REQ[&quot;Requête avec jeton&quot;] --&gt; DEC[&quot;Vérification de signature, iss, aud, exp&quot;]
@@ -175,6 +175,11 @@
 <td><code>verify2FA</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.services.ts</code></a></td>
 </tr>
 <tr>
+<td>Réinitialisation ou définition du mot de passe (<code>/password/reset</code>)</td>
+<td>Toutes les sessions</td>
+<td><code>resetPassword</code>, même fichier</td>
+</tr>
+<tr>
 <td>Confirmation d&#39;une suppression RGPD</td>
 <td>Toutes les sessions</td>
 <td><code>confirmGdprAccountDeletion</code> dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a></td>
@@ -192,8 +197,8 @@
 <span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/json
 
 { &quot;allDevices&quot;: true }</code></pre></div>
-<p>La réponse contient <code>{ &quot;loggedOut&quot;: true, &quot;allDevices&quot;: true }</code> et l&#39;en-tête <code>Clear-Site-Data: &quot;cache&quot;, &quot;cookies&quot;, &quot;storage&quot;</code>, qui demande au navigateur d&#39;effacer les données du site. Le web appelle cette route depuis <code>useAuth</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/hooks/useAuth.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/hooks/useAuth.ts</code></a>) avant de vider son état ; le mobile fait de même dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useAuth.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/hooks/useAuth.ts</code></a>. Le bouton « Déconnecter tous mes appareils » du profil envoie <code>allDevices: true</code>.</p>
-<p>Côté client, une réponse 401 alors qu&#39;un jeton était présent déclenche la déconnexion locale (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/store/api/baseApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/store/api/baseApi.ts</code></a>).</p>
+<p>La réponse contient <code>{ &quot;loggedOut&quot;: true, &quot;allDevices&quot;: true }</code> et l&#39;en-tête <code>Clear-Site-Data: &quot;cache&quot;, &quot;cookies&quot;, &quot;storage&quot;</code>, qui demande au navigateur d&#39;effacer les données du site. Le web appelle cette route depuis <code>useAuth</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/hooks/useAuth.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/hooks/useAuth.ts</code></a>) avant de vider son état ; le mobile fait de même dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useAuth.ts" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/hooks/useAuth.ts</code></a>. Le bouton « Déconnecter tous mes appareils » du profil web et le bouton « Déconnecter tous les appareils » de l&#39;écran Sécurité du mobile envoient <code>allDevices: true</code>.</p>
+<p>Côté web, une réponse 401 alors qu&#39;un jeton était présent déclenche la déconnexion locale (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/store/api/baseApi.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/store/api/baseApi.ts</code></a>). Le mobile n&#39;a pas cette garde : une session révoquée y reste affichée jusqu&#39;à la déconnexion manuelle.</p>
 <h2 id="droits-relus-a-chaque-requete"><a class="anchor" href="#droits-relus-a-chaque-requete" aria-hidden="true" tabindex="-1">#</a>Droits relus à chaque requête</h2>
 <p><code>requireRoles</code> ne fait pas confiance au rôle du jeton. Il relit <code>role</code>, <code>deletedAt</code> et <code>isTwoFactorEnabled</code> en base et répond 403 « Droits révoqués ou modifiés : reconnectez-vous » si le compte a été supprimé ou si son rôle a changé. Le test <code>refuse un jeton dont le rôle ne correspond plus au compte</code> le vérifie. Les routes qui n&#39;utilisent que <code>authenticate</code> (profil, achat de ticket) ne font pas cette relecture : un compte rétrogradé conserve l&#39;accès à ces routes, qui ne demandent de toute façon aucun rôle particulier.</p>
 <h2 id="stockage-du-jeton-par-les-clients"><a class="anchor" href="#stockage-du-jeton-par-les-clients" aria-hidden="true" tabindex="-1">#</a>Stockage du jeton par les clients</h2>

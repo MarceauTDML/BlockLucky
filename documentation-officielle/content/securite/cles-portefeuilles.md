@@ -52,7 +52,7 @@ Ce modèle retire au citoyen toute manipulation de clé, mais fait de la Ville l
 
 | Usage | Fonction | Rôle requis sur la chaîne |
 |---|---|---|
-| Dotation de bienvenue (`WELCOME_GRANT_WEI`, 0,1 ETH par défaut) | Transfert simple | Aucun, mais un solde suffisant |
+| Dotation de bienvenue (`WELCOME_GRANT_WEI`, 0,5 ETH par défaut) | Transfert simple | Aucun, mais un solde suffisant |
 | Demande de tirage (route ADMIN et keeper) | `requestDraw` | Aucun (fonction publique) |
 | Clôture d'un tour expiré (keeper) | `closeExpiredRound` | Aucun (fonction publique) |
 | Annulation et remboursement (route ADMIN `/api/lottery/refund`) | `cancelRound` | `OPERATOR_ROLE` |

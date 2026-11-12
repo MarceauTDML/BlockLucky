@@ -112,7 +112,8 @@
 </tbody></table></div>
 <p>Il n&#39;y a ni test automatisé d&#39;accessibilité (axe, pa11y, Lighthouse) dans la CI, ni évaluation des contrastes documentée, ni test avec un lecteur d&#39;écran consigné.</p>
 <h3 id="application-mobile"><a class="anchor" href="#application-mobile" aria-hidden="true" tabindex="-1">#</a>Application mobile</h3>
-<p>Le code de l&#39;application (<a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src</code></a>) ne contient <strong>aucune</strong> propriété d&#39;accessibilité React Native (<code>accessibilityLabel</code>, <code>accessibilityRole</code>, <code>accessibilityHint</code>, <code>accessible</code>). Les textes sont lus par VoiceOver et TalkBack par défaut, mais les boutons composés d&#39;icônes, les cartes cliquables et les animations (roulette du tirage, carte à gratter) n&#39;ont pas d&#39;intitulé ni de rôle explicite. L&#39;application ne respecte pas non plus le réglage « réduire les animations » du système. C&#39;est l&#39;interface la plus éloignée de la conformité.</p>
+<p>La refonte de l&#39;application a ajouté des propriétés d&#39;accessibilité React Native (<code>accessibilityRole</code>, <code>accessibilityLabel</code>, <code>accessibilityState</code>) aux composants de base de <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/mobile-app/src/components/ui" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/src/components/ui</code></a> (<code>AppButton</code>, <code>AppInput</code>, <code>ListRow</code>, <code>Card</code>, <code>ResultDialog</code>, barre d&#39;onglets) et à la plupart des écrans. Les onglets sont annoncés comme tels avec leur état sélectionné, et quelques zones dynamiques (messages d&#39;erreur, bandeau de notification, tirage en direct) utilisent <code>accessibilityLiveRegion</code>. Ces mesures n&#39;ont été ni auditées ni testées avec VoiceOver ou TalkBack.</p>
+<p>Il reste des écarts visibles dans le code : la roue du tirage tourne sans tenir compte du réglage « réduire les animations » du système (<code>AccessibilityInfo.isReduceMotionEnabled</code> n&#39;est jamais lu), et la vérification d&#39;âge suppose de photographier ou de choisir une image, sans autre voie pour un citoyen qui ne peut pas le faire seul.</p>
 <h3 id="site-de-l-office-de-tourisme"><a class="anchor" href="#site-de-l-office-de-tourisme" aria-hidden="true" tabindex="-1">#</a>Site de l&#39;Office de Tourisme</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -152,7 +153,7 @@
 <tbody><tr>
 <td>Mesures techniques de base</td>
 <td>Présentes</td>
-<td>Absentes</td>
+<td>Partielles, non vérifiées</td>
 <td>Présentes</td>
 </tr>
 <tr>
@@ -200,7 +201,7 @@
 </tr>
 <tr>
 <td>2</td>
-<td>Ajouter <code>accessibilityLabel</code> et <code>accessibilityRole</code> aux éléments interactifs de l&#39;application mobile, et respecter <code>AccessibilityInfo.isReduceMotionEnabled</code></td>
+<td>Vérifier l&#39;application mobile avec VoiceOver et TalkBack, compléter les intitulés manquants, et respecter <code>AccessibilityInfo.isReduceMotionEnabled</code> pour la roue du tirage</td>
 </tr>
 <tr>
 <td>3</td>

@@ -117,7 +117,7 @@
 </tr>
 <tr>
 <td>Plafond de tickets par participant</td>
-<td><code>maxTicketsPerPlayer</code> (100 par défaut)</td>
+<td><code>maxTicketsPerPlayer</code> (1 par défaut au déploiement, <code>MAX_TICKETS_PER_PLAYER</code>)</td>
 <td>Réel</td>
 </tr>
 <tr>
@@ -144,24 +144,59 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>Onboarding en quatre écrans</td>
-<td><code>/connexion</code></td>
-<td><code>OnboardingScreen</code></td>
-<td><code>GET /api/v1/auth/onboarding</code></td>
+<td>Onboarding illustré</td>
+<td><code>/connexion</code> (quatre écrans)</td>
+<td><code>OnboardingScreen</code> (trois écrans écrits dans l&#39;écran)</td>
+<td><code>GET /api/v1/auth/onboarding</code> pour le web</td>
 <td>Réel</td>
 </tr>
 <tr>
 <td>Déclaration de majorité obligatoire et tranche d&#39;âge</td>
 <td><code>/connexion</code></td>
-<td><code>LoginScreen</code></td>
+<td>-</td>
 <td>Validée par <code>socialLoginSchema</code></td>
 <td>Réel (déclaratif)</td>
 </tr>
 <tr>
 <td>Connexion sans mot de passe par code à 6 chiffres</td>
 <td><code>/connexion</code>, <code>/connexion/verification</code></td>
-<td><code>LoginScreen</code>, <code>Verify2FAScreen</code></td>
+<td>-</td>
 <td><code>POST /api/v1/auth/login</code>, <code>POST /api/v1/auth/2fa/verify</code></td>
+<td>Réel</td>
+</tr>
+<tr>
+<td>Inscription par email et mot de passe, confirmée par un code à 6 chiffres</td>
+<td>-</td>
+<td><code>SignUpScreen</code>, <code>Verify2FAScreen</code></td>
+<td><code>POST /api/v1/auth/signup</code>, <code>POST /api/v1/auth/2fa/verify</code></td>
+<td>Réel</td>
+</tr>
+<tr>
+<td>Connexion par email et mot de passe</td>
+<td>-</td>
+<td><code>SignInScreen</code></td>
+<td><code>POST /api/v1/auth/signin</code></td>
+<td>Réel</td>
+</tr>
+<tr>
+<td>Mot de passe oublié et réinitialisation par code</td>
+<td>-</td>
+<td><code>ForgotPasswordScreen</code>, <code>ResetPasswordScreen</code></td>
+<td><code>POST /api/v1/auth/password/forgot</code>, <code>POST /api/v1/auth/password/reset</code></td>
+<td>Réel</td>
+</tr>
+<tr>
+<td>Connexion Google et Apple</td>
+<td>-</td>
+<td><code>SignInScreen</code>, <code>SignUpScreen</code></td>
+<td><code>POST /api/v1/auth/oauth/google</code>, <code>POST /api/v1/auth/oauth/apple</code></td>
+<td>Partiel : 503 tant que <code>GOOGLE_CLIENT_IDS</code> ou <code>APPLE_CLIENT_IDS</code> est vide</td>
+</tr>
+<tr>
+<td>Vérification d&#39;âge par pièce d&#39;identité validée par la Mairie</td>
+<td><code>/profil/identite</code></td>
+<td><code>VerifyAgeScreen</code></td>
+<td><code>POST /api/v1/user/identity</code>, <code>GET /api/v1/user/identity</code></td>
 <td>Réel</td>
 </tr>
 <tr>
@@ -188,7 +223,7 @@
 <tr>
 <td>Déconnexion de l&#39;appareil, ou de tous les appareils</td>
 <td><code>/profil/securite</code></td>
-<td>déconnexion simple</td>
+<td><code>ProfileScreen</code>, <code>SecurityScreen</code></td>
 <td><code>POST /api/v1/auth/logout</code></td>
 <td>Réel</td>
 </tr>
@@ -200,7 +235,7 @@
 <td>Réel</td>
 </tr>
 <tr>
-<td>Verrouillage après codes erronés</td>
+<td>Verrouillage après codes ou mots de passe erronés</td>
 <td>-</td>
 <td>-</td>
 <td>5 essais par code, 10 échecs par heure et par compte</td>
@@ -227,7 +262,7 @@
 <td>Réel</td>
 </tr>
 <tr>
-<td>Dotation de bienvenue en ethers fictifs (0,1 ETH par défaut, une fois)</td>
+<td>Dotation de bienvenue en ethers fictifs (0,5 ETH par défaut, une fois)</td>
 <td>automatique</td>
 <td>automatique</td>
 <td><code>WELCOME_GRANT_WEI</code></td>
@@ -236,9 +271,9 @@
 <tr>
 <td>Adresse, solde et lien vers l&#39;explorateur</td>
 <td><code>/accueil</code></td>
-<td><code>HomeScreen</code></td>
+<td><code>HomeScreen</code>, <code>ProfileScreen</code></td>
 <td><code>GET /api/v1/lottery/wallet</code></td>
-<td>Réel</td>
+<td>Réel ; aucun solde en mode simulé</td>
 </tr>
 <tr>
 <td>Effacement de la clé à la suppression RGPD</td>
@@ -267,45 +302,59 @@
 <td>Réel</td>
 </tr>
 <tr>
-<td>Paliers communautaires de la jauge</td>
+<td>Phase du tour (ouvert, salle d&#39;attente, tirage, terminé, annulé) et heure de révélation</td>
+<td><code>/accueil</code></td>
+<td><code>HomeScreen</code>, <code>WaitingRoomScreen</code></td>
+<td>même route, champs <code>phase</code> et <code>revealAt</code></td>
+<td>Réel</td>
+</tr>
+<tr>
+<td>Paliers communautaires de la jauge (5 000, 7 500, 9 000 et 10 000 participants)</td>
 <td><code>/accueil</code></td>
 <td><code>HomeScreen</code></td>
 <td>même route</td>
 <td>Fictif : récompenses jamais appliquées</td>
 </tr>
 <tr>
-<td>Achat d&#39;un ou plusieurs tickets en un geste</td>
+<td>Achat de son ticket unique du grand tirage en un geste, âge vérifié</td>
 <td><code>/billetterie</code></td>
 <td><code>BuyTicketScreen</code></td>
 <td><code>POST /api/v1/lottery/buy</code></td>
 <td>Réel</td>
 </tr>
 <tr>
-<td>Plafond personnel de jeu responsable (50 par défaut)</td>
-<td><code>/profil/securite</code></td>
-<td><code>SecurityScreen</code></td>
-<td><code>PUT /api/v1/user/responsible-limit</code></td>
+<td>Numéro de ticket à cinq chiffres</td>
+<td><code>/historique</code></td>
+<td><code>MyTicketsScreen</code>, <code>TransactionHistoryScreen</code></td>
+<td>champ <code>ticketNumber</code></td>
 <td>Réel</td>
 </tr>
 <tr>
-<td>Ticket offert à un proche par email</td>
+<td>Plafond personnel de jeu responsable (50 par défaut)</td>
+<td><code>/profil/securite</code></td>
+<td>-</td>
+<td><code>PUT /api/v1/user/responsible-limit</code></td>
+<td>Réel, sans effet tant qu&#39;un seul ticket est permis</td>
+</tr>
+<tr>
+<td>Ticket offert à un proche par email, s&#39;il n&#39;a pas encore le sien</td>
 <td><code>/billetterie</code></td>
-<td><code>BuyTicketScreen</code></td>
+<td><code>GiftTicketScreen</code></td>
 <td><code>POST /api/v1/lottery/gift</code></td>
 <td>Réel</td>
 </tr>
 <tr>
 <td>Historique des tickets et galerie POAP</td>
 <td><code>/historique</code></td>
-<td><code>TransactionHistoryScreen</code></td>
+<td><code>MyTicketsScreen</code>, <code>TransactionHistoryScreen</code></td>
 <td><code>GET /api/v1/lottery/my-tickets</code></td>
 <td>Réel</td>
 </tr>
 <tr>
-<td>Tirage automatique (keeper)</td>
+<td>Tirage automatique (keeper) après le délai de révélation <code>DRAW_REVEAL_DELAY_SECONDS</code></td>
 <td>-</td>
 <td>-</td>
-<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.keeper.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.keeper.ts</code></a></td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.keeper.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.keeper.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/draw-reveal.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/draw-reveal.ts</code></a></td>
 <td>Réel</td>
 </tr>
 <tr>
@@ -318,21 +367,21 @@
 <tr>
 <td>Réclamation manuelle de la cagnotte</td>
 <td><code>/accueil</code>, <code>/tirage</code></td>
-<td><code>HomeScreen</code>, <code>LiveDrawScreen</code></td>
+<td><code>LiveDrawScreen</code></td>
 <td><code>POST /api/v1/lottery/claim-prize</code></td>
 <td>Réel</td>
 </tr>
 <tr>
 <td>Classement anonymisé des ambassadeurs</td>
 <td><code>/accueil</code></td>
-<td><code>HomeScreen</code></td>
+<td><code>SponsorsScreen</code></td>
 <td><code>GET /api/v1/lottery/leaderboard</code></td>
 <td>Réel</td>
 </tr>
 <tr>
 <td>Charte de transparence</td>
 <td><code>/transparence</code>, <code>/profil/aide</code></td>
-<td><code>HelpSupportScreen</code></td>
+<td><code>HowItWorksScreen</code>, <code>HelpSupportScreen</code></td>
 <td><code>GET /api/v1/lottery/transparency-charter</code></td>
 <td>Réel</td>
 </tr>
@@ -356,21 +405,21 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>Salle d&#39;attente 10 minutes avant la fin du tour</td>
+<td>Salle d&#39;attente entre la fermeture des achats et la révélation</td>
 <td><code>/tirage</code></td>
-<td><code>LiveDrawScreen</code></td>
+<td><code>WaitingRoomScreen</code></td>
 <td><code>draw:join</code>, <code>draw:waiting-room</code></td>
 <td>Réel</td>
 </tr>
 <tr>
 <td>Chat en direct et réactions</td>
 <td><code>/tirage</code></td>
-<td><code>LiveDrawScreen</code></td>
+<td><code>WaitingRoomScreen</code>, <code>LiveDrawScreen</code> (sans réactions)</td>
 <td><code>chat:send</code>, <code>chat:message</code>, <code>chat:react</code>, <code>chat:reaction</code></td>
 <td>Réel</td>
 </tr>
 <tr>
-<td>Annonce du gagnant à tous les clients</td>
+<td>Annonce du gagnant à tous les clients, roue animée sur mobile</td>
 <td><code>/tirage</code></td>
 <td><code>LiveDrawScreen</code></td>
 <td><code>draw:winner</code></td>
@@ -406,7 +455,7 @@
 <tr>
 <td>Solde et historique des points</td>
 <td><code>/boutique</code></td>
-<td><code>RewardsCatalogScreen</code></td>
+<td><code>RewardsCatalogScreen</code>, <code>HomeScreen</code></td>
 <td><code>GET /api/v1/marketplace/points</code></td>
 <td>Réel</td>
 </tr>
@@ -418,10 +467,17 @@
 <td>Réel</td>
 </tr>
 <tr>
-<td>Échange contre une carte à gratter et un code promo</td>
+<td>Échange d&#39;une offre choisie contre une carte à gratter et un code promo, âge vérifié</td>
 <td><code>/boutique/carte</code></td>
-<td><code>ScratchCardScreen</code></td>
+<td><code>RewardDetailScreen</code>, <code>ScratchCardScreen</code></td>
 <td><code>POST /api/v1/marketplace/claim</code></td>
+<td>Réel</td>
+</tr>
+<tr>
+<td>Ticket à gratter acheté en EtherPoints (violet 50, lucky 100), qui tire au hasard une offre en stock, âge vérifié</td>
+<td>-</td>
+<td><code>ScratchCardScreen</code></td>
+<td><code>POST /api/v1/marketplace/scratch</code></td>
 <td>Réel</td>
 </tr>
 <tr>
@@ -434,14 +490,14 @@
 <tr>
 <td>Quêtes sociales</td>
 <td><code>/profil</code></td>
-<td><code>ProfileScreen</code></td>
+<td><code>SponsorsScreen</code></td>
 <td><code>GET /api/v1/user/quests</code>, <code>POST /api/v1/user/quests/complete</code></td>
 <td>Partiel : validées sur déclaration</td>
 </tr>
 <tr>
 <td>Parrainage et liens de partage</td>
 <td><code>/profil</code>, <code>/invite/[code]</code></td>
-<td><code>ProfileScreen</code></td>
+<td><code>SponsorsScreen</code></td>
 <td><code>GET /api/v1/user/referrals</code></td>
 <td>Réel</td>
 </tr>
@@ -554,6 +610,12 @@
 <td>Partiel : le « PDF » serveur est du JSON ; le web imprime le PDF dans le navigateur</td>
 </tr>
 <tr>
+<td>Vérification des pièces d&#39;identité : consultation journalisée, décision, effacement des images, email au citoyen</td>
+<td><code>/mairie/identites</code></td>
+<td><code>GET /api/v1/admin/identity-verifications</code>, <code>GET /api/v1/admin/identity-verifications/:id</code>, <code>POST /api/v1/admin/identity-verifications/:id/decision</code></td>
+<td>Réel</td>
+</tr>
+<tr>
 <td>Journal d&#39;audit</td>
 <td><code>/mairie/audit</code></td>
 <td><code>GET /api/v1/admin/audit-logs</code></td>
@@ -582,14 +644,14 @@
 <tr>
 <td>Thème clair ou sombre, français ou anglais</td>
 <td>partout</td>
-<td>partout</td>
+<td><code>SettingsScreen</code></td>
 <td><code>PUT /api/v1/user/preferences</code></td>
 <td>Réel</td>
 </tr>
 <tr>
 <td>Centre de notifications</td>
 <td>cloche</td>
-<td>tiroir</td>
+<td><code>NotificationsScreen</code></td>
 <td><code>GET /api/v1/user/notifications</code></td>
 <td>Fictif : trois notifications codées en dur</td>
 </tr>
@@ -662,9 +724,9 @@
 <td>Réel</td>
 </tr>
 <tr>
-<td>Idempotence des achats, cadeaux et échanges</td>
+<td>Idempotence des achats, cadeaux, échanges et tickets à gratter</td>
 <td><code>Idempotency-Key</code></td>
-<td>Réel</td>
+<td>Réel côté API ; le mobile n&#39;envoie pas l&#39;en-tête</td>
 </tr>
 <tr>
 <td>Nœud RPC de secours</td>

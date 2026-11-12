@@ -32,7 +32,7 @@ Le test `refuse un jeton signé avec un autre algorithme ou sans émetteur` de [
 
 ## Durée
 
-La durée vient de `JWT_EXPIRES_IN`, au format `<nombre><s|m|h|d>`, par défaut `12h`. Il n'y a pas de jeton de rafraîchissement : à l'expiration, l'utilisateur se reconnecte avec un nouveau code. Ce choix simplifie le modèle (pas de rotation de jetons à gérer) au prix d'une reconnexion deux fois par jour au plus.
+La durée vient de `JWT_EXPIRES_IN`, au format `<nombre><s|m|h|d>`, par défaut `12h`. Il n'y a pas de jeton de rafraîchissement : à l'expiration, l'utilisateur se reconnecte avec son mot de passe, un compte Google ou Apple, ou un nouveau code. Ce choix simplifie le modèle (pas de rotation de jetons à gérer) au prix d'une reconnexion deux fois par jour au plus.
 
 ## Révocation
 
@@ -65,6 +65,7 @@ L'horodatage de révocation globale vaut l'instant de la révocation moins une s
 | `POST /api/auth/logout` | Session courante | `sessionService.revoke` |
 | `POST /api/auth/logout` avec `{ "allDevices": true }` | Toutes les sessions du compte | `sessionService.revokeAllForUser` |
 | Activation de la 2FA (application ou email) | Toutes les sessions | `verify2FA` dans [`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts) |
+| Réinitialisation ou définition du mot de passe (`/password/reset`) | Toutes les sessions | `resetPassword`, même fichier |
 | Confirmation d'une suppression RGPD | Toutes les sessions | `confirmGdprAccountDeletion` dans [`backend/src/api/user/user.services.ts`](src:backend/src/api/user/user.services.ts) |
 | Changement de rôle ou suppression du compte en base | Accès aux routes protégées par `requireRoles` | Comparaison du rôle du jeton au rôle en base |
 
@@ -80,9 +81,9 @@ Content-Type: application/json
 { "allDevices": true }
 ```
 
-La réponse contient `{ "loggedOut": true, "allDevices": true }` et l'en-tête `Clear-Site-Data: "cache", "cookies", "storage"`, qui demande au navigateur d'effacer les données du site. Le web appelle cette route depuis `useAuth` ([`frontend-web/src/hooks/useAuth.ts`](src:frontend-web/src/hooks/useAuth.ts)) avant de vider son état ; le mobile fait de même dans [`mobile-app/src/hooks/useAuth.ts`](src:mobile-app/src/hooks/useAuth.ts). Le bouton « Déconnecter tous mes appareils » du profil envoie `allDevices: true`.
+La réponse contient `{ "loggedOut": true, "allDevices": true }` et l'en-tête `Clear-Site-Data: "cache", "cookies", "storage"`, qui demande au navigateur d'effacer les données du site. Le web appelle cette route depuis `useAuth` ([`frontend-web/src/hooks/useAuth.ts`](src:frontend-web/src/hooks/useAuth.ts)) avant de vider son état ; le mobile fait de même dans [`mobile-app/src/hooks/useAuth.ts`](src:mobile-app/src/hooks/useAuth.ts). Le bouton « Déconnecter tous mes appareils » du profil web et le bouton « Déconnecter tous les appareils » de l'écran Sécurité du mobile envoient `allDevices: true`.
 
-Côté client, une réponse 401 alors qu'un jeton était présent déclenche la déconnexion locale ([`frontend-web/src/store/api/baseApi.ts`](src:frontend-web/src/store/api/baseApi.ts)).
+Côté web, une réponse 401 alors qu'un jeton était présent déclenche la déconnexion locale ([`frontend-web/src/store/api/baseApi.ts`](src:frontend-web/src/store/api/baseApi.ts)). Le mobile n'a pas cette garde : une session révoquée y reste affichée jusqu'à la déconnexion manuelle.
 
 ## Droits relus à chaque requête
 

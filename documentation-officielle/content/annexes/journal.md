@@ -25,6 +25,7 @@ flowchart LR
     C --> D["10 nov. : production, sécurité, CI"]
     D --> E["11 nov. : smart contracts et intégration on-chain"]
     E --> F["11 nov. : documentation et conformité"]
+    F --> G["12 nov. : comptes, vérification d'âge, refonte mobile"]
 ```
 
 ## Livraison 1 : socle du backend (2 novembre 2026)
@@ -131,6 +132,19 @@ Pull requests #187 à #193.
 ## Après le dernier commit
 
 Cette documentation officielle (`documentation-officielle/`) reprend et remplace l'ancien dossier `docs/` et les README détaillés des projets, réduits à quelques lignes qui renvoient vers elle.
+
+## Livraison 9 : comptes, vérification d'âge et refonte mobile (12 novembre 2026)
+
+Pas encore de pull request à la rédaction de cette entrée. La date est celle de la migration `20261112090000_password_accounts_identity_verification`.
+
+- Comptes avec mot de passe haché par bcrypt : inscription confirmée par un code email, connexion, mot de passe oublié et réinitialisation qui révoque toutes les sessions (`/auth/signup`, `/auth/signin`, `/auth/password/forgot`, `/auth/password/reset`). `/auth/login` reste la connexion du web.
+- Connexion Google et Apple par jeton d'identité vérifié côté serveur (`/auth/oauth/google`, `/auth/oauth/apple`), qui répond 503 tant que `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` est vide.
+- Vérification d'âge : envoi du recto et du verso de la pièce d'identité (`/user/identity`), images chiffrées en AES-256-GCM, table `IdentityDocument`, page Mairie `/mairie/identites`, consultation et décision tracées dans l'audit, images effacées à la décision, email `identity-decision`. Achat, cadeau, échange et ticket à gratter refusés en 403 `AGE_VERIFICATION_REQUIRED` tant que l'âge n'est pas vérifié.
+- Loterie : un seul ticket par participant et par grand tirage (`MAX_TICKETS_PER_PLAYER` à 1 au déploiement, 409 sinon), numéros de ticket à cinq chiffres, phases `OPEN`, `WAITING_ROOM`, `DRAWING`, `COMPLETED` et `CANCELLED`, délai de révélation `DRAW_REVEAL_DELAY_SECONDS` respecté par le keeper, paliers de la jauge à 5 000, 7 500, 9 000 et 10 000 participants.
+- Boutique : ticket à gratter acheté en EtherPoints (`POST /marketplace/scratch`, 50 ou 100 points).
+- Dotation de bienvenue portée à 0,5 ETH fictif ; seed avec le mot de passe de démonstration `EtherBay2026demo` et trois comptes à l'âge vérifié.
+- Application mobile refaite sur la maquette Figma : police Inter, jetons de couleur, composants d'interface et icônes SVG, quatre onglets (Accueil, Mes tickets, Parrains, Profil), écrans poussés sur la pile racine, douze nouveaux écrans dont la salle d'attente, la roue du tirage et la vérification d'âge, ouverte d'elle-même après la connexion tant que l'âge n'est pas vérifié.
+- Frontend web aligné sur la nouvelle charte du mobile : jetons de couleur recopiés (jaune `#FFDA38`, encre `#1D2637`, lavande, menthe, pêche), police Inter servie en local, jeu d'icônes SVG copié, logo « B » en favicon, composants d'interface, coquilles et pages restylés sur les écrans mobiles, roue du tirage à dix secteurs. Le favicon de la documentation est passé au même logo.
 
 ## Ce que l'historique révèle
 

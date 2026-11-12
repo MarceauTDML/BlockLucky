@@ -118,7 +118,7 @@ Aucune mise en euros ni en ethers réels. Ce choix écarte la qualification de j
 
 ### Aucun prérequis technique ni financier
 
-L'inclusion demandée par la Maire a conduit à supprimer MetaMask et l'achat de crypto. Le backend crée le portefeuille, la Mairie le dote en ethers fictifs, et la connexion se fait par un code envoyé par email. Le citoyen n'a jamais à manipuler de clé.
+L'inclusion demandée par la Maire a conduit à supprimer MetaMask et l'achat de crypto. Le backend crée le portefeuille, la Mairie le dote en ethers fictifs, et la connexion se fait par un code envoyé par email ou, sur mobile, par un mot de passe. Le citoyen n'a jamais à manipuler de clé.
 
 ### Un produit complet autour du contrat
 
@@ -128,4 +128,4 @@ Le contrat seul ne suffit pas à convaincre la Mairie, le responsable événemen
 
 - Les mises en monnaie réelle et l'achat de crypto-monnaie par les citoyens.
 - Le déploiement sur le réseau Ethereum principal.
-- La vérification d'identité au-delà de la déclaration de majorité (case 18 ans et plus obligatoire à la connexion).
+- La vérification d'identité au-delà de l'âge : la Mairie contrôle la majorité sur une photo de la pièce d'identité, sans conserver l'image ni vérifier l'authenticité du document par un service tiers.

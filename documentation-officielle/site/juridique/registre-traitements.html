@@ -80,11 +80,11 @@
 </tr>
 <tr>
 <td>Personnes concernées</td>
-<td>Citoyens majeurs, sur déclaration (<code>isAdultConfirmed</code>) ; bénéficiaires d&#39;un ticket offert (voir fiche 2)</td>
+<td>Citoyens majeurs, dont l&#39;âge est vérifié par pièce d&#39;identité avant tout achat (voir fiche 2 bis) ; bénéficiaires d&#39;un ticket offert (voir fiche 2)</td>
 </tr>
 <tr>
 <td>Données</td>
-<td>Email ; adresse du portefeuille intégré et clé privée chiffrée (AES-256-GCM) ; hash de la dotation de bienvenue ; tranche d&#39;âge ; rôle ; tickets, hash de transaction et adresse payeuse ; code de parrainage et parrain ; préférences (thème, langue, notifications) ; limite de jeu responsable</td>
+<td>Email ; empreinte bcrypt du mot de passe, s&#39;il en existe un ; adresse du portefeuille intégré et clé privée chiffrée (AES-256-GCM) ; hash de la dotation de bienvenue ; tranche d&#39;âge (connexion web) ; rôle ; tickets, hash de transaction et adresse payeuse ; code de parrainage et parrain ; préférences (thème, langue, notifications) ; limite de jeu responsable</td>
 </tr>
 <tr>
 <td>Code</td>
@@ -92,7 +92,7 @@
 </tr>
 <tr>
 <td>Destinataires</td>
-<td>Services municipaux habilités (rôle ADMIN) ; sous-traitants techniques listés plus bas</td>
+<td>Services municipaux habilités (rôle ADMIN) ; sous-traitants techniques listés plus bas ; Google ou Apple, pour un citoyen qui choisit de se connecter avec eux (le fournisseur sait alors que son utilisateur se connecte à BlockLucky)</td>
 </tr>
 <tr>
 <td>Données publiques</td>
@@ -141,7 +141,60 @@
 </tr>
 <tr>
 <td>Remarque</td>
-<td>Le bénéficiaire n&#39;a ni confirmé sa majorité ni accepté les conditions. Ce traitement est absent de l&#39;ancien registre ; il est ajouté ici pour être examiné par le DPO.</td>
+<td>Le bénéficiaire n&#39;a ni fait vérifier sa majorité ni accepté les conditions ; seul l&#39;expéditeur doit avoir un âge vérifié. Ce traitement est absent de l&#39;ancien registre ; il est ajouté ici pour être examiné par le DPO.</td>
+</tr>
+</tbody></table></div>
+<h2 id="2-bis-verification-d-age-par-piece-d-identite"><a class="anchor" href="#2-bis-verification-d-age-par-piece-d-identite" aria-hidden="true" tabindex="-1">#</a>2 bis. Vérification d&#39;âge par pièce d&#39;identité</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rubrique</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Finalité</td>
+<td>Réserver l&#39;achat et le cadeau de tickets, l&#39;échange de récompenses et les tickets à gratter aux personnes majeures</td>
+</tr>
+<tr>
+<td>Base légale</td>
+<td>Obligation légale d&#39;exclure les mineurs des jeux d&#39;argent, <strong>à confirmer</strong> : le dispositif sans mise réelle n&#39;est peut-être pas un jeu d&#39;argent au sens strict (voir <a href="veille-juridique.html">Veille juridique</a>) ; à défaut, exécution du contrat ou mission d&#39;intérêt public</td>
+</tr>
+<tr>
+<td>Personnes concernées</td>
+<td>Citoyens qui souhaitent jouer</td>
+</tr>
+<tr>
+<td>Données</td>
+<td>Photos du recto et du verso de la pièce d&#39;identité (avec toutes les mentions qu&#39;elle porte) ; type d&#39;image ; statut (<code>NONE</code>, <code>PENDING</code>, <code>VERIFIED</code>, <code>REJECTED</code>) ; dates d&#39;envoi, de décision et de vérification ; motif d&#39;un refus ; identifiant de l&#39;agent qui a statué</td>
+</tr>
+<tr>
+<td>Collecte</td>
+<td>Application mobile, écran de vérification d&#39;âge, après accord pour l&#39;accès à l&#39;appareil photo ou aux photos ; web, page <code>/profil/identite</code>, par choix de deux fichiers et case de consentement à la consultation par la Mairie</td>
+</tr>
+<tr>
+<td>Code</td>
+<td><code>submitIdentity</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.services.ts</code></a>, décision dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/admin/admin.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/admin/admin.services.ts</code></a>, page <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/identites/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/mairie/identites/page.tsx</code></a></td>
+</tr>
+<tr>
+<td>Destinataires</td>
+<td>Agents de la Mairie titulaires du rôle ADMIN, avec double authentification ; aucun sous-traitant de vérification d&#39;identité</td>
+</tr>
+<tr>
+<td>Sécurité</td>
+<td>Images contrôlées (JPEG ou PNG, 4 Mo au plus), chiffrées en AES-256-GCM à la réception, déchiffrées seulement pour l&#39;agent tant que la demande est en attente, réponse non mise en cache ; chaque consultation et chaque décision sont inscrites au journal d&#39;administration (fiche 7)</td>
+</tr>
+<tr>
+<td>Conservation</td>
+<td>Photos : effacées dans la transaction de la décision ; aucune durée maximale n&#39;est appliquée à une demande jamais traitée (<strong>à mettre en place</strong>). Statut et date : durée du compte. Motif d&#39;un refus : jusqu&#39;à la validation suivante ou l&#39;anonymisation sur la fiche du compte, et dans le journal d&#39;administration. La demande est supprimée à l&#39;anonymisation du compte</td>
+</tr>
+<tr>
+<td>Information</td>
+<td>Email <code>identity-decision</code> à chaque décision, qui rappelle l&#39;effacement des images ; mention dans l&#39;écran mobile et sur la page <code>/profil/identite</code> du web ; la politique de confidentialité du web ne mentionne pas encore ce traitement</td>
+</tr>
+<tr>
+<td>Remarque</td>
+<td>Traitement à fort enjeu : il est probablement soumis à une analyse d&#39;impact. Son ajout est récent et il doit être examiné par le DPO (voir <a href="points-a-valider.html">Points à valider</a>)</td>
 </tr>
 </tbody></table></div>
 <h2 id="3-programme-de-fidelite-etherpoints-et-recompenses-partenaires"><a class="anchor" href="#3-programme-de-fidelite-etherpoints-et-recompenses-partenaires" aria-hidden="true" tabindex="-1">#</a>3. Programme de fidélité EtherPoints et récompenses partenaires</h2>
@@ -154,7 +207,7 @@
 </thead>
 <tbody><tr>
 <td>Finalité</td>
-<td>Attribution et échange d&#39;EtherPoints contre des offres de commerçants d&#39;EtherBay</td>
+<td>Attribution et échange d&#39;EtherPoints contre des offres de commerçants d&#39;EtherBay, directement ou par un ticket à gratter qui attribue une offre au hasard</td>
 </tr>
 <tr>
 <td>Base légale</td>
@@ -232,7 +285,7 @@
 </tr>
 <tr>
 <td>Données</td>
-<td>Secret TOTP chiffré ; empreintes des codes de secours ; codes de connexion temporaires ; compteurs d&#39;échecs ; identifiants de sessions révoquées ; adresse IP, utilisée en mémoire et dans Redis par la limitation de débit</td>
+<td>Empreinte bcrypt du mot de passe ; secret TOTP chiffré ; empreintes des codes de secours ; codes de connexion et de réinitialisation temporaires ; empreinte HMAC de l&#39;email d&#39;une tentative sur un compte inconnu ; compteurs d&#39;échecs ; identifiants de sessions révoquées ; adresse IP, utilisée en mémoire et dans Redis par la limitation de débit</td>
 </tr>
 <tr>
 <td>Code</td>
@@ -240,7 +293,7 @@
 </tr>
 <tr>
 <td>Conservation</td>
-<td>Codes 10 minutes, compteurs 1 heure, révocations jusqu&#39;à l&#39;expiration du jeton, compteurs de débit 10 ou 15 minutes ; secret supprimé à la désactivation de la 2FA ou à l&#39;anonymisation</td>
+<td>Codes 10 minutes, compteurs 1 heure, révocations jusqu&#39;à l&#39;expiration du jeton, compteurs de débit 10 minutes, 15 minutes ou 1 heure ; secret supprimé à la désactivation de la 2FA ou à l&#39;anonymisation ; empreinte du mot de passe supprimée à l&#39;anonymisation</td>
 </tr>
 </tbody></table></div>
 <h2 id="6-mesure-d-audience-et-acquisition"><a class="anchor" href="#6-mesure-d-audience-et-acquisition" aria-hidden="true" tabindex="-1">#</a>6. Mesure d&#39;audience et acquisition</h2>
@@ -302,7 +355,7 @@
 </tr>
 <tr>
 <td>Données</td>
-<td>Administrateur, action (<code>CIRCUIT_BREAKER_PAUSE</code>, <code>CIRCUIT_BREAKER_RESUME</code>, <code>TREASURY_WITHDRAWAL_MULTISIG</code>, <code>PARTNER_APPROVED</code>, <code>PARTNER_SUSPENDED</code>, <code>EXPORT_REPORT_CSV</code> ou <code>_PDF</code>), horodatage, paramètres</td>
+<td>Administrateur, action (<code>CIRCUIT_BREAKER_PAUSE</code>, <code>CIRCUIT_BREAKER_RESUME</code>, <code>TREASURY_WITHDRAWAL_MULTISIG</code>, <code>PARTNER_APPROVED</code>, <code>PARTNER_SUSPENDED</code>, <code>EXPORT_REPORT_CSV</code> ou <code>_PDF</code>, <code>IDENTITY_DOCUMENT_VIEWED</code>, <code>IDENTITY_VERIFICATION_DECISION</code>), horodatage, paramètres ; pour la vérification d&#39;âge, identifiant du citoyen, décision et motif d&#39;un refus</td>
 </tr>
 <tr>
 <td>Code</td>
@@ -327,7 +380,7 @@
 </thead>
 <tbody><tr>
 <td>Finalité</td>
-<td>Codes de connexion, alertes de sécurité, bienvenue, confirmation de suppression RGPD, codes promo obtenus</td>
+<td>Codes de connexion, d&#39;inscription et de réinitialisation du mot de passe, alertes de sécurité, bienvenue, confirmation de suppression RGPD, codes promo obtenus, décision sur la vérification d&#39;âge</td>
 </tr>
 <tr>
 <td>Base légale</td>
@@ -335,7 +388,7 @@
 </tr>
 <tr>
 <td>Données</td>
-<td>Email, contenu du message (code, adresse de portefeuille, code de parrainage, jeton de suppression)</td>
+<td>Email, contenu du message (code, adresse de portefeuille, code de parrainage, jeton de suppression, décision et motif d&#39;un refus de pièce d&#39;identité)</td>
 </tr>
 <tr>
 <td>Code</td>
@@ -442,6 +495,12 @@
 <td>À désigner</td>
 <td>À signer</td>
 </tr>
+<tr>
+<td>Google, Apple</td>
+<td>Vérification de l&#39;identité à la connexion sociale, au choix du citoyen</td>
+<td>Hors UE possible</td>
+<td>Conditions des fournisseurs ; le backend ne leur envoie aucune donnée, il ne fait que vérifier leurs jetons</td>
+</tr>
 </tbody></table></div>
 <h2 id="tenir-le-registre-a-jour"><a class="anchor" href="#tenir-le-registre-a-jour" aria-hidden="true" tabindex="-1">#</a>Tenir le registre à jour</h2>
 <p>Toute nouvelle collecte de donnée (nouvelle colonne, nouvel événement analytique, nouveau sous-traitant) doit donner lieu à une mise à jour de ce registre dans la même pull request. La relecture du <a href="../base-de-donnees/modele.html">modèle de données</a> et du <a href="../base-de-donnees/dictionnaire.html">dictionnaire de données</a> permet de vérifier qu&#39;aucune donnée n&#39;a été oubliée.</p>
@@ -453,7 +512,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#1-comptes-citoyens-et-participation-a-la-loterie">1. Comptes citoyens et participation à la loterie</a></li><li class="toc-h2"><a href="#2-cadeau-de-ticket">2. Cadeau de ticket</a></li><li class="toc-h2"><a href="#3-programme-de-fidelite-etherpoints-et-recompenses-partenaires">3. Programme de fidélité EtherPoints et récompenses partenaires</a></li><li class="toc-h2"><a href="#4-comptes-partenaires">4. Comptes partenaires</a></li><li class="toc-h2"><a href="#5-double-authentification-et-securite-des-comptes">5. Double authentification et sécurité des comptes</a></li><li class="toc-h2"><a href="#6-mesure-d-audience-et-acquisition">6. Mesure d&#39;audience et acquisition</a></li><li class="toc-h2"><a href="#7-journal-des-actions-d-administration">7. Journal des actions d&#39;administration</a></li><li class="toc-h2"><a href="#8-emails-transactionnels">8. Emails transactionnels</a></li><li class="toc-h2"><a href="#9-journaux-techniques">9. Journaux techniques</a></li><li class="toc-h2"><a href="#10-site-de-l-office-de-tourisme">10. Site de l&#39;Office de Tourisme</a></li><li class="toc-h2"><a href="#sous-traitants">Sous-traitants</a></li><li class="toc-h2"><a href="#tenir-le-registre-a-jour">Tenir le registre à jour</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#1-comptes-citoyens-et-participation-a-la-loterie">1. Comptes citoyens et participation à la loterie</a></li><li class="toc-h2"><a href="#2-cadeau-de-ticket">2. Cadeau de ticket</a></li><li class="toc-h2"><a href="#2-bis-verification-d-age-par-piece-d-identite">2 bis. Vérification d&#39;âge par pièce d&#39;identité</a></li><li class="toc-h2"><a href="#3-programme-de-fidelite-etherpoints-et-recompenses-partenaires">3. Programme de fidélité EtherPoints et récompenses partenaires</a></li><li class="toc-h2"><a href="#4-comptes-partenaires">4. Comptes partenaires</a></li><li class="toc-h2"><a href="#5-double-authentification-et-securite-des-comptes">5. Double authentification et sécurité des comptes</a></li><li class="toc-h2"><a href="#6-mesure-d-audience-et-acquisition">6. Mesure d&#39;audience et acquisition</a></li><li class="toc-h2"><a href="#7-journal-des-actions-d-administration">7. Journal des actions d&#39;administration</a></li><li class="toc-h2"><a href="#8-emails-transactionnels">8. Emails transactionnels</a></li><li class="toc-h2"><a href="#9-journaux-techniques">9. Journaux techniques</a></li><li class="toc-h2"><a href="#10-site-de-l-office-de-tourisme">10. Site de l&#39;Office de Tourisme</a></li><li class="toc-h2"><a href="#sous-traitants">Sous-traitants</a></li><li class="toc-h2"><a href="#tenir-le-registre-a-jour">Tenir le registre à jour</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

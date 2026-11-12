@@ -42,6 +42,7 @@ Liste de contrôle :
 | --- | --- |
 | `LOGIN_EMAIL_CODE_REQUIRED` | ne peut pas être `false` |
 | `ADMIN_MFA_REQUIRED` | ne peut pas être `false` : tout compte `ADMIN` doit activer la 2FA |
+| `AGE_VERIFICATION_REQUIRED` | ne peut pas être `false` : achat, cadeau, échange et ticket à gratter exigent un âge vérifié |
 | `BLOCKCHAIN_MODE` | doit valoir `onchain` : la simulation est refusée |
 | `METRICS_TOKEN` | obligatoire si `METRICS_ENABLED=true` |
 | `JWT_SECRET`, `ENCRYPTION_KEY`, `RELAYER_PRIVATE_KEY`, `WEBHOOK_SECRET` | valeur de développement refusée |
@@ -59,6 +60,10 @@ Liste de contrôle :
 - [ ] `EXPO_PUBLIC_API_URL` et `EXPO_PUBLIC_WS_URL` pointent vers l'API publique dans le build mobile.
 - [ ] `SITE.lotteryAppUrl` de l'Office de Tourisme ne vaut plus `http://localhost:3000` (voir [Servir et déployer](../office-tourisme/deploiement.md#avant-une-mise-en-ligne)).
 - [ ] `MAINTENANCE_MODE=false`.
+- [ ] `DRAW_REVEAL_DELAY_SECONDS` est validé avec le responsable événementiel (600 secondes par défaut).
+- [ ] Pour la connexion Google et Apple, `GOOGLE_CLIENT_IDS` et `APPLE_CLIENT_IDS` listent les identifiants client des applications publiées, et le build mobile reçoit les `EXPO_PUBLIC_GOOGLE_*_CLIENT_ID` correspondants. Vides, les deux routes répondent 503.
+- [ ] La procédure d'examen des pièces d'identité est confiée à des agents habilités, avec un délai de traitement annoncé aux citoyens (voir [Points à valider](../juridique/points-a-valider.md)).
+- [ ] `SCRATCH_COST_VIOLET` et `SCRATCH_COST_LUCKY` sont validés ; le mobile affiche les prix par défaut, écrits dans son code.
 
 Toutes les variables sont décrites dans [Variables d'environnement](../backend/variables-environnement.md).
 
@@ -111,7 +116,7 @@ Liste de contrôle :
 - [ ] `CHAIN_START_BLOCK` vaut le `deploymentBlock` du fichier de déploiement : l'indexeur ne parcourt pas tout l'historique de Sepolia.
 - [ ] `CHAIN_CONFIRMATIONS=2` au moins, pour ne pas indexer un bloc qui serait réorganisé.
 - [ ] `EXPLORER_URL=https://sepolia.etherscan.io`, pour les liens de transparence.
-- [ ] Le compte opérateur est approvisionné : chaque inscription coûte `WELCOME_GRANT_WEI` (0,1 ETH par défaut) plus le gas, le premier achat d'un participant dans un tour déclenche la frappe de son badge POAP, payée par l'opérateur, et le keeper paie le gas de `requestDraw`. Prévoir le solde pour le nombre d'inscriptions attendu.
+- [ ] Le compte opérateur est approvisionné : chaque inscription coûte `WELCOME_GRANT_WEI` (0,5 ETH par défaut) plus le gas, le premier achat d'un participant dans un tour déclenche la frappe de son badge POAP, payée par l'opérateur, et le keeper paie le gas de `requestDraw`. Prévoir le solde pour le nombre d'inscriptions attendu.
 - [ ] Un achat de test, un tirage et un versement de cagnotte ont été observés de bout en bout sur l'explorateur.
 
 Voir [Mode onchain ou simulé](../integration-blockchain/modes.md) et [Client RPC et compte opérateur](../integration-blockchain/client-rpc.md).

@@ -36,7 +36,7 @@ Les fichiers à lire en premier dans chaque projet, avec leur rôle. Ils suffise
 | [`scripts/deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) | Déploiement local avec coordinateur VRF simulé et habilitation de l'opérateur |
 | [`scripts/local-vrf-responder.ts`](src:smart-contract/scripts/local-vrf-responder.ts) | Oracle VRF simulé qui répond aux demandes d'aléa |
 | [`scripts/deploy-sepolia.ts`](src:smart-contract/scripts/deploy-sepolia.ts) | Déploiement Sepolia avec contrôles du coordinateur et de l'abonnement |
-| [`scripts/lib/deployment.ts`](src:smart-contract/scripts/lib/deployment.ts) | Configuration des tours par variables d'environnement, écriture de `deployments/` |
+| [`scripts/lib/deployment.ts`](src:smart-contract/scripts/lib/deployment.ts) | Configuration des tours par variables d'environnement (un ticket par participant par défaut), écriture de `deployments/` |
 | [`scripts/export-abi.mjs`](src:smart-contract/scripts/export-abi.mjs) | Copie des ABI vers le backend, mode `--check` pour la CI |
 | [`docker/start-local-chain.sh`](src:smart-contract/docker/start-local-chain.sh) | Démarrage du conteneur : nœud, déploiement, oracle |
 | [`test/BlockLucky.test.ts`](src:smart-contract/test/BlockLucky.test.ts) | Tests unitaires du contrat de loterie |
@@ -72,6 +72,7 @@ Voir [Smart contracts](../smart-contracts/index.md).
 | [`src/blockchain/lottery.gateway.ts`](src:backend/src/blockchain/lottery.gateway.ts) | Lecture des tours, achats, tirage, retrait, traduction des erreurs du contrat |
 | [`src/blockchain/lottery.indexer.ts`](src:backend/src/blockchain/lottery.indexer.ts) | Projection des événements du contrat dans PostgreSQL |
 | [`src/blockchain/lottery.keeper.ts`](src:backend/src/blockchain/lottery.keeper.ts) | Keeper du tirage et démarrage des services blockchain |
+| [`src/blockchain/draw-reveal.ts`](src:backend/src/blockchain/draw-reveal.ts) | Heure à laquelle le tour est devenu tirable et heure de révélation, gardées dans Redis |
 | [`src/blockchain/chain-actions.ts`](src:backend/src/blockchain/chain-actions.ts) | File des actions on-chain (cagnotte, remboursement, badge) |
 | [`src/blockchain/wallet.service.ts`](src:backend/src/blockchain/wallet.service.ts) | Création, chiffrement et dotation des portefeuilles intégrés |
 | [`src/blockchain/poap.metadata.ts`](src:backend/src/blockchain/poap.metadata.ts) | Métadonnées et visuel des badges |
@@ -83,12 +84,17 @@ Voir [Smart contracts](../smart-contracts/index.md).
 | --- | --- |
 | [`src/middlewares/auth.middleware.ts`](src:backend/src/middlewares/auth.middleware.ts) | Vérification du JWT |
 | [`src/middlewares/rbac.middleware.ts`](src:backend/src/middlewares/rbac.middleware.ts) | Contrôle des rôles en base et 2FA des administrateurs |
+| [`src/middlewares/age-verification.middleware.ts`](src:backend/src/middlewares/age-verification.middleware.ts) | Refus 403 `AGE_VERIFICATION_REQUIRED` tant que l'âge du compte n'est pas vérifié |
+| [`src/middlewares/body-parser.middleware.ts`](src:backend/src/middlewares/body-parser.middleware.ts) | Analyse des corps JSON : 1 Mo par défaut, 12 Mo pour l'envoi de la pièce d'identité, corps brut des webhooks |
 | [`src/middlewares/idempotency.middleware.ts`](src:backend/src/middlewares/idempotency.middleware.ts) | En-tête `Idempotency-Key` |
 | [`src/middlewares/rateLimiter.middleware.ts`](src:backend/src/middlewares/rateLimiter.middleware.ts) | Limites de débit partagées dans Redis |
 | [`src/middlewares/error.middleware.ts`](src:backend/src/middlewares/error.middleware.ts) | Format unique des erreurs |
 | [`src/services/session.service.ts`](src:backend/src/services/session.service.ts) | Émission et révocation des sessions |
+| [`src/services/oauth-verifier.service.ts`](src:backend/src/services/oauth-verifier.service.ts) | Vérification des jetons d'identité Google et Apple |
+| [`src/services/otp-challenge.service.ts`](src:backend/src/services/otp-challenge.service.ts) | Codes à 6 chiffres de connexion, d'inscription et de réinitialisation, verrouillage après échecs |
 | [`src/services/ledger.service.ts`](src:backend/src/services/ledger.service.ts) | Mouvements d'EtherPoints |
-| [`src/utils/crypto.util.ts`](src:backend/src/utils/crypto.util.ts) | Chiffrement AES-256-GCM, HMAC, comparaison à temps constant |
+| [`src/utils/crypto.util.ts`](src:backend/src/utils/crypto.util.ts) | Chiffrement AES-256-GCM des textes et des images, hachage bcrypt, HMAC, comparaison à temps constant |
+| [`src/utils/identity-image.util.ts`](src:backend/src/utils/identity-image.util.ts) | Décodage et contrôle des images d'identité (JPEG ou PNG, 4 Mo au plus) |
 | [`src/observability/metrics.ts`](src:backend/src/observability/metrics.ts) | Métriques Prometheus |
 | [`src/observability/shutdown.ts`](src:backend/src/observability/shutdown.ts) | Arrêt propre |
 | [`src/api/system/system.routes.ts`](src:backend/src/api/system/system.routes.ts) | Sondes de santé et configuration des clients |
@@ -115,15 +121,21 @@ Chaque dossier de `src/api/` suit le même découpage : `*.routes.ts` (routes et
 | --- | --- |
 | [`next.config.mjs`](src:frontend-web/next.config.mjs) | En-têtes de sécurité, CSP calculée depuis les URL de l'API, sortie `standalone` |
 | [`src/app/layout.tsx`](src:frontend-web/src/app/layout.tsx) | Mise en page racine |
+| [`src/app/globals.css`](src:frontend-web/src/app/globals.css) | Jetons de couleur repris du mobile, rayons, échelle typographique, thèmes clair et sombre |
+| [`src/app/fonts/`](src:frontend-web/src/app/fonts) | Police Inter chargée par `next/font/local`, avec sa licence |
+| [`src/components/ui/Icon.tsx`](src:frontend-web/src/components/ui/Icon.tsx), [`src/components/ui/iconData.ts`](src:frontend-web/src/components/ui/iconData.ts) | Icônes SVG copiées du mobile |
+| [`src/components/layout/AppShell.tsx`](src:frontend-web/src/components/layout/AppShell.tsx) | Barre latérale, en-tête et barre d'onglets des espaces connectés |
 | [`src/app/providers.tsx`](src:frontend-web/src/app/providers.tsx) | Store Redux, restauration de la session, thème, capture de la source UTM, fenêtres globales |
 | [`src/lib/config.ts`](src:frontend-web/src/lib/config.ts) | URL de l'API et constantes de la loterie |
 | [`src/store/api/baseApi.ts`](src:frontend-web/src/store/api/baseApi.ts) | Client RTK Query, en-tête d'authentification |
 | [`src/store/index.ts`](src:frontend-web/src/store/index.ts) | Store Redux |
 | [`src/hooks/useBlockLuckyWallet.ts`](src:frontend-web/src/hooks/useBlockLuckyWallet.ts) | Portefeuille intégré et achat de tickets |
+| [`src/hooks/useAgeVerification.ts`](src:frontend-web/src/hooks/useAgeVerification.ts) | Statut de vérification d'âge relu par `GET /user/identity` et recopié dans le profil stocké |
 | [`src/hooks/useSocket.ts`](src:frontend-web/src/hooks/useSocket.ts), [`src/lib/socket.ts`](src:frontend-web/src/lib/socket.ts) | Temps réel |
 | [`src/components/layout/GlobalOverlays.tsx`](src:frontend-web/src/components/layout/GlobalOverlays.tsx) | Fenêtres globales : points gagnés, relance, file d'attente, informations réseau |
 | [`src/theme/ThemeProvider.tsx`](src:frontend-web/src/theme/ThemeProvider.tsx) | Thème clair ou sombre et traductions |
 | [`src/app/mairie/page.tsx`](src:frontend-web/src/app/mairie/page.tsx) | Tableau de bord de la Mairie |
+| [`src/app/mairie/identites/page.tsx`](src:frontend-web/src/app/mairie/identites/page.tsx) | Examen des pièces d'identité et décision sur la vérification d'âge |
 | [`src/app/(citoyen)/billetterie/page.tsx`](src:frontend-web/src/app/(citoyen)/billetterie/page.tsx) | Achat et cadeau de tickets |
 | [`src/app/(citoyen)/tirage/page.tsx`](src:frontend-web/src/app/(citoyen)/tirage/page.tsx) | Salle de tirage en direct |
 | [`Dockerfile`](src:frontend-web/Dockerfile) | Image de production |
@@ -137,13 +149,18 @@ Voir [Frontend web](../web/structure.md).
 | [`src/App.tsx`](src:mobile-app/src/App.tsx) | Point d'entrée |
 | [`app.json`](src:mobile-app/app.json) | Configuration Expo |
 | [`eas.json`](src:mobile-app/eas.json) | Profils de build EAS (`development`, `preview`, `production`) |
-| [`src/navigation/RootNavigator.tsx`](src:mobile-app/src/navigation/RootNavigator.tsx) | Navigation racine et bascule authentifié ou non |
+| [`src/navigation/RootNavigator.tsx`](src:mobile-app/src/navigation/RootNavigator.tsx) | Navigation racine, bascule authentifié ou non, écrans empilés, ouverture de la vérification d'âge |
+| [`src/navigation/MainTabs.tsx`](src:mobile-app/src/navigation/MainTabs.tsx) | Quatre onglets : Accueil, Mes tickets, Parrains, Profil |
+| [`src/types/navigation.types.ts`](src:mobile-app/src/types/navigation.types.ts), [`src/navigation/hooks.ts`](src:mobile-app/src/navigation/hooks.ts) | Paramètres typés des routes et hooks de navigation |
 | [`src/services/api.client.ts`](src:mobile-app/src/services/api.client.ts) | Client HTTP et URL de l'API |
 | [`src/services/socket.client.ts`](src:mobile-app/src/services/socket.client.ts) | Client Socket.IO |
 | [`src/services/secureStorage.ts`](src:mobile-app/src/services/secureStorage.ts) | Stockage sécurisé du jeton de session |
 | [`src/store/api/baseApi.ts`](src:mobile-app/src/store/api/baseApi.ts) | Client RTK Query |
-| [`src/hooks/useCitizenWallet.ts`](src:mobile-app/src/hooks/useCitizenWallet.ts) | Portefeuille intégré et achat |
-| [`src/theme/ThemeProvider.tsx`](src:mobile-app/src/theme/ThemeProvider.tsx) | Thème et couleurs |
+| [`src/hooks/useAuth.ts`](src:mobile-app/src/hooks/useAuth.ts) | Connexion par mot de passe, Google et Apple, inscription, réinitialisation, déconnexion |
+| [`src/hooks/useCitizenWallet.ts`](src:mobile-app/src/hooks/useCitizenWallet.ts) | Portefeuille intégré, achat et cadeau, classement des erreurs |
+| [`src/screens/settings/VerifyAgeScreen.tsx`](src:mobile-app/src/screens/settings/VerifyAgeScreen.tsx) | Envoi du recto et du verso de la pièce d'identité |
+| [`src/theme/ThemeProvider.tsx`](src:mobile-app/src/theme/ThemeProvider.tsx), [`src/theme/colors.ts`](src:mobile-app/src/theme/colors.ts) | Thème et jetons de couleur de la maquette |
+| [`src/components/ui/icons/Icon.tsx`](src:mobile-app/src/components/ui/icons/Icon.tsx) | Icônes SVG du design system |
 
 Voir [Application mobile](../mobile/structure.md).
 

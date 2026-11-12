@@ -146,7 +146,7 @@
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/lib/deployment.ts" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/lib/deployment.ts</code></a></td>
-<td>Configuration des tours par variables d&#39;environnement, écriture de <code>deployments/</code></td>
+<td>Configuration des tours par variables d&#39;environnement (un ticket par participant par défaut), écriture de <code>deployments/</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/export-abi.mjs" class="external" target="_blank" rel="noopener noreferrer"><code>scripts/export-abi.mjs</code></a></td>
@@ -253,6 +253,10 @@
 <td>Keeper du tirage et démarrage des services blockchain</td>
 </tr>
 <tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/draw-reveal.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/blockchain/draw-reveal.ts</code></a></td>
+<td>Heure à laquelle le tour est devenu tirable et heure de révélation, gardées dans Redis</td>
+</tr>
+<tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/chain-actions.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/blockchain/chain-actions.ts</code></a></td>
 <td>File des actions on-chain (cagnotte, remboursement, badge)</td>
 </tr>
@@ -286,6 +290,14 @@
 <td>Contrôle des rôles en base et 2FA des administrateurs</td>
 </tr>
 <tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/age-verification.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/middlewares/age-verification.middleware.ts</code></a></td>
+<td>Refus 403 <code>AGE_VERIFICATION_REQUIRED</code> tant que l&#39;âge du compte n&#39;est pas vérifié</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/body-parser.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/middlewares/body-parser.middleware.ts</code></a></td>
+<td>Analyse des corps JSON : 1 Mo par défaut, 12 Mo pour l&#39;envoi de la pièce d&#39;identité, corps brut des webhooks</td>
+</tr>
+<tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/idempotency.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/middlewares/idempotency.middleware.ts</code></a></td>
 <td>En-tête <code>Idempotency-Key</code></td>
 </tr>
@@ -302,12 +314,24 @@
 <td>Émission et révocation des sessions</td>
 </tr>
 <tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/oauth-verifier.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/services/oauth-verifier.service.ts</code></a></td>
+<td>Vérification des jetons d&#39;identité Google et Apple</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/otp-challenge.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/services/otp-challenge.service.ts</code></a></td>
+<td>Codes à 6 chiffres de connexion, d&#39;inscription et de réinitialisation, verrouillage après échecs</td>
+</tr>
+<tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/ledger.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/services/ledger.service.ts</code></a></td>
 <td>Mouvements d&#39;EtherPoints</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/crypto.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/utils/crypto.util.ts</code></a></td>
-<td>Chiffrement AES-256-GCM, HMAC, comparaison à temps constant</td>
+<td>Chiffrement AES-256-GCM des textes et des images, hachage bcrypt, HMAC, comparaison à temps constant</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/identity-image.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/utils/identity-image.util.ts</code></a></td>
+<td>Décodage et contrôle des images d&#39;identité (JPEG ou PNG, 4 Mo au plus)</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/observability/metrics.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/observability/metrics.ts</code></a></td>
@@ -378,6 +402,22 @@
 <td>Mise en page racine</td>
 </tr>
 <tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/globals.css" class="external" target="_blank" rel="noopener noreferrer"><code>src/app/globals.css</code></a></td>
+<td>Jetons de couleur repris du mobile, rayons, échelle typographique, thèmes clair et sombre</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/app/fonts" class="external" target="_blank" rel="noopener noreferrer"><code>src/app/fonts/</code></a></td>
+<td>Police Inter chargée par <code>next/font/local</code>, avec sa licence</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/Icon.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/components/ui/Icon.tsx</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/ui/iconData.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/components/ui/iconData.ts</code></a></td>
+<td>Icônes SVG copiées du mobile</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/layout/AppShell.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/components/layout/AppShell.tsx</code></a></td>
+<td>Barre latérale, en-tête et barre d&#39;onglets des espaces connectés</td>
+</tr>
+<tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/providers.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/app/providers.tsx</code></a></td>
 <td>Store Redux, restauration de la session, thème, capture de la source UTM, fenêtres globales</td>
 </tr>
@@ -398,6 +438,10 @@
 <td>Portefeuille intégré et achat de tickets</td>
 </tr>
 <tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/hooks/useAgeVerification.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/hooks/useAgeVerification.ts</code></a></td>
+<td>Statut de vérification d&#39;âge relu par <code>GET /user/identity</code> et recopié dans le profil stocké</td>
+</tr>
+<tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/hooks/useSocket.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/hooks/useSocket.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/lib/socket.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/lib/socket.ts</code></a></td>
 <td>Temps réel</td>
 </tr>
@@ -412,6 +456,10 @@
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/app/mairie/page.tsx</code></a></td>
 <td>Tableau de bord de la Mairie</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/identites/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/app/mairie/identites/page.tsx</code></a></td>
+<td>Examen des pièces d&#39;identité et décision sur la vérification d&#39;âge</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/billetterie/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/app/(citoyen)/billetterie/page.tsx</code></a></td>
@@ -449,7 +497,15 @@
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/RootNavigator.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/navigation/RootNavigator.tsx</code></a></td>
-<td>Navigation racine et bascule authentifié ou non</td>
+<td>Navigation racine, bascule authentifié ou non, écrans empilés, ouverture de la vérification d&#39;âge</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/MainTabs.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/navigation/MainTabs.tsx</code></a></td>
+<td>Quatre onglets : Accueil, Mes tickets, Parrains, Profil</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/types/navigation.types.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/types/navigation.types.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/navigation/hooks.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/navigation/hooks.ts</code></a></td>
+<td>Paramètres typés des routes et hooks de navigation</td>
 </tr>
 <tr>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/services/api.client.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/services/api.client.ts</code></a></td>
@@ -468,12 +524,24 @@
 <td>Client RTK Query</td>
 </tr>
 <tr>
-<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useCitizenWallet.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/hooks/useCitizenWallet.ts</code></a></td>
-<td>Portefeuille intégré et achat</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useAuth.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/hooks/useAuth.ts</code></a></td>
+<td>Connexion par mot de passe, Google et Apple, inscription, réinitialisation, déconnexion</td>
 </tr>
 <tr>
-<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/theme/ThemeProvider.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/theme/ThemeProvider.tsx</code></a></td>
-<td>Thème et couleurs</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/hooks/useCitizenWallet.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/hooks/useCitizenWallet.ts</code></a></td>
+<td>Portefeuille intégré, achat et cadeau, classement des erreurs</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/VerifyAgeScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/screens/settings/VerifyAgeScreen.tsx</code></a></td>
+<td>Envoi du recto et du verso de la pièce d&#39;identité</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/theme/ThemeProvider.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/theme/ThemeProvider.tsx</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/theme/colors.ts" class="external" target="_blank" rel="noopener noreferrer"><code>src/theme/colors.ts</code></a></td>
+<td>Thème et jetons de couleur de la maquette</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/ui/icons/Icon.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>src/components/ui/icons/Icon.tsx</code></a></td>
+<td>Icônes SVG du design system</td>
 </tr>
 </tbody></table></div>
 <p>Voir <a href="../mobile/structure.html">Application mobile</a>.</p>

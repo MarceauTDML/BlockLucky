@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Réel, simulé ou à venir | Documentation BlockLucky</title>
-<meta name="description" content="Cette page fait l&#39;inventaire honnête de l&#39;état du projet au 11 novembre 2026. Elle distingue ce qui fonctionne réellement, ce qui n&#39;existe qu&#39;en mode simulé, ce">
+<meta name="description" content="Cette page fait l&#39;inventaire honnête de l&#39;état du projet au 12 novembre 2026. Elle distingue ce qui fonctionne réellement, ce qui n&#39;existe qu&#39;en mode simulé, ce">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>1. Présentation du projet</span></div>
     <article class="markdown">
 <h1>Réel, simulé ou à venir</h1>
-<p>Cette page fait l&#39;inventaire honnête de l&#39;état du projet au 11 novembre 2026. Elle distingue ce qui fonctionne réellement, ce qui n&#39;existe qu&#39;en mode simulé, ce qui est encore fictif dans le code, ce qui n&#39;a pas été fait et le code mort. Elle est à relire avant toute démonstration et avant toute mise en production.</p>
+<p>Cette page fait l&#39;inventaire honnête de l&#39;état du projet au 12 novembre 2026. Elle distingue ce qui fonctionne réellement, ce qui n&#39;existe qu&#39;en mode simulé, ce qui est encore fictif dans le code, ce qui n&#39;a pas été fait et le code mort. Elle est à relire avant toute démonstration et avant toute mise en production.</p>
 <h2 id="synthese"><a class="anchor" href="#synthese" aria-hidden="true" tabindex="-1">#</a>Synthèse</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -48,7 +48,7 @@
 </thead>
 <tbody><tr>
 <td>Réel</td>
-<td>Contrats Solidity, tirage Chainlink VRF, portefeuilles intégrés chiffrés, dotation, achats et cadeaux signés, versement automatique, POAP, disjoncteur, commission, authentification, RGPD, indexeur, keeper</td>
+<td>Contrats Solidity, tirage Chainlink VRF, portefeuilles intégrés chiffrés, dotation, achats et cadeaux signés, versement automatique, POAP, disjoncteur, commission, authentification, vérification d&#39;âge par la Mairie, salle d&#39;attente, RGPD, indexeur, keeper</td>
 </tr>
 <tr>
 <td>Simulé à dessein</td>
@@ -56,7 +56,7 @@
 </tr>
 <tr>
 <td>Encore fictif</td>
-<td>Notifications push, Sentry, libellé multi-signatures, paliers de la jauge, répartition par âge par défaut, rapport PDF serveur, stockage S3 en local</td>
+<td>Notifications push, Sentry, libellé multi-signatures, paliers de la jauge, répartition par âge par défaut, rapport PDF serveur, stockage S3 en local, solde ETH en mode simulé</td>
 </tr>
 <tr>
 <td>Pas encore fait</td>
@@ -129,7 +129,7 @@
 </tr>
 <tr>
 <td>Tirage et clôture automatiques</td>
-<td>Le keeper appelle <code>requestDraw</code> ou <code>closeExpiredRound</code> dès que le contrat l&#39;autorise</td>
+<td>Le keeper appelle <code>requestDraw</code> une fois écoulé le délai de révélation (<code>DRAW_REVEAL_DELAY_SECONDS</code>, 10 minutes par défaut) après que le contrat l&#39;autorise, ou <code>closeExpiredRound</code> pour un tour expiré</td>
 <td><a href="../integration-blockchain/keeper.html">Keeper du tirage</a></td>
 </tr>
 <tr>
@@ -138,9 +138,14 @@
 <td><a href="../integration-blockchain/indexeur.html">Indexeur d&#39;événements</a></td>
 </tr>
 <tr>
-<td>Connexion par code email</td>
-<td>Code à 6 chiffres haché, valable 10 minutes, envoyé par email</td>
+<td>Connexion par code email ou par mot de passe</td>
+<td>Code à 6 chiffres haché, valable 10 minutes, envoyé par email ; mot de passe haché par bcrypt, verrouillage après échecs répétés</td>
 <td><a href="../backend/modules/auth.html">Authentification</a></td>
+</tr>
+<tr>
+<td>Vérification d&#39;âge</td>
+<td>Recto et verso de la pièce d&#39;identité chiffrés en AES-256-GCM, examinés par un agent de la Mairie puis effacés ; achat, cadeau et échange refusés (403 <code>AGE_VERIFICATION_REQUIRED</code>) tant que l&#39;âge n&#39;est pas vérifié</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/age-verification.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/age-verification.middleware.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/mairie/identites/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/mairie/identites/page.tsx</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/app/(citoyen)/profil/identite/page.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/(citoyen)/profil/identite/page.tsx</code></a></td>
 </tr>
 <tr>
 <td>2FA TOTP</td>
@@ -208,8 +213,13 @@
 </tr>
 <tr>
 <td>Paliers de la jauge</td>
-<td>Trois paliers (1 000, 5 000, 10 000) promettent un bonus de cagnotte, des offres chez 25 commerçants et un double tirage. Aucun de ces avantages n&#39;est implémenté</td>
+<td>Quatre paliers (5 000, 7 500, 9 000 et 10 000 participants) annoncent les coulisses du tirage, une offre spéciale des commerçants, un jeu bonus et l&#39;ouverture de la salle. Seule la fermeture des achats à 10 000 tickets découle du contrat (<code>maxTickets</code>) ; les trois autres avantages ne sont pas implémentés</td>
 <td><code>buildMilestones</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.services.ts</code></a></td>
+</tr>
+<tr>
+<td>Solde ETH en mode simulé</td>
+<td><code>walletService.balanceOf</code> renvoie <code>null</code> hors mode onchain : le mobile n&#39;affiche aucun solde et la billetterie considère le solde comme suffisant</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/wallet.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/wallet.service.ts</code></a></td>
 </tr>
 <tr>
 <td>Répartition par âge</td>
@@ -253,13 +263,18 @@
 </tr>
 <tr>
 <td>Traces de Web3Auth</td>
-<td>Il n&#39;y a pas de Web3Auth : le portefeuille est créé par le backend. <code>EXPO_PUBLIC_WEB3AUTH_CLIENT_ID</code> figure dans <code>mobile-app/.env.example</code> sans être lu. L&#39;adresse envoyée par le client à la connexion (<code>generateDeterministicWallet</code>) n&#39;est qu&#39;un identifiant de recherche : le vrai portefeuille est créé côté serveur</td>
+<td>Il n&#39;y a pas de Web3Auth : le portefeuille est créé par le backend. <code>EXPO_PUBLIC_WEB3AUTH_CLIENT_ID</code> figure dans <code>mobile-app/.env.example</code> sans être lu. L&#39;adresse envoyée par le web à la connexion (<code>POST /auth/login</code>) n&#39;est qu&#39;un identifiant de recherche : le vrai portefeuille est créé côté serveur. Le mobile, qui passe par <code>/auth/signin</code> et <code>/auth/signup</code>, n&#39;envoie plus d&#39;adresse</td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/auth/auth.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/auth/auth.routes.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/lib/wallet.ts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/lib/wallet.ts</code></a></td>
 </tr>
 <tr>
 <td>Tests mobiles</td>
 <td>8 tests écrits mais sans exécuteur : ni script <code>test</code> ni Jest dans <code>mobile-app/package.json</code></td>
 <td><code>mobile-app/__tests__/</code></td>
+</tr>
+<tr>
+<td>Connexion Google et Apple</td>
+<td>Code complet côté serveur et mobile, mais <code>GOOGLE_CLIENT_IDS</code> et <code>APPLE_CLIENT_IDS</code> sont vides par défaut : les deux routes répondent 503 et le mobile grise ses boutons tant qu&#39;aucun identifiant client n&#39;est déclaré</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/services/oauth-verifier.service.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/services/oauth-verifier.service.ts</code></a></td>
 </tr>
 </tbody></table></div>
 <h2 id="ce-qui-n-est-pas-encore-fait"><a class="anchor" href="#ce-qui-n-est-pas-encore-fait" aria-hidden="true" tabindex="-1">#</a>Ce qui n&#39;est pas encore fait</h2>
@@ -313,7 +328,8 @@
 </tr>
 </tbody></table></div>
 <h2 id="code-mort"><a class="anchor" href="#code-mort" aria-hidden="true" tabindex="-1">#</a>Code mort</h2>
-<p>La première version prévoyait des achats « gasless », c&#39;est-à-dire relayés et payés par la Mairie. Depuis le passage au portefeuille intégré, le citoyen paie lui-même les frais sur sa dotation. Les trois fichiers de cette époque, que plus rien n&#39;importait, ont été supprimés : les hooks <code>useGaslessWeb3.ts</code> du web et du mobile, remplacés par <a href="../web/portefeuille-loterie.html"><code>useBlockLuckyWallet</code></a> et <a href="../mobile/portefeuille-loterie.html"><code>useCitizenWallet</code></a>, et le composant mobile <code>WalletConnectButton.tsx</code>, remplacé par <code>IntegratedWalletButton</code>.</p>
+<p>La première version prévoyait des achats « gasless », c&#39;est-à-dire relayés et payés par la Mairie. Depuis le passage au portefeuille intégré, le citoyen paie lui-même les frais sur sa dotation. Les trois fichiers de cette époque, que plus rien n&#39;importait, ont été supprimés : les hooks <code>useGaslessWeb3.ts</code> du web et du mobile, remplacés par <a href="../web/portefeuille-loterie.html"><code>useBlockLuckyWallet</code></a> et <a href="../mobile/portefeuille-loterie.html"><code>useCitizenWallet</code></a>, et le composant mobile <code>WalletConnectButton.tsx</code>, remplacé par <code>IntegratedWalletButton</code>, que plus aucun écran n&#39;affiche depuis la refonte du mobile.</p>
+<p>La refonte du mobile du 12 novembre 2026 a aussi supprimé <code>LoginScreen</code>, <code>SettingsStack</code> et sept composants de loterie (<code>ChatBox</code>, <code>CountdownTimer</code>, <code>LeaderboardList</code>, <code>POAPBadge</code>, <code>RouletteAnimation</code>, <code>TicketCard</code>, <code>WinnerClaimCard</code>), remplacés par les écrans et composants décrits dans <a href="../mobile/navigation-ecrans.html">Navigation et écrans</a>.</p>
 <p>Il reste le champ <code>gaslessSponsored</code> des réponses de <code>GET /lottery/status</code> et <code>POST /lottery/buy</code>, conservé pour ne pas casser les clients : il vaut <code>false</code> en mode onchain. D&#39;autres éléments installés mais inutilisés côté mobile sont recensés dans <a href="../mobile/structure.html#code-mort-a-connaitre">Stack et structure de l&#39;application mobile</a>.</p>
 <h2 id="avant-une-demonstration"><a class="anchor" href="#avant-une-demonstration" aria-hidden="true" tabindex="-1">#</a>Avant une démonstration</h2>
 <ol>

@@ -32,7 +32,7 @@ Les mises et la cagnotte sont détenues par le contrat, pas par le backend. Le g
 
 ### Comment se connecter en développement ?
 
-La connexion se fait par code envoyé par email. En local, les emails arrivent dans Mailpit, à l'adresse `http://localhost:8025`. Avec `NODE_ENV=development`, la réponse de `POST /api/auth/login` contient aussi le code dans le champ `devOtpPreview`. Les comptes de démonstration sont créés par le seed. Voir [Comptes de démonstration et connexion](../demarrage/comptes-et-connexion.md).
+Sur le web, la connexion se fait par code envoyé par email. En local, les emails arrivent dans Mailpit, à l'adresse `http://localhost:8025`. Avec `NODE_ENV=development`, la réponse de `POST /api/auth/login` contient aussi le code dans le champ `devOtpPreview`. Sur mobile, la connexion se fait par email et mot de passe (`POST /api/auth/signin`). Les trois comptes de démonstration créés par le seed ont le mot de passe `EtherBay2026demo` et un âge déjà vérifié. Voir [Comptes de démonstration et connexion](../demarrage/comptes-et-connexion.md).
 
 ### Où est la documentation de l'API ?
 
@@ -42,7 +42,7 @@ Swagger UI est servi par le backend sur `/api/docs` (par exemple `http://localho
 
 Un tirage n'est possible que si le tour compte au moins `minTicketsToDraw` tickets (2 par défaut) et que son échéance est passée ou tous ses tickets vendus. Avant, `POST /api/lottery/draw` répond 409 (`DrawNotReady`). En local, deux solutions :
 
-- avancer l'horloge du nœud Hardhat, puis miner un bloc ; le keeper lance le tirage dans les 10 secondes :
+- avancer l'horloge du nœud Hardhat, puis miner un bloc ; le tour passe en salle d'attente et le keeper lance le tirage une fois écoulé le délai de révélation (`DRAW_REVEAL_DELAY_SECONDS`, 600 secondes par défaut ; le mettre à 0 dans `backend/.env` pour un tirage dans les 10 secondes) :
 
   ```bash
   curl -s -X POST -H "content-type: application/json" --data '{"jsonrpc":"2.0","id":1,"method":"evm_increaseTime","params":[1800]}' http://127.0.0.1:8545
@@ -52,7 +52,17 @@ Un tirage n'est possible que si le tour compte au moins `minTicketsToDraw` ticke
   curl -s -X POST -H "content-type: application/json" --data '{"jsonrpc":"2.0","id":1,"method":"evm_mine","params":[]}' http://127.0.0.1:8545
   ```
 
-- raccourcir les tours au déploiement avec la variable `ROUND_DURATION_SECONDS`, lue par `deploy-local.ts` (30 minutes par défaut). Le service Compose `blockchain` ne la transmet pas : il faut l'ajouter à son `environment`.
+- raccourcir les tours au déploiement avec la variable `ROUND_DURATION_SECONDS`, lue par `deploy-local.ts` (30 minutes par défaut). Le service Compose `blockchain` la lit dans le fichier `.env` placé à la racine du dépôt (par exemple `ROUND_DURATION_SECONDS=180`), puis il faut recréer le conteneur avec `docker compose up -d --force-recreate blockchain`. Une blockchain neuve oblige à vider les tours, les tickets et `ChainCursor` en base, à remettre `welcomeGrantTxHash` à `NULL` et à effacer les clés `bull:chain-actions:*` et `blocklucky:development:chain:*` de Redis.
+
+Un tour prêt peut aussi être tiré depuis le dashboard Mairie (`POST /api/lottery/draw`) : cet appel n'attend pas le délai de révélation du keeper.
+
+### Pourquoi mon achat échoue-t-il en 403 ?
+
+Le compte n'a pas encore d'âge vérifié. Avec `AGE_VERIFICATION_REQUIRED=true` (valeur par défaut, obligatoire en production), l'achat, le cadeau, l'échange d'une récompense et le ticket à gratter répondent 403 avec le code `AGE_VERIFICATION_REQUIRED` tant que `User.ageVerificationStatus` ne vaut pas `VERIFIED`. Le citoyen envoie sa pièce depuis `/profil/identite` sur le web ou depuis l'application mobile, puis un administrateur la valide sur `/mairie/identites`. Sur le web, la billetterie relit le statut à chaque chargement et quand l'onglet reprend le focus : l'approbation est prise en compte sans nouvelle connexion. Les comptes du seed sont déjà vérifiés. Voir [Vérification d'âge requise](../mobile/portefeuille-loterie.md#verification-d-age-requise).
+
+### Pourquoi un second achat échoue-t-il en 409 ?
+
+Un participant n'a droit qu'à un ticket par grand tirage. Le backend refuse le second achat, ou un cadeau à une personne qui a déjà son ticket, avec 409 et `contractError: PlayerLimitReached`. Le contrat applique la même règle (`maxTicketsPerPlayer` à 1 au déploiement).
 
 ### Pourquoi mon achat échoue-t-il en 402 ?
 
@@ -94,7 +104,7 @@ Le script de déploiement est prêt et vérifié, mais aucune adresse Sepolia n'
 
 ### Les notifications push fonctionnent-elles ?
 
-Non. Le centre de notifications renvoie trois notifications écrites en dur dans le backend, et l'application mobile n'enregistre aucun jeton de notification auprès d'Expo. La bannière « push » de l'application est simulée. Voir [Dette technique et limites](dette-technique.md).
+Non. Le centre de notifications renvoie trois notifications écrites en dur dans le backend, et l'application mobile n'enregistre aucun jeton de notification auprès d'Expo. Sur le web, la bannière « push » de l'aide est simulée ; sur mobile, l'écran Notifications affiche la même liste. Voir [Dette technique et limites](dette-technique.md).
 
 ### Que faire en cas de faille suspectée dans le contrat ?
 
@@ -104,8 +114,8 @@ Activer le disjoncteur depuis l'espace Mairie ou par `POST /api/admin/circuit-br
 
 ### La suppression d'un compte efface-t-elle tout ?
 
-Elle anonymise le compte en base et efface la clé chiffrée du portefeuille. Les transactions déjà inscrites sur la chaîne restent publiques et ne peuvent pas être effacées, mais l'adresse n'est plus reliée à une identité côté BlockLucky. Voir [Suppression RGPD](../architecture/flux/suppression-rgpd.md) et [Blockchain et données personnelles](../juridique/blockchain-donnees.md).
+Elle anonymise le compte en base, efface la clé chiffrée du portefeuille, le mot de passe haché et le motif d'un refus de vérification d'âge, et supprime la pièce d'identité éventuellement en attente. Les transactions déjà inscrites sur la chaîne restent publiques et ne peuvent pas être effacées, mais l'adresse n'est plus reliée à une identité côté BlockLucky. Voir [Suppression RGPD](../architecture/flux/suppression-rgpd.md) et [Blockchain et données personnelles](../juridique/blockchain-donnees.md).
 
 ### Quelles données sont envoyées à des tiers ?
 
-En démonstration, aucune : les emails restent dans Mailpit et la chaîne est locale. Sur Sepolia, les adresses et transactions deviennent publiques. Le registre complet est dans [Registre des traitements](../juridique/registre-traitements.md).
+En démonstration, aucune : les emails restent dans Mailpit et la chaîne est locale. Seule la connexion Google ou Apple, si elle est configurée, fait intervenir ces fournisseurs, qui délivrent le jeton d'identité vérifié par le backend. Sur Sepolia, les adresses et transactions deviennent publiques. Le registre complet est dans [Registre des traitements](../juridique/registre-traitements.md).

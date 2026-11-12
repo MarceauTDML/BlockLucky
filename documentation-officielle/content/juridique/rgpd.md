@@ -16,17 +16,18 @@ Ces informations figurent aussi dans la politique de confidentialité du web ([`
 
 | Catégorie | Données | Stockage |
 |---|---|---|
-| Identification | Email, identifiant de compte | Table `User` |
+| Identification | Email, identifiant de compte, empreinte du mot de passe | Table `User` |
+| Vérification d'âge | Photos du recto et du verso de la pièce d'identité, statut, dates d'envoi et de décision, motif d'un refus, agent qui a statué | Tables `IdentityDocument` (images chiffrées) et `User` |
 | Portefeuille | Adresse, clé privée chiffrée, hash de la dotation de bienvenue | Table `User` |
 | Participation | Tickets, hash de transaction, adresse payeuse, tours | Tables `Ticket`, `LotteryRound` |
 | Fidélité | Solde et journal des points, récompenses et codes promo obtenus | Tables `User`, `PointTransaction`, `ClaimedReward` |
 | Parrainage | Code de parrainage, parrain | Table `User` |
 | Sécurité | Secret TOTP chiffré, empreintes des codes de secours, codes temporaires, compteurs, révocations | Table `User`, Redis |
-| Déclaratif | Confirmation de majorité, tranche d'âge (`18-25`, `26-35`, `36-50`, `50+`) | Métadonnées de l'événement analytique `USER_SIGNUP` |
+| Déclaratif | Confirmation de majorité et tranche d'âge (`18-25`, `26-35`, `36-50`, `50+`), demandées par la connexion web seulement | Métadonnées de l'événement analytique `USER_SIGNUP` |
 | Préférences | Thème, langue, notifications, limite de jeu responsable, quêtes accomplies | Redis (`user:prefs:*`, `user:ticket_limit:*`, `user:quests:*`) |
 | Mesure d'audience | Type d'événement, source UTM, plateforme, page, identifiant du compte s'il est connecté | Table `Analytics` |
 
-Aucune donnée bancaire, aucun nom, aucune adresse postale ni aucun document d'identité n'est collecté. Le modèle complet est décrit dans [Modèle de données](../base-de-donnees/modele.md).
+Aucune donnée bancaire n'est collectée. Le nom, la date de naissance, le numéro du document et, le cas échéant, l'adresse ne sont pas saisis, mais ils figurent sur les photos de la pièce d'identité jusqu'à la décision de la Mairie : ce sont alors des données d'identité civile, à protéger en conséquence. Le nom transmis par Apple à la première connexion est ignoré. Le modèle complet est décrit dans [Modèle de données](../base-de-donnees/modele.md).
 
 ## Bases légales
 
@@ -34,7 +35,8 @@ Aucune donnée bancaire, aucun nom, aucune adresse postale ni aucun document d'i
 |---|---|---|
 | Compte et participation à la loterie | Exécution du contrat (conditions de participation) | Les conditions publiées sont une version de travail |
 | Programme EtherPoints et récompenses | Exécution du contrat | |
-| Sécurité des comptes (2FA, limites, révocation) | Intérêt légitime | |
+| Vérification d'âge par pièce d'identité | Obligation légale (exclusion des mineurs des jeux d'argent), à confirmer | Voir [Mineurs](#mineurs) |
+| Sécurité des comptes (mot de passe, 2FA, limites, révocation) | Intérêt légitime | |
 | Mesure d'audience | Intérêt légitime, avec opposition | Le droit d'opposition n'est offert que sur le web et ne couvre pas les événements enregistrés par le serveur |
 | Journal d'administration | Obligation légale et intérêt légitime | |
 | Emails transactionnels | Exécution du contrat et intérêt légitime | Codes, alertes, bienvenue, confirmation RGPD, codes promo |
@@ -45,7 +47,9 @@ Le choix de l'exécution du contrat pour un service public communal, plutôt que
 
 | Donnée | Durée annoncée | Ce que fait le code |
 |---|---|---|
-| Code de connexion email | 10 minutes | Fait : TTL Redis |
+| Code de connexion, d'inscription ou de réinitialisation | 10 minutes | Fait : TTL Redis |
+| Photos de la pièce d'identité | Jusqu'à la décision de la Mairie | Fait : effacées dans la transaction de la décision ; **aucune limite** pour une demande jamais traitée |
+| Décision sur l'âge (statut, date, motif d'un refus) | Durée du compte | Conservée sur `User` et dans le journal d'administration (`IDENTITY_VERIFICATION_DECISION`, avec le motif) |
 | Compteur d'échecs | 1 heure | Fait : TTL Redis |
 | Révocation d'une session | Durée restante du jeton | Fait : TTL Redis |
 | Marqueur anti-rejeu TOTP | 2 minutes | Fait : TTL Redis |
@@ -68,13 +72,13 @@ Le choix de l'exécution du contrat pour un service public communal, plutôt que
 | Clé de l'export | Contenu |
 |---|---|
 | `exportedAt`, `controller` | Date et responsable de traitement |
-| `personalData` | Identifiant, adresse du portefeuille, email, rôle, solde de points, code de parrainage, état de la 2FA, dates de création et de mise à jour |
+| `personalData` | Identifiant, adresse du portefeuille, email, rôle, solde de points, code de parrainage, état de la 2FA, statut et date de la vérification d'âge, dates de création et de mise à jour |
 | `ticketsHistory` | Tickets avec leur tour |
 | `pointsLedger` | Journal complet des points |
 | `claimedRewards` | Récompenses, offre et commerçant |
 | `analyticsEvents` | Événements analytiques rattachés au compte |
 
-L'export ne contient ni la clé privée chiffrée, ni le secret TOTP, ni les empreintes des codes de secours. Il omet aussi des données qui devraient y figurer : préférences, limite de jeu responsable et quêtes stockées dans Redis, parrain et liste des filleuls.
+L'export ne contient ni la clé privée chiffrée, ni l'empreinte du mot de passe, ni le secret TOTP, ni les empreintes des codes de secours. Il omet aussi des données qui devraient y figurer : préférences, limite de jeu responsable et quêtes stockées dans Redis, parrain et liste des filleuls, motif d'un refus de la pièce d'identité et dates de la demande. Les photos de la pièce n'y figurent pas ; elles sont de toute façon effacées dès la décision.
 
 ### Effacement
 
@@ -103,8 +107,12 @@ L'anonymisation, faite par `anonymizeUserAccount` de [`backend/src/api/user/user
 | `walletEncryptedKey` | `null` : la clé privée est détruite |
 | `welcomeGrantTxHash` | `null` |
 | `email` | `null` |
+| `passwordHash` | `null` |
+| `ageVerificationNote` | `null` ; le statut et la date de vérification sont conservés |
 | `twoFactorSecret`, `twoFactorMethod`, `twoFactorBackupCodes`, `isTwoFactorEnabled` | Effacés |
 | `deletedAt` | Date de la suppression |
+
+La même transaction supprime la ligne `IdentityDocument` du compte, avec ses photos si la demande était encore en attente.
 
 Ce qui **n'est pas** effacé :
 
@@ -113,7 +121,7 @@ Ce qui **n'est pas** effacé :
 | Ligne `User` | Conservée (suppression logique), avec `id`, `role`, `pointsBalance`, `referralCode`, `referredById` |
 | Tickets | Conservés avec `transactionHash`, `payerWallet` et `userId` : le lien entre l'identifiant du compte et l'ancienne adresse du portefeuille subsiste par ces colonnes |
 | Journal des points, récompenses et codes promo | Conservés, rattachés à l'identifiant |
-| Événements analytiques | Conservés avec `userId` et leurs métadonnées |
+| Événements analytiques | Conservés avec `userId` et leurs métadonnées, y compris le motif d'un refus de pièce d'identité dans le journal d'administration |
 | Données Redis | Préférences, limite de jeu et quêtes non supprimées |
 | Entreprises partenaires | Restent rattachées au compte (`ownerId`), puisque la ligne `User` n'est pas supprimée |
 | Transactions sur la chaîne | Impossibles à effacer (voir [Blockchain et données personnelles](blockchain-donnees.md)) |
@@ -137,10 +145,26 @@ Les droits d'accès, de portabilité et d'effacement sont en libre-service et im
 
 ## Mineurs
 
-La participation est réservée aux majeurs. Le schéma de connexion exige `isAdultConfirmed: true`, et les conditions de participation le rappellent. C'est une déclaration, sans vérification.
+La participation est réservée aux majeurs. Deux mécanismes coexistent :
+
+| Mécanisme | Où | Portée |
+|---|---|---|
+| Déclaration de majorité (`isAdultConfirmed: true`) | Connexion web `POST /api/auth/login` | Déclarative ; l'inscription mobile par mot de passe, Google ou Apple ne la demande pas |
+| Vérification d'âge par pièce d'identité | `POST /api/user/identity`, décision d'un agent de la Mairie | Exigée pour acheter ou offrir un ticket, échanger une récompense et acheter un ticket à gratter (`AGE_VERIFICATION_REQUIRED`, obligatoire en production) |
+
+Le citoyen envoie depuis `/profil/identite` sur le web, ou depuis l'application mobile, une photo du recto et du verso, après avoir coché sur le web une case de consentement à la consultation par la Mairie. Les images sont chiffrées à la réception, consultées par un agent sur la page Identités de l'espace Mairie, puis effacées à la décision ; le citoyen reçoit la décision par email, avec le motif en cas de refus, et peut envoyer une nouvelle pièce. Chaque consultation et chaque décision sont journalisées. Le détail technique est dans [Autorisations](../securite/autorisations.md#verification-d-age).
+
+Le contrôle a des limites à faire connaître :
+
+- l'agent juge sur photo : aucun contrôle ne vérifie que la pièce est authentique ni qu'elle appartient à la personne qui joue ;
+- l'API ne connaît pas la date de naissance : la décision est entièrement humaine et n'est pas réexaminée ;
+- un achat direct sur le contrat, sans passer par BlockLucky, échappe au contrôle ;
+- le web n'offre pas l'envoi de la pièce : un citoyen sans l'application mobile ne peut pas faire vérifier son âge.
+
+La collecte d'une copie de pièce d'identité est un traitement sensible pour la CNIL, qui recommande de la limiter au strict nécessaire et de privilégier des solutions de vérification d'âge qui ne transmettent pas l'identité au service. La proportionnalité de ce choix et la nécessité d'une analyse d'impact sont à valider (voir [Points à valider](points-a-valider.md)).
 
 > [!IMPORTANT]
-> Le cadeau d'un ticket (`POST /api/lottery/gift`) crée un compte pour l'email du bénéficiaire s'il n'en a pas, avec un portefeuille, sans que ce bénéficiaire ait confirmé sa majorité ni accepté les conditions, et en le rattachant à l'expéditeur comme filleul. C'est un traitement de données d'un tiers sans démarche de sa part. La base légale de ce traitement et l'information du bénéficiaire sont à valider (voir [Points à valider](points-a-valider.md)).
+> Le cadeau d'un ticket (`POST /api/lottery/gift`) crée un compte pour l'email du bénéficiaire s'il n'en a pas, avec un portefeuille, sans que ce bénéficiaire ait vérifié sa majorité ni accepté les conditions, et en le rattachant à l'expéditeur comme filleul. Le contrôle d'âge ne porte que sur l'expéditeur : le bénéficiaire détient un ticket sans avoir fait vérifier son âge. C'est un traitement de données d'un tiers sans démarche de sa part. La base légale de ce traitement et l'information du bénéficiaire sont à valider (voir [Points à valider](points-a-valider.md)).
 
 ## Sous-traitants et transferts
 
@@ -166,6 +190,8 @@ Les mesures de sécurité (article 32) sont décrites dans la partie [Sécurité
 | Export complet (Redis, parrainage) | À compléter |
 | Page web de confirmation de suppression | À créer, ou lien à retirer de l'email |
 | Effacement des données Redis à l'anonymisation | À ajouter |
-| Analyse d'impact (AIPD) | Non réalisée ; sa nécessité est à apprécier par le DPO |
+| Délai maximal pour une pièce d'identité jamais traitée | À fixer et à implémenter |
+| Information sur la vérification d'âge dans la politique de confidentialité | À rédiger |
+| Analyse d'impact (AIPD) | Non réalisée ; fortement recommandée depuis la collecte des pièces d'identité, à apprécier par le DPO |
 | Contrats de sous-traitance | À signer |
 | Preuve du consentement | Sans objet tant qu'aucun traitement ne repose sur le consentement |

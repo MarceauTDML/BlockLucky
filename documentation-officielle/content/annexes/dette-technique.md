@@ -14,7 +14,7 @@ Niveaux de priorité :
 
 ### Notifications push codées en dur
 
-**Priorité moyenne.** `GET /api/user/notifications` renvoie toujours les trois mêmes notifications, écrites dans `getPushNotificationsHistory` de [`user.services.ts`](src:backend/src/api/user/user.services.ts) (« Nouveau commerçant partenaire », « Objectif 10 000 participants », « Bienvenue »), avec des dates relatives à l'instant de l'appel. Aucune notification n'est stockée en base. Côté mobile, le paquet `expo-notifications` est déclaré dans `package.json` mais n'est importé nulle part : aucun jeton n'est demandé, aucune notification système n'est reçue. La bannière affichée par `triggerSimulatedOsPush` de [`usePushNotifications.ts`](src:mobile-app/src/hooks/usePushNotifications.ts) est un composant de l'application.
+**Priorité moyenne.** `GET /api/user/notifications` renvoie toujours les trois mêmes notifications, écrites dans `getPushNotificationsHistory` de [`user.services.ts`](src:backend/src/api/user/user.services.ts) (« Nouveau commerçant partenaire », « Objectif 10 000 participants », « Bienvenue »), avec des dates relatives à l'instant de l'appel. Aucune notification n'est stockée en base. Côté mobile, le paquet `expo-notifications` est déclaré dans `package.json` mais n'est importé nulle part : aucun jeton n'est demandé, aucune notification système n'est reçue. L'écran Notifications affiche la liste de l'API et retient les notifications vues en mémoire seulement ; la fonction `triggerSimulatedOsPush` de [`usePushNotifications.ts`](src:mobile-app/src/hooks/usePushNotifications.ts), qui dessinait une fausse bannière système, n'est plus appelée par aucun écran mobile.
 
 À faire : une table de notifications, l'enregistrement du jeton Expo par appareil et un envoi depuis le worker (par exemple à l'annonce du gagnant).
 
@@ -47,6 +47,90 @@ De plus, `setTreasury` exige `DEFAULT_ADMIN_ROLE`, que le compte opérateur ne r
 
 **Priorité basse.** `POST` de validation d'une quête crédite les points sans aucune preuve que l'action (partage, abonnement) a eu lieu. Le catalogue des quêtes est écrit dans [`user.services.ts`](src:backend/src/api/user/user.services.ts).
 
+## Comptes et vérification d'âge
+
+### Code TOTP accepté avec le seul identifiant du compte
+
+**Priorité haute.** `POST /api/auth/2fa/verify` est public (`optionalAuthenticate`). Le contrôleur prend `req.user?.userId`, sinon le `userId` du corps ([`auth.controllers.ts`](src:backend/src/api/auth/auth.controllers.ts)). Quand aucun défi email n'est en attente pour cet identifiant, `verify2FA` de [`auth.services.ts`](src:backend/src/api/auth/auth.services.ts) vérifie un code TOTP ou un code de secours du compte et ouvre une session. Pour un compte en 2FA `APP`, un code TOTP valide et l'identifiant suffisent donc : ni le mot de passe, ni le code email, ni une session préalable ne sont exigés. Le TOTP remplace le premier facteur au lieu de s'y ajouter. L'identifiant interne n'est pas secret : il est renvoyé par `/auth/signin` et diffusé à tous les clients par l'événement `points:awarded`. Le verrouillage (10 échecs par heure et par compte) limite la recherche du code sans supprimer le défaut. Ce comportement existait avant les comptes avec mot de passe et n'a pas été corrigé.
+
+À faire : faire émettre par `/auth/signin` et `/auth/login` un jeton de défi signé et de courte durée, et exiger ce jeton à la place du `userId`.
+
+### Codes de parrainage peu lisibles
+
+**Priorité basse.** `User.referralCode` vaut `@default(uuid())` dans [`schema.prisma`](src:backend/prisma/schema.prisma) : un code de 36 caractères, difficile à dicter ou à recopier. La maquette Figma de l'écran Parrains montre un code court, et l'application affiche le code complet dans `ReferralCodeCard`. Aucun lien profond ne préremplit le code à l'inscription mobile (voir [Navigation et écrans](../mobile/navigation-ecrans.md)).
+
+À faire : un code court généré sans ambiguïté (alphabet de [`crypto.util.ts`](src:backend/src/utils/crypto.util.ts) des codes de secours, par exemple), avec contrainte d'unicité et nouvelle tentative en cas de collision.
+
+### Statut d'âge figé sur le téléphone
+
+**Priorité moyenne.** Le mobile garde `ageVerificationStatus` dans le profil stocké au login. Seul l'écran de vérification d'âge le met à jour, en relisant `GET /user/identity`. Après la décision de la Mairie, le profil local reste `PENDING` jusqu'à une visite de cet écran ou une nouvelle connexion ; l'ouverture automatique de l'écran après un refus dépend de cette valeur.
+
+Le web n'a pas ce défaut : le hook `useAgeVerification` relit `GET /user/identity` et met le profil stocké à jour (voir [Portefeuille et loterie](../web/portefeuille-loterie.md#verification-d-identite)).
+
+### Plafond de jeu responsable sans objet
+
+**Priorité basse.** La page [`profil/securite/page.tsx`](src:frontend-web/src/app/(citoyen)/profil/securite/page.tsx) propose toujours un plafond personnel de 5, 10, 25, 50 ou 100 tickets par tirage, enregistré par `PUT /user/responsible-limit`. Depuis que le contrat et le backend n'acceptent qu'un ticket par participant et par tour, et que la billetterie n'achète plus qu'un ticket, ce plafond n'a plus d'effet. Les pages publiques `/` et `/transparence` le présentent encore comme une garantie de jeu responsable.
+
+À faire : retirer le réglage, ou le remplacer par une mesure qui a un sens avec un ticket par tirage (par exemple une pause volontaire de participation).
+
+### Pièces d'identité sans contrôle d'unicité
+
+**Priorité basse.** Les images sont effacées dès la décision et aucune empreinte n'est conservée : rien n'empêche une même pièce de valider plusieurs comptes. C'est le prix de la minimisation des données ; la règle est à valider avec la Mairie (voir [Points à valider](../juridique/points-a-valider.md)).
+
+### Nom complet Apple ignoré
+
+**Priorité basse.** `appleOAuthSchema` accepte `fullName`, que le mobile envoie à la première connexion Apple, mais `oauthLogin` ne l'enregistre pas. Apple ne le transmet qu'une fois.
+
+### Comptes OAuth rattachés par l'adresse seule
+
+**Priorité moyenne.** `oauthLogin` de [`auth.services.ts`](src:backend/src/api/auth/auth.services.ts) retrouve le compte par l'email du jeton Google ou Apple et n'enregistre pas l'identifiant `sub` du fournisseur. Une adresse relais Apple ou un changement d'adresse chez le fournisseur crée un compte distinct, et la sécurité d'un compte BlockLucky dépend de celle du compte Google ou Apple de même adresse (voir [Authentification et 2FA](../securite/authentification.md#rattachement-par-adresse-email)).
+
+À faire : une table des identités externes (`provider`, `sub`, `userId`), et une confirmation explicite avant de rattacher un fournisseur à un compte qui a déjà un mot de passe.
+
+### Mot de passe non imposé et énumération à l'inscription
+
+**Priorité moyenne.** Un compte qui a un mot de passe reste joignable par `/auth/login`, par simple code email, et par OAuth. `/auth/signup` répond 409 pour une adresse déjà inscrite, ce qui révèle l'existence du compte, alors que `/auth/signin` et `/auth/password/forgot` répondent de façon identique. Aucun contrôle des mots de passe compromis n'est fait, et le hachage par `bcryptjs` en JavaScript, au coût 12, occupe le processus Node à chaque tentative : la limite de 30 requêtes par 10 minutes et par IP est la seule protection contre une saturation par `/auth/signin`.
+
+### Conservation des pièces d'identité en attente
+
+**Priorité moyenne.** Les images sont effacées à la décision, mais une demande jamais traitée garde ses images chiffrées sans limite de durée, et tout compte `ADMIN` peut les consulter : il n'existe ni rôle dédié à l'examen des pièces, ni purge automatique. Les images ne sont pas réencodées, ce qui conserve les métadonnées EXIF d'un fichier envoyé par un autre client que le mobile.
+
+À faire : une purge des demandes `PENDING` au-delà d'une durée fixée avec le DPO, un rôle ou une permission propre à l'examen, et un réencodage des images à la réception.
+
+### Vérification d'âge contournable sur la chaîne
+
+**Priorité basse.** Le contrôle d'âge est fait par l'API. Le contrat accepte `buyTickets` et `buyTicketsFor` de n'importe quelle adresse : un détenteur d'ethers de test peut acheter sans passer par BlockLucky, et le bénéficiaire d'un cadeau reçoit son ticket sans vérification. Sur Sepolia comme en local, ce contournement reste théorique pour un citoyen, dont la clé est gardée par le backend.
+
+## Application mobile
+
+### Mode simulé sans solde ETH
+
+**Priorité moyenne.** `walletService.balanceOf` de [`wallet.service.ts`](src:backend/src/blockchain/wallet.service.ts) renvoie `null` hors mode onchain. `GET /lottery/wallet` ne donne alors aucun solde : le profil mobile n'affiche pas la tuile des ETH fictifs et la billetterie considère le solde comme suffisant. Aucun écran mobile n'affiche plus de mention « Mode démonstration », et aucun ne lit `guarantees.paused` : la pause du contrat n'apparaît qu'au refus de l'achat.
+
+### Coûts des tickets à gratter recopiés
+
+**Priorité basse.** Les prix 50 et 100 sont écrits dans `SCRATCH_COSTS` de [`scratchOffers.ts`](src:mobile-app/src/components/marketplace/scratchOffers.ts). Si `SCRATCH_COST_VIOLET` ou `SCRATCH_COST_LUCKY` change côté serveur, l'application affiche un prix faux ; le débit réel reste celui du serveur.
+
+### Pas de clé d'idempotence sur mobile
+
+**Priorité moyenne.** Le mobile n'envoie jamais `Idempotency-Key`. Un nouvel appui après une erreur réseau peut acheter deux tickets à gratter et débiter deux fois les EtherPoints ; pour les tickets du tirage, le contrôle d'un ticket par participant empêche le doublon.
+
+### Erreurs 409 mal classées
+
+**Priorité basse.** `classifyTicketError` de [`useCitizenWallet.ts`](src:mobile-app/src/hooks/useCitizenWallet.ts) traite tout 409 sans `contractError` comme un ticket déjà acheté. « Ce tour est terminé, le tirage va être lancé » s'affiche donc dans la fenêtre du ticket déjà possédé.
+
+### Solde de points jamais relu
+
+**Priorité basse.** `usePoints` lit `pointsBalance` dans la réponse de `GET /marketplace/points`, qui renvoie `balance`. Le solde affiché ne suit que les réponses des achats, cadeaux et échanges.
+
+### Identifiants Google absents de l'exemple
+
+**Priorité basse.** [`SocialAuthButtons.tsx`](src:mobile-app/src/components/auth/SocialAuthButtons.tsx) lit `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` et `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, listés vides dans [`mobile-app/.env.example`](src:mobile-app/.env.example). Sans eux, le bouton Google reste grisé. L'exemple garde aussi `EXPO_PUBLIC_WEB3AUTH_CLIENT_ID`, lu par aucun fichier.
+
+### Code mort après la refonte
+
+**Priorité basse.** Plusieurs éléments ne sont plus utilisés par aucun écran : les composants `IntegratedWalletCard`, `IntegratedWalletButton` et `ExplorerLink`, `generateDeterministicWallet` de `useCitizenWallet`, `triggerSimulatedOsPush`, les fenêtres globales `retryModal`, `queueModal` et `sentryModal` du slice `ui`, les endpoints `getOnboarding` et `setResponsibleLimit`. Le plafond de jeu responsable n'est plus réglable sur mobile. Les dépendances `axios`, `expo-notifications`, `expo-crypto`, `lottie-react-native` et `react-native-gesture-handler` ne sont importées nulle part, et les polices `assets/fonts/Inter-*.ttf` ne sont plus lues depuis le passage à `@expo-google-fonts/inter`. Le détail est dans [Stack et structure](../mobile/structure.md#code-mort-a-connaitre).
+
 ## Données et cohérence
 
 ### Données de référence dans Redis seul
@@ -66,6 +150,14 @@ Si Redis est perdu, ces données disparaissent : un citoyen perd sa limite de je
 Les lectures et écritures de ces clés ne sont pas atomiques (lecture, modification en mémoire, réécriture). Deux échanges simultanés de la même récompense peuvent recevoir le même code partenaire ; deux validations simultanées d'une quête peuvent créditer les points deux fois.
 
 À faire : déplacer ces données dans PostgreSQL, avec des contraintes d'unicité.
+
+### Indice de ticket concurrent en mode simulé
+
+**Priorité basse.** En mode simulé, l'indice d'un nouveau ticket vaut le nombre de tickets déjà enregistrés sur le tour (`countTicketsInRound` dans [`lottery.services.ts`](src:backend/src/api/lottery/lottery.services.ts)). Deux achats simultanés obtiennent le même indice, et le second échoue sur l'index unique `(lotteryId, ticketIndex)`. En mode onchain, l'indice vient du contrat et ce cas n'existe pas.
+
+### Délai de révélation ignoré par le tirage manuel
+
+**Priorité basse.** `DRAW_REVEAL_DELAY_SECONDS` n'est respecté que par le keeper ([`lottery.keeper.ts`](src:backend/src/blockchain/lottery.keeper.ts)). `POST /lottery/draw`, Chainlink Automation et tout compte qui appelle `requestDraw` sur le contrat peuvent tirer avant l'heure `revealAt` affichée aux participants.
 
 ### Montants en virgule flottante
 
@@ -103,7 +195,7 @@ Les lectures et écritures de ces clés ne sont pas atomiques (lecture, modifica
 
 ### Adresse pseudo-déterministe à la connexion
 
-**Priorité basse.** La page de connexion web et l'écran mobile envoient à `POST /api/auth/login` une `walletAddress` calculée à partir de l'email par `generateDeterministicWallet` ([`wallet.ts`](src:frontend-web/src/lib/wallet.ts)), une fonction de hachage non cryptographique. Le backend s'en sert d'abord pour chercher le compte, puis cherche par email. Depuis la création des portefeuilles intégrés, l'adresse réelle du compte est générée par le serveur et cette valeur ne correspond plus à rien. Le champ `provider` (`GOOGLE` par défaut) est un reste de la connexion sociale Web3Auth, qui n'existe plus.
+**Priorité basse.** La page de connexion web envoie à `POST /api/auth/login` une `walletAddress` calculée à partir de l'email par `generateDeterministicWallet` ([`wallet.ts`](src:frontend-web/src/lib/wallet.ts)), une fonction de hachage non cryptographique. Le backend s'en sert d'abord pour chercher le compte, puis cherche par email. Depuis la création des portefeuilles intégrés, l'adresse réelle du compte est générée par le serveur et cette valeur ne correspond plus à rien. Le champ `provider` (`GOOGLE` par défaut) est un reste de la connexion sociale Web3Auth, qui n'existe plus.
 
 ### Chemins du mode simulé
 
@@ -117,7 +209,7 @@ La configuration [`swagger.config.ts`](src:backend/src/config/swagger.config.ts)
 
 ### Fichiers Expo commités
 
-**Priorité basse.** Le dossier `mobile-app/.expo/` (`devices.json`, `README.md`) est versionné alors qu'il est propre à chaque poste.
+**Priorité basse.** Le dossier `mobile-app/.expo/` (`devices.json`, `README.md`) est versionné alors qu'il est propre à chaque poste. Il n'est pas ignoré par git : le cache `mobile-app/.expo/web/`, produit par `npm run web`, apparaît dans les fichiers non suivis.
 
 ## Infrastructure et exploitation
 
@@ -154,7 +246,7 @@ Voir [Objectifs de service et métriques](../infrastructure/slo-metriques.md).
 
 ### Rotation de la clé de chiffrement
 
-**Priorité moyenne.** Aucun outil ne permet de rechiffrer les clés de portefeuille et les secrets TOTP avec une nouvelle `ENCRYPTION_KEY`. [`crypto.util.ts`](src:backend/src/utils/crypto.util.ts) sait encore déchiffrer l'ancien format AES-256-CBC, sans procédure de migration des valeurs restantes.
+**Priorité moyenne.** Aucun outil ne permet de rechiffrer les clés de portefeuille, les secrets TOTP et les pièces d'identité en attente avec une nouvelle `ENCRYPTION_KEY`. Les images chiffrées par `encryptBuffer` ne portent pas de préfixe de version, contrairement aux textes au format `v2`. [`crypto.util.ts`](src:backend/src/utils/crypto.util.ts) sait encore déchiffrer l'ancien format AES-256-CBC, sans procédure de migration des valeurs restantes.
 
 ### Chaîne logicielle
 

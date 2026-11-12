@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Comptes de démonstration et connexion | Documentation BlockLucky</title>
-<meta name="description" content="BlockLucky n&#39;utilise aucun mot de passe. On se connecte avec une adresse email et un code à 6 chiffres reçu par email. Cette page décrit les comptes créés par l">
+<meta name="description" content="On se connecte à BlockLucky de deux façons selon le client. L&#39;application mobile utilise un email et un mot de passe, ou Google et Apple quand ils sont configur">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/doc.css">
@@ -37,7 +37,7 @@
     <div class="breadcrumb"><span>2. Démarrage rapide</span></div>
     <article class="markdown">
 <h1>Comptes de démonstration et connexion</h1>
-<p>BlockLucky n&#39;utilise aucun mot de passe. On se connecte avec une adresse email et un code à 6 chiffres reçu par email. Cette page décrit les comptes créés par le seed, le déroulement de la connexion en local et les particularités des comptes partenaire et administrateur.</p>
+<p>On se connecte à BlockLucky de deux façons selon le client. L&#39;application mobile utilise un email et un mot de passe, ou Google et Apple quand ils sont configurés. Le frontend web n&#39;a pas de mot de passe : il envoie un code à 6 chiffres par email. Cette page décrit les comptes créés par le seed, le déroulement de la connexion en local, la vérification d&#39;âge et les particularités des comptes partenaire et administrateur.</p>
 <h2 id="les-comptes-du-seed"><a class="anchor" href="#les-comptes-du-seed" aria-hidden="true" tabindex="-1">#</a>Les comptes du seed</h2>
 <p>Le script <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/prisma/seed.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/prisma/seed.ts</code></a>, lancé par <code>npm run prisma:seed</code>, crée trois comptes, un tour et deux commerces.</p>
 <div class="table-wrap"><table>
@@ -72,7 +72,10 @@
 <td><code>/mairie</code></td>
 </tr>
 </tbody></table></div>
-<p>Les trois comptes ont l&#39;email marqué comme vérifié. Ces adresses sont fictives : les emails n&#39;arrivent que dans Mailpit.</p>
+<p>Les trois comptes ont l&#39;email marqué comme vérifié, le mot de passe de démonstration <code>EtherBay2026demo</code> et l&#39;âge vérifié (<code>ageVerificationStatus = VERIFIED</code>) : ils peuvent jouer sans envoyer de pièce d&#39;identité. Relancer le seed remet ce mot de passe et ce statut sur les comptes existants. Ces adresses sont fictives : les emails n&#39;arrivent que dans Mailpit.</p>
+<div class="hint hint-caution"><p class="hint-title">Danger</p>
+<code>EtherBay2026demo</code> est publié dans le dépôt et dans cette documentation. Le seed ne doit jamais être lancé sur une base de production.</p>
+</div>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -99,7 +102,7 @@
 <li>à l&#39;affichage du portefeuille (<code>GET /api/v1/lottery/wallet</code>, appelé par la page d&#39;accueil) ;</li>
 <li>ou au premier achat ou cadeau.</li>
 </ul>
-<p>À ce moment, le backend remplace l&#39;adresse factice par une adresse Ethereum réelle, chiffre la clé, puis verse la dotation de bienvenue (0,1 ETH fictif par défaut). Un nouveau compte inscrit par l&#39;interface reçoit, lui, son portefeuille dès l&#39;inscription.</p>
+<p>À ce moment, le backend remplace l&#39;adresse factice par une adresse Ethereum réelle, chiffre la clé, puis verse la dotation de bienvenue (0,5 ETH fictif par défaut). Un nouveau compte inscrit par l&#39;interface reçoit, lui, son portefeuille dès l&#39;inscription.</p>
 <div class="hint hint-note"><p class="hint-title">À savoir</p>
 <p>Le tour n° 1 du seed porte une cagnotte de 12,5 qui ne correspond à rien sur la chaîne. Elle est remplacée par la vraie valeur, lue sur le contrat, au premier appel de <code>GET /api/v1/lottery/status</code>.</p>
 </div>
@@ -125,7 +128,7 @@
     W-&gt;&gt;B: POST /api/v1/auth/2fa/verify
     B--&gt;&gt;W: Jeton de session et profil
     W-&gt;&gt;U: Redirection selon le rôle</pre></div>
-<p>Un email inconnu crée un compte citoyen au moment de la vérification du code : portefeuille, dotation de bienvenue, 25 EtherPoints de bienvenue et email de bienvenue. N&#39;importe quelle adresse fictive fonctionne en local, par exemple <code>test1@etherbay.fr</code>.</p>
+<p>Un email inconnu crée un compte citoyen au moment de la vérification du code : portefeuille, dotation de bienvenue, 25 EtherPoints de bienvenue et email de bienvenue. N&#39;importe quelle adresse fictive fonctionne en local, par exemple <code>test1@etherbay.fr</code>. Ce nouveau compte n&#39;a pas l&#39;âge vérifié : l&#39;achat lui répond 403 tant qu&#39;il n&#39;a pas envoyé de pièce d&#39;identité, depuis <code>/profil/identite</code> ou depuis le mobile, et que la Mairie ne l&#39;a pas validée (voir plus bas).</p>
 <h3 id="le-code-dans-la-reponse-de-l-api"><a class="anchor" href="#le-code-dans-la-reponse-de-l-api" aria-hidden="true" tabindex="-1">#</a>Le code dans la réponse de l&#39;API</h3>
 <p>Quand <code>NODE_ENV=development</code> (valeur de <code>.env.example</code>), la réponse de <code>POST /api/v1/auth/login</code> contient aussi le code dans le champ <code>devOtpPreview</code>. Il est visible dans l&#39;onglet Réseau des outils de développement du navigateur, ou directement avec curl :</p>
 <div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -X POST http://localhost:2053/api/v1/auth/login -H <span class="hljs-string">&quot;content-type: application/json&quot;</span> -d <span class="hljs-string">&#x27;{&quot;walletAddress&quot;:&quot;0x0000000000000000000000000000000000000001&quot;,&quot;email&quot;:&quot;citoyen@etherbay.fr&quot;,&quot;provider&quot;:&quot;EMAIL&quot;,&quot;isAdultConfirmed&quot;:true}&#x27;</span></code></pre></div>
@@ -146,9 +149,21 @@
 <code>devOtpPreview</code> n&#39;existe qu&#39;en <code>NODE_ENV=development</code>. Il n&#39;apparaît ni en test ni en production.</p>
 </div>
 <h3 id="depuis-l-application-mobile"><a class="anchor" href="#depuis-l-application-mobile" aria-hidden="true" tabindex="-1">#</a>Depuis l&#39;application mobile</h3>
-<p>Le parcours est le même : écran de connexion, déclaration de majorité, email, puis code saisi sur <code>Verify2FAScreen</code>. Le code arrive dans Mailpit, sur le poste de développement.</p>
+<p>L&#39;écran de connexion demande l&#39;email et le mot de passe. Avec un compte du seed, saisir par exemple <code>citoyen@etherbay.fr</code> et <code>EtherBay2026demo</code> : la session s&#39;ouvre sans code email, puisque <code>/auth/signin</code> n&#39;en demande que si la 2FA est active.</p>
+<div class="code-block"><div class="code-head"><span>Terminal</span></div><pre><code class="hljs language-bash">curl -s -X POST http://localhost:2053/api/v1/auth/signin -H <span class="hljs-string">&quot;content-type: application/json&quot;</span> -d <span class="hljs-string">&#x27;{&quot;email&quot;:&quot;citoyen@etherbay.fr&quot;,&quot;password&quot;:&quot;EtherBay2026demo&quot;}&#x27;</span></code></pre></div>
+<p>L&#39;inscription d&#39;un nouveau compte se fait sur l&#39;écran « Créer un compte » : email, mot de passe d&#39;au moins 10 caractères avec une lettre et un chiffre, acceptation des conditions. Un code à 6 chiffres part dans Mailpit (et dans <code>devOtpPreview</code> en développement), à saisir sur <code>Verify2FAScreen</code>. « Mot de passe oublié » suit le même principe avec un code de réinitialisation.</p>
+<p>Les boutons Google et Apple répondent 503 tant que <code>GOOGLE_CLIENT_IDS</code> et <code>APPLE_CLIENT_IDS</code> sont vides dans <code>backend/.env</code>, ce qui est le cas par défaut ; sur le mobile, le bouton Google est aussi désactivé sans les variables <code>EXPO_PUBLIC_GOOGLE_*_CLIENT_ID</code>. Voir <a href="../mobile/authentification.html#google-et-apple">Authentification mobile</a>.</p>
+<p>Les comptes inscrits par le web peuvent aussi se connecter sur le mobile après avoir défini un mot de passe par « Mot de passe oublié ».</p>
+<h2 id="verification-d-age-d-un-nouveau-compte"><a class="anchor" href="#verification-d-age-d-un-nouveau-compte" aria-hidden="true" tabindex="-1">#</a>Vérification d&#39;âge d&#39;un nouveau compte</h2>
+<p>Avec <code>AGE_VERIFICATION_REQUIRED=true</code> (valeur par défaut, obligatoire en production), un compte qui n&#39;est pas vérifié reçoit <code>403 Vérifiez votre âge pour jouer.</code> à l&#39;achat, au cadeau, à l&#39;échange d&#39;une récompense et au ticket à gratter. Pour en vérifier un en local :</p>
+<ol>
+<li>Sur le mobile, se connecter avec le nouveau compte : l&#39;écran de vérification d&#39;âge s&#39;ouvre de lui-même. Envoyer une photo du recto et du verso, JPEG ou PNG de 4 Mo au plus chacune ; n&#39;importe quelle image de test fait l&#39;affaire.</li>
+<li>Sur le web, se connecter avec <code>maire@etherbay.fr</code> (2FA activée, voir ci-dessous), ouvrir <code>/mairie/identites</code>, ouvrir la demande et l&#39;approuver.</li>
+<li>L&#39;email de décision arrive dans Mailpit. Sur le mobile, rouvrir l&#39;écran de vérification d&#39;âge pour rafraîchir le statut affiché.</li>
+</ol>
+<p>L&#39;envoi peut aussi se faire depuis le web : ouvrir <code>/profil/identite</code> avec le nouveau compte, choisir les deux images, cocher le consentement et envoyer. Après l&#39;approbation, recharger <code>/billetterie</code> ou revenir sur l&#39;onglet suffit pour pouvoir acheter : la page relit le statut, sans nouvelle connexion. Pour des essais rapides, <code>AGE_VERIFICATION_REQUIRED=false</code> dans <code>backend/.env</code> supprime ce contrôle.</p>
 <h2 id="compte-mairie-activer-la-double-authentification"><a class="anchor" href="#compte-mairie-activer-la-double-authentification" aria-hidden="true" tabindex="-1">#</a>Compte Mairie : activer la double authentification</h2>
-<p>Avec <code>ADMIN_MFA_REQUIRED=true</code> (valeur par défaut, obligatoire en production), toute route réservée au rôle <code>ADMIN</code> répond 403 avec le message « La double authentification est obligatoire pour les comptes d&#39;administration. Activez-la depuis votre profil. » tant que la 2FA n&#39;est pas active. Le dashboard <code>/mairie</code> est donc inutilisable à la première connexion.</p>
+<p>Avec <code>ADMIN_MFA_REQUIRED=true</code> (valeur par défaut, obligatoire en production), toute route réservée au rôle <code>ADMIN</code> répond 403 avec le message « La double authentification est obligatoire pour les comptes d&#39;administration. Activez-la depuis votre profil. » tant que la 2FA n&#39;est pas active, avec le code <code>ADMIN_MFA_REQUIRED</code> dans <code>errors.code</code>. Le dashboard <code>/mairie</code> est donc inutilisable à la première connexion : chacune de ses pages affiche alors ce motif et un bouton « Activer la double authentification » qui mène à <code>/profil/securite/2fa</code> (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/frontend-web/src/components/admin/AdminQueryError.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>AdminQueryError</code></a>).</p>
 <ol>
 <li>Se connecter avec <code>maire@etherbay.fr</code> depuis <code>/connexion?espace=pro</code>.</li>
 <li>Ouvrir <code>/profil/securite/2fa</code>.</li>
@@ -179,19 +194,19 @@
 <h2 id="compte-partenaire"><a class="anchor" href="#compte-partenaire" aria-hidden="true" tabindex="-1">#</a>Compte partenaire</h2>
 <p><code>boulangerie@etherbay.fr</code> arrive sur <code>/partenaire</code>, qui propose de choisir l&#39;un de ses deux établissements. Il peut créer des offres, importer des codes et valider en caisse les codes présentés par les citoyens. La 2FA n&#39;est pas obligatoire pour ce rôle.</p>
 <h2 id="scenario-de-demonstration"><a class="anchor" href="#scenario-de-demonstration" aria-hidden="true" tabindex="-1">#</a>Scénario de démonstration</h2>
-<p>Ce scénario couvre le parcours complet en local avec deux citoyens, le minimum pour qu&#39;un tour puisse être tiré (<code>minTicketsToDraw</code> vaut 2).</p>
+<p>Ce scénario couvre le parcours complet en local avec deux participants, le minimum pour qu&#39;un tour puisse être tiré (<code>minTicketsToDraw</code> vaut 2). Chaque participant n&#39;a qu&#39;un ticket par tour.</p>
 <ol>
-<li>Se connecter avec <code>citoyen@etherbay.fr</code>, attendre l&#39;affichage du solde sur l&#39;accueil, puis acheter un ticket sur <code>/billetterie</code>.</li>
-<li>Dans une fenêtre de navigation privée, se connecter avec une nouvelle adresse (par exemple <code>voisin@etherbay.fr</code>) et acheter un ticket.</li>
-<li>Attendre la fin du tour : 30 minutes après son ouverture en local (le compte à rebours de l&#39;accueil l&#39;indique). Un tour expiré avec moins de deux tickets est annulé par le keeper et un nouveau tour s&#39;ouvre. Avec deux tickets ou plus, le tour se tire automatiquement : <code>DrawRequested</code>, puis réponse de l&#39;oracle local en quelques secondes, puis <code>WinnerPicked</code>.</li>
+<li>Se connecter avec <code>citoyen@etherbay.fr</code>, attendre l&#39;affichage du solde sur l&#39;accueil, puis acheter un ticket sur <code>/billetterie</code>, qui n&#39;en propose qu&#39;un.</li>
+<li>Dans une fenêtre de navigation privée, se connecter avec <code>boulangerie@etherbay.fr</code>, déjà vérifié, et acheter un ticket. Une nouvelle adresse peut aussi servir, après la vérification d&#39;âge décrite plus haut. Un second achat avec le même compte répond 409.</li>
+<li>Attendre la fin du tour : 30 minutes après son ouverture en local (le compte à rebours de l&#39;accueil l&#39;indique). Un tour expiré avec moins de deux tickets est annulé par le keeper et un nouveau tour s&#39;ouvre. Avec deux tickets ou plus, le tour entre en salle d&#39;attente pendant <code>DRAW_REVEAL_DELAY_SECONDS</code> (600 s par défaut), puis le keeper le tire : <code>DrawRequested</code>, réponse de l&#39;oracle local en quelques secondes, puis <code>WinnerPicked</code>.</li>
 <li>Suivre l&#39;annonce sur <code>/tirage</code> ; la cagnotte est versée automatiquement au gagnant.</li>
 <li>Avec <code>maire@etherbay.fr</code>, consulter <code>/mairie</code>, mettre le contrat en pause depuis <code>/mairie/securite</code>, constater que l&#39;achat est refusé, puis le réactiver.</li>
 </ol>
 <p>Le test automatisé <code>npm run test:chain</code> du backend joue un scénario équivalent sans attendre, en avançant l&#39;horloge du nœud.</p>
 <h2 id="desactiver-les-protections-en-developpement"><a class="anchor" href="#desactiver-les-protections-en-developpement" aria-hidden="true" tabindex="-1">#</a>Désactiver les protections en développement</h2>
-<p><code>LOGIN_EMAIL_CODE_REQUIRED</code> et <code>ADMIN_MFA_REQUIRED</code> peuvent être passées à <code>false</code> dans <code>backend/.env</code> pour accélérer certains essais : la connexion délivre alors directement une session, et un administrateur sans 2FA accède au dashboard. La suite de tests le fait dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/setup-env.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/setup-env.ts</code></a>.</p>
+<p><code>LOGIN_EMAIL_CODE_REQUIRED</code>, <code>ADMIN_MFA_REQUIRED</code> et <code>AGE_VERIFICATION_REQUIRED</code> peuvent être passées à <code>false</code> dans <code>backend/.env</code> pour accélérer certains essais : la connexion par <code>/auth/login</code> délivre alors directement une session, un administrateur sans 2FA accède au dashboard et un compte non vérifié peut jouer. <code>DRAW_REVEAL_DELAY_SECONDS=0</code> supprime l&#39;attente avant le tirage. La suite de tests le fait dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/__tests__/setup-env.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/__tests__/setup-env.ts</code></a>.</p>
 <div class="hint hint-warning"><p class="hint-title">Attention</p>
-<p>Ces deux variables ne peuvent pas être désactivées en production : le backend refuse de démarrer. Ne pas prendre l&#39;habitude de les désactiver, au risque de ne plus tester le vrai parcours.</p>
+<p>Ces trois variables ne peuvent pas être désactivées en production : le backend refuse de démarrer. Ne pas prendre l&#39;habitude de les désactiver, au risque de ne plus tester le vrai parcours.</p>
 </div>
 <h2 id="creer-d-autres-comptes-partenaire-ou-administrateur"><a class="anchor" href="#creer-d-autres-comptes-partenaire-ou-administrateur" aria-hidden="true" tabindex="-1">#</a>Créer d&#39;autres comptes partenaire ou administrateur</h2>
 <p>Aucune route ni aucun écran ne permet d&#39;attribuer un rôle. Un compte créé par l&#39;interface est toujours <code>USER</code>. Pour promouvoir un compte en local, après sa première connexion :</p>
@@ -205,7 +220,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#les-comptes-du-seed">Les comptes du seed</a></li><li class="toc-h3"><a href="#le-portefeuille-des-comptes-du-seed">Le portefeuille des comptes du seed</a></li><li class="toc-h2"><a href="#se-connecter-en-local">Se connecter en local</a></li><li class="toc-h3"><a href="#depuis-le-web">Depuis le web</a></li><li class="toc-h3"><a href="#le-code-dans-la-reponse-de-l-api">Le code dans la réponse de l&#39;API</a></li><li class="toc-h3"><a href="#depuis-l-application-mobile">Depuis l&#39;application mobile</a></li><li class="toc-h2"><a href="#compte-mairie-activer-la-double-authentification">Compte Mairie : activer la double authentification</a></li><li class="toc-h2"><a href="#compte-partenaire">Compte partenaire</a></li><li class="toc-h2"><a href="#scenario-de-demonstration">Scénario de démonstration</a></li><li class="toc-h2"><a href="#desactiver-les-protections-en-developpement">Désactiver les protections en développement</a></li><li class="toc-h2"><a href="#creer-d-autres-comptes-partenaire-ou-administrateur">Créer d&#39;autres comptes partenaire ou administrateur</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#les-comptes-du-seed">Les comptes du seed</a></li><li class="toc-h3"><a href="#le-portefeuille-des-comptes-du-seed">Le portefeuille des comptes du seed</a></li><li class="toc-h2"><a href="#se-connecter-en-local">Se connecter en local</a></li><li class="toc-h3"><a href="#depuis-le-web">Depuis le web</a></li><li class="toc-h3"><a href="#le-code-dans-la-reponse-de-l-api">Le code dans la réponse de l&#39;API</a></li><li class="toc-h3"><a href="#depuis-l-application-mobile">Depuis l&#39;application mobile</a></li><li class="toc-h2"><a href="#verification-d-age-d-un-nouveau-compte">Vérification d&#39;âge d&#39;un nouveau compte</a></li><li class="toc-h2"><a href="#compte-mairie-activer-la-double-authentification">Compte Mairie : activer la double authentification</a></li><li class="toc-h2"><a href="#compte-partenaire">Compte partenaire</a></li><li class="toc-h2"><a href="#scenario-de-demonstration">Scénario de démonstration</a></li><li class="toc-h2"><a href="#desactiver-les-protections-en-developpement">Désactiver les protections en développement</a></li><li class="toc-h2"><a href="#creer-d-autres-comptes-partenaire-ou-administrateur">Créer d&#39;autres comptes partenaire ou administrateur</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

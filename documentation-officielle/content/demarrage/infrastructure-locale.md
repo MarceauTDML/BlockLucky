@@ -102,12 +102,12 @@ La valeur par défaut de `RELAYER_PRIVATE_KEY` dans `backend/.env.example` est l
 | Prix du ticket | 0,01 ETH fictif |
 | Tickets maximum par tour | 10 000 |
 | Tickets minimum pour tirer | 2 |
-| Tickets maximum par participant | 100 |
+| Tickets maximum par participant | 1 |
 | Durée d'un tour | 30 minutes |
 | Commission de la Mairie | 10 % (1 000 points de base) |
 | Délai avant relance du tirage | 10 minutes |
 
-Ces valeurs viennent de [`smart-contract/scripts/deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) et des variables `TICKET_PRICE_WEI`, `MAX_TICKETS`, `MIN_TICKETS_TO_DRAW`, `MAX_TICKETS_PER_PLAYER`, `ROUND_DURATION_SECONDS` et `MUNICIPALITY_FEE_BPS`. Le service Compose ne transmet pas ces variables au conteneur : pour les changer, lancer le nœud hors Docker (voir plus bas) ou ajouter les variables dans la section `environment` du service. Avec une durée de 30 minutes et deux tickets minimum, un tour local se tire automatiquement 30 minutes après son ouverture, dès que deux tickets ont été achetés.
+Ces valeurs viennent de [`smart-contract/scripts/deploy-local.ts`](src:smart-contract/scripts/deploy-local.ts) et des variables `TICKET_PRICE_WEI`, `MAX_TICKETS`, `MIN_TICKETS_TO_DRAW`, `MAX_TICKETS_PER_PLAYER`, `ROUND_DURATION_SECONDS` et `MUNICIPALITY_FEE_BPS`. Le service Compose ne transmet pas ces variables au conteneur : pour les changer, lancer le nœud hors Docker (voir plus bas) ou ajouter les variables dans la section `environment` du service. Avec une durée de 30 minutes et deux tickets minimum, un tour local entre en salle d'attente 30 minutes après son ouverture si deux participants au moins ont pris leur ticket, puis le keeper le tire `DRAW_REVEAL_DELAY_SECONDS` plus tard (10 minutes par défaut). Le fichier versionné `smart-contract/deployments/localhost.json` indique encore 100 tickets par participant : il est réécrit à chaque déploiement, et le nœud Docker redéploie les contrats à chaque démarrage.
 
 #### Pas de persistance
 
