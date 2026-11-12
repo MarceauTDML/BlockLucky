@@ -1,134 +1,80 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+
 import useAppTheme from '../../hooks/useAppTheme';
-import AppText from '../ui/AppText';
 import { RewardItem } from '../../types/api.types';
+import AppText from '../ui/AppText';
 
 export interface RewardCardProps {
   reward: RewardItem;
+  pointsBalance: number;
+  tone?: 'sun' | 'lavender';
   onPress: () => void;
 }
 
-export const RewardCard: React.FC<RewardCardProps> = ({ reward, onPress }) => {
-  const { colors, borderRadius, t } = useAppTheme();
+export const RewardCard: React.FC<RewardCardProps> = ({
+  reward,
+  pointsBalance,
+  tone = 'sun',
+  onPress,
+}) => {
+  const { colors, t } = useAppTheme();
+  const missing = Math.max(0, reward.costInPoints - pointsBalance);
+  const soldOut = reward.remainingStock <= 0;
+  const isSun = tone === 'sun';
+  const background = isSun ? colors.sunPale : colors.lavenderSoft;
+  const textColor = isSun ? colors.onSun : colors.ink;
+  const mutedColor = isSun ? colors.onSunMuted : colors.inkMuted;
+
+  const status = soldOut
+    ? t('Épuisé', 'Sold out')
+    : missing > 0
+      ? t(`Encore ${missing} EP`, `${missing} EP to go`)
+      : t('Échanger', 'Exchange');
+  const actionable = !soldOut && missing === 0;
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${reward.title}, ${reward.partner.name}, ${reward.costInPoints} EtherPoints. ${status}`}
       onPress={onPress}
-      style={[
-        styles.card,
-        {
-          backgroundColor: colors.surface,
-          borderRadius: borderRadius.lg,
-          borderColor: colors.border,
-        },
+      style={({ pressed }) => [
+        styles.row,
+        { backgroundColor: background, opacity: pressed ? 0.85 : 1 },
       ]}
     >
-      <View style={styles.headerRow}>
-        <View
-          style={[
-            styles.partnerAvatar,
-            {
-              backgroundColor: colors.surfaceElevated,
-              borderRadius: borderRadius.md,
-            },
-          ]}
-        >
-          <AppText variant="caption" weight="bold" color={colors.primary}>
-            {reward.partner.name.slice(0, 2).toUpperCase()}
-          </AppText>
-        </View>
-        <View style={styles.partnerCol}>
-          <AppText variant="caption" color={colors.textMuted}>
-            {reward.partner.name}
-          </AppText>
-          <AppText variant="body" weight="bold">
-            {reward.title}
-          </AppText>
-        </View>
-      </View>
-
-      <View
-        style={[
-          styles.stockBarTrack,
-          { backgroundColor: colors.surfaceElevated },
-        ]}
-      >
-        <View
-          style={[
-            styles.stockBarFill,
-            {
-              width: `${Math.max(5, reward.stockPercentage)}%`,
-              backgroundColor: colors.primary,
-            },
-          ]}
-        />
-      </View>
-
-      <View style={styles.footerRow}>
-        <AppText variant="caption" color={colors.textSecondary}>
-          {t(
-            `${reward.remainingStock} / ${reward.totalStock} restants`,
-            `${reward.remainingStock} / ${reward.totalStock} left`
-          )}
+      <View style={styles.text}>
+        <AppText size={12} weight="semibold" color={textColor} numberOfLines={2}>
+          {`${reward.title} · ${reward.partner.name}`}
         </AppText>
-        <View
-          style={[
-            styles.costPill,
-            {
-              backgroundColor: colors.surfaceElevated,
-              borderRadius: borderRadius.sm,
-            },
-          ]}
-        >
-          <AppText variant="caption" weight="bold" color={colors.secondary}>
-            {reward.costInPoints} pts
-          </AppText>
-        </View>
+        <AppText size={10} color={mutedColor}>
+          {`${reward.costInPoints} EtherPoints`}
+        </AppText>
       </View>
-    </TouchableOpacity>
+      <AppText
+        size={actionable ? 11 : 10}
+        weight={actionable ? 'bold' : 'medium'}
+        color={actionable ? textColor : mutedColor}
+      >
+        {status}
+      </AppText>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    padding: 16,
-    borderWidth: 1,
-    marginBottom: 10,
-  },
-  headerRow: {
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    gap: 12,
+    minHeight: 50,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
-  partnerAvatar: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  partnerCol: {
+  text: {
     flex: 1,
-  },
-  stockBarTrack: {
-    height: 4,
-    borderRadius: 2,
-    overflow: 'hidden',
-    marginBottom: 10,
-  },
-  stockBarFill: {
-    height: '100%',
-  },
-  footerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  costPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    gap: 2,
   },
 });
 

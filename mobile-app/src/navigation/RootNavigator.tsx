@@ -29,6 +29,7 @@ import GDPRScreen from '../screens/settings/GDPRScreen';
 import HelpSupportScreen from '../screens/settings/HelpSupportScreen';
 import NotificationsScreen from '../screens/settings/NotificationsScreen';
 import SecurityScreen from '../screens/settings/SecurityScreen';
+import SettingsScreen from '../screens/settings/SettingsScreen';
 import VerifyAgeScreen from '../screens/settings/VerifyAgeScreen';
 import { useAppDispatch, useAppSelector } from '../store';
 import {
@@ -120,6 +121,7 @@ export const RootNavigator: React.FC = () => {
               <Stack.Screen name="ScratchCard" component={ScratchCardScreen} />
               <Stack.Screen name="MyCodes" component={MyCodesScreen} />
               <Stack.Screen name="VerifyAge" component={VerifyAgeScreen} />
+              <Stack.Screen name="Settings" component={SettingsScreen} />
               <Stack.Screen name="Security" component={SecurityScreen} />
               <Stack.Screen name="Setup2FA" component={Setup2FAScreen} />
               <Stack.Screen name="GDPR" component={GDPRScreen} />

@@ -10,6 +10,7 @@ import useAppTheme from '../hooks/useAppTheme';
 import HomeScreen from '../screens/lottery/HomeScreen';
 import MyTicketsScreen from '../screens/lottery/MyTicketsScreen';
 import ProfileScreen from '../screens/settings/ProfileScreen';
+import SponsorsScreen from '../screens/sponsors/SponsorsScreen';
 import { MainTabsParamList } from '../types/navigation.types';
 
 const Tab = createBottomTabNavigator<MainTabsParamList>();
@@ -90,6 +91,11 @@ export const MainTabs: React.FC = () => {
         name="TicketsTab"
         component={MyTicketsScreen}
         options={{ tabBarLabel: t('Mes tickets', 'My tickets') }}
+      />
+      <Tab.Screen
+        name="SponsorsTab"
+        component={SponsorsScreen}
+        options={{ tabBarLabel: t('Parrains', 'Referrals') }}
       />
       <Tab.Screen
         name="ProfileTab"

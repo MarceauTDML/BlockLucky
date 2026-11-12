@@ -1,190 +1,127 @@
-import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import useAppTheme from '../../hooks/useAppTheme';
-import { useGetMyCodesQuery } from '../../store/api/marketplaceApi';
-import AppText from '../../components/ui/AppText';
+import React, { useMemo, useState } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+
+import CodeCard from '../../components/marketplace/CodeCard';
+import { getApiErrorMessage } from '../../components/marketplace/apiErrors';
 import AppButton from '../../components/ui/AppButton';
-import BackButton from '../../components/ui/BackButton';
-import Loader from '../../components/ui/Loader';
-import { formatDateShort } from '../../utils/date.util';
+import AppText from '../../components/ui/AppText';
+import Card from '../../components/ui/Card';
+import FilterChips from '../../components/ui/FilterChips';
+import Screen from '../../components/ui/Screen';
+import ScreenHeader from '../../components/ui/ScreenHeader';
+import useAppTheme from '../../hooks/useAppTheme';
+import { useRootNavigation } from '../../navigation/hooks';
+import { useGetMyCodesQuery } from '../../store/api/marketplaceApi';
 
-export const MyCodesScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const { colors, borderRadius, spacing, t } = useAppTheme();
-  const { data, isLoading } = useGetMyCodesQuery();
+type CodesFilter = 'active' | 'used' | 'all';
 
-  const rawCodes = data?.data?.codes;
-  const codes = Array.isArray(rawCodes) ? rawCodes : [];
+const TONES = ['sun', 'lavender', 'peach'] as const;
+
+const MyCodesScreen: React.FC = () => {
+  const { colors, t } = useAppTheme();
+  const navigation = useRootNavigation();
+  const { data, isLoading, isFetching, isError, error, refetch } = useGetMyCodesQuery();
+  const [filter, setFilter] = useState<CodesFilter>('active');
+
+  const codes = useMemo(() => {
+    const raw = data?.data?.codes;
+    return Array.isArray(raw) ? raw : [];
+  }, [data]);
+  const activeCount = codes.filter((code) => !code.isUsed).length;
+  const usedCount = codes.length - activeCount;
+  const visible = codes.filter((code) =>
+    filter === 'all' ? true : filter === 'used' ? code.isUsed : !code.isUsed,
+  );
 
   return (
-    <SafeAreaView
-      edges={['top', 'left', 'right']}
-      style={[styles.safeArea, { backgroundColor: colors.background }]}
-    >
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={[
-          styles.content,
-          { padding: spacing.lg, paddingBottom: spacing.xxl },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        {navigation?.canGoBack?.() ? (
-          <BackButton onPress={() => navigation.goBack()} />
-        ) : null}
+    <Screen showSecurityFooter refreshing={isFetching && !isLoading} onRefresh={refetch}>
+      <ScreenHeader
+        title={t('Mes codes', 'My codes')}
+        subtitle={t('À présenter en caisse chez les commerçants', 'Show them at the shop checkout')}
+        onBack={() => navigation.goBack()}
+      />
 
-        <AppText variant="title" weight="bold" style={styles.title}>
-          {t('Mes codes partenaires', 'My Partner Codes')}
-        </AppText>
-        <AppText variant="body" color={colors.textSecondary} style={styles.subtitle}>
-          {t(
-            'Présentez ces codes uniques chez les commerçants partenaires d EtherBay.',
-            'Present these unique promo codes at EtherBay partner stores.'
-          )}
-        </AppText>
-
-        {isLoading ? (
-          <Loader
-            message={t('Chargement de vos codes...', 'Loading your codes...')}
-          />
-        ) : codes.length === 0 ? (
-          <View
-            style={[
-              styles.emptyCard,
-              {
-                backgroundColor: colors.surface,
-                borderRadius: borderRadius.lg,
-                borderColor: colors.border,
-              },
+      {codes.length > 0 ? (
+        <View style={styles.filters}>
+          <FilterChips<CodesFilter>
+            options={[
+              { value: 'active', label: t(`Actifs · ${activeCount}`, `Active · ${activeCount}`) },
+              { value: 'used', label: t(`Utilisés · ${usedCount}`, `Used · ${usedCount}`) },
+              { value: 'all', label: t(`Tous · ${codes.length}`, `All · ${codes.length}`) },
             ]}
-          >
-            <AppText variant="subtitle" weight="semibold" align="center">
-              {t('Aucun code enregistré', 'No saved codes')}
-            </AppText>
-            <AppText
-              variant="body"
-              color={colors.textSecondary}
-              align="center"
-              style={styles.emptyDesc}
-            >
-              {t(
-                'Échangez vos points dans le catalogue pour débloquer votre première carte à gratter.',
-                'Redeem your points in the catalog to unlock your first scratch card.'
-              )}
-            </AppText>
-            <AppButton
-              title={t('Explorer le catalogue', 'Explore Catalog')}
-              onPress={() => navigation.goBack()}
-            />
-          </View>
-        ) : (
-          codes.map((item) => (
-            <View
-              key={item.id}
-              style={[
-                styles.codeCard,
-                {
-                  backgroundColor: colors.surface,
-                  borderRadius: borderRadius.lg,
-                  borderColor: colors.border,
-                },
-              ]}
-            >
-              <View style={styles.topRow}>
-                <AppText variant="overline" weight="semibold" color={colors.secondary}>
-                  {item.partner?.name ||
-                    item.partnerName ||
-                    t('Commerçant EtherBay', 'EtherBay Partner')}
-                </AppText>
-                <AppText
-                  variant="caption"
-                  weight="semibold"
-                  color={item.isUsed ? colors.textMuted : colors.primary}
-                >
-                  {item.isUsed ? t('Utilisé', 'Used') : t('Actif', 'Active')}
-                </AppText>
-              </View>
+            value={filter}
+            onChange={setFilter}
+          />
+        </View>
+      ) : null}
 
-              <AppText variant="subtitle" weight="semibold" style={styles.rewardTitle}>
-                {item.rewardTitle}
-              </AppText>
-
-              <View
-                style={[
-                  styles.qrPlaceholder,
-                  {
-                    backgroundColor: colors.surfaceElevated,
-                    borderRadius: borderRadius.md,
-                    borderColor: colors.border,
-                  },
-                ]}
-              >
-                <AppText variant="overline" color={colors.textSecondary}>
-                  {t('Code magasin', 'In-Store Code')}
-                </AppText>
-                <AppText variant="title" weight="bold" color={colors.primary}>
-                  {item.uniqueCode}
-                </AppText>
-              </View>
-
-              <AppText variant="caption" color={colors.textMuted}>
-                {t(
-                  `Obtenu le ${formatDateShort(item.claimedAt)}`,
-                  `Claimed on ${formatDateShort(item.claimedAt)}`
-                )}
-              </AppText>
-            </View>
-          ))
-        )}
-      </ScrollView>
-    </SafeAreaView>
+      {isLoading ? (
+        <Card style={styles.state}>
+          <ActivityIndicator color={colors.ink} />
+          <AppText size={12} color={colors.inkMuted}>
+            {t('Chargement de vos codes...', 'Loading your codes...')}
+          </AppText>
+        </Card>
+      ) : isError ? (
+        <Card style={styles.state}>
+          <AppText size={13} weight="semibold" align="center">
+            {t('Codes indisponibles', 'Codes unavailable')}
+          </AppText>
+          <AppText size={12} color={colors.inkMuted} align="center">
+            {getApiErrorMessage(
+              error,
+              t('Vérifiez votre connexion et réessayez.', 'Check your connection and try again.'),
+            )}
+          </AppText>
+          <AppButton
+            title={t('Réessayer', 'Retry')}
+            variant="outline"
+            size="md"
+            onPress={refetch}
+          />
+        </Card>
+      ) : visible.length === 0 ? (
+        <Card tone="lavender" style={styles.state}>
+          <AppText size={16} weight="bold" align="center">
+            {codes.length === 0
+              ? t('Aucun code pour l’instant', 'No codes yet')
+              : t('Rien dans ce filtre', 'Nothing in this filter')}
+          </AppText>
+          <AppText size={12} color={colors.ink} align="center">
+            {t(
+              'Échangez vos EtherPoints dans la boutique ou grattez un ticket pour obtenir une réduction.',
+              'Exchange your EtherPoints in the shop or scratch a ticket to get a discount.',
+            )}
+          </AppText>
+          <AppButton
+            title={t('Aller à la boutique', 'Go to the shop')}
+            variant="dark"
+            size="md"
+            onPress={() => navigation.navigate('RewardsCatalog')}
+          />
+        </Card>
+      ) : (
+        <View style={styles.list}>
+          {visible.map((code, index) => (
+            <CodeCard key={code.id} code={code} tone={TONES[index % TONES.length]} />
+          ))}
+        </View>
+      )}
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
+  filters: {
+    marginBottom: 14,
   },
-  container: {
-    flex: 1,
+  state: {
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 26,
   },
-  content: {},
-  title: {
-    marginBottom: 6,
-  },
-  subtitle: {
-    marginBottom: 18,
-    lineHeight: 22,
-  },
-  emptyCard: {
-    padding: 24,
-    borderWidth: 1,
+  list: {
     gap: 12,
-  },
-  emptyDesc: {
-    lineHeight: 22,
-  },
-  codeCard: {
-    padding: 18,
-    borderWidth: 1,
-    marginBottom: 12,
-    gap: 8,
-  },
-  topRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  rewardTitle: {
-    marginVertical: 2,
-  },
-  qrPlaceholder: {
-    padding: 16,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    marginVertical: 6,
   },
 });
 

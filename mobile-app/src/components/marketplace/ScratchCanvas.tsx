@@ -1,146 +1,212 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  View,
-  TouchableOpacity,
+  Animated,
+  GestureResponderEvent,
+  LayoutChangeEvent,
   PanResponder,
   StyleSheet,
+  View,
 } from 'react-native';
+
 import useAppTheme from '../../hooks/useAppTheme';
 import AppText from '../ui/AppText';
+
+const COLUMNS = 8;
+const ROWS = 4;
+const TOTAL = COLUMNS * ROWS;
+const AUTO_REVEAL_RATIO = 0.6;
+const BRUSH = 0.6;
 
 export interface ScratchCanvasProps {
   secretCode: string;
   partnerName: string;
   rewardTitle: string;
-  onRevealed?: () => void;
+  revealed: boolean;
+  onReveal: () => void;
+  coverColor: string;
+  accentColor: string;
+  symbol: string;
 }
 
 export const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
   secretCode,
   partnerName,
   rewardTitle,
-  onRevealed,
+  revealed,
+  onReveal,
+  coverColor,
+  accentColor,
+  symbol,
 }) => {
-  const { colors, borderRadius, t } = useAppTheme();
-  const [scratchProgress, setScratchProgress] = useState(0);
-  const [revealed, setRevealed] = useState(false);
+  const { colors, t } = useAppTheme();
+  const [cleared, setCleared] = useState<boolean[]>(() => Array(TOTAL).fill(false));
+  const clearedRef = useRef<boolean[]>(cleared);
+  const size = useRef({ width: 0, height: 0 });
+  const revealedRef = useRef(revealed);
+  const onRevealRef = useRef(onReveal);
+  const coverOpacity = useRef(new Animated.Value(revealed ? 0 : 1)).current;
 
-  const handleScratchStep = () => {
-    setScratchProgress((prev) => {
-      const next = Math.min(100, prev + 25);
-      if (next >= 100 && !revealed) {
-        setRevealed(true);
-        if (onRevealed) onRevealed();
+  useEffect(() => {
+    onRevealRef.current = onReveal;
+  }, [onReveal]);
+
+  useEffect(() => {
+    revealedRef.current = revealed;
+    if (revealed) {
+      Animated.timing(coverOpacity, { toValue: 0, duration: 380, useNativeDriver: true }).start();
+    }
+  }, [revealed, coverOpacity]);
+
+  const scratchAt = useCallback((event: GestureResponderEvent) => {
+    if (revealedRef.current) return;
+    const { width, height } = size.current;
+    if (!width || !height) return;
+    const { locationX, locationY } = event.nativeEvent;
+    const cellWidth = width / COLUMNS;
+    const cellHeight = height / ROWS;
+    const column = locationX / cellWidth;
+    const row = locationY / cellHeight;
+    const next = [...clearedRef.current];
+    let changed = false;
+    for (let r = 0; r < ROWS; r += 1) {
+      for (let c = 0; c < COLUMNS; c += 1) {
+        const dx = c + 0.5 - column;
+        const dy = r + 0.5 - row;
+        const index = r * COLUMNS + c;
+        if (!next[index] && dx * dx + dy * dy <= (BRUSH + 0.5) * (BRUSH + 0.5)) {
+          next[index] = true;
+          changed = true;
+        }
       }
-      return next;
-    });
+    }
+    if (!changed) return;
+    clearedRef.current = next;
+    setCleared(next);
+    const ratio = next.filter(Boolean).length / TOTAL;
+    if (ratio >= AUTO_REVEAL_RATIO) {
+      revealedRef.current = true;
+      onRevealRef.current();
+    }
+  }, []);
+
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => !revealedRef.current,
+        onStartShouldSetPanResponderCapture: () => !revealedRef.current,
+        onMoveShouldSetPanResponder: () => !revealedRef.current,
+        onMoveShouldSetPanResponderCapture: () => !revealedRef.current,
+        onPanResponderTerminationRequest: () => false,
+        onPanResponderGrant: scratchAt,
+        onPanResponderMove: scratchAt,
+      }),
+    [scratchAt],
+  );
+
+  const onLayout = (event: LayoutChangeEvent) => {
+    size.current = {
+      width: event.nativeEvent.layout.width,
+      height: event.nativeEvent.layout.height,
+    };
   };
 
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: () => {
-      handleScratchStep();
-    },
-    onPanResponderRelease: () => {
-      handleScratchStep();
-    },
-  });
+  const progress = Math.round((cleared.filter(Boolean).length / TOTAL) * 100);
 
   return (
     <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: colors.surface,
-          borderRadius: borderRadius.lg,
-          borderColor: colors.border,
-        },
-      ]}
+      onLayout={onLayout}
+      style={[styles.zone, { backgroundColor: colors.surface }]}
+      accessible
+      accessibilityRole={revealed ? 'text' : 'adjustable'}
+      accessibilityLabel={
+        revealed
+          ? t(
+              `${rewardTitle} chez ${partnerName}. Votre code : ${secretCode}`,
+              `${rewardTitle} at ${partnerName}. Your code: ${secretCode}`,
+            )
+          : t(`Zone à gratter, ${progress} % découvert`, `Scratch area, ${progress}% uncovered`)
+      }
+      accessibilityActions={
+        revealed ? undefined : [{ name: 'activate', label: t('Tout révéler', 'Reveal all') }]
+      }
+      onAccessibilityAction={() => onReveal()}
+      {...panResponder.panHandlers}
     >
-      <AppText variant="caption" color={colors.textMuted} align="center">
-        {partnerName}
-      </AppText>
-      <AppText variant="subtitle" weight="bold" align="center" style={styles.title}>
-        {rewardTitle}
-      </AppText>
-
-      <View
-        {...panResponder.panHandlers}
-        style={[
-          styles.scratchArea,
-          {
-            backgroundColor: revealed ? colors.surfaceElevated : colors.primary,
-            borderRadius: borderRadius.md,
-          },
-        ]}
-      >
-        {revealed ? (
-          <View style={styles.revealedContent}>
-            <AppText variant="caption" color={colors.textSecondary}>
-              {t('Code promotionnel débloqué', 'Promo Code Unlocked')}
-            </AppText>
-            <AppText
-              variant="title"
-              weight="bold"
-              color={colors.secondary}
-              style={styles.codeText}
-            >
-              {secretCode}
-            </AppText>
-            <AppText variant="caption" color={colors.textMuted} align="center">
-              {t(
-                `Présentez ce code en caisse chez ${partnerName}`,
-                `Present this code in store at ${partnerName}`
-              )}
-            </AppText>
-          </View>
-        ) : (
-          <TouchableOpacity
-            activeOpacity={0.9}
-            onPress={handleScratchStep}
-            style={styles.foilOverlay}
+      <View pointerEvents="none" style={styles.content}>
+        <AppText size={11} weight="semibold" color={colors.inkMuted} align="center">
+          {partnerName}
+        </AppText>
+        <AppText size={18} weight="bold" align="center">
+          {rewardTitle}
+        </AppText>
+        <View style={[styles.codeBox, { borderColor: accentColor }]}>
+          <AppText
+            size={24}
+            weight="bold"
+            color={accentColor}
+            align="center"
+            selectable
+            style={styles.code}
           >
-            <AppText variant="body" weight="medium" color="#F7F6F2" align="center">
-              {t(
-                `Grattez ou touchez pour révéler (${scratchProgress}%)`,
-                `Scratch or tap to reveal (${scratchProgress}%)`
-              )}
-            </AppText>
-          </TouchableOpacity>
-        )}
+            {secretCode}
+          </AppText>
+        </View>
       </View>
+
+      <Animated.View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, styles.grid, { opacity: coverOpacity }]}
+      >
+        {cleared.map((isCleared, index) => (
+          <View
+            key={index}
+            style={[styles.cell, { backgroundColor: isCleared ? 'transparent' : coverColor }]}
+          >
+            {isCleared || index % 3 !== 1 ? null : (
+              <AppText size={14} weight="bold" color={accentColor} align="center">
+                {symbol}
+              </AppText>
+            )}
+          </View>
+        ))}
+      </Animated.View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 18,
-    borderWidth: 1,
-    marginVertical: 12,
+  zone: {
+    height: 176,
+    borderRadius: 18,
+    overflow: 'hidden',
   },
-  title: {
-    marginVertical: 6,
-  },
-  scratchArea: {
-    minHeight: 136,
+  content: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
-    marginTop: 8,
+    paddingHorizontal: 16,
+    gap: 6,
   },
-  foilOverlay: {
-    width: '100%',
+  codeBox: {
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    marginTop: 6,
+  },
+  code: {
+    letterSpacing: 2,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  cell: {
+    width: `${100 / COLUMNS}%`,
+    height: `${100 / ROWS}%`,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  revealedContent: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  codeText: {
-    letterSpacing: 1.5,
   },
 });
 
