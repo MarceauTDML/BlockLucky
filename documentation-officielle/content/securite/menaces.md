@@ -10,12 +10,14 @@ Le modèle décrit le dépôt tel qu'il est : un pilote sur réseau de test (Har
 |---|---|---|
 | Clés privées des portefeuilles citoyens | Colonne `User.walletEncryptedKey`, chiffrée en AES-256-GCM | Elles signent les achats, les cadeaux et les retraits de gains |
 | Clé du compte opérateur `RELAYER_PRIVATE_KEY` | Variable d'environnement du backend et du worker | Elle verse la dotation de bienvenue et porte des rôles du contrat |
-| Clé de chiffrement `ENCRYPTION_KEY` | Variable d'environnement | Elle protège toutes les clés citoyennes et les secrets TOTP |
+| Clé de chiffrement `ENCRYPTION_KEY` | Variable d'environnement | Elle protège toutes les clés citoyennes, les secrets TOTP et les pièces d'identité |
 | Secret de signature `JWT_SECRET` | Variable d'environnement | Il permet de fabriquer n'importe quelle session |
 | Secret `WEBHOOK_SECRET` | Variable d'environnement | Il authentifie les événements blockchain entrants |
 | Cagnotte et commission | Solde du contrat `BlockLucky` | Ce sont les seuls fonds en jeu |
 | Équité du tirage | Contrat et oracle Chainlink VRF | C'est la promesse centrale du projet |
 | Données personnelles | PostgreSQL (email, historique) et Redis (préférences, codes) | Elles relèvent du RGPD |
+| Pièces d'identité en attente | Table `IdentityDocument`, recto et verso chiffrés en AES-256-GCM jusqu'à la décision | Donnée la plus sensible du système : une fuite expose l'identité civile du citoyen |
+| Mots de passe | Colonne `User.passwordHash`, empreinte bcrypt | Souvent réutilisés par les citoyens sur d'autres services |
 | Comptes ADMIN et PARTNER | Table `User`, colonne `role` | Ils donnent accès au tirage, à la trésorerie et aux codes promo |
 
 ## Frontières de confiance
@@ -46,17 +48,21 @@ Quatre frontières concentrent les contrôles :
 
 | STRIDE | Menace | Protection en place | Risque résiduel |
 |---|---|---|---|
-| Usurpation | Connexion au compte d'un autre citoyen | Code à 6 chiffres envoyé par email, haché en HMAC, valide 10 minutes, 5 essais par code, blocage du compte après 10 échecs par heure ([Authentification](authentification.md)) | L'adresse email reste le seul facteur pour un compte sans TOTP |
+| Usurpation | Connexion au compte d'un autre citoyen | Mot de passe haché par bcrypt, code à 6 chiffres envoyé par email, haché en HMAC, valide 10 minutes, 5 essais par code, blocage du compte après 10 échecs par heure ([Authentification](authentification.md)) | La connexion par code email et la connexion Google ou Apple restent ouvertes à tous les comptes : l'adresse email reste un facteur suffisant |
+| Usurpation | Jeton Google ou Apple forgé ou destiné à une autre application | Signature, émetteur, audience (`GOOGLE_CLIENT_IDS`, `APPLE_CLIENT_IDS`) et `email_verified` vérifiés côté serveur | Rattachement au compte par l'adresse email seule ; la sécurité du compte dépend de celle du compte du fournisseur |
+| Usurpation | Mineur qui joue avec le compte ou la pièce d'un adulte | Pièce d'identité examinée par un agent de la Mairie ([Autorisations](autorisations.md#verification-d-age)) | Aucun contrôle de correspondance entre la personne et la pièce (pas de selfie ni de vérification du document) ; achat direct sur le contrat sans contrôle |
 | Usurpation | Jeton JWT forgé ou rejoué | Algorithme HS256 imposé, `iss`, `aud`, `exp` et `jti` vérifiés, liste de révocation dans Redis ([Sessions](sessions.md)) | Révocation perdue si Redis tombe (repli mémoire par processus) |
 | Usurpation | Webhook blockchain forgé | Signature HMAC-SHA-256 sur `t.corps`, fenêtre de 5 minutes, rejeu refusé pendant 7 jours ([Protection des API](protection-api.md)) | Aucun |
 | Altération | Injection SQL | Requêtes Prisma paramétrées, aucun SQL brut construit à partir d'une entrée | Aucun connu |
 | Altération | Modification du rôle ou de champs protégés par affectation de masse | Schémas Zod explicites, champs non listés ignorés ([Validation](validation.md)) | Aucun connu |
 | Altération | Partenaire qui agit sur l'entreprise d'un autre | `assertPartnerAccess` compare `Partner.ownerId` au compte appelant ([Autorisations](autorisations.md)) | Aucun connu |
-| Répudiation | Administrateur qui nie une action | Journal `ADMIN_AUDIT:*` pour le disjoncteur, la trésorerie, le statut des partenaires et les exports | Le tirage et le remboursement manuels ne sont pas journalisés dans ce journal ; la chaîne garde en revanche une trace publique |
-| Divulgation | Fuite de la base | Clés de portefeuille et secrets TOTP chiffrés, codes de secours et jetons RGPD hachés ([Cryptographie](cryptographie-secrets.md)) | Les emails sont en clair en base |
+| Répudiation | Administrateur qui nie une action | Journal `ADMIN_AUDIT:*` pour le disjoncteur, la trésorerie, le statut des partenaires, les exports, la consultation des pièces d'identité et les décisions sur l'âge | Le tirage et le remboursement manuels ne sont pas journalisés dans ce journal ; la chaîne garde en revanche une trace publique |
+| Divulgation | Fuite de la base | Clés de portefeuille, secrets TOTP et pièces d'identité chiffrés, mots de passe, codes de secours et jetons RGPD hachés ([Cryptographie](cryptographie-secrets.md)) | Les emails sont en clair en base ; les pièces en attente sont lisibles avec `ENCRYPTION_KEY` |
+| Divulgation | Consultation abusive des pièces d'identité | Routes réservées aux ADMIN avec 2FA, images effacées dès la décision, chaque consultation journalisée, `Cache-Control: no-store` | Tout ADMIN peut consulter toutes les pièces en attente ; une pièce jamais traitée reste stockée sans limite de durée |
 | Divulgation | Secrets dans les logs ou le dépôt | Emails masqués dans les logs, gitleaks sur tout l'historique ([Chaîne logicielle](chaine-logicielle.md)) | Aucun connu |
-| Divulgation | Énumération des comptes | Message d'erreur unique sur un code invalide | La réponse de `POST /api/auth/login` diffère pour un compte protégé par TOTP |
-| Déni de service | Saturation de l'API ou force brute | Limites de débit partagées dans Redis, corps limité à 1 Mo | `passOnStoreError: true` : sans Redis, chaque instance retombe sur une limite locale |
+| Divulgation | Énumération des comptes | Message d'erreur unique sur un code invalide et sur un mot de passe faux, réponse identique de `/password/forgot`, temps de réponse égalisé par une empreinte factice | La réponse de `POST /api/auth/login` diffère pour un compte protégé par TOTP ; `/signup` répond 409 pour une adresse déjà inscrite |
+| Déni de service | Saturation de l'API ou force brute | Limites de débit partagées dans Redis, corps limité à 1 Mo (12 Mo et 10 envois par heure pour les pièces d'identité) | `passOnStoreError: true` : sans Redis, chaque instance retombe sur une limite locale |
+| Déni de service | Calcul bcrypt provoqué en masse sur `/signin` | 30 requêtes en 10 minutes par adresse IP | `bcryptjs` est en JavaScript pur : une attaque distribuée consomme le processeur de l'API |
 | Déni de service | Chat temps réel abusé | Messages tronqués à 280 caractères | Pas de limite de débit ni d'authentification pour `chat:send` |
 | Élévation | Utilisateur qui appelle une route ADMIN | `requireRoles('ADMIN')`, rôle relu en base, 2FA exigée pour l'ADMIN | Voir la limite sur la 2FA dans [Authentification](authentification.md#limites-connues) |
 | Élévation | Jeton conservé après une rétrogradation | Rôle du jeton comparé au rôle en base à chaque route protégée par `requireRoles` | Les routes sans `requireRoles` (profil, achat) acceptent le jeton jusqu'à sa révocation ou son expiration |

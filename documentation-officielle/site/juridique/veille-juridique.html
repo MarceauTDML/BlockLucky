@@ -87,13 +87,18 @@
 </tr>
 <tr>
 <td>Le RGPD s&#39;applique-t-il ?</td>
-<td>Oui : email, adresse de portefeuille, historique de participation</td>
+<td>Oui : email, adresse de portefeuille, historique de participation, photos de pièce d&#39;identité jusqu&#39;à la décision de la Mairie</td>
 <td>Idem, avec en plus des obligations de lutte contre le blanchiment</td>
 </tr>
 <tr>
 <td>Les mineurs peuvent-ils jouer ?</td>
-<td>L&#39;inscription exige une déclaration de majorité (<code>isAdultConfirmed</code>)</td>
-<td>Contrôle d&#39;âge effectif obligatoire</td>
+<td>Non : l&#39;achat exige une pièce d&#39;identité validée par la Mairie (<code>AGE_VERIFICATION_REQUIRED</code>)</td>
+<td>Contrôle d&#39;âge effectif obligatoire, probablement plus robuste qu&#39;un examen sur photo</td>
+</tr>
+<tr>
+<td>Le ticket à gratter est-il un jeu de hasard ?</td>
+<td>Il attribue au hasard une offre de commerçant contre des EtherPoints : à faire qualifier</td>
+<td>Loterie à mise si les points avaient une valeur</td>
 </tr>
 <tr>
 <td>Des cookies sont-ils déposés ?</td>
@@ -140,7 +145,7 @@
 </tr>
 <tr>
 <td>Espérance d&#39;un gain</td>
-<td>La cagnotte est en ethers de réseau de test, sans valeur marchande. Les EtherPoints et les offres des partenaires s&#39;obtiennent par la participation, pas par le hasard.</td>
+<td>La cagnotte est en ethers de réseau de test, sans valeur marchande. Les EtherPoints s&#39;obtiennent par la participation. Les offres des partenaires s&#39;obtiennent soit par un échange direct, soit par un ticket à gratter qui tire l&#39;offre au hasard.</td>
 <td>Conditions de participation, voir <a href="cookies-mentions.html">Cookies, mentions et CGU</a></td>
 </tr>
 <tr>
@@ -159,7 +164,12 @@
 <ol>
 <li>Ne jamais vendre d&#39;ethers fictifs, ni échanger la cagnotte contre des euros, des biens ou des services.</li>
 <li>Ne pas déployer le contrat sur le réseau Ethereum principal et ne pas l&#39;alimenter en ethers réels. Le script <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/deploy-sepolia.ts" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/scripts/deploy-sepolia.ts</code></a> refuse tout réseau dont l&#39;identifiant n&#39;est pas celui de Sepolia.</li>
-<li>Garder les avantages des commerces partenaires indépendants du tirage. La « carte à gratter » du catalogue est une animation qui révèle la récompense choisie et payée en EtherPoints ; elle ne doit jamais devenir un tirage aléatoire, sinon elle recréerait une loterie à mise.</li>
+<li>Garder les avantages des commerces partenaires indépendants du tirage de la cagnotte.</li>
+</ol>
+<div class="hint hint-warning"><p class="hint-title">Attention</p>
+<p>Le ticket à gratter ne respecte plus la condition qui figurait dans la version précédente de cette veille. <code>POST /api/marketplace/scratch</code> débite 50 EtherPoints (offre « violet », <code>SCRATCH_COST_VIOLET</code>) ou 100 (offre « lucky », <code>SCRATCH_COST_LUCKY</code>), puis choisit l&#39;offre par <code>crypto.randomInt</code> parmi les offres en stock (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/marketplace.services.ts</code></a>) : c&#39;est un tirage au sort payé en points. Tant que les EtherPoints sont gratuits, non achetables et sans valeur monétaire, le sacrifice financier fait défaut ; mais les offres gagnées ont une valeur réelle chez les commerçants, et les points se gagnent aussi en achetant des tickets. La qualification est à faire valider (point JUR-4 de <a href="points-a-valider.html">Points à valider</a>). L&#39;achat est réservé aux comptes dont l&#39;âge est vérifié.</p>
+</div>
+<ol start="4">
 <li>L&#39;afficher clairement dans l&#39;interface (charte de transparence, bandeau de démonstration) et dans les conditions de participation.</li>
 </ol>
 <h3 id="si-la-mairie-voulait-une-vraie-loterie"><a class="anchor" href="#si-la-mairie-voulait-une-vraie-loterie" aria-hidden="true" tabindex="-1">#</a>Si la Mairie voulait une vraie loterie</h3>
@@ -275,11 +285,11 @@
 <p>L&#39;état réel est décrit dans <a href="accessibilite.html">Accessibilité numérique</a>.</p>
 <h2 id="ethique-et-jeu-responsable"><a class="anchor" href="#ethique-et-jeu-responsable" aria-hidden="true" tabindex="-1">#</a>Éthique et jeu responsable</h2>
 <ul>
-<li>Public visé : les 18 à 35 ans d&#39;EtherBay. L&#39;accès est réservé aux majeurs, sur déclaration à l&#39;inscription.</li>
-<li>Plafonds : par participant et par tour dans le contrat (<code>maxTicketsPerPlayer</code>), et limite de jeu responsable de 1 à 500 tickets réglable par le citoyen (<code>PUT /api/user/responsible-limit</code>).</li>
+<li>Public visé : les 18 à 35 ans d&#39;EtherBay. Le jeu est réservé aux majeurs dont la pièce d&#39;identité a été validée par la Mairie.</li>
+<li>Plafonds : un seul ticket par participant et par grand tirage, imposé par le schéma de <code>POST /api/lottery/buy</code>, par le service (409 « Vous avez déjà votre ticket pour ce grand tirage. ») et par le contrat (<code>maxTicketsPerPlayer</code>, 1 par défaut dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/scripts/lib/deployment.ts" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/scripts/lib/deployment.ts</code></a>). La limite de jeu responsable de 1 à 500 tickets (<code>PUT /api/user/responsible-limit</code>) existe toujours côté serveur, mais elle n&#39;a plus d&#39;effet pratique et l&#39;application mobile ne la propose plus.</li>
 <li>Transparence : code du contrat vérifiable sur Etherscan après déploiement sur Sepolia, preuve VRF consultable, commission de la Mairie plafonnée à 20 % dans le contrat (<code>MAX_FEE_BPS = 2000</code>), remboursement intégral si le tour est annulé.</li>
 <li>Les conditions de participation rappellent le numéro de Joueurs Info Service (09 74 75 13 13).</li>
-<li>Les mécaniques d&#39;engagement (compte à rebours, cadeaux, parrainage, quêtes) doivent rester mesurées. Aucune incitation à racheter des ethers ne doit exister, puisqu&#39;aucun achat n&#39;est possible.</li>
+<li>Les mécaniques d&#39;engagement (compte à rebours, salle d&#39;attente, cadeaux, parrainage, quêtes, tickets à gratter) doivent rester mesurées. Aucune incitation à racheter des ethers ne doit exister, puisqu&#39;aucun achat n&#39;est possible.</li>
 </ul>
 <h2 id="suivi-de-la-veille"><a class="anchor" href="#suivi-de-la-veille" aria-hidden="true" tabindex="-1">#</a>Suivi de la veille</h2>
 <div class="table-wrap"><table>

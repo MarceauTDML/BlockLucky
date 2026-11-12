@@ -43,7 +43,7 @@
     A[&quot;requestContextMiddleware : X-Request-Id&quot;] --&gt; B[&quot;httpMetricsMiddleware&quot;]
     B --&gt; C[&quot;helmet : en-têtes de sécurité&quot;]
     C --&gt; D[&quot;cors&quot;]
-    D --&gt; E[&quot;express.json 1 Mo, corps brut des webhooks&quot;]
+    D --&gt; E[&quot;globalJsonParser 1 Mo, corps brut des webhooks, sauf envoi de pièce d&#39;identité&quot;]
     E --&gt; F[&quot;Routes système : /health, /metrics&quot;]
     F --&gt; G[&quot;Mode maintenance&quot;]
     G --&gt; H[&quot;globalRateLimiter&quot;]
@@ -77,10 +77,16 @@
 <td><code>authRateLimiter</code></td>
 <td>10 minutes</td>
 <td>30</td>
-<td><code>POST /api/auth/login</code>, <code>/2fa/verify</code>, <code>/2fa/disable</code></td>
+<td><code>POST /api/auth/signup</code>, <code>/signin</code>, <code>/password/forgot</code>, <code>/password/reset</code>, <code>/oauth/google</code>, <code>/oauth/apple</code>, <code>/login</code>, <code>/2fa/verify</code>, <code>/2fa/disable</code></td>
+</tr>
+<tr>
+<td><code>identityUploadRateLimiter</code></td>
+<td>1 heure</td>
+<td>10</td>
+<td><code>POST /api/user/identity</code></td>
 </tr>
 </tbody></table></div>
-<p>En environnement <code>test</code>, les deux limites passent à 10 000 pour ne pas gêner les suites de tests.</p>
+<p>En environnement <code>test</code>, les trois limites passent à 10 000 pour ne pas gêner les suites de tests.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -101,7 +107,7 @@
 </tr>
 <tr>
 <td>Préfixe Redis</td>
-<td><code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:ratelimit:&lt;global ou auth&gt;:</code></td>
+<td><code>&lt;REDIS_KEY_PREFIX&gt;:&lt;NODE_ENV&gt;:ratelimit:&lt;global, auth ou identity&gt;:</code></td>
 <td>Compteurs partagés entre toutes les instances de l&#39;API</td>
 </tr>
 <tr>
@@ -110,7 +116,7 @@
 <td>L&#39;API reste disponible pendant une panne de Redis</td>
 </tr>
 </tbody></table></div>
-<p>Le compteur d&#39;échecs de code par compte, décrit dans <a href="authentification.html#parametres-du-code">Authentification</a>, complète la limite par IP : il ne dépend pas de l&#39;adresse de l&#39;attaquant.</p>
+<p>Le limiteur des pièces d&#39;identité est placé avant <code>authenticate</code> et avant l&#39;analyse du corps de 12 Mo : un client qui dépasse son quota est refusé sans que le serveur lise le corps. Le compteur d&#39;échecs de code et de mot de passe par compte, décrit dans <a href="authentification.html#parametres-du-code">Authentification</a>, complète la limite par IP : il ne dépend pas de l&#39;adresse de l&#39;attaquant.</p>
 <div class="hint hint-note"><p class="hint-title">À savoir</p>
 <p>Le choix <code>passOnStoreError: true</code> privilégie la disponibilité. Pendant une panne de Redis, la seule limite restante sur les codes est le blocage par compte, lui-même tenu dans le repli mémoire propre à chaque processus. Voir l&#39;<a href="../architecture/adr/0002-redis-files-et-repli-memoire.html">ADR 0002</a>.</p>
 </div>
@@ -171,6 +177,10 @@
 <td><code>POST /api/marketplace/claim</code></td>
 <td>Double dépense d&#39;EtherPoints</td>
 </tr>
+<tr>
+<td><code>POST /api/marketplace/scratch</code></td>
+<td>Double achat d&#39;un ticket à gratter</td>
+</tr>
 </tbody></table></div>
 <p>Fonctionnement :</p>
 <div class="table-wrap"><table>
@@ -215,7 +225,7 @@
 <span class="hljs-attribute">x-webhook-signature</span><span class="hljs-punctuation">: </span>t=1762867200,v1=5f0c...64 caractères hexadécimaux
 
 {&quot;eventType&quot;:&quot;WINNER_PICKED&quot;,&quot;payload&quot;:{&quot;contractRoundId&quot;:3,&quot;winnerWallet&quot;:&quot;0x...&quot;}}</code></pre></div>
-<p><code>v1</code> vaut <code>HMAC-SHA-256(WEBHOOK_SECRET, &quot;&lt;t&gt;.&lt;corps brut&gt;&quot;)</code> en hexadécimal. Le corps brut est capturé par l&#39;option <code>verify</code> de <code>express.json</code>, uniquement pour les chemins <code>/api/webhooks/</code> et <code>/api/v1/webhooks/</code>, afin que la signature porte sur les octets reçus et non sur un JSON reformaté.</p>
+<p><code>v1</code> vaut <code>HMAC-SHA-256(WEBHOOK_SECRET, &quot;&lt;t&gt;.&lt;corps brut&gt;&quot;)</code> en hexadécimal. Le corps brut est capturé par l&#39;option <code>verify</code> du <code>globalJsonParser</code>, uniquement pour les chemins <code>/api/webhooks/</code> et <code>/api/v1/webhooks/</code>, afin que la signature porte sur les octets reçus et non sur un JSON reformaté.</p>
 <h3 id="controles"><a class="anchor" href="#controles" aria-hidden="true" tabindex="-1">#</a>Contrôles</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -321,8 +331,8 @@
 </tr>
 <tr>
 <td>Corps de requête</td>
-<td>1 Mo</td>
-<td><code>express.json</code></td>
+<td>1 Mo, 12 Mo pour l&#39;envoi d&#39;une pièce d&#39;identité</td>
+<td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/body-parser.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>body-parser.middleware.ts</code></a></td>
 </tr>
 </tbody></table></div>
 <p>Ces délais limitent l&#39;effet des clients lents (attaque de type Slowloris) et des dépendances qui ne répondent plus. Ils sont fixés dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/server.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/server.ts</code></a>.</p>
@@ -344,7 +354,7 @@
 </tr>
 <tr>
 <td>Idempotence facultative et inutilisée par les clients</td>
-<td>Une requête sans <code>Idempotency-Key</code> n&#39;est pas protégée et le serveur ne l&#39;exige pas. Ni le web ni le mobile n&#39;envoient cet en-tête aujourd&#39;hui : la protection ne joue que pour un client qui la demande explicitement.</td>
+<td>Une requête sans <code>Idempotency-Key</code> n&#39;est pas protégée et le serveur ne l&#39;exige pas. Ni le web ni le mobile n&#39;envoient cet en-tête aujourd&#39;hui : la protection ne joue que pour un client qui la demande explicitement. Sur mobile, une nouvelle tentative d&#39;achat de ticket à gratter peut ainsi débiter deux fois les EtherPoints.</td>
 </tr>
 <tr>
 <td>Swagger UI public</td>

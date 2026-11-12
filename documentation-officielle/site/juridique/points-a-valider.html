@@ -75,8 +75,8 @@
 </tr>
 <tr>
 <td>JUR-4</td>
-<td>La « carte à gratter » du catalogue, qui révèle une récompense déjà choisie et payée, peut-elle être perçue comme un jeu de hasard ?</td>
-<td>Animation sans tirage aléatoire</td>
+<td>Le ticket à gratter, acheté 50 ou 100 EtherPoints et qui attribue au hasard une offre de commerçant (<code>POST /api/marketplace/scratch</code>), est-il un jeu de hasard ? Les points, gagnés gratuitement mais aussi par l&#39;achat de tickets, constituent-ils une mise ?</td>
+<td>Tirage par <code>crypto.randomInt</code> parmi les offres en stock ; l&#39;échange direct d&#39;une offre choisie existe toujours</td>
 <td><a href="veille-juridique.html#conditions-a-maintenir">Veille juridique</a></td>
 </tr>
 <tr>
@@ -155,6 +155,12 @@
 <td>Aucune déclaration publiée</td>
 <td><a href="accessibilite.html#cadre">Accessibilité numérique</a></td>
 </tr>
+<tr>
+<td>JUR-14</td>
+<td>Le contrôle de l&#39;âge par une photo de pièce d&#39;identité examinée par un agent est-il suffisant et proportionné pour ce dispositif ? Faut-il un contrôle de correspondance avec la personne, ou au contraire une solution qui ne transmet pas l&#39;identité ?</td>
+<td>Vérification humaine sur photo, images effacées à la décision</td>
+<td><a href="rgpd.html#mineurs">RGPD</a></td>
+</tr>
 </tbody></table></div>
 <h2 id="pour-le-dpo"><a class="anchor" href="#pour-le-dpo" aria-hidden="true" tabindex="-1">#</a>Pour le DPO</h2>
 <div class="table-wrap"><table>
@@ -174,7 +180,7 @@
 </tr>
 <tr>
 <td>DPO-2</td>
-<td>Quelle base légale pour la création d&#39;un compte au nom du bénéficiaire d&#39;un cadeau, qui n&#39;a fait aucune démarche ni confirmé sa majorité ? Faut-il l&#39;informer, et comment ?</td>
+<td>Quelle base légale pour la création d&#39;un compte au nom du bénéficiaire d&#39;un cadeau, qui n&#39;a fait aucune démarche ni fait vérifier sa majorité ? Faut-il l&#39;informer, et comment ?</td>
 <td>Compte créé avec portefeuille, rattaché à l&#39;expéditeur comme filleul, sans email d&#39;information dans le mode sur chaîne</td>
 <td><a href="registre-traitements.html#2-cadeau-de-ticket">Registre des traitements</a></td>
 </tr>
@@ -204,7 +210,7 @@
 </tr>
 <tr>
 <td>DPO-7</td>
-<td>Une analyse d&#39;impact (AIPD) est-elle nécessaire (technologie innovante, données publiques et immuables, public potentiellement large) ?</td>
+<td>Une analyse d&#39;impact (AIPD) est-elle nécessaire (technologie innovante, données publiques et immuables, copies de pièces d&#39;identité, public potentiellement large) ?</td>
 <td>Non réalisée</td>
 <td><a href="rgpd.html#ce-qui-reste-a-faire">RGPD</a></td>
 </tr>
@@ -231,6 +237,12 @@
 <td>Quelles clauses dans les contrats de sous-traitance (hébergeur, SMTP, S3, fournisseur RPC) ?</td>
 <td>Prestataires non désignés</td>
 <td><a href="registre-traitements.html#sous-traitants">Registre des traitements</a></td>
+</tr>
+<tr>
+<td>DPO-12</td>
+<td>Quelle base légale et quelles durées pour la vérification d&#39;âge : délai maximal d&#39;une pièce jamais traitée, conservation du motif de refus dans le journal d&#39;administration, agents habilités à consulter les pièces ?</td>
+<td>Images effacées à la décision ; aucune limite pour une demande en attente ; tout ADMIN peut consulter</td>
+<td><a href="registre-traitements.html#2-bis-verification-d-age-par-piece-d-identite">Registre des traitements</a></td>
 </tr>
 </tbody></table></div>
 <h2 id="pour-la-dsi"><a class="anchor" href="#pour-la-dsi" aria-hidden="true" tabindex="-1">#</a>Pour la DSI</h2>
@@ -260,7 +272,7 @@
 </tr>
 <tr>
 <td>DSI-4</td>
-<td>Décider si la 2FA des administrateurs doit être un vrai second facteur (TOTP en plus du code email, ou WebAuthn)</td>
+<td>Décider si la 2FA des administrateurs doit être un vrai second facteur (TOTP en plus du mot de passe ou du code email, refus de <code>/2fa/verify</code> sans premier facteur, ou WebAuthn)</td>
 <td><a href="../securite/authentification.html#limites-connues">Authentification</a></td>
 </tr>
 <tr>
@@ -275,8 +287,13 @@
 </tr>
 <tr>
 <td>DSI-7</td>
-<td>Planifier un audit d&#39;accessibilité et la mise en accessibilité de l&#39;application mobile</td>
+<td>Planifier un audit d&#39;accessibilité et terminer la mise en accessibilité de l&#39;application mobile</td>
 <td><a href="accessibilite.html#recommandations">Accessibilité numérique</a></td>
+</tr>
+<tr>
+<td>DSI-8</td>
+<td>Désigner les agents habilités à consulter les pièces d&#39;identité et décider s&#39;il faut un rôle dédié plutôt que le rôle ADMIN</td>
+<td><a href="../securite/autorisations.html#verification-d-age">Autorisations</a></td>
 </tr>
 </tbody></table></div>
 <h2 id="suivi"><a class="anchor" href="#suivi" aria-hidden="true" tabindex="-1">#</a>Suivi</h2>
@@ -291,21 +308,21 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>JUR-1 à JUR-13</td>
+<td>JUR-1 à JUR-14</td>
 <td>Juriste</td>
 <td>En attente</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>DPO-1 à DPO-11</td>
+<td>DPO-1 à DPO-12</td>
 <td>DPO</td>
 <td>En attente</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>DSI-1 à DSI-7</td>
+<td>DSI-1 à DSI-8</td>
 <td>DSI</td>
 <td>En attente</td>
 <td></td>

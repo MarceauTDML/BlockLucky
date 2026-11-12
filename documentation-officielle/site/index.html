@@ -44,8 +44,8 @@
 <p>Autour du contrat, le dépôt contient une plateforme complète :</p>
 <ul>
 <li>un backend Express 5 en TypeScript (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/app.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/app.ts</code></a>) avec PostgreSQL, Redis, BullMQ et Socket.IO. Il crée pour chaque citoyen un portefeuille Ethereum intégré, chiffré en AES-256-GCM, lui verse une dotation de bienvenue en ethers fictifs, signe ses achats avec sa clé et projette les événements du contrat en base ;</li>
-<li>un frontend web Next.js 16 avec trois espaces : citoyen, commerçant partenaire et dashboard de la Mairie ;</li>
-<li>une application mobile Expo pour les citoyens ;</li>
+<li>un frontend web Next.js 16 avec trois espaces : citoyen, commerçant partenaire et dashboard de la Mairie, qui examine aussi les pièces d&#39;identité envoyées pour la vérification d&#39;âge ;</li>
+<li>une application mobile Expo pour les citoyens, avec compte par mot de passe ou Google et Apple, vérification d&#39;âge, salle d&#39;attente et roue du tirage ;</li>
 <li>un site vitrine statique de l&#39;Office de Tourisme, livré en bonus ;</li>
 <li>une blockchain locale en conteneur (nœud Hardhat, contrats déployés à des adresses fixes, oracle VRF simulé), une CI GitHub Actions et des scénarios de charge k6.</li>
 </ul>
@@ -141,7 +141,7 @@
 </tr>
 <tr>
 <td>Comment se connecter en local ?</td>
-<td>Par un code à 6 chiffres reçu dans Mailpit, sans mot de passe.</td>
+<td>Sur le web, par un code à 6 chiffres reçu dans Mailpit ; sur mobile, avec le mot de passe <code>EtherBay2026demo</code> des comptes de démonstration.</td>
 <td><a href="demarrage/comptes-et-connexion.html">Comptes de démonstration et connexion</a></td>
 </tr>
 <tr>
@@ -151,8 +151,13 @@
 </tr>
 <tr>
 <td>Qu&#39;est-ce qui est encore fictif ?</td>
-<td>Notifications push, Sentry, libellé multi-signatures, paliers de la jauge, notamment.</td>
-<td><a href="presentation/reel-ou-simule.html">Réel, simulé ou à venir</a></td>
+<td>Notifications push, Sentry, libellé multi-signatures, paliers de la jauge, solde ETH en mode simulé, notamment.</td>
+<td></td>
+</tr>
+<tr>
+<td>Pourquoi l&#39;achat répond-il 403 ?</td>
+<td>L&#39;âge du compte n&#39;est pas encore vérifié par la Mairie (<code>AGE_VERIFICATION_REQUIRED</code>).</td>
+<td><a href="annexes/faq.html">FAQ</a></td>
 </tr>
 </tbody></table></div>
 <h2 id="adresses-locales-utiles"><a class="anchor" href="#adresses-locales-utiles" aria-hidden="true" tabindex="-1">#</a>Adresses locales utiles</h2>

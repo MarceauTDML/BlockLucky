@@ -151,7 +151,7 @@ En développement, le code figure aussi dans le champ `devOtpPreview` de la rép
 
 ### Le dashboard Mairie répond 403
 
-Message : « La double authentification est obligatoire pour les comptes d'administration. Activez-la depuis votre profil. » C'est le comportement attendu : activer la 2FA depuis `/profil/securite/2fa` ([Compte Mairie](comptes-et-connexion.md#compte-mairie-activer-la-double-authentification)).
+Message : « La double authentification est obligatoire pour les comptes d'administration. Activez-la depuis votre profil. » C'est le comportement attendu, et les pages de la Mairie l'affichent avec un bouton d'activation : activer la 2FA depuis `/profil/securite/2fa` ([Compte Mairie](comptes-et-connexion.md#compte-mairie-activer-la-double-authentification)).
 
 Message : « Droits révoqués ou modifiés : reconnectez-vous ». Le rôle a changé en base depuis l'ouverture de la session, ou le compte a été supprimé. Se reconnecter.
 

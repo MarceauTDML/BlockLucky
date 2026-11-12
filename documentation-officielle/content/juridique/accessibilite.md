@@ -37,7 +37,9 @@ Il n'y a ni test automatisé d'accessibilité (axe, pa11y, Lighthouse) dans la C
 
 ### Application mobile
 
-Le code de l'application ([`mobile-app/src`](src:mobile-app/src)) ne contient **aucune** propriété d'accessibilité React Native (`accessibilityLabel`, `accessibilityRole`, `accessibilityHint`, `accessible`). Les textes sont lus par VoiceOver et TalkBack par défaut, mais les boutons composés d'icônes, les cartes cliquables et les animations (roulette du tirage, carte à gratter) n'ont pas d'intitulé ni de rôle explicite. L'application ne respecte pas non plus le réglage « réduire les animations » du système. C'est l'interface la plus éloignée de la conformité.
+La refonte de l'application a ajouté des propriétés d'accessibilité React Native (`accessibilityRole`, `accessibilityLabel`, `accessibilityState`) aux composants de base de [`mobile-app/src/components/ui`](src:mobile-app/src/components/ui) (`AppButton`, `AppInput`, `ListRow`, `Card`, `ResultDialog`, barre d'onglets) et à la plupart des écrans. Les onglets sont annoncés comme tels avec leur état sélectionné, et quelques zones dynamiques (messages d'erreur, bandeau de notification, tirage en direct) utilisent `accessibilityLiveRegion`. Ces mesures n'ont été ni auditées ni testées avec VoiceOver ou TalkBack.
+
+Il reste des écarts visibles dans le code : la roue du tirage tourne sans tenir compte du réglage « réduire les animations » du système (`AccessibilityInfo.isReduceMotionEnabled` n'est jamais lu), et la vérification d'âge suppose de photographier ou de choisir une image, sans autre voie pour un citoyen qui ne peut pas le faire seul.
 
 ### Site de l'Office de Tourisme
 
@@ -54,7 +56,7 @@ La mention « vise la conformité RGAA » n'est pas une déclaration d'accessibi
 
 | Exigence | Web | Mobile | Office de Tourisme |
 |---|---|---|---|
-| Mesures techniques de base | Présentes | Absentes | Présentes |
+| Mesures techniques de base | Présentes | Partielles, non vérifiées | Présentes |
 | Audit RGAA | Non réalisé | Non réalisé | Non réalisé |
 | Déclaration d'accessibilité | Absente | Absente | Mention d'intention seulement |
 | Moyen de signalement | Absent | Absent | Adresse de contact |
@@ -66,7 +68,7 @@ La mention « vise la conformité RGAA » n'est pas une déclaration d'accessibi
 | Priorité | Action |
 |---|---|
 | 1 | Réaliser un audit RGAA sur un échantillon de pages de chaque interface (accueil, connexion, achat, tirage, profil, données personnelles) |
-| 2 | Ajouter `accessibilityLabel` et `accessibilityRole` aux éléments interactifs de l'application mobile, et respecter `AccessibilityInfo.isReduceMotionEnabled` |
+| 2 | Vérifier l'application mobile avec VoiceOver et TalkBack, compléter les intitulés manquants, et respecter `AccessibilityInfo.isReduceMotionEnabled` pour la roue du tirage |
 | 3 | Intégrer un contrôle automatisé (par exemple axe avec Playwright) dans le job `web` de la CI ; il ne détecte qu'une partie des défauts mais évite les régressions |
 | 4 | Publier une déclaration d'accessibilité par interface, avec un contact, une fois l'audit fait |
 | 5 | Prévoir une alternative au tirage en direct animé (texte du résultat, annonce par région `aria-live`) |

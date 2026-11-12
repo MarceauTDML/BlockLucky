@@ -26,7 +26,7 @@ L'emplacement du dossier décide de l'habillage et de la protection de la page :
 
 Le dossier `(citoyen)` est un groupe de routes : ses parenthèses n'apparaissent pas dans l'URL. La protection est faite côté navigateur par [`RequireRole`](src:frontend-web/src/components/layout/RequireRole.tsx), qui redirige vers `/connexion?next=...` ou affiche `AccessDenied`. Elle améliore l'ergonomie mais ne protège rien : la vraie barrière est le contrôle `authenticate` et `requireRoles` de chaque route de l'API.
 
-Ajouter une entrée de menu à un espace se fait dans le tableau `nav` du `layout.tsx` correspondant.
+Ajouter une entrée de menu à un espace se fait dans le tableau `nav` du `layout.tsx` correspondant. Renseigner aussi son champ `icon` avec un nom de [`iconData.ts`](src:frontend-web/src/components/ui/iconData.ts) (par exemple `{ href: '/historique', label: t('Historique & POAP', 'History & POAP'), icon: 'tabTickets' }`) : la barre latérale et la barre d'onglets affichent l'icône à côté du libellé.
 
 ## 1. Typer la réponse
 

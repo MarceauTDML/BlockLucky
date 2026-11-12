@@ -51,11 +51,12 @@ En développement, aucune CSP n'est envoyée, pour laisser fonctionner le rechar
 
 | Mesure | Situation |
 |---|---|
-| Polices | Pile de polices système (`ui-sans-serif, system-ui, ...`), aucune requête vers un service de polices tiers |
+| Polices | Inter servie par le site lui-même (`next/font/local`, fichiers de [`frontend-web/src/app/fonts`](src:frontend-web/src/app/fonts)), autorisée par `font-src 'self' data:` ; aucune requête vers un service de polices tiers |
 | Liens externes | Les liens `target="_blank"` portent `rel="noopener noreferrer"` |
 | Fichier `security.txt` | [`frontend-web/public/.well-known/security.txt`](src:frontend-web/public/.well-known/security.txt), contact `securite@etherbay.fr`, expiration le 10 novembre 2027 |
 | Cookies | Aucun cookie posé par l'application ; préférences et jeton dans `localStorage` |
 | Rendu | React échappe le texte affiché ; le seul `dangerouslySetInnerHTML` est le script de thème, sans donnée externe |
+| Pièces d'identité | La page Identités de l'espace Mairie affiche le recto et le verso en `data:` URL, autorisées par `img-src data:` ; la réponse de l'API porte `Cache-Control: no-store`. Les images restent dans la mémoire de l'onglet tant que la demande est ouverte |
 
 ## Site de l'Office de Tourisme
 
@@ -109,7 +110,15 @@ Le site n'envoie aucune donnée à un serveur. Panier, favoris, commandes de dé
 | Android | Keystore (données chiffrées par une clé du Keystore) | Même option |
 | Web (Expo pour le web) | `localStorage` | Aucune protection supplémentaire |
 
-Une copie du jeton est aussi gardée dans un cache mémoire du module, vidé à la fermeture de l'application. Les erreurs d'écriture dans le stockage sécurisé sont ignorées silencieusement : dans ce cas, la session ne survit pas au redémarrage de l'application. À la déconnexion, le jeton et le profil sont effacés après l'appel à `POST /api/auth/logout`.
+Une copie du jeton est aussi gardée dans un cache mémoire du module, vidé à la fermeture de l'application. Les erreurs d'écriture dans le stockage sécurisé sont ignorées silencieusement. L'application ne relit de toute façon pas la session au démarrage : le jeton reste stocké mais l'utilisateur doit se reconnecter. À la déconnexion, le jeton et le profil sont effacés après l'appel à `POST /api/auth/logout`. Aucun mot de passe n'est stocké sur l'appareil.
+
+### Connexion Google et Apple
+
+Le mobile obtient le jeton d'identité par `expo-auth-session` (Google, avec les identifiants `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` et `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`) ou par `expo-apple-authentication` (Apple, sur iOS seulement), puis le transmet au backend, qui le vérifie ([`SocialAuthButtons.tsx`](src:mobile-app/src/components/auth/SocialAuthButtons.tsx)). L'application ne garde pas ce jeton. Les identifiants client sont publics par nature ; ils figurent vides dans [`mobile-app/.env.example`](src:mobile-app/.env.example). Sans eux, ou si le backend répond 503, le bouton Google est désactivé.
+
+### Photos de la pièce d'identité
+
+[`VerifyAgeScreen.tsx`](src:mobile-app/src/screens/settings/VerifyAgeScreen.tsx) prend le recto et le verso avec l'appareil photo ou les choisit dans la galerie (`expo-image-picker`, autorisations demandées au moment de l'usage, textes d'explication déclarés dans `app.json`). Les images sont lues en base64, sans métadonnées EXIF (`exif: false`), refusées au-delà de 4 Mo, puis envoyées en HTTPS par `POST /api/user/identity` et retirées de l'état de l'écran après l'envoi. Le sélecteur dépose aussi une copie de chaque image dans le cache de l'application (`asset.uri`), que le code ne supprime pas. Une photo prise dans la galerie y reste, puisqu'elle appartient au citoyen.
 
 ### Configuration
 
@@ -117,7 +126,9 @@ Une copie du jeton est aussi gardée dans un cache mémoire du module, vidé à 
 |---|---|---|
 | Sauvegarde Android | [`mobile-app/app.json`](src:mobile-app/app.json) | `android.allowBackup: false` : les données de l'application ne partent pas dans la sauvegarde Google |
 | Chiffrement déclaré | idem | `ios.config.usesNonExemptEncryption: false` |
-| Secrets embarqués | [`mobile-app/.env.example`](src:mobile-app/.env.example) | Uniquement des URL et un identifiant client public ; toute variable `EXPO_PUBLIC_*` est lisible dans le binaire |
+| Autorisations | idem | Appareil photo et photos (plugin `expo-image-picker`), avec un texte qui explique l'usage pour la pièce d'identité ; connexion Apple (`ios.usesAppleSignIn`) |
+| Schéma d'URL | idem | `blocklucky`, qui permet à `expo-auth-session` de revenir dans l'application après l'authentification Google ; aucun lien profond applicatif n'est configuré |
+| Secrets embarqués | [`mobile-app/.env.example`](src:mobile-app/.env.example) | Uniquement des URL et des identifiants client publics ; toute variable `EXPO_PUBLIC_*` est lisible dans le binaire |
 
 ### Ce qui n'est pas en place
 
@@ -127,6 +138,8 @@ Une copie du jeton est aussi gardée dans un cache mémoire du module, vidé à 
 | Épinglage de certificat | Absent |
 | Détection de root ou de jailbreak, attestation d'intégrité | Absentes |
 | Masquage de l'écran dans le sélecteur d'applications | Absent |
+| Garde 401 | Absente : une session révoquée côté serveur n'est pas effacée de l'appareil |
+| En-tête `Idempotency-Key` | Jamais envoyé, y compris pour l'achat d'un ticket à gratter |
 | Mise à jour forcée | Le backend expose `MOBILE_MIN_VERSION` sous le nom `minimumMobileVersion` dans `GET /api/config`, mais l'application ne lit pas cette valeur aujourd'hui. Le déploiement est traité dans [Builds et publication](../mobile/builds-publication.md). |
 
 Ces absences sont acceptables pour un pilote sur réseau de test. Elles redeviennent prioritaires si l'application manipule des fonds réels, la clé de portefeuille restant de toute façon côté serveur.

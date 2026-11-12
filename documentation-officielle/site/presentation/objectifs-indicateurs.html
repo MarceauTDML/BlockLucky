@@ -113,7 +113,7 @@
 <h2 id="engagement"><a class="anchor" href="#engagement" aria-hidden="true" tabindex="-1">#</a>Engagement</h2>
 <h3 id="l-objectif-de-10-000-participants"><a class="anchor" href="#l-objectif-de-10-000-participants" aria-hidden="true" tabindex="-1">#</a>L&#39;objectif de 10 000 participants</h3>
 <p>C&#39;est le seul objectif chiffré du kickoff. Il représente environ un quart de la cible principale (42 000 habitants de 18 à 35 ans) et 8 % de la population.</p>
-<p>Le livrable « Budget, acquisition et indicateurs » définit le participant confirmé comme une personne éligible distincte ayant au moins un ticket confirmé sur le réseau. Il précise qu&#39;une personne peut détenir plusieurs adresses : compter des comptes n&#39;est pas compter des personnes. Le projet associe un compte à un email vérifié par code et à un portefeuille unique, ce qui limite les doublons sans les empêcher.</p>
+<p>Le livrable « Budget, acquisition et indicateurs » définit le participant confirmé comme une personne éligible distincte ayant au moins un ticket confirmé sur le réseau. Il précise qu&#39;une personne peut détenir plusieurs adresses : compter des comptes n&#39;est pas compter des personnes. Le projet associe un compte à un email vérifié par code, à un portefeuille unique et à une pièce d&#39;identité examinée par la Mairie, ce qui limite les doublons sans les empêcher : rien ne rapproche deux comptes qui présenteraient la même pièce, puisque les images sont effacées après la décision.</p>
 <h3 id="ce-que-mesure-le-code"><a class="anchor" href="#ce-que-mesure-le-code" aria-hidden="true" tabindex="-1">#</a>Ce que mesure le code</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -139,13 +139,18 @@
 <td><code>ticketsSold / maxTickets</code> ; <code>maxTickets</code> vaut 10 000 par défaut</td>
 </tr>
 <tr>
+<td>Participants affichés</td>
+<td><code>round.participants</code> et <code>round.maxParticipants</code></td>
+<td>En mode onchain, <code>ticketsSold</code> quand le contrat limite à un ticket par adresse (<code>maxTicketsPerPlayer</code> à 1), sinon <code>distinctParticipants</code> ; <code>maxParticipants</code> vaut <code>maxTickets</code></td>
+</tr>
+<tr>
 <td>Comptes inscrits et taux d&#39;atteinte</td>
 <td><code>kpis.totalUsers</code> et <code>kpis.completionRatePercent</code> de <code>GET /api/v1/analytics/dashboard</code></td>
 <td>Nombre total de comptes divisé par 10 000</td>
 </tr>
 </tbody></table></div>
 <div class="hint hint-warning"><p class="hint-title">Attention</p>
-<p>La jauge affichée aux citoyens compare des tickets à la capacité du tour, et le taux d&#39;atteinte du dashboard compare des comptes à 10 000. Aucun des deux ne mesure des participants distincts. Pour piloter l&#39;objectif, utiliser <code>distinctParticipants</code>, ou la requête SQL ci-dessous, et documenter la règle de décompte avec la Mairie.</p>
+<p>Avec un ticket par participant et par grand tirage, la jauge des citoyens compare désormais des portefeuilles distincts à la capacité du tour. Elle ne compte toujours pas des personnes distinctes, et le taux d&#39;atteinte du dashboard compare des comptes à 10 000. Pour piloter l&#39;objectif, utiliser <code>distinctParticipants</code>, ou la requête SQL ci-dessous, et documenter la règle de décompte avec la Mairie.</p>
 </div>
 <p>Requête de contrôle sur la base, tous tours confondus :</p>
 <div class="code-block"><div class="code-head"><span>SQL</span></div><pre><code class="hljs language-sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">COUNT</span>(<span class="hljs-keyword">DISTINCT</span> &quot;userId&quot;) <span class="hljs-keyword">AS</span> participants_confirmes

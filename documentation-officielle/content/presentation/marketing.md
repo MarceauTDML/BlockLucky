@@ -109,8 +109,8 @@ Le premier signal se lit dans la table `Analytics` en comparant `landing_view` e
 | Principe | Application |
 |---|---|
 | Pas d'incitation au jeu d'argent | Ethers fictifs, aucune valeur monétaire, aucune conversion |
-| Public majeur | Déclaration de majorité obligatoire avant toute participation |
-| Jeu responsable | Plafond personnel de tickets par tour, plafond du contrat par participant |
+| Public majeur | Pièce d'identité, envoyée depuis le web ou le mobile, validée par la Mairie avant tout achat, cadeau ou échange ; déclaration de majorité à la connexion web |
+| Jeu responsable | Un seul ticket par participant et par grand tirage, imposé par le contrat et seul choix proposé par la billetterie |
 | Données proportionnées | Mesure d'audience first-party sans cookie, refus possible sur `/confidentialite` ; emails uniquement vers une base autorisée |
 | Transparence | Règles et preuves publiées, résultat vérifiable |
 

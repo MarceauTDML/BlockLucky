@@ -27,7 +27,7 @@ Fonctions portées par [`smart-contract/contracts/BlockLucky.sol`](src:smart-con
 | Versement de la cagnotte au gagnant | `claimPrize` (retrait en mode pull) | Réel |
 | Commission de la Mairie plafonnée | `feeBps` (10 % par défaut, 20 % au plus), `withdrawFees` vers `treasury` | Réel |
 | Disjoncteur | `pause`, `unpause` (rôle `PAUSER_ROLE`) | Réel |
-| Plafond de tickets par participant | `maxTicketsPerPlayer` (100 par défaut) | Réel |
+| Plafond de tickets par participant | `maxTicketsPerPlayer` (1 par défaut au déploiement, `MAX_TICKETS_PER_PLAYER`) | Réel |
 | Compatibilité Chainlink Automation | `checkUpkeep`, `performUpkeep` | Réel, non enregistré auprès de Chainlink |
 | Badge de participation non transférable | `mintBadge` (ERC-721, un par participant et par tour) | Réel |
 
@@ -37,15 +37,20 @@ Voir [Contrat BlockLucky](../smart-contracts/blocklucky.md) et [Badge POAP](../s
 
 | Fonctionnalité | Web | Mobile | Route ou fichier | État |
 |---|---|---|---|---|
-| Onboarding en quatre écrans | `/connexion` | `OnboardingScreen` | `GET /api/v1/auth/onboarding` | Réel |
-| Déclaration de majorité obligatoire et tranche d'âge | `/connexion` | `LoginScreen` | Validée par `socialLoginSchema` | Réel (déclaratif) |
-| Connexion sans mot de passe par code à 6 chiffres | `/connexion`, `/connexion/verification` | `LoginScreen`, `Verify2FAScreen` | `POST /api/v1/auth/login`, `POST /api/v1/auth/2fa/verify` | Réel |
+| Onboarding illustré | `/connexion` (quatre écrans) | `OnboardingScreen` (trois écrans écrits dans l'écran) | `GET /api/v1/auth/onboarding` pour le web | Réel |
+| Déclaration de majorité obligatoire et tranche d'âge | `/connexion` | - | Validée par `socialLoginSchema` | Réel (déclaratif) |
+| Connexion sans mot de passe par code à 6 chiffres | `/connexion`, `/connexion/verification` | - | `POST /api/v1/auth/login`, `POST /api/v1/auth/2fa/verify` | Réel |
+| Inscription par email et mot de passe, confirmée par un code à 6 chiffres | - | `SignUpScreen`, `Verify2FAScreen` | `POST /api/v1/auth/signup`, `POST /api/v1/auth/2fa/verify` | Réel |
+| Connexion par email et mot de passe | - | `SignInScreen` | `POST /api/v1/auth/signin` | Réel |
+| Mot de passe oublié et réinitialisation par code | - | `ForgotPasswordScreen`, `ResetPasswordScreen` | `POST /api/v1/auth/password/forgot`, `POST /api/v1/auth/password/reset` | Réel |
+| Connexion Google et Apple | - | `SignInScreen`, `SignUpScreen` | `POST /api/v1/auth/oauth/google`, `POST /api/v1/auth/oauth/apple` | Partiel : 503 tant que `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` est vide |
+| Vérification d'âge par pièce d'identité validée par la Mairie | `/profil/identite` | `VerifyAgeScreen` | `POST /api/v1/user/identity`, `GET /api/v1/user/identity` | Réel |
 | Double authentification TOTP avec codes de secours | `/profil/securite/2fa` | `Setup2FAScreen` | `POST /api/v1/auth/2fa/setup` | Réel |
 | Double authentification par email | `/profil/securite/2fa` | `Setup2FAScreen` | même route, méthode `EMAIL` | Réel |
 | Désactivation de la 2FA (code ou connexion récente) | `/profil/securite` | `SecurityScreen` | `POST /api/v1/auth/2fa/disable` | Réel |
-| Déconnexion de l'appareil, ou de tous les appareils | `/profil/securite` | déconnexion simple | `POST /api/v1/auth/logout` | Réel |
+| Déconnexion de l'appareil, ou de tous les appareils | `/profil/securite` | `ProfileScreen`, `SecurityScreen` | `POST /api/v1/auth/logout` | Réel |
 | Alertes de sécurité par email | - | - | Template `security-alert` | Réel |
-| Verrouillage après codes erronés | - | - | 5 essais par code, 10 échecs par heure et par compte | Réel |
+| Verrouillage après codes ou mots de passe erronés | - | - | 5 essais par code, 10 échecs par heure et par compte | Réel |
 
 Détails : [Authentification](../backend/modules/auth.md), [Authentification et 2FA](../securite/authentification.md).
 
@@ -54,8 +59,8 @@ Détails : [Authentification](../backend/modules/auth.md), [Authentification et 
 | Fonctionnalité | Web | Mobile | Route ou fichier | État |
 |---|---|---|---|---|
 | Création d'un portefeuille Ethereum par citoyen, clé chiffrée AES-256-GCM | automatique | automatique | [`backend/src/blockchain/wallet.service.ts`](src:backend/src/blockchain/wallet.service.ts) | Réel |
-| Dotation de bienvenue en ethers fictifs (0,1 ETH par défaut, une fois) | automatique | automatique | `WELCOME_GRANT_WEI` | Réel |
-| Adresse, solde et lien vers l'explorateur | `/accueil` | `HomeScreen` | `GET /api/v1/lottery/wallet` | Réel |
+| Dotation de bienvenue en ethers fictifs (0,5 ETH par défaut, une fois) | automatique | automatique | `WELCOME_GRANT_WEI` | Réel |
+| Adresse, solde et lien vers l'explorateur | `/accueil` | `HomeScreen`, `ProfileScreen` | `GET /api/v1/lottery/wallet` | Réel ; aucun solde en mode simulé |
 | Effacement de la clé à la suppression RGPD | `/profil/rgpd` | `GDPRScreen` | [`backend/src/api/user/user.repo.ts`](src:backend/src/api/user/user.repo.ts) | Réel |
 
 ## Loterie
@@ -63,25 +68,27 @@ Détails : [Authentification](../backend/modules/auth.md), [Authentification et 
 | Fonctionnalité | Web | Mobile | Route | État |
 |---|---|---|---|---|
 | État du tour, compte à rebours, jauge | `/accueil`, `/` | `HomeScreen` | `GET /api/v1/lottery/status` | Réel |
-| Paliers communautaires de la jauge | `/accueil` | `HomeScreen` | même route | Fictif : récompenses jamais appliquées |
-| Achat d'un ou plusieurs tickets en un geste | `/billetterie` | `BuyTicketScreen` | `POST /api/v1/lottery/buy` | Réel |
-| Plafond personnel de jeu responsable (50 par défaut) | `/profil/securite` | `SecurityScreen` | `PUT /api/v1/user/responsible-limit` | Réel |
-| Ticket offert à un proche par email | `/billetterie` | `BuyTicketScreen` | `POST /api/v1/lottery/gift` | Réel |
-| Historique des tickets et galerie POAP | `/historique` | `TransactionHistoryScreen` | `GET /api/v1/lottery/my-tickets` | Réel |
-| Tirage automatique (keeper) | - | - | [`backend/src/blockchain/lottery.keeper.ts`](src:backend/src/blockchain/lottery.keeper.ts) | Réel |
+| Phase du tour (ouvert, salle d'attente, tirage, terminé, annulé) et heure de révélation | `/accueil` | `HomeScreen`, `WaitingRoomScreen` | même route, champs `phase` et `revealAt` | Réel |
+| Paliers communautaires de la jauge (5 000, 7 500, 9 000 et 10 000 participants) | `/accueil` | `HomeScreen` | même route | Fictif : récompenses jamais appliquées |
+| Achat de son ticket unique du grand tirage en un geste, âge vérifié | `/billetterie` | `BuyTicketScreen` | `POST /api/v1/lottery/buy` | Réel |
+| Numéro de ticket à cinq chiffres | `/historique` | `MyTicketsScreen`, `TransactionHistoryScreen` | champ `ticketNumber` | Réel |
+| Plafond personnel de jeu responsable (50 par défaut) | `/profil/securite` | - | `PUT /api/v1/user/responsible-limit` | Réel, sans effet tant qu'un seul ticket est permis |
+| Ticket offert à un proche par email, s'il n'a pas encore le sien | `/billetterie` | `GiftTicketScreen` | `POST /api/v1/lottery/gift` | Réel |
+| Historique des tickets et galerie POAP | `/historique` | `MyTicketsScreen`, `TransactionHistoryScreen` | `GET /api/v1/lottery/my-tickets` | Réel |
+| Tirage automatique (keeper) après le délai de révélation `DRAW_REVEAL_DELAY_SECONDS` | - | - | [`backend/src/blockchain/lottery.keeper.ts`](src:backend/src/blockchain/lottery.keeper.ts), [`backend/src/blockchain/draw-reveal.ts`](src:backend/src/blockchain/draw-reveal.ts) | Réel |
 | Versement automatique de la cagnotte et des remboursements | - | - | [`backend/src/blockchain/chain-actions.ts`](src:backend/src/blockchain/chain-actions.ts) | Réel |
-| Réclamation manuelle de la cagnotte | `/accueil`, `/tirage` | `HomeScreen`, `LiveDrawScreen` | `POST /api/v1/lottery/claim-prize` | Réel |
-| Classement anonymisé des ambassadeurs | `/accueil` | `HomeScreen` | `GET /api/v1/lottery/leaderboard` | Réel |
-| Charte de transparence | `/transparence`, `/profil/aide` | `HelpSupportScreen` | `GET /api/v1/lottery/transparency-charter` | Réel |
+| Réclamation manuelle de la cagnotte | `/accueil`, `/tirage` | `LiveDrawScreen` | `POST /api/v1/lottery/claim-prize` | Réel |
+| Classement anonymisé des ambassadeurs | `/accueil` | `SponsorsScreen` | `GET /api/v1/lottery/leaderboard` | Réel |
+| Charte de transparence | `/transparence`, `/profil/aide` | `HowItWorksScreen`, `HelpSupportScreen` | `GET /api/v1/lottery/transparency-charter` | Réel |
 | Métadonnées et visuel des badges POAP | - | - | `GET /api/v1/lottery/poap/:file` | Réel |
 
 ## Tirage en direct
 
 | Fonctionnalité | Web | Mobile | Événement Socket.IO | État |
 |---|---|---|---|---|
-| Salle d'attente 10 minutes avant la fin du tour | `/tirage` | `LiveDrawScreen` | `draw:join`, `draw:waiting-room` | Réel |
-| Chat en direct et réactions | `/tirage` | `LiveDrawScreen` | `chat:send`, `chat:message`, `chat:react`, `chat:reaction` | Réel |
-| Annonce du gagnant à tous les clients | `/tirage` | `LiveDrawScreen` | `draw:winner` | Réel |
+| Salle d'attente entre la fermeture des achats et la révélation | `/tirage` | `WaitingRoomScreen` | `draw:join`, `draw:waiting-room` | Réel |
+| Chat en direct et réactions | `/tirage` | `WaitingRoomScreen`, `LiveDrawScreen` (sans réactions) | `chat:send`, `chat:message`, `chat:react`, `chat:reaction` | Réel |
+| Annonce du gagnant à tous les clients, roue animée sur mobile | `/tirage` | `LiveDrawScreen` | `draw:winner` | Réel |
 | Notification des EtherPoints gagnés | modale | modale | `points:awarded` | Réel |
 
 Détails : [Temps réel Socket.IO](../backend/socket-io.md).
@@ -91,12 +98,13 @@ Détails : [Temps réel Socket.IO](../backend/socket-io.md).
 | Fonctionnalité | Web | Mobile | Route | État |
 |---|---|---|---|---|
 | Gain de points : 50 par ticket, 75 par ticket offert, 25 à l'inscription, 100 au parrain et 50 au filleul | automatique | automatique | Montants dans [`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts) et [`backend/src/blockchain/lottery.indexer.ts`](src:backend/src/blockchain/lottery.indexer.ts), écriture par [`backend/src/services/ledger.service.ts`](src:backend/src/services/ledger.service.ts) | Réel |
-| Solde et historique des points | `/boutique` | `RewardsCatalogScreen` | `GET /api/v1/marketplace/points` | Réel |
+| Solde et historique des points | `/boutique` | `RewardsCatalogScreen`, `HomeScreen` | `GET /api/v1/marketplace/points` | Réel |
 | Catalogue des offres et détail avec stock | `/boutique`, `/boutique/[rewardId]` | `RewardsCatalogScreen`, `RewardDetailScreen` | `GET /api/v1/marketplace/catalog`, `GET /api/v1/marketplace/rewards/:id` | Réel |
-| Échange contre une carte à gratter et un code promo | `/boutique/carte` | `ScratchCardScreen` | `POST /api/v1/marketplace/claim` | Réel |
+| Échange d'une offre choisie contre une carte à gratter et un code promo, âge vérifié | `/boutique/carte` | `RewardDetailScreen`, `ScratchCardScreen` | `POST /api/v1/marketplace/claim` | Réel |
+| Ticket à gratter acheté en EtherPoints (violet 50, lucky 100), qui tire au hasard une offre en stock, âge vérifié | - | `ScratchCardScreen` | `POST /api/v1/marketplace/scratch` | Réel |
 | Codes obtenus avec QR code | `/boutique/mes-codes` | `MyCodesScreen` | `GET /api/v1/marketplace/my-codes` | Réel |
-| Quêtes sociales | `/profil` | `ProfileScreen` | `GET /api/v1/user/quests`, `POST /api/v1/user/quests/complete` | Partiel : validées sur déclaration |
-| Parrainage et liens de partage | `/profil`, `/invite/[code]` | `ProfileScreen` | `GET /api/v1/user/referrals` | Réel |
+| Quêtes sociales | `/profil` | `SponsorsScreen` | `GET /api/v1/user/quests`, `POST /api/v1/user/quests/complete` | Partiel : validées sur déclaration |
+| Parrainage et liens de partage | `/profil`, `/invite/[code]` | `SponsorsScreen` | `GET /api/v1/user/referrals` | Réel |
 
 Les EtherPoints sont tenus en base (table `PointTransaction`), pas sur la chaîne.
 
@@ -125,6 +133,7 @@ L'espace partenaire n'existe que sur le web. Détails : [Partenaires](../backend
 | Approbation ou suspension d'un partenaire | `/mairie/partenaires` | `PATCH /api/v1/admin/partners/:partnerId/status` | Réel |
 | Analytique : âges et sources d'acquisition | `/mairie/analytique` | `GET /api/v1/analytics/dashboard` | Partiel : répartition par âge fictive sans données |
 | Export de rapport CSV ou PDF | `/mairie/analytique` | `GET /api/v1/admin/reports/export` | Partiel : le « PDF » serveur est du JSON ; le web imprime le PDF dans le navigateur |
+| Vérification des pièces d'identité : consultation journalisée, décision, effacement des images, email au citoyen | `/mairie/identites` | `GET /api/v1/admin/identity-verifications`, `GET /api/v1/admin/identity-verifications/:id`, `POST /api/v1/admin/identity-verifications/:id/decision` | Réel |
 | Journal d'audit | `/mairie/audit` | `GET /api/v1/admin/audit-logs` | Réel |
 
 Détails : [Administration Mairie](../backend/modules/administration.md).
@@ -134,8 +143,8 @@ Détails : [Administration Mairie](../backend/modules/administration.md).
 | Fonctionnalité | Web | Mobile | Route | État |
 |---|---|---|---|---|
 | Profil et statistiques | `/profil` | `ProfileScreen` | `GET /api/v1/user/profile` | Réel |
-| Thème clair ou sombre, français ou anglais | partout | partout | `PUT /api/v1/user/preferences` | Réel |
-| Centre de notifications | cloche | tiroir | `GET /api/v1/user/notifications` | Fictif : trois notifications codées en dur |
+| Thème clair ou sombre, français ou anglais | partout | `SettingsScreen` | `PUT /api/v1/user/preferences` | Réel |
+| Centre de notifications | cloche | `NotificationsScreen` | `GET /api/v1/user/notifications` | Fictif : trois notifications codées en dur |
 | Export des données personnelles en JSON | `/profil/rgpd` | `GDPRScreen` | `GET /api/v1/user/gdpr/export` | Réel |
 | Suppression du compte confirmée par email | `/profil/rgpd` | `GDPRScreen` | `POST /api/v1/user/gdpr/delete-request`, `POST /api/v1/user/gdpr/confirm-delete` | Réel |
 | Refus de la mesure d'audience | `/confidentialite` | - | stockage local | Réel |
@@ -151,7 +160,7 @@ Détails : [Administration Mairie](../backend/modules/administration.md).
 | Métriques Prometheus protégées par jeton | `/metrics` | Réel |
 | Documentation interactive | `/api/docs` | Réel |
 | Journaux JSON et identifiant de corrélation | [`backend/src/observability/request-context.ts`](src:backend/src/observability/request-context.ts) | Réel |
-| Idempotence des achats, cadeaux et échanges | `Idempotency-Key` | Réel |
+| Idempotence des achats, cadeaux, échanges et tickets à gratter | `Idempotency-Key` | Réel côté API ; le mobile n'envoie pas l'en-tête |
 | Nœud RPC de secours | `FALLBACK_RPC_URL` | Réel |
 | Indexation des événements du contrat | [`backend/src/blockchain/lottery.indexer.ts`](src:backend/src/blockchain/lottery.indexer.ts) | Réel |
 | Webhook blockchain signé HMAC | `POST /api/v1/webhooks/blockchain` | Mode simulé uniquement ; répond 409 en mode onchain |

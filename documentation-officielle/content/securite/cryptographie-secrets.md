@@ -8,7 +8,10 @@ Toutes les primitives cryptographiques du backend sont regroupées dans [`backen
 |---|---|---|---|
 | Clé privée du portefeuille citoyen | AES-256-GCM | `encryptText` | Oui, avec `ENCRYPTION_KEY` |
 | Secret TOTP | AES-256-GCM | `encryptText` | Oui, avec `ENCRYPTION_KEY` |
-| Code de connexion email | HMAC-SHA-256 avec clé dérivée | `hmacSha256` | Non |
+| Recto et verso d'une pièce d'identité | AES-256-GCM, format binaire | `encryptBuffer` | Oui, avec `ENCRYPTION_KEY`, jusqu'à leur effacement à la décision de la Mairie |
+| Mot de passe | bcrypt, coût 12 | `hashValue` | Non |
+| Code de connexion, d'inscription ou de réinitialisation | HMAC-SHA-256 avec clé dérivée | `hmacSha256` | Non |
+| Email d'une tentative sur un compte inconnu (sujet de blocage) | HMAC-SHA-256 avec clé dérivée | `hmacSha256` | Non |
 | Code de secours 2FA | SHA-256 de `backup:<code>` | `sha256` | Non |
 | Jeton de suppression RGPD | SHA-256 | `sha256` dans [`backend/src/api/user/user.repo.ts`](src:backend/src/api/user/user.repo.ts) | Non |
 | Signature des webhooks | HMAC-SHA-256 avec `WEBHOOK_SECRET` | `hmacSha256` | Sans objet |
@@ -36,6 +39,16 @@ v2:<iv en base64url>:<étiquette en base64url>:<texte chiffré en base64url>
 
 L'IV de 12 octets est la taille recommandée pour GCM. Il est tiré au hasard pour chaque valeur ; avec quelques milliers de valeurs chiffrées sous une même clé, le risque de collision est négligeable. L'étiquette rend le chiffrement authentifié : une valeur modifiée en base ou déchiffrée avec une autre clé fait échouer `decipher.final()` au lieu de produire une clé privée erronée.
 
+### Format binaire des pièces d'identité
+
+Les images des pièces d'identité sont stockées dans des colonnes `BYTEA` de `IdentityDocument` sous une forme binaire, sans préfixe de version :
+
+```text
+<iv : 12 octets><étiquette : 16 octets><image chiffrée>
+```
+
+`encryptBuffer` tire un IV par image, et `decryptBuffer` refuse une valeur trop courte puis vérifie l'étiquette. Les deux faces sont chiffrées séparément. Le déchiffrement n'a lieu que dans `GET /api/admin/identity-verifications/:id`, tant que la demande est en attente ; l'image déchiffrée part au navigateur de l'agent en `data:` URL avec `Cache-Control: no-store`. La décision remet les deux colonnes à `NULL`.
+
 ### Ancien format CBC
 
 `decryptText` accepte encore, en lecture seule, l'ancien format `iv:données` en hexadécimal chiffré en AES-256-CBC. Ce format n'est plus jamais écrit. Il est non authentifié ; le garder en lecture permet de relire d'anciennes valeurs, mais aucune donnée du schéma actuel ne devrait plus l'utiliser. `readTotpSecret` de [`backend/src/api/auth/auth.services.ts`](src:backend/src/api/auth/auth.services.ts) accepte aussi un secret TOTP en clair s'il ne porte pas le préfixe `v2:`, pour la même raison de compatibilité.
@@ -44,11 +57,12 @@ L'IV de 12 octets est la taille recommandée pour GCM. Il est tiré au hasard po
 
 | Usage | Algorithme | Justification |
 |---|---|---|
+| Mots de passe | bcrypt, coût 12 (`hashValue`), comparaison par `compareHash` | Hachage lent et salé, adapté à un secret choisi par l'utilisateur. Un compte sans mot de passe est comparé à une empreinte factice pour égaliser le temps de réponse. |
 | Codes email | `HMAC-SHA-256(HMAC_KEY, "subjectId:code")` | Le code n'a que 10⁶ valeurs : un simple SHA-256 se retrouverait par force brute. La clé HMAC, dérivée de `ENCRYPTION_KEY` par `HMAC(ENCRYPTION_KEY, "blocklucky:hmac")`, l'empêche sans connaître la clé. Le code vit 10 minutes. |
 | Codes de secours | `SHA-256("backup:" + code)` | 50 bits d'entropie par code. Pas de sel : un hachage lent serait plus robuste. |
 | Jetons RGPD | `SHA-256(jeton)` | Jeton de 32 octets aléatoires : une recherche exhaustive est hors de portée. |
 
-La bibliothèque `bcryptjs` est installée et `hashValue` (bcrypt, coût 12) existe, mais aucune fonctionnalité ne l'utilise aujourd'hui, puisqu'il n'y a pas de mot de passe.
+bcrypt est fourni par `bcryptjs`, une implémentation en JavaScript pur : un hachage au coût 12 consomme le processeur du processus Node.js pendant plusieurs centaines de millisecondes, partagées avec toutes les autres requêtes. La limite de 30 requêtes en 10 minutes par adresse IP sur les routes d'authentification borne cette charge, mais une attaque distribuée sur `/signin` ralentirait toute l'API. Une implémentation native (`bcrypt`) ou un hachage dans un thread de travail l'éviterait.
 
 ## Aléa et comparaisons
 
@@ -114,10 +128,10 @@ Il n'existe pas d'outil de rotation automatisé. Le tableau donne l'effet de cha
 | `WEBHOOK_SECRET` | Les webhooks signés avec l'ancien secret sont refusés | Mettre à jour l'émetteur en même temps |
 | `METRICS_TOKEN` | Le collecteur de métriques reçoit 401 | Mettre à jour le collecteur |
 | `RELAYER_PRIVATE_KEY` | Le backend signe avec un nouveau compte | Accorder les rôles au nouveau compte, révoquer l'ancien, transférer les ETH restants (voir [Clés et garde des portefeuilles](cles-portefeuilles.md#compromission-et-revocation)) |
-| `ENCRYPTION_KEY` | **Toutes les clés de portefeuille, tous les secrets TOTP et tous les codes email en cours deviennent illisibles** | Re-chiffrer chaque valeur avec la nouvelle clé avant la bascule |
+| `ENCRYPTION_KEY` | **Toutes les clés de portefeuille, tous les secrets TOTP, toutes les pièces d'identité en attente et tous les codes email en cours deviennent illisibles** | Re-chiffrer chaque valeur avec la nouvelle clé avant la bascule |
 
 > [!CAUTION]
-> Le dépôt ne fournit aucun script de re-chiffrement, et le format `v2:` ne porte pas d'identifiant de clé : il n'est pas possible de faire cohabiter deux clés. Remplacer `ENCRYPTION_KEY` sans re-chiffrement rend les portefeuilles citoyens définitivement inutilisables. Sur un réseau de test, les fonds sont fictifs et redistribuables ; avec des fonds réels, ce serait une perte. Avant toute exploitation, il faut écrire ce script (lire chaque `walletEncryptedKey` et `twoFactorSecret`, déchiffrer avec l'ancienne clé, chiffrer avec la nouvelle, dans une transaction) et ajouter un identifiant de clé au format, par exemple `v3:<kid>:...`.
+> Le dépôt ne fournit aucun script de re-chiffrement, et le format `v2:` ne porte pas d'identifiant de clé : il n'est pas possible de faire cohabiter deux clés. Remplacer `ENCRYPTION_KEY` sans re-chiffrement rend les portefeuilles citoyens définitivement inutilisables. Sur un réseau de test, les fonds sont fictifs et redistribuables ; avec des fonds réels, ce serait une perte. Avant toute exploitation, il faut écrire ce script (lire chaque `walletEncryptedKey`, `twoFactorSecret`, `frontEncrypted` et `backEncrypted`, déchiffrer avec l'ancienne clé, chiffrer avec la nouvelle, dans une transaction) et ajouter un identifiant de clé au format, par exemple `v3:<kid>:...`.
 
 La sauvegarde de `ENCRYPTION_KEY` est aussi critique que celle de la base : l'une sans l'autre ne permet pas de restaurer les portefeuilles. Voir [Sauvegardes et reprise](../infrastructure/sauvegardes.md).
 
@@ -128,3 +142,4 @@ La sauvegarde de `ENCRYPTION_KEY` est aussi critique que celle de la base : l'un
 | Clé unique pour tout | Une seule `ENCRYPTION_KEY` protège toutes les données chiffrées et sert aussi, par dérivation, de clé HMAC. Pas de clé par utilisateur ni de séparation par usage. |
 | Pas de module matériel | Les clés vivent en mémoire du processus Node.js. |
 | Emails en clair | Nécessaires pour envoyer les codes ; protégés seulement par le contrôle d'accès à la base. |
+| Pièces d'identité et clés dans la même base | Une copie de la base et de `ENCRYPTION_KEY` suffit à lire les pièces en attente. Une clé dédiée, ou un stockage séparé, limiterait l'effet d'une fuite. |

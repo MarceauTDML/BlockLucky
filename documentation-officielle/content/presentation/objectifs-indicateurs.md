@@ -38,7 +38,7 @@ Le code contribue à cet objectif sans le mesurer :
 
 C'est le seul objectif chiffré du kickoff. Il représente environ un quart de la cible principale (42 000 habitants de 18 à 35 ans) et 8 % de la population.
 
-Le livrable « Budget, acquisition et indicateurs » définit le participant confirmé comme une personne éligible distincte ayant au moins un ticket confirmé sur le réseau. Il précise qu'une personne peut détenir plusieurs adresses : compter des comptes n'est pas compter des personnes. Le projet associe un compte à un email vérifié par code et à un portefeuille unique, ce qui limite les doublons sans les empêcher.
+Le livrable « Budget, acquisition et indicateurs » définit le participant confirmé comme une personne éligible distincte ayant au moins un ticket confirmé sur le réseau. Il précise qu'une personne peut détenir plusieurs adresses : compter des comptes n'est pas compter des personnes. Le projet associe un compte à un email vérifié par code, à un portefeuille unique et à une pièce d'identité examinée par la Mairie, ce qui limite les doublons sans les empêcher : rien ne rapproche deux comptes qui présenteraient la même pièce, puisque les images sont effacées après la décision.
 
 ### Ce que mesure le code
 
@@ -47,10 +47,11 @@ Le livrable « Budget, acquisition et indicateurs » définit le participant con
 | Participants distincts d'un tour | `progression.distinctParticipants` dans `GET /api/v1/lottery/status` | Nombre d'utilisateurs distincts ayant au moins un ticket indexé dans le tour (`countDistinctParticipants` de [`backend/src/api/lottery/lottery.repo.ts`](src:backend/src/api/lottery/lottery.repo.ts)) |
 | Tickets vendus | `progression.ticketsSold` | `ticketCount` du tour, lu sur le contrat |
 | Pourcentage de la jauge | `progression.percentage` | `ticketsSold / maxTickets` ; `maxTickets` vaut 10 000 par défaut |
+| Participants affichés | `round.participants` et `round.maxParticipants` | En mode onchain, `ticketsSold` quand le contrat limite à un ticket par adresse (`maxTicketsPerPlayer` à 1), sinon `distinctParticipants` ; `maxParticipants` vaut `maxTickets` |
 | Comptes inscrits et taux d'atteinte | `kpis.totalUsers` et `kpis.completionRatePercent` de `GET /api/v1/analytics/dashboard` | Nombre total de comptes divisé par 10 000 |
 
 > [!WARNING]
-> La jauge affichée aux citoyens compare des tickets à la capacité du tour, et le taux d'atteinte du dashboard compare des comptes à 10 000. Aucun des deux ne mesure des participants distincts. Pour piloter l'objectif, utiliser `distinctParticipants`, ou la requête SQL ci-dessous, et documenter la règle de décompte avec la Mairie.
+> Avec un ticket par participant et par grand tirage, la jauge des citoyens compare désormais des portefeuilles distincts à la capacité du tour. Elle ne compte toujours pas des personnes distinctes, et le taux d'atteinte du dashboard compare des comptes à 10 000. Pour piloter l'objectif, utiliser `distinctParticipants`, ou la requête SQL ci-dessous, et documenter la règle de décompte avec la Mairie.
 
 Requête de contrôle sur la base, tous tours confondus :
 

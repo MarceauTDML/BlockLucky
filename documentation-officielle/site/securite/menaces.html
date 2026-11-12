@@ -61,7 +61,7 @@
 <tr>
 <td>Clé de chiffrement <code>ENCRYPTION_KEY</code></td>
 <td>Variable d&#39;environnement</td>
-<td>Elle protège toutes les clés citoyennes et les secrets TOTP</td>
+<td>Elle protège toutes les clés citoyennes, les secrets TOTP et les pièces d&#39;identité</td>
 </tr>
 <tr>
 <td>Secret de signature <code>JWT_SECRET</code></td>
@@ -87,6 +87,16 @@
 <td>Données personnelles</td>
 <td>PostgreSQL (email, historique) et Redis (préférences, codes)</td>
 <td>Elles relèvent du RGPD</td>
+</tr>
+<tr>
+<td>Pièces d&#39;identité en attente</td>
+<td>Table <code>IdentityDocument</code>, recto et verso chiffrés en AES-256-GCM jusqu&#39;à la décision</td>
+<td>Donnée la plus sensible du système : une fuite expose l&#39;identité civile du citoyen</td>
+</tr>
+<tr>
+<td>Mots de passe</td>
+<td>Colonne <code>User.passwordHash</code>, empreinte bcrypt</td>
+<td>Souvent réutilisés par les citoyens sur d&#39;autres services</td>
 </tr>
 <tr>
 <td>Comptes ADMIN et PARTNER</td>
@@ -127,8 +137,20 @@
 <tbody><tr>
 <td>Usurpation</td>
 <td>Connexion au compte d&#39;un autre citoyen</td>
-<td>Code à 6 chiffres envoyé par email, haché en HMAC, valide 10 minutes, 5 essais par code, blocage du compte après 10 échecs par heure (<a href="authentification.html">Authentification</a>)</td>
-<td>L&#39;adresse email reste le seul facteur pour un compte sans TOTP</td>
+<td>Mot de passe haché par bcrypt, code à 6 chiffres envoyé par email, haché en HMAC, valide 10 minutes, 5 essais par code, blocage du compte après 10 échecs par heure (<a href="authentification.html">Authentification</a>)</td>
+<td>La connexion par code email et la connexion Google ou Apple restent ouvertes à tous les comptes : l&#39;adresse email reste un facteur suffisant</td>
+</tr>
+<tr>
+<td>Usurpation</td>
+<td>Jeton Google ou Apple forgé ou destiné à une autre application</td>
+<td>Signature, émetteur, audience (<code>GOOGLE_CLIENT_IDS</code>, <code>APPLE_CLIENT_IDS</code>) et <code>email_verified</code> vérifiés côté serveur</td>
+<td>Rattachement au compte par l&#39;adresse email seule ; la sécurité du compte dépend de celle du compte du fournisseur</td>
+</tr>
+<tr>
+<td>Usurpation</td>
+<td>Mineur qui joue avec le compte ou la pièce d&#39;un adulte</td>
+<td>Pièce d&#39;identité examinée par un agent de la Mairie (<a href="autorisations.html#verification-d-age">Autorisations</a>)</td>
+<td>Aucun contrôle de correspondance entre la personne et la pièce (pas de selfie ni de vérification du document) ; achat direct sur le contrat sans contrôle</td>
 </tr>
 <tr>
 <td>Usurpation</td>
@@ -163,14 +185,20 @@
 <tr>
 <td>Répudiation</td>
 <td>Administrateur qui nie une action</td>
-<td>Journal <code>ADMIN_AUDIT:*</code> pour le disjoncteur, la trésorerie, le statut des partenaires et les exports</td>
+<td>Journal <code>ADMIN_AUDIT:*</code> pour le disjoncteur, la trésorerie, le statut des partenaires, les exports, la consultation des pièces d&#39;identité et les décisions sur l&#39;âge</td>
 <td>Le tirage et le remboursement manuels ne sont pas journalisés dans ce journal ; la chaîne garde en revanche une trace publique</td>
 </tr>
 <tr>
 <td>Divulgation</td>
 <td>Fuite de la base</td>
-<td>Clés de portefeuille et secrets TOTP chiffrés, codes de secours et jetons RGPD hachés (<a href="cryptographie-secrets.html">Cryptographie</a>)</td>
-<td>Les emails sont en clair en base</td>
+<td>Clés de portefeuille, secrets TOTP et pièces d&#39;identité chiffrés, mots de passe, codes de secours et jetons RGPD hachés (<a href="cryptographie-secrets.html">Cryptographie</a>)</td>
+<td>Les emails sont en clair en base ; les pièces en attente sont lisibles avec <code>ENCRYPTION_KEY</code></td>
+</tr>
+<tr>
+<td>Divulgation</td>
+<td>Consultation abusive des pièces d&#39;identité</td>
+<td>Routes réservées aux ADMIN avec 2FA, images effacées dès la décision, chaque consultation journalisée, <code>Cache-Control: no-store</code></td>
+<td>Tout ADMIN peut consulter toutes les pièces en attente ; une pièce jamais traitée reste stockée sans limite de durée</td>
 </tr>
 <tr>
 <td>Divulgation</td>
@@ -181,14 +209,20 @@
 <tr>
 <td>Divulgation</td>
 <td>Énumération des comptes</td>
-<td>Message d&#39;erreur unique sur un code invalide</td>
-<td>La réponse de <code>POST /api/auth/login</code> diffère pour un compte protégé par TOTP</td>
+<td>Message d&#39;erreur unique sur un code invalide et sur un mot de passe faux, réponse identique de <code>/password/forgot</code>, temps de réponse égalisé par une empreinte factice</td>
+<td>La réponse de <code>POST /api/auth/login</code> diffère pour un compte protégé par TOTP ; <code>/signup</code> répond 409 pour une adresse déjà inscrite</td>
 </tr>
 <tr>
 <td>Déni de service</td>
 <td>Saturation de l&#39;API ou force brute</td>
-<td>Limites de débit partagées dans Redis, corps limité à 1 Mo</td>
+<td>Limites de débit partagées dans Redis, corps limité à 1 Mo (12 Mo et 10 envois par heure pour les pièces d&#39;identité)</td>
 <td><code>passOnStoreError: true</code> : sans Redis, chaque instance retombe sur une limite locale</td>
+</tr>
+<tr>
+<td>Déni de service</td>
+<td>Calcul bcrypt provoqué en masse sur <code>/signin</code></td>
+<td>30 requêtes en 10 minutes par adresse IP</td>
+<td><code>bcryptjs</code> est en JavaScript pur : une attaque distribuée consomme le processeur de l&#39;API</td>
 </tr>
 <tr>
 <td>Déni de service</td>

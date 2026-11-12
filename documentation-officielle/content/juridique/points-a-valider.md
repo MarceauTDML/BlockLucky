@@ -17,7 +17,7 @@ Cette page rassemble les questions que l'équipe projet ne peut pas trancher seu
 | JUR-1 | Un dispositif sans mise réelle, dont la dotation en ethers fictifs est financée par la commune, sort-il bien de la définition de la loterie de l'article L322-2 du code de la sécurité intérieure ? | Aucune vente, aucune conversion, réseau de test | [Veille juridique](veille-juridique.md#jeux-d-argent-et-loteries) |
 | JUR-2 | Quels sont les articles exacts du CSI applicables aux exceptions, et quelle autorité serait compétente pour une variante associative ? | Numérotation divergente selon les sources secondaires | [Veille juridique](veille-juridique.md#textes) |
 | JUR-3 | Les EtherPoints, échangeables contre des offres de commerçants, sont-ils un avantage en nature ou relèvent-ils d'un autre régime (fidélité, promotion) ? | Points gagnés par la participation, sans hasard | [Crypto-actifs et MiCA](crypto-actifs.md#etherpoints) |
-| JUR-4 | La « carte à gratter » du catalogue, qui révèle une récompense déjà choisie et payée, peut-elle être perçue comme un jeu de hasard ? | Animation sans tirage aléatoire | [Veille juridique](veille-juridique.md#conditions-a-maintenir) |
+| JUR-4 | Le ticket à gratter, acheté 50 ou 100 EtherPoints et qui attribue au hasard une offre de commerçant (`POST /api/marketplace/scratch`), est-il un jeu de hasard ? Les points, gagnés gratuitement mais aussi par l'achat de tickets, constituent-ils une mise ? | Tirage par `crypto.randomInt` parmi les offres en stock ; l'échange direct d'une offre choisie existe toujours | [Veille juridique](veille-juridique.md#conditions-a-maintenir) |
 | JUR-5 | Quel contenu minimal pour un règlement de jeu : durée, dotation, absence de valeur, remboursement, litiges ? Faut-il un dépôt ? | Page « Conditions de participation » en version de travail | [Cookies, mentions et CGU](cookies-mentions.md#pages-legales) |
 
 ### Crypto-actifs
@@ -37,22 +37,24 @@ Cette page rassemble les questions que l'équipe projet ne peut pas trancher seu
 | JUR-11 | Qui détient les droits sur le code d'un projet pédagogique réalisé pour une ville fictive, et quelle licence publier ? | Aucun fichier `LICENSE` ; `ISC` dans un seul `package.json` ; contrats en MIT | [Licences](licences.md#licence-du-depot) |
 | JUR-12 | L'engagement de ne pas poursuivre un chercheur de bonne foi, écrit dans `SECURITY.md`, engage-t-il valablement la Ville ? | Engagement publié | [Signaler une vulnérabilité](../securite/signalement.md#engagements) |
 | JUR-13 | Quelles obligations d'accessibilité s'appliquent concrètement (déclaration, schéma pluriannuel, sanctions) ? | Aucune déclaration publiée | [Accessibilité numérique](accessibilite.md#cadre) |
+| JUR-14 | Le contrôle de l'âge par une photo de pièce d'identité examinée par un agent est-il suffisant et proportionné pour ce dispositif ? Faut-il un contrôle de correspondance avec la personne, ou au contraire une solution qui ne transmet pas l'identité ? | Vérification humaine sur photo, images effacées à la décision | [RGPD](rgpd.md#mineurs) |
 
 ## Pour le DPO
 
 | N° | Question | Situation actuelle | Page |
 |---|---|---|---|
 | DPO-1 | Pour un service communal, la base légale du compte doit-elle être l'exécution du contrat ou la mission d'intérêt public ? | Exécution du contrat | [RGPD](rgpd.md#bases-legales) |
-| DPO-2 | Quelle base légale pour la création d'un compte au nom du bénéficiaire d'un cadeau, qui n'a fait aucune démarche ni confirmé sa majorité ? Faut-il l'informer, et comment ? | Compte créé avec portefeuille, rattaché à l'expéditeur comme filleul, sans email d'information dans le mode sur chaîne | [Registre des traitements](registre-traitements.md#2-cadeau-de-ticket) |
+| DPO-2 | Quelle base légale pour la création d'un compte au nom du bénéficiaire d'un cadeau, qui n'a fait aucune démarche ni fait vérifier sa majorité ? Faut-il l'informer, et comment ? | Compte créé avec portefeuille, rattaché à l'expéditeur comme filleul, sans email d'information dans le mode sur chaîne | [Registre des traitements](registre-traitements.md#2-cadeau-de-ticket) |
 | DPO-3 | La mesure d'audience, qui porte l'identifiant du compte connecté et la source UTM, peut-elle bénéficier de l'exemption de consentement ? À défaut, un bandeau est nécessaire sur le web. | Opposition sur la page Confidentialité ; événements de connexion non couverts | [Cookies, mentions et CGU](cookies-mentions.md#consentement) |
 | DPO-4 | Quelles durées de conservation retenir pour les comptes inactifs, les événements d'audience, le journal d'administration et les journaux techniques ? | Durées annoncées, aucune purge implémentée | [RGPD](rgpd.md#durees-de-conservation) |
 | DPO-5 | L'anonymisation actuelle suffit-elle, alors que `Ticket.payerWallet` et `transactionHash` conservent le lien vers l'ancienne adresse ? Faut-il effacer ces colonnes ? | Email et clé supprimés, tickets conservés | [Blockchain et données personnelles](blockchain-donnees.md#immutabilite-et-droit-a-l-effacement) |
 | DPO-6 | La publication d'adresses pseudonymes sur une blockchain répliquée mondialement constitue-t-elle un transfert hors UE, et comment le documenter ? | Seules des adresses et des montants sont publiés | [Blockchain et données personnelles](blockchain-donnees.md#transferts-hors-de-l-union-europeenne) |
-| DPO-7 | Une analyse d'impact (AIPD) est-elle nécessaire (technologie innovante, données publiques et immuables, public potentiellement large) ? | Non réalisée | [RGPD](rgpd.md#ce-qui-reste-a-faire) |
+| DPO-7 | Une analyse d'impact (AIPD) est-elle nécessaire (technologie innovante, données publiques et immuables, copies de pièces d'identité, public potentiellement large) ? | Non réalisée | [RGPD](rgpd.md#ce-qui-reste-a-faire) |
 | DPO-8 | Le contenu de la politique de confidentialité doit-il être complété : cadeau de ticket, données Redis, caractère définitif des transactions, destruction des fonds à l'effacement ? La mention « événements anonymisés » doit-elle être corrigée ? | Version de travail | [Cookies, mentions et CGU](cookies-mentions.md#pages-legales) |
 | DPO-9 | L'export doit-il inclure les préférences, la limite de jeu, les quêtes et le lien de parrainage ? | Absents de l'export | [RGPD](rgpd.md#acces-et-portabilite) |
 | DPO-10 | Les deux adresses de contact `dpo@etherbay.fr` et `dpo@destination-etherbay.fr` désignent-elles la même personne ? | Adresses différentes selon le site | [Cookies, mentions et CGU](cookies-mentions.md#mentions-legales) |
 | DPO-11 | Quelles clauses dans les contrats de sous-traitance (hébergeur, SMTP, S3, fournisseur RPC) ? | Prestataires non désignés | [Registre des traitements](registre-traitements.md#sous-traitants) |
+| DPO-12 | Quelle base légale et quelles durées pour la vérification d'âge : délai maximal d'une pièce jamais traitée, conservation du motif de refus dans le journal d'administration, agents habilités à consulter les pièces ? | Images effacées à la décision ; aucune limite pour une demande en attente ; tout ADMIN peut consulter | [Registre des traitements](registre-traitements.md#2-bis-verification-d-age-par-piece-d-identite) |
 
 ## Pour la DSI
 
@@ -63,17 +65,18 @@ Ces points ne sont pas juridiques mais conditionnent la conformité ou la sécur
 | DSI-1 | Transférer la propriété VRF du contrat (`transferOwnership`) à un multisig de la Mairie après chaque déploiement | [Clés et garde des portefeuilles](../securite/cles-portefeuilles.md#roles-sur-la-chaine) |
 | DSI-2 | Séparer les comptes administrateur, trésorerie et opérateur, et adapter le reversement de commission en conséquence | [Clés et garde des portefeuilles](../securite/cles-portefeuilles.md#separation-recommandee) |
 | DSI-3 | Écrire un outil de re-chiffrement avant toute rotation de `ENCRYPTION_KEY`, et organiser la sauvegarde de ce secret | [Cryptographie et secrets](../securite/cryptographie-secrets.md#rotation) |
-| DSI-4 | Décider si la 2FA des administrateurs doit être un vrai second facteur (TOTP en plus du code email, ou WebAuthn) | [Authentification](../securite/authentification.md#limites-connues) |
+| DSI-4 | Décider si la 2FA des administrateurs doit être un vrai second facteur (TOTP en plus du mot de passe ou du code email, refus de `/2fa/verify` sans premier facteur, ou WebAuthn) | [Authentification](../securite/authentification.md#limites-connues) |
 | DSI-5 | Restreindre `cancelRound` à l'état `Open` lors du prochain redéploiement du contrat | [Modèle de menaces](../securite/menaces.md#front-running-et-ordre-des-transactions) |
 | DSI-6 | Créer la page web de confirmation de suppression, ou retirer le lien de l'email | [RGPD](rgpd.md#effacement) |
-| DSI-7 | Planifier un audit d'accessibilité et la mise en accessibilité de l'application mobile | [Accessibilité numérique](accessibilite.md#recommandations) |
+| DSI-7 | Planifier un audit d'accessibilité et terminer la mise en accessibilité de l'application mobile | [Accessibilité numérique](accessibilite.md#recommandations) |
+| DSI-8 | Désigner les agents habilités à consulter les pièces d'identité et décider s'il faut un rôle dédié plutôt que le rôle ADMIN | [Autorisations](../securite/autorisations.md#verification-d-age) |
 
 ## Suivi
 
 | N° | Destinataire | Réponse | Date | Action |
 |---|---|---|---|---|
-| JUR-1 à JUR-13 | Juriste | En attente | | |
-| DPO-1 à DPO-11 | DPO | En attente | | |
-| DSI-1 à DSI-7 | DSI | En attente | | |
+| JUR-1 à JUR-14 | Juriste | En attente | | |
+| DPO-1 à DPO-12 | DPO | En attente | | |
+| DSI-1 à DSI-8 | DSI | En attente | | |
 
 Ce tableau est à tenir à jour au fil des réponses. Une réponse qui modifie une qualification (par exemple JUR-1 ou JUR-6) impose de relire la [veille juridique](veille-juridique.md) et le [registre des risques](registre-risques.md).

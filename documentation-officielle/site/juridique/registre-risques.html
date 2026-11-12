@@ -362,8 +362,8 @@
 <td>Participation de mineurs</td>
 <td>2</td>
 <td>3</td>
-<td>Déclaration de majorité obligatoire à l&#39;inscription</td>
-<td>2</td>
+<td>Pièce d&#39;identité examinée par la Mairie avant tout achat, cadeau ou échange (<code>AGE_VERIFICATION_REQUIRED</code>, obligatoire en production), envoyée depuis <code>/profil/identite</code> sur le web ou depuis le mobile ; déclaration de majorité à la connexion web</td>
+<td>1</td>
 <td>2</td>
 <td>Mairie</td>
 </tr>
@@ -399,10 +399,10 @@
 </tr>
 <tr>
 <td>J6</td>
-<td>Nouveau. Création d&#39;un compte pour le bénéficiaire d&#39;un cadeau sans démarche de sa part ni confirmation de majorité</td>
+<td>Nouveau. Création d&#39;un compte pour le bénéficiaire d&#39;un cadeau sans démarche de sa part ni vérification de majorité</td>
 <td>3</td>
 <td>2</td>
-<td>Aucune</td>
+<td>Le bénéficiaire doit faire vérifier son âge pour acheter, offrir ou échanger, mais il détient le ticket reçu</td>
 <td>3</td>
 <td>2</td>
 <td>DPO</td>
@@ -412,7 +412,7 @@
 <td>Nouveau. Non-conformité à l&#39;obligation d&#39;accessibilité d&#39;un service public</td>
 <td>3</td>
 <td>2</td>
-<td>Mesures de base sur le web et le site de l&#39;Office de Tourisme ; aucune sur le mobile ; aucune déclaration</td>
+<td>Mesures de base sur le web, le site de l&#39;Office de Tourisme et les composants principaux du mobile ; aucun audit ni déclaration</td>
 <td>3</td>
 <td>2</td>
 <td>Mairie</td>
@@ -437,9 +437,30 @@
 <td>2</td>
 <td>DPO</td>
 </tr>
+<tr>
+<td>J10</td>
+<td>Nouveau. Fuite ou consultation abusive des pièces d&#39;identité</td>
+<td>2</td>
+<td>4</td>
+<td>Chiffrement AES-256-GCM, accès ADMIN avec 2FA, consultation journalisée, images effacées à la décision</td>
+<td>1</td>
+<td>4</td>
+<td>DSI</td>
+</tr>
+<tr>
+<td>J11</td>
+<td>Nouveau. Ticket à gratter payé en EtherPoints avec un lot tiré au hasard, perçu comme un jeu de hasard</td>
+<td>2</td>
+<td>3</td>
+<td>Points gratuits, non achetables ; achat réservé aux âges vérifiés</td>
+<td>2</td>
+<td>3</td>
+<td>Mairie</td>
+</tr>
 </tbody></table></div>
 <p>Correction apportée :</p>
 <ul>
+<li><strong>J2.</strong> La déclaration de majorité est remplacée, pour jouer, par une vérification de la pièce d&#39;identité. La probabilité résiduelle baisse, sans tomber à zéro : la pièce est jugée sur photo, sans contrôle de correspondance avec la personne, et un achat direct sur le contrat échappe au contrôle.</li>
 <li><strong>J3.</strong> L&#39;anonymisation laisse <code>payerWallet</code> et <code>transactionHash</code> dans la table <code>Ticket</code>, ce qui maintient en base le lien entre l&#39;identifiant du compte et l&#39;ancienne adresse (voir <a href="blockchain-donnees.html">Blockchain et données personnelles</a>). La cotation résiduelle reste faible tant que l&#39;email est supprimé, mais la mesure « effacement du lien entre compte et adresse » du registre initial est incomplète.</li>
 </ul>
 <h2 id="risques-a-traiter-en-priorite"><a class="anchor" href="#risques-a-traiter-en-priorite" aria-hidden="true" tabindex="-1">#</a>Risques à traiter en priorité</h2>
@@ -457,9 +478,14 @@
 <td>Seul risque qui permette de truquer un tirage ; se traite par un simple transfert de propriété</td>
 </tr>
 <tr>
-<td>J6, J7, J9</td>
+<td>J6, J7, J9, J11</td>
 <td>6</td>
-<td>Écarts de conformité d&#39;un service public</td>
+<td>Écarts de conformité d&#39;un service public, qualification du ticket à gratter</td>
+</tr>
+<tr>
+<td>J10</td>
+<td>4</td>
+<td>Impact maximal en cas de fuite : identité civile des citoyens</td>
 </tr>
 <tr>
 <td>P5</td>

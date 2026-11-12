@@ -91,7 +91,8 @@ Quelques termes reviennent partout. Ils sont définis dans le [glossaire](../ann
 | Ethers fictifs | ETH d'un réseau de test (Hardhat local ou Sepolia), sans valeur monétaire |
 | Portefeuille intégré | Compte Ethereum créé par le backend pour chaque citoyen, clé chiffrée en base |
 | Dotation de bienvenue | Ethers fictifs versés une fois par le compte opérateur de la Mairie (`WELCOME_GRANT_WEI`) |
-| Tour | Une session de loterie du contrat (`currentRoundId`), de l'ouverture au versement |
+| Tour | Une session de loterie du contrat (`currentRoundId`), de l'ouverture au versement ; aussi appelé grand tirage, un seul ticket par participant |
+| Vérification d'âge | Contrôle par la Mairie d'une photo de la pièce d'identité, exigé avant tout achat, cadeau ou échange |
 | Opérateur | Compte du backend (`RELAYER_PRIVATE_KEY`) qui détient les rôles opérateur, pause et frappe |
 | EtherPoints | Points de fidélité tenus en base, échangeables chez les partenaires |
 | Mode onchain ou simulé | Valeur de `BLOCKCHAIN_MODE` ; le mode simulé est réservé aux tests unitaires |

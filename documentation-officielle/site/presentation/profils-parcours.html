@@ -53,7 +53,7 @@
 <td>Personne de 18 à 35 ans à l&#39;aise sur téléphone</td>
 <td>Participer rapidement et retrouver son ticket</td>
 <td>Le vocabulaire et la connexion provoquent-ils un abandon ?</td>
-<td>Connexion par code email, achat en un geste, application mobile, historique des tickets</td>
+<td>Connexion par code email sur le web, par mot de passe ou Google et Apple sur mobile, achat en un geste, historique des tickets</td>
 </tr>
 <tr>
 <td>Adulte curieux, peu familier de la blockchain</td>
@@ -71,7 +71,7 @@
 <td>Agent ou relais local</td>
 <td>Aider sans accéder aux secrets du compte</td>
 <td>Les réponses de la FAQ suffisent-elles ?</td>
-<td>Aucun secret à transmettre : pas de mot de passe ni de phrase de récupération, la clé du portefeuille reste chiffrée côté serveur</td>
+<td>Aucun secret à transmettre : pas de phrase de récupération, la clé du portefeuille reste chiffrée côté serveur ; un mot de passe oublié se réinitialise par un code reçu par email</td>
 </tr>
 </tbody></table></div>
 <p>La cible principale reste celle du kickoff : les 18 à 35 ans, soit 35 % des 120 000 habitants. Le livrable marketing ouvre le dispositif à tous les adultes pour répondre à l&#39;objectif d&#39;inclusion.</p>
@@ -162,13 +162,13 @@
 <tr>
 <td>Accéder</td>
 <td>Comprendre le compte et les données</td>
-<td>Onboarding en quatre écrans, déclaration de majorité, saisie de l&#39;email puis du code</td>
+<td>Onboarding en quatre écrans, déclaration de majorité, saisie de l&#39;email puis du code ; sur mobile, compte avec mot de passe confirmé par un code ; puis envoi de la pièce d&#39;identité, sur <code>/profil/identite</code> ou depuis l&#39;application</td>
 <td><code>access_started</code></td>
 </tr>
 <tr>
 <td>Participer</td>
 <td>Confirmer une seule action</td>
-<td>Billetterie : quantité, total en ETH fictif, case de compréhension, bouton bloqué pendant l&#39;envoi</td>
+<td>Billetterie : un seul ticket par grand tirage, total en ETH fictif, case de compréhension sur le web, bouton bloqué pendant l&#39;envoi ; sur le web, achat désactivé avec un lien vers la vérification d&#39;identité tant que l&#39;âge n&#39;est pas vérifié, refus 403 côté backend</td>
 <td><code>ticket_submitted</code></td>
 </tr>
 <tr>
@@ -180,7 +180,7 @@
 <tr>
 <td>Vérifier</td>
 <td>Comprendre le résultat</td>
-<td>Salle de tirage : identifiant de la requête VRF, annonce du gagnant en direct</td>
+<td>Salle d&#39;attente puis salle de tirage : identifiant de la requête VRF, annonce du gagnant en direct, numéro du ticket gagnant</td>
 <td><code>result_view</code></td>
 </tr>
 </tbody></table></div>
@@ -204,6 +204,7 @@
     B--&gt;&gt;W: Ticket confirmé et 50 EtherPoints
     K--&gt;&gt;B: WinnerPicked après le tirage VRF
     B--&gt;&gt;W: draw:winner en temps réel</pre></div>
+<p>Ce diagramme suit le web. Sur le web, un compte dont l&#39;âge n&#39;est pas vérifié voit à la billetterie une alerte qui mène à <code>/profil/identite</code>, où il envoie le recto et le verso de sa pièce. Sur mobile, la connexion passe par <code>POST /auth/signup</code> ou <code>POST /auth/signin</code>, puis l&#39;application ouvre d&#39;elle-même l&#39;écran de vérification d&#39;âge tant que la pièce n&#39;a pas été envoyée ou a été refusée (voir <a href="../mobile/navigation-ecrans.html#ouverture-automatique-de-la-verification-d-age">Navigation et écrans</a>). L&#39;achat n&#39;est possible qu&#39;après la décision de la Mairie.</p>
 <p>Les étapes antérieures à la connexion envoient des événements anonymes. Le livrable demande aussi qu&#39;un nouvel appui après une erreur reprenne l&#39;état existant pour éviter les doublons : c&#39;est le rôle de l&#39;en-tête <code>Idempotency-Key</code> accepté par <code>POST /api/v1/lottery/buy</code>.</p>
 <h3 id="les-etats-a-couvrir"><a class="anchor" href="#les-etats-a-couvrir" aria-hidden="true" tabindex="-1">#</a>Les états à couvrir</h3>
 <p>Le livrable liste six états à tester. Le code les traite ainsi :</p>
@@ -232,7 +233,7 @@
 </tr>
 <tr>
 <td>Participation fermée</td>
-<td>Tour en tirage ou contrat en pause : achat refusé avec un message explicite, bouton désactivé</td>
+<td>Tour en salle d&#39;attente ou en tirage, contrat en pause, ticket déjà acheté : achat refusé avec un message explicite (409 pour le ticket déjà acheté), bouton désactivé</td>
 </tr>
 <tr>
 <td>Accès refusé</td>
@@ -250,40 +251,46 @@
 </tr>
 </thead>
 <tbody><tr>
+<td>Vérifier son âge</td>
+<td>-</td>
+<td><code>VerifyAgeScreen</code></td>
+<td>Photo du recto et du verso de la pièce d&#39;identité, chiffrées à réception, examinées par la Mairie puis effacées ; email de décision ; nouvel envoi possible après un refus</td>
+</tr>
+<tr>
 <td>Offrir un ticket à un proche</td>
 <td><code>/billetterie</code></td>
-<td><code>BuyTicketScreen</code></td>
-<td>Le ticket est acheté par le portefeuille de l&#39;expéditeur au nom du destinataire (<code>buyTicketsFor</code>) ; un compte et un portefeuille sont créés pour le destinataire s&#39;il n&#39;existe pas ; 75 EtherPoints pour l&#39;expéditeur</td>
+<td><code>GiftTicketScreen</code></td>
+<td>Le ticket est acheté par le portefeuille de l&#39;expéditeur au nom du destinataire (<code>buyTicketsFor</code>) ; un compte et un portefeuille sont créés pour le destinataire s&#39;il n&#39;existe pas ; refusé si le destinataire a déjà son ticket ou si c&#39;est l&#39;expéditeur ; 75 EtherPoints pour l&#39;expéditeur</td>
 </tr>
 <tr>
 <td>Parrainer</td>
 <td><code>/profil</code>, <code>/invite/[code]</code></td>
-<td><code>ProfileScreen</code></td>
+<td><code>SponsorsScreen</code></td>
 <td>Lien unique ; 100 EtherPoints pour le parrain et 50 pour le filleul à l&#39;inscription</td>
 </tr>
 <tr>
 <td>Suivre le tirage en direct</td>
 <td><code>/tirage</code></td>
-<td><code>LiveDrawScreen</code></td>
-<td>Salle d&#39;attente, chat, roulette, annonce du gagnant</td>
+<td><code>WaitingRoomScreen</code>, <code>LiveDrawScreen</code></td>
+<td>Salle d&#39;attente avec compte à rebours jusqu&#39;à la révélation, chat, roue animée, annonce du gagnant</td>
 </tr>
 <tr>
 <td>Échanger des EtherPoints</td>
 <td><code>/boutique</code>, <code>/boutique/[rewardId]</code>, <code>/boutique/carte</code>, <code>/boutique/mes-codes</code></td>
 <td><code>RewardsCatalogScreen</code>, <code>RewardDetailScreen</code>, <code>ScratchCardScreen</code>, <code>MyCodesScreen</code></td>
-<td>Carte à gratter virtuelle, code promo et QR code à présenter en caisse</td>
+<td>Carte à gratter virtuelle, code promo et QR code à présenter en caisse ; sur mobile, ticket à gratter acheté 50 ou 100 EtherPoints qui tire une offre au hasard</td>
 </tr>
 <tr>
 <td>Retirer ses gains</td>
 <td><code>/accueil</code></td>
-<td><code>HomeScreen</code></td>
+<td><code>LiveDrawScreen</code></td>
 <td>La cagnotte est versée automatiquement ; un bouton permet de la réclamer si besoin</td>
 </tr>
 <tr>
 <td>Gérer sa sécurité</td>
 <td><code>/profil/securite</code>, <code>/profil/securite/2fa</code></td>
 <td><code>SecurityScreen</code>, <code>Setup2FAScreen</code></td>
-<td>2FA par application TOTP ou par email, sessions, plafond de jeu responsable</td>
+<td>2FA par application TOTP ou par email, sessions ; plafond de jeu responsable sur le web seulement</td>
 </tr>
 <tr>
 <td>Exercer ses droits RGPD</td>
@@ -320,6 +327,10 @@
 <tr>
 <td><code>/mairie/partenaires</code></td>
 <td>Approbation ou suspension des commerces</td>
+</tr>
+<tr>
+<td><code>/mairie/identites</code></td>
+<td>File des pièces d&#39;identité en attente, consultation du recto et du verso (journalisée), validation ou refus motivé</td>
 </tr>
 <tr>
 <td><code>/mairie/securite</code></td>

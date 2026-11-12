@@ -8,10 +8,10 @@ Le livrable de recherche définit quatre profils hypothétiques. Ce ne sont pas 
 
 | Profil | Besoin supposé | Question à vérifier | Réponse prévue dans le produit |
 |---|---|---|---|
-| Personne de 18 à 35 ans à l'aise sur téléphone | Participer rapidement et retrouver son ticket | Le vocabulaire et la connexion provoquent-ils un abandon ? | Connexion par code email, achat en un geste, application mobile, historique des tickets |
+| Personne de 18 à 35 ans à l'aise sur téléphone | Participer rapidement et retrouver son ticket | Le vocabulaire et la connexion provoquent-ils un abandon ? | Connexion par code email sur le web, par mot de passe ou Google et Apple sur mobile, achat en un geste, historique des tickets |
 | Adulte curieux, peu familier de la blockchain | Comprendre le montant engagé et le gain | Peut-il expliquer le caractère fictif des ethers ? | Mention « ETH fictif » sur chaque montant, case de compréhension avant l'achat, charte de transparence |
 | Personne ayant besoin d'un accompagnement | Obtenir de l'aide et lire facilement les écrans | Peut-elle participer avec le dispositif proposé ? | Page d'aide (`/profil/aide`), thème clair ou sombre, navigation clavier, textes en français et en anglais |
-| Agent ou relais local | Aider sans accéder aux secrets du compte | Les réponses de la FAQ suffisent-elles ? | Aucun secret à transmettre : pas de mot de passe ni de phrase de récupération, la clé du portefeuille reste chiffrée côté serveur |
+| Agent ou relais local | Aider sans accéder aux secrets du compte | Les réponses de la FAQ suffisent-elles ? | Aucun secret à transmettre : pas de phrase de récupération, la clé du portefeuille reste chiffrée côté serveur ; un mot de passe oublié se réinitialise par un code reçu par email |
 
 La cible principale reste celle du kickoff : les 18 à 35 ans, soit 35 % des 120 000 habitants. Le livrable marketing ouvre le dispositif à tous les adultes pour répondre à l'objectif d'inclusion.
 
@@ -48,10 +48,10 @@ L'équipe a conçu un parcours en six étapes, chacune instrumentée par un év�
 |---|---|---|---|
 | Découvrir | Savoir qui organise | Page municipale publique `/` qui identifie la Mairie et l'objet pédagogique | `landing_view` |
 | Comprendre | Connaître les règles et la valeur engagée | Règles et charte de transparence sur `/transparence` | `rules_view` |
-| Accéder | Comprendre le compte et les données | Onboarding en quatre écrans, déclaration de majorité, saisie de l'email puis du code | `access_started` |
-| Participer | Confirmer une seule action | Billetterie : quantité, total en ETH fictif, case de compréhension, bouton bloqué pendant l'envoi | `ticket_submitted` |
+| Accéder | Comprendre le compte et les données | Onboarding en quatre écrans, déclaration de majorité, saisie de l'email puis du code ; sur mobile, compte avec mot de passe confirmé par un code ; puis envoi de la pièce d'identité, sur `/profil/identite` ou depuis l'application | `access_started` |
+| Participer | Confirmer une seule action | Billetterie : un seul ticket par grand tirage, total en ETH fictif, case de compréhension sur le web, bouton bloqué pendant l'envoi ; sur le web, achat désactivé avec un lien vers la vérification d'identité tant que l'âge n'est pas vérifié, refus 403 côté backend | `ticket_submitted` |
 | Recevoir | Retrouver une confirmation | Ticket affiché comme confirmé une fois la transaction minée et indexée, historique avec lien vers l'explorateur | `ticket_confirmed` |
-| Vérifier | Comprendre le résultat | Salle de tirage : identifiant de la requête VRF, annonce du gagnant en direct | `result_view` |
+| Vérifier | Comprendre le résultat | Salle d'attente puis salle de tirage : identifiant de la requête VRF, annonce du gagnant en direct, numéro du ticket gagnant | `result_view` |
 
 ```mermaid
 sequenceDiagram
@@ -76,6 +76,8 @@ sequenceDiagram
     B-->>W: draw:winner en temps réel
 ```
 
+Ce diagramme suit le web. Sur le web, un compte dont l'âge n'est pas vérifié voit à la billetterie une alerte qui mène à `/profil/identite`, où il envoie le recto et le verso de sa pièce. Sur mobile, la connexion passe par `POST /auth/signup` ou `POST /auth/signin`, puis l'application ouvre d'elle-même l'écran de vérification d'âge tant que la pièce n'a pas été envoyée ou a été refusée (voir [Navigation et écrans](../mobile/navigation-ecrans.md#ouverture-automatique-de-la-verification-d-age)). L'achat n'est possible qu'après la décision de la Mairie.
+
 Les étapes antérieures à la connexion envoient des événements anonymes. Le livrable demande aussi qu'un nouvel appui après une erreur reprenne l'état existant pour éviter les doublons : c'est le rôle de l'en-tête `Idempotency-Key` accepté par `POST /api/v1/lottery/buy`.
 
 ### Les états à couvrir
@@ -88,19 +90,20 @@ Le livrable liste six états à tester. Le code les traite ainsi :
 | Absence de ticket | État vide de l'historique |
 | Refus réseau | Erreur traduite par [`backend/src/blockchain/lottery.gateway.ts`](src:backend/src/blockchain/lottery.gateway.ts), réessai proposé quand `canRetry` est vrai |
 | Transaction en attente | Bouton désactivé pendant l'envoi, reçu « en attente » jusqu'à la confirmation |
-| Participation fermée | Tour en tirage ou contrat en pause : achat refusé avec un message explicite, bouton désactivé |
+| Participation fermée | Tour en salle d'attente ou en tirage, contrat en pause, ticket déjà acheté : achat refusé avec un message explicite (409 pour le ticket déjà acheté), bouton désactivé |
 | Accès refusé | Écran 403 côté web, réponse 403 du backend |
 
 ## Les parcours secondaires du citoyen
 
 | Parcours | Web | Mobile | Détail |
 |---|---|---|---|
-| Offrir un ticket à un proche | `/billetterie` | `BuyTicketScreen` | Le ticket est acheté par le portefeuille de l'expéditeur au nom du destinataire (`buyTicketsFor`) ; un compte et un portefeuille sont créés pour le destinataire s'il n'existe pas ; 75 EtherPoints pour l'expéditeur |
-| Parrainer | `/profil`, `/invite/[code]` | `ProfileScreen` | Lien unique ; 100 EtherPoints pour le parrain et 50 pour le filleul à l'inscription |
-| Suivre le tirage en direct | `/tirage` | `LiveDrawScreen` | Salle d'attente, chat, roulette, annonce du gagnant |
-| Échanger des EtherPoints | `/boutique`, `/boutique/[rewardId]`, `/boutique/carte`, `/boutique/mes-codes` | `RewardsCatalogScreen`, `RewardDetailScreen`, `ScratchCardScreen`, `MyCodesScreen` | Carte à gratter virtuelle, code promo et QR code à présenter en caisse |
-| Retirer ses gains | `/accueil` | `HomeScreen` | La cagnotte est versée automatiquement ; un bouton permet de la réclamer si besoin |
-| Gérer sa sécurité | `/profil/securite`, `/profil/securite/2fa` | `SecurityScreen`, `Setup2FAScreen` | 2FA par application TOTP ou par email, sessions, plafond de jeu responsable |
+| Vérifier son âge | - | `VerifyAgeScreen` | Photo du recto et du verso de la pièce d'identité, chiffrées à réception, examinées par la Mairie puis effacées ; email de décision ; nouvel envoi possible après un refus |
+| Offrir un ticket à un proche | `/billetterie` | `GiftTicketScreen` | Le ticket est acheté par le portefeuille de l'expéditeur au nom du destinataire (`buyTicketsFor`) ; un compte et un portefeuille sont créés pour le destinataire s'il n'existe pas ; refusé si le destinataire a déjà son ticket ou si c'est l'expéditeur ; 75 EtherPoints pour l'expéditeur |
+| Parrainer | `/profil`, `/invite/[code]` | `SponsorsScreen` | Lien unique ; 100 EtherPoints pour le parrain et 50 pour le filleul à l'inscription |
+| Suivre le tirage en direct | `/tirage` | `WaitingRoomScreen`, `LiveDrawScreen` | Salle d'attente avec compte à rebours jusqu'à la révélation, chat, roue animée, annonce du gagnant |
+| Échanger des EtherPoints | `/boutique`, `/boutique/[rewardId]`, `/boutique/carte`, `/boutique/mes-codes` | `RewardsCatalogScreen`, `RewardDetailScreen`, `ScratchCardScreen`, `MyCodesScreen` | Carte à gratter virtuelle, code promo et QR code à présenter en caisse ; sur mobile, ticket à gratter acheté 50 ou 100 EtherPoints qui tire une offre au hasard |
+| Retirer ses gains | `/accueil` | `LiveDrawScreen` | La cagnotte est versée automatiquement ; un bouton permet de la réclamer si besoin |
+| Gérer sa sécurité | `/profil/securite`, `/profil/securite/2fa` | `SecurityScreen`, `Setup2FAScreen` | 2FA par application TOTP ou par email, sessions ; plafond de jeu responsable sur le web seulement |
 | Exercer ses droits RGPD | `/profil/rgpd` | `GDPRScreen` | Export JSON, demande de suppression confirmée par email |
 
 ## Le parcours du commerçant partenaire
@@ -125,6 +128,7 @@ L'administrateur se connecte depuis `/connexion?espace=pro`. Tant qu'il n'a pas 
 | `/mairie` | Indicateurs, état du tour, tirage manuel, annulation avec remboursement, export de rapport |
 | `/mairie/analytique` | Répartition par âge, acquisition par source UTM, exports CSV et PDF |
 | `/mairie/partenaires` | Approbation ou suspension des commerces |
+| `/mairie/identites` | File des pièces d'identité en attente, consultation du recto et du verso (journalisée), validation ou refus motivé |
 | `/mairie/securite` | Disjoncteur (pause du contrat), reversement de la commission à la trésorerie |
 | `/mairie/audit` | Journal chronologique des actions d'administration, filtrable et exportable |
 

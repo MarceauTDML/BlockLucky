@@ -32,7 +32,7 @@ Termes métier et techniques employés dans le code et dans cette documentation,
 
 **Cagnotte.** Somme des mises d'un tour, moins la commission de la Mairie. Attribuée au gagnant par le contrat ; le backend la retire pour lui (`claimPrize`) par la file `chain-actions`.
 
-**Carte à gratter.** Récompense de la boutique, obtenue en échangeant des EtherPoints, qui révèle un code promotionnel d'un commerçant partenaire.
+**Carte à gratter.** Récompense de la boutique, obtenue en échangeant des EtherPoints, qui révèle un code promotionnel d'un commerçant partenaire. Voir aussi Ticket à gratter.
 
 **Chain ID.** Identifiant numérique d'un réseau Ethereum, inclus dans chaque transaction signée pour empêcher son rejeu sur un autre réseau : `31337` pour Hardhat, `11155111` pour Sepolia. Variable `CHAIN_ID`.
 
@@ -58,9 +58,11 @@ Termes métier et techniques employés dans le code et dans cette documentation,
 
 ## D
 
+**Délai de révélation.** Temps que le keeper laisse s'écouler entre le moment où le tour devient tirable et l'appel à `requestDraw`, pour que tous les participants rejoignent la salle d'attente : `DRAW_REVEAL_DELAY_SECONDS`, 600 secondes par défaut, 0 le supprime. Le point de départ est mémorisé dans Redis (`chain:draw-ready-at:<tour>`) et l'heure de révélation est publiée dans `round.revealAt`. Voir [Keeper du tirage](../integration-blockchain/keeper.md).
+
 **Disjoncteur** (circuit breaker). Mise en pause d'urgence du contrat par la Mairie : achats et tirages bloqués, retraits et remboursements toujours possibles. Voir [Disjoncteur](../architecture/flux/disjoncteur.md).
 
-**Dotation de bienvenue.** Ethers fictifs envoyés par le compte opérateur au portefeuille intégré d'un nouveau citoyen, pour qu'il puisse acheter ses premiers tickets. `WELCOME_GRANT_WEI`, 0,1 ETH par défaut ; versée une seule fois (`welcomeGrantTxHash`).
+**Dotation de bienvenue.** Ethers fictifs envoyés par le compte opérateur au portefeuille intégré d'un nouveau citoyen, pour qu'il puisse acheter ses premiers tickets. `WELCOME_GRANT_WEI`, 0,5 ETH par défaut ; versée une seule fois (`welcomeGrantTxHash`).
 
 **drawTimeout.** Délai après lequel un tirage sans réponse VRF peut être relancé par `retryDraw` : 10 minutes en local, 24 heures sur Sepolia.
 
@@ -81,6 +83,8 @@ Termes métier et techniques employés dans le code et dans cette documentation,
 **Fuzzing.** Test qui exécute une fonction avec un grand nombre d'entrées générées aléatoirement. Les contrats en ont, écrits en Solidity dans `test/BlockLucky.t.sol`.
 
 ## G
+
+**Grand tirage.** Nom donné aux citoyens à un tour de la loterie. Chaque participant n'y a droit qu'à un ticket.
 
 **Gas.** Unité de travail de calcul sur Ethereum. Chaque transaction paie `gas consommé × prix du gas` en ethers. Le citoyen paie le gas de ses achats depuis son portefeuille intégré ; l'opérateur paie celui du keeper, des badges et des dotations.
 
@@ -104,7 +108,7 @@ Termes métier et techniques employés dans le code et dans cette documentation,
 
 ## K
 
-**Keeper.** Boucle du backend qui, toutes les 10 secondes, demande le tirage quand un tour est prêt ou clôt un tour expiré sans assez de participants. Voir [Keeper du tirage](../integration-blockchain/keeper.md).
+**Keeper.** Boucle du backend qui, toutes les 10 secondes, demande le tirage quand un tour est prêt et que le délai de révélation est écoulé, ou clôt un tour expiré sans assez de participants. Voir [Keeper du tirage](../integration-blockchain/keeper.md).
 
 **Key hash.** Identifiant de la clé de l'oracle Chainlink et donc du niveau de prix du gas accepté pour la réponse VRF.
 
@@ -122,17 +126,23 @@ Termes métier et techniques employés dans le code et dans cette documentation,
 
 ## N
 
+**Numéro de ticket.** Rang du ticket dans le tour, affiché sur cinq chiffres à partir de 1 : le ticket d'index 0 porte le numéro `00001` (`ticketNumber`, calculé par `formatTicketNumber`).
+
 **Nonce.** Numéro d'ordre des transactions d'un compte. Deux transactions ne peuvent pas porter le même nonce ; une transaction bloquée bloque toutes les suivantes. Voir [Runbooks blockchain](../infrastructure/runbooks-blockchain.md#nonce-bloque).
 
 ## O
 
 **Office de Tourisme.** Site vitrine statique de la destination EtherBay, livré en bonus du projet.
 
+**OAuth.** Connexion déléguée à Google ou à Apple. L'application mobile obtient un jeton d'identité signé par le fournisseur, que le backend vérifie avant de créer ou d'ouvrir le compte de la même adresse email. Inactive tant que `GOOGLE_CLIENT_IDS` ou `APPLE_CLIENT_IDS` est vide.
+
 **Oracle.** Service qui apporte à la chaîne une donnée extérieure, ici l'aléa du tirage. En local, l'oracle est simulé par `local-vrf-responder.ts`.
 
 ## P
 
-**Parrainage.** Lien d'invitation personnel ; le parrain reçoit 100 EtherPoints à l'inscription du filleul.
+**Parrainage.** Lien d'invitation personnel ou code à saisir à l'inscription (`referralCode`, un UUID) ; le parrain reçoit 100 EtherPoints à l'inscription du filleul.
+
+**Phase du tour.** État d'un tour vu par les clients, renvoyé dans `round.phase` : `OPEN` (achats ouverts), `WAITING_ROOM` (achats clos par la fin du temps ou la vente du dernier ticket, révélation à venir), `DRAWING` (tirage demandé, état `LOCKED` en base), `COMPLETED` et `CANCELLED`.
 
 **Pause.** État du contrat activé par le disjoncteur (`Pausable` d'OpenZeppelin).
 
@@ -162,6 +172,8 @@ Termes métier et techniques employés dans le code et dans cette documentation,
 
 ## S
 
+**Salle d'attente.** Phase `WAITING_ROOM` du tour et écran où les participants attendent ensemble la révélation du gagnant, avec compte à rebours et discussion en direct. Voir [Portefeuille et loterie mobile](../mobile/portefeuille-loterie.md).
+
 **Seed.** Script qui charge les données de démonstration (comptes, partenaires, récompenses). Voir [Seed](../base-de-donnees/seed.md).
 
 **Sepolia.** Réseau de test public d'Ethereum, utilisé pour un déploiement avec le vrai Chainlink VRF.
@@ -178,13 +190,19 @@ Termes métier et techniques employés dans le code et dans cette documentation,
 
 **Testnet.** Réseau de test, sans valeur monétaire. Sepolia en est un.
 
-**Ticket.** Participation à un tour, numérotée à partir de 0 dans le tour (`ticketIndex`). Un même achat peut créer plusieurs tickets.
+**Ticket.** Participation à un tour, numérotée à partir de 0 dans le tour (`ticketIndex`) et affichée sur cinq chiffres (voir Numéro de ticket). Un seul ticket par participant et par tour : `maxTicketsPerPlayer` vaut 1 au déploiement et le backend refuse un second achat en 409.
+
+**Ticket à gratter.** Achat en EtherPoints (`POST /marketplace/scratch`) d'une carte qui tire au hasard une offre partenaire en stock : offre « violet » à 50 points et « lucky » à 100 par défaut (`SCRATCH_COST_VIOLET`, `SCRATCH_COST_LUCKY`). Proposé sur mobile seulement.
 
 **TOTP** (Time-based One-Time Password). Code à six chiffres renouvelé toutes les 30 secondes par une application d'authentification, l'une des deux méthodes de double authentification avec le code par email.
 
-**Tour.** Cycle de la loterie : ouvert à l'achat jusqu'à son échéance ou à la vente du dernier ticket, puis tirage, puis tour suivant. États sur le contrat : `Open`, `Drawing`, `Completed`, `Cancelled` ; en base : `OPEN`, `LOCKED`, `COMPLETED`, `CANCELLED`. Voir [Cycle de vie d'un tour](../smart-contracts/cycle-tour.md).
+**Tour.** Cycle de la loterie : ouvert à l'achat jusqu'à son échéance ou à la vente du dernier ticket, puis salle d'attente, tirage et tour suivant. États sur le contrat : `Open`, `Drawing`, `Completed`, `Cancelled` ; en base : `OPEN`, `LOCKED`, `COMPLETED`, `CANCELLED` ; côté clients, voir Phase du tour. Voir [Cycle de vie d'un tour](../smart-contracts/cycle-tour.md).
 
 **Trésorerie.** Adresse qui reçoit la commission de la Mairie (`treasury`).
+
+## V
+
+**Vérification d'âge.** Contrôle de la majorité par un agent de la Mairie sur la photo du recto et du verso de la pièce d'identité, envoyée depuis `/profil/identite` sur le web ou depuis l'application mobile. Statuts `NONE`, `PENDING`, `VERIFIED`, `REJECTED` (`User.ageVerificationStatus`). Les images sont chiffrées en AES-256-GCM puis effacées à la décision. Tant que le statut n'est pas `VERIFIED`, l'achat, le cadeau, l'échange et le ticket à gratter répondent 403 `AGE_VERIFICATION_REQUIRED`. Voir [Authentification mobile](../mobile/authentification.md#verification-d-age).
 
 ## W
 

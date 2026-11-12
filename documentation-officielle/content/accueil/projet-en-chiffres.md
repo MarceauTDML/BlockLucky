@@ -1,6 +1,6 @@
 # Le projet en chiffres
 
-Cette page donne la taille réelle du projet, mesurée dans le dépôt le 11 novembre 2026 sur la branche `marceau`. Chaque chiffre est accompagné de la méthode de comptage, pour pouvoir le recalculer après une évolution. Les commandes se lancent depuis la racine du dépôt, dans un terminal Bash (Git Bash sous Windows).
+Cette page donne la taille réelle du projet, mesurée dans le dépôt le 12 novembre 2026 sur la branche `marceau`, fichiers de la refonte des comptes et du mobile compris. Chaque chiffre est accompagné de la méthode de comptage, pour pouvoir le recalculer après une évolution. Les commandes se lancent depuis la racine du dépôt, dans un terminal Bash (Git Bash sous Windows).
 
 > [!NOTE]
 > Les chiffres de l'API, des variables, de la base, des contrats, de Docker Compose et de la CI sont aussi présents dans les pages générées depuis le code ([référence de l'API](../backend/reference-api.md), [variables d'environnement](../backend/variables-environnement.md), [dictionnaire de données](../base-de-donnees/dictionnaire.md), [intégration continue](../infrastructure/ci.md)). En cas d'écart, ces pages générées font foi.
@@ -9,23 +9,23 @@ Cette page donne la taille réelle du projet, mesurée dans le dépôt le 11 nov
 
 | Indicateur | Valeur |
 |---|---|
-| Routes HTTP de l'API | 52, dans 9 modules |
-| Pages du frontend web | 29 |
-| Écrans de l'application mobile | 16 |
-| Tables PostgreSQL (modèles Prisma) | 10, plus 4 énumérations |
-| Migrations Prisma | 4 |
-| Variables d'environnement du backend | 53 |
+| Routes HTTP de l'API | 64, dans 9 modules |
+| Pages du frontend web | 30 |
+| Écrans de l'application mobile | 27 |
+| Tables PostgreSQL (modèles Prisma) | 11, plus 5 énumérations |
+| Migrations Prisma | 5 |
+| Variables d'environnement du backend | 59 |
 | Contrats Solidity de production | 2 (`BlockLucky`, `BlockLuckyPOAP`) |
 | Lignes Solidity des contrats de production | 479 (398 hors lignes vides et commentaires) |
-| Tests automatisés | 47 pour les contrats, 41 unitaires et d'intégration pour le backend, 2 sur une vraie chaîne, 13 pour le web, 8 écrits pour le mobile |
+| Tests automatisés | 47 pour les contrats, 80 unitaires et d'intégration pour le backend, 2 sur une vraie chaîne, 13 pour le web, 8 écrits pour le mobile |
 | Événements Socket.IO typés | 13 (9 du serveur vers les clients, 4 des clients vers le serveur) |
 | Services Docker Compose | 9 (4 par défaut, 5 dans le profil `app`) |
 | Jobs de CI | 11 (10 dans `ci.yml`, 1 dans `codeql.yml`) |
-| Commits | 331 sur la branche `marceau`, dont 181 hors fusions |
+| Commits | 381 sur la branche `marceau`, dont 204 hors fusions |
 
 ## API
 
-52 routes, comptées comme le fait le générateur de la [référence de l'API](../backend/reference-api.md) : chaque appel `router.get|post|put|patch|delete(` des fichiers `*.routes.ts`.
+64 routes, comptées comme le fait le générateur de la [référence de l'API](../backend/reference-api.md) : chaque appel `router.get|post|put|patch|delete(` des fichiers `*.routes.ts`.
 
 ```bash
 grep -cE "router\.(get|post|put|patch|delete)\(" backend/src/api/*/*.routes.ts
@@ -34,22 +34,22 @@ grep -cE "router\.(get|post|put|patch|delete)\(" backend/src/api/*/*.routes.ts
 | Module | Fichier | Routes |
 |---|---|---|
 | Système (sondes, configuration) | [`backend/src/api/system/system.routes.ts`](src:backend/src/api/system/system.routes.ts) | 5 |
-| Authentification | [`backend/src/api/auth/auth.routes.ts`](src:backend/src/api/auth/auth.routes.ts) | 6 |
+| Authentification | [`backend/src/api/auth/auth.routes.ts`](src:backend/src/api/auth/auth.routes.ts) | 12 |
 | Loterie | [`backend/src/api/lottery/lottery.routes.ts`](src:backend/src/api/lottery/lottery.routes.ts) | 11 |
-| Boutique (marketplace) | [`backend/src/api/marketplace/marketplace.routes.ts`](src:backend/src/api/marketplace/marketplace.routes.ts) | 6 |
+| Boutique (marketplace) | [`backend/src/api/marketplace/marketplace.routes.ts`](src:backend/src/api/marketplace/marketplace.routes.ts) | 7 |
 | Partenaires | [`backend/src/api/partners/partners.routes.ts`](src:backend/src/api/partners/partners.routes.ts) | 5 |
-| Utilisateur et RGPD | [`backend/src/api/user/user.routes.ts`](src:backend/src/api/user/user.routes.ts) | 10 |
+| Utilisateur et RGPD | [`backend/src/api/user/user.routes.ts`](src:backend/src/api/user/user.routes.ts) | 12 |
 | Analytique | [`backend/src/api/analytics/analytics.routes.ts`](src:backend/src/api/analytics/analytics.routes.ts) | 2 |
-| Administration Mairie | [`backend/src/api/admin/admin.routes.ts`](src:backend/src/api/admin/admin.routes.ts) | 6 |
+| Administration Mairie | [`backend/src/api/admin/admin.routes.ts`](src:backend/src/api/admin/admin.routes.ts) | 9 |
 | Webhooks | [`backend/src/api/webhooks/webhooks.routes.ts`](src:backend/src/api/webhooks/webhooks.routes.ts) | 1 |
 
-Les 47 routes métier sont servies deux fois : sous `/api/v1` (préfixe à utiliser) et sous `/api` (compatibilité). Les 5 routes système (`/health`, `/health/live`, `/health/ready`, `/health/deep`, `/api/config`) sont montées à la racine. `/metrics` et `/api/docs` sont montés directement dans [`backend/src/app.ts`](src:backend/src/app.ts) et ne sont pas comptés.
+Les 59 routes métier sont servies deux fois : sous `/api/v1` (préfixe à utiliser) et sous `/api` (compatibilité). Les 5 routes système (`/health`, `/health/live`, `/health/ready`, `/health/deep`, `/api/config`) sont montées à la racine. `/metrics` et `/api/docs` sont montés directement dans [`backend/src/app.ts`](src:backend/src/app.ts) et ne sont pas comptés.
 
-Répartition par niveau d'accès : 18 routes publiques (dont les 5 sondes et le webhook signé), 20 réservées à un utilisateur connecté, 5 aux rôles `PARTNER` ou `ADMIN`, 9 au rôle `ADMIN` seul.
+Répartition par niveau d'accès : 24 routes publiques (dont les 5 sondes, le webhook signé et les 6 routes d'inscription, de connexion par mot de passe ou OAuth et de réinitialisation), 23 réservées à un utilisateur connecté, 5 aux rôles `PARTNER` ou `ADMIN`, 12 au rôle `ADMIN` seul.
 
 ## Interfaces
 
-### Frontend web : 29 pages
+### Frontend web : 31 pages
 
 Une page Next.js (App Router) est un fichier `page.tsx` sous `frontend-web/src/app/`.
 
@@ -60,19 +60,19 @@ git ls-files frontend-web/src/app | grep -cE "/page\.tsx$"
 | Espace | Pages |
 |---|---|
 | Public (accueil municipal, transparence, confidentialité, mentions légales, connexion, vérification du code, invitation) | 7 |
-| Citoyen (groupe de routes `(citoyen)`) | 13 |
-| Dashboard Mairie (`/mairie`) | 5 |
+| Citoyen (groupe de routes `(citoyen)`), dont la vérification d'identité | 14 |
+| Dashboard Mairie (`/mairie`), dont la vérification des identités | 6 |
 | Espace partenaire (`/partenaire`) | 4 |
 
 Les pages d'erreur (`error.tsx`, `global-error.tsx`, `not-found.tsx`) et les trois `layout.tsx` d'espace ne sont pas comptées. Le détail est dans [Pages et espaces](../web/pages.md).
 
-### Application mobile : 16 écrans
+### Application mobile : 27 écrans
 
 ```bash
 git ls-files mobile-app/src/screens | wc -l
 ```
 
-4 écrans d'authentification, 4 de loterie, 4 de boutique et 4 de réglages, déclarés dans les navigateurs de `mobile-app/src/navigation/`. L'application mobile ne couvre que l'espace citoyen : les espaces Mairie et partenaire sont uniquement sur le web. Voir [Navigation et écrans](../mobile/navigation-ecrans.md).
+7 écrans d'authentification, 8 de loterie, 4 de boutique, 7 de profil et réglages et 1 de parrainage, déclarés dans les navigateurs de `mobile-app/src/navigation/`. L'application mobile ne couvre que l'espace citoyen : les espaces Mairie et partenaire sont uniquement sur le web. Voir [Navigation et écrans](../mobile/navigation-ecrans.md).
 
 ### Office de Tourisme
 
@@ -86,18 +86,18 @@ git ls-files frontend-office-tourisme | grep -cE "^frontend-office-tourisme/[^/]
 
 | Élément | Valeur | Méthode |
 |---|---|---|
-| Modèles Prisma (tables) | 10 : `User`, `Token`, `LotteryRound`, `Ticket`, `ChainCursor`, `PointTransaction`, `Partner`, `RewardCatalog`, `ClaimedReward`, `Analytics` | `grep -c "^model " backend/prisma/schema.prisma` |
-| Énumérations | 4 : `Role`, `TwoFactorMethod`, `TokenType`, `Status` | `grep -c "^enum " backend/prisma/schema.prisma` |
-| Index et unicités composés | 14 attributs `@@index` ou `@@unique` | `grep -cE "@@index\|@@unique" backend/prisma/schema.prisma` |
+| Modèles Prisma (tables) | 11 : `User`, `IdentityDocument`, `Token`, `LotteryRound`, `Ticket`, `ChainCursor`, `PointTransaction`, `Partner`, `RewardCatalog`, `ClaimedReward`, `Analytics` | `grep -c "^model " backend/prisma/schema.prisma` |
+| Énumérations | 5 : `Role`, `TwoFactorMethod`, `AgeVerificationStatus`, `TokenType`, `Status` | `grep -c "^enum " backend/prisma/schema.prisma` |
+| Index et unicités composés | 16 attributs `@@index` ou `@@unique` | `grep -cE "@@index\|@@unique" backend/prisma/schema.prisma` |
 | Contraintes CHECK | 5, toutes dans la migration du 9 novembre | `grep -c CHECK` sur les fichiers `migration.sql` |
-| Migrations | 4, du 2 au 11 novembre 2026 | `ls backend/prisma/migrations` |
-| Templates d'email | 5 | `ls backend/src/templates/emails` |
+| Migrations | 5, du 2 au 12 novembre 2026 | `ls backend/prisma/migrations` |
+| Templates d'email | 6 | `ls backend/src/templates/emails` |
 
 Le détail est dans le [modèle de données](../base-de-donnees/modele.md) et la page [Migrations](../base-de-donnees/migrations.md).
 
 ## Configuration
 
-53 variables d'environnement, déclarées dans le schéma Zod de [`backend/src/config/env.config.ts`](src:backend/src/config/env.config.ts). Le script `npm run env:check` du backend vérifie que [`backend/.env.example`](src:backend/.env.example) contient exactement ces variables. Le frontend web lit 2 variables (`NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WS_URL`) et l'application mobile 3 (`EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_WS_URL`, `EXPO_PUBLIC_SENTRY_DSN`).
+59 variables d'environnement, déclarées dans le schéma Zod de [`backend/src/config/env.config.ts`](src:backend/src/config/env.config.ts). Le script `npm run env:check` du backend vérifie que [`backend/.env.example`](src:backend/.env.example) contient exactement ces variables. Le frontend web lit 2 variables (`NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WS_URL`) et l'application mobile 6 (`EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_WS_URL`, `EXPO_PUBLIC_SENTRY_DSN` et les trois identifiants client Google `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, listés vides dans `mobile-app/.env.example`).
 
 ## Smart contracts
 
@@ -127,7 +127,7 @@ grep -cE "^\s*(it|test)\(\s*['\"\`]" backend/__tests__/api/*.ts
 | Projet | Fichiers | Cas | Commande |
 |---|---|---|---|
 | Smart contracts | 3 | 47 : 38 dans `BlockLucky.test.ts`, 5 dans `BlockLuckyPOAP.test.ts`, 4 fuzzing dans `BlockLucky.t.sol` | `npm test` |
-| Backend, unitaires et intégration | 13 | 41 | `npm test` |
+| Backend, unitaires et intégration | 17 | 80 | `npm test` |
 | Backend, vraie blockchain locale | 1 | 2 | `npm run test:chain` |
 | Frontend web | 2 | 13 | `npm test` |
 | Application mobile | 3 | 8 | aucune |
@@ -162,9 +162,9 @@ Fichiers TypeScript et JavaScript versionnés, hors tests et hors configuration 
 
 | Dossier | Lignes |
 |---|---|
-| `backend/src/` | 8 101 |
-| `frontend-web/src/` | 9 755 |
-| `mobile-app/src/` | 8 701 |
+| `backend/src/` | 9 487 |
+| `frontend-web/src/` | 11 456 |
+| `mobile-app/src/` | 17 533 |
 | `smart-contract/scripts/` | 430 |
 | `frontend-office-tourisme/` (JavaScript) | 4 010 |
 
@@ -172,15 +172,15 @@ Fichiers TypeScript et JavaScript versionnés, hors tests et hors configuration 
 git ls-files backend/src | grep -E '\.(ts|tsx|js|mjs)$' | xargs cat | wc -l
 ```
 
-Le dépôt versionne 550 fichiers, hors dossier `documentation-officielle/`.
+Le dépôt compte 655 fichiers, hors dossier `documentation-officielle/` et hors cache local `mobile-app/.expo/`.
 
 ## Historique Git
 
 | Indicateur | Valeur | Commande |
 |---|---|---|
-| Commits sur la branche `marceau` | 331 | `git rev-list --count HEAD` |
-| Commits hors fusions | 181 | `git log --no-merges --oneline \| wc -l` |
-| Fusions de pull requests | 150 | `git log --merges --oneline \| wc -l` |
+| Commits sur la branche `marceau` | 381 | `git rev-list --count HEAD` |
+| Commits hors fusions | 204 | `git log --no-merges --oneline \| wc -l` |
+| Fusions de pull requests | 177 | `git log --merges --oneline \| wc -l` |
 | Premier commit | 2 novembre 2026 | `git log --reverse --format=%ad --date=short \| head -1` |
 | Dernier commit | 11 novembre 2026 | `git log -1 --format=%ad --date=short` |
 | Jours avec au moins un commit | 5 (2, 3, 9, 10 et 11 novembre) | `git log --format=%ad --date=short \| sort -u` |

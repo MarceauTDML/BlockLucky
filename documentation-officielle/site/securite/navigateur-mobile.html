@@ -163,7 +163,7 @@
 </thead>
 <tbody><tr>
 <td>Polices</td>
-<td>Pile de polices système (<code>ui-sans-serif, system-ui, ...</code>), aucune requête vers un service de polices tiers</td>
+<td>Inter servie par le site lui-même (<code>next/font/local</code>, fichiers de <a href="https://github.com/MarceauTDML/BlockLucky/tree/main/frontend-web/src/app/fonts" class="external" target="_blank" rel="noopener noreferrer"><code>frontend-web/src/app/fonts</code></a>), autorisée par <code>font-src &#39;self&#39; data:</code> ; aucune requête vers un service de polices tiers</td>
 </tr>
 <tr>
 <td>Liens externes</td>
@@ -180,6 +180,10 @@
 <tr>
 <td>Rendu</td>
 <td>React échappe le texte affiché ; le seul <code>dangerouslySetInnerHTML</code> est le script de thème, sans donnée externe</td>
+</tr>
+<tr>
+<td>Pièces d&#39;identité</td>
+<td>La page Identités de l&#39;espace Mairie affiche le recto et le verso en <code>data:</code> URL, autorisées par <code>img-src data:</code> ; la réponse de l&#39;API porte <code>Cache-Control: no-store</code>. Les images restent dans la mémoire de l&#39;onglet tant que la demande est ouverte</td>
 </tr>
 </tbody></table></div>
 <h2 id="site-de-l-office-de-tourisme"><a class="anchor" href="#site-de-l-office-de-tourisme" aria-hidden="true" tabindex="-1">#</a>Site de l&#39;Office de Tourisme</h2>
@@ -291,7 +295,11 @@
 <td>Aucune protection supplémentaire</td>
 </tr>
 </tbody></table></div>
-<p>Une copie du jeton est aussi gardée dans un cache mémoire du module, vidé à la fermeture de l&#39;application. Les erreurs d&#39;écriture dans le stockage sécurisé sont ignorées silencieusement : dans ce cas, la session ne survit pas au redémarrage de l&#39;application. À la déconnexion, le jeton et le profil sont effacés après l&#39;appel à <code>POST /api/auth/logout</code>.</p>
+<p>Une copie du jeton est aussi gardée dans un cache mémoire du module, vidé à la fermeture de l&#39;application. Les erreurs d&#39;écriture dans le stockage sécurisé sont ignorées silencieusement. L&#39;application ne relit de toute façon pas la session au démarrage : le jeton reste stocké mais l&#39;utilisateur doit se reconnecter. À la déconnexion, le jeton et le profil sont effacés après l&#39;appel à <code>POST /api/auth/logout</code>. Aucun mot de passe n&#39;est stocké sur l&#39;appareil.</p>
+<h3 id="connexion-google-et-apple"><a class="anchor" href="#connexion-google-et-apple" aria-hidden="true" tabindex="-1">#</a>Connexion Google et Apple</h3>
+<p>Le mobile obtient le jeton d&#39;identité par <code>expo-auth-session</code> (Google, avec les identifiants <code>EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID</code>, <code>EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID</code> et <code>EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID</code>) ou par <code>expo-apple-authentication</code> (Apple, sur iOS seulement), puis le transmet au backend, qui le vérifie (<a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/components/auth/SocialAuthButtons.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>SocialAuthButtons.tsx</code></a>). L&#39;application ne garde pas ce jeton. Les identifiants client sont publics par nature ; ils figurent vides dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/.env.example" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/.env.example</code></a>. Sans eux, ou si le backend répond 503, le bouton Google est désactivé.</p>
+<h3 id="photos-de-la-piece-d-identite"><a class="anchor" href="#photos-de-la-piece-d-identite" aria-hidden="true" tabindex="-1">#</a>Photos de la pièce d&#39;identité</h3>
+<p><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/src/screens/settings/VerifyAgeScreen.tsx" class="external" target="_blank" rel="noopener noreferrer"><code>VerifyAgeScreen.tsx</code></a> prend le recto et le verso avec l&#39;appareil photo ou les choisit dans la galerie (<code>expo-image-picker</code>, autorisations demandées au moment de l&#39;usage, textes d&#39;explication déclarés dans <code>app.json</code>). Les images sont lues en base64, sans métadonnées EXIF (<code>exif: false</code>), refusées au-delà de 4 Mo, puis envoyées en HTTPS par <code>POST /api/user/identity</code> et retirées de l&#39;état de l&#39;écran après l&#39;envoi. Le sélecteur dépose aussi une copie de chaque image dans le cache de l&#39;application (<code>asset.uri</code>), que le code ne supprime pas. Une photo prise dans la galerie y reste, puisqu&#39;elle appartient au citoyen.</p>
 <h3 id="configuration"><a class="anchor" href="#configuration" aria-hidden="true" tabindex="-1">#</a>Configuration</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -312,9 +320,19 @@
 <td><code>ios.config.usesNonExemptEncryption: false</code></td>
 </tr>
 <tr>
+<td>Autorisations</td>
+<td>idem</td>
+<td>Appareil photo et photos (plugin <code>expo-image-picker</code>), avec un texte qui explique l&#39;usage pour la pièce d&#39;identité ; connexion Apple (<code>ios.usesAppleSignIn</code>)</td>
+</tr>
+<tr>
+<td>Schéma d&#39;URL</td>
+<td>idem</td>
+<td><code>blocklucky</code>, qui permet à <code>expo-auth-session</code> de revenir dans l&#39;application après l&#39;authentification Google ; aucun lien profond applicatif n&#39;est configuré</td>
+</tr>
+<tr>
 <td>Secrets embarqués</td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/mobile-app/.env.example" class="external" target="_blank" rel="noopener noreferrer"><code>mobile-app/.env.example</code></a></td>
-<td>Uniquement des URL et un identifiant client public ; toute variable <code>EXPO_PUBLIC_*</code> est lisible dans le binaire</td>
+<td>Uniquement des URL et des identifiants client publics ; toute variable <code>EXPO_PUBLIC_*</code> est lisible dans le binaire</td>
 </tr>
 </tbody></table></div>
 <h3 id="ce-qui-n-est-pas-en-place"><a class="anchor" href="#ce-qui-n-est-pas-en-place" aria-hidden="true" tabindex="-1">#</a>Ce qui n&#39;est pas en place</h3>
@@ -342,6 +360,14 @@
 <td>Absent</td>
 </tr>
 <tr>
+<td>Garde 401</td>
+<td>Absente : une session révoquée côté serveur n&#39;est pas effacée de l&#39;appareil</td>
+</tr>
+<tr>
+<td>En-tête <code>Idempotency-Key</code></td>
+<td>Jamais envoyé, y compris pour l&#39;achat d&#39;un ticket à gratter</td>
+</tr>
+<tr>
 <td>Mise à jour forcée</td>
 <td>Le backend expose <code>MOBILE_MIN_VERSION</code> sous le nom <code>minimumMobileVersion</code> dans <code>GET /api/config</code>, mais l&#39;application ne lit pas cette valeur aujourd&#39;hui. Le déploiement est traité dans <a href="../mobile/builds-publication.html">Builds et publication</a>.</td>
 </tr>
@@ -355,7 +381,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#frontend-web">Frontend web</a></li><li class="toc-h3"><a href="#en-tetes">En-têtes</a></li><li class="toc-h3"><a href="#politique-csp">Politique CSP</a></li><li class="toc-h3"><a href="#autres-mesures">Autres mesures</a></li><li class="toc-h2"><a href="#site-de-l-office-de-tourisme">Site de l&#39;Office de Tourisme</a></li><li class="toc-h3"><a href="#en-tetes-2">En-têtes</a></li><li class="toc-h3"><a href="#durcissement-nginx">Durcissement nginx</a></li><li class="toc-h3"><a href="#serveur-de-developpement">Serveur de développement</a></li><li class="toc-h3"><a href="#donnees-dans-le-navigateur">Données dans le navigateur</a></li><li class="toc-h2"><a href="#application-mobile">Application mobile</a></li><li class="toc-h3"><a href="#stockage-securise">Stockage sécurisé</a></li><li class="toc-h3"><a href="#configuration">Configuration</a></li><li class="toc-h3"><a href="#ce-qui-n-est-pas-en-place">Ce qui n&#39;est pas en place</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#frontend-web">Frontend web</a></li><li class="toc-h3"><a href="#en-tetes">En-têtes</a></li><li class="toc-h3"><a href="#politique-csp">Politique CSP</a></li><li class="toc-h3"><a href="#autres-mesures">Autres mesures</a></li><li class="toc-h2"><a href="#site-de-l-office-de-tourisme">Site de l&#39;Office de Tourisme</a></li><li class="toc-h3"><a href="#en-tetes-2">En-têtes</a></li><li class="toc-h3"><a href="#durcissement-nginx">Durcissement nginx</a></li><li class="toc-h3"><a href="#serveur-de-developpement">Serveur de développement</a></li><li class="toc-h3"><a href="#donnees-dans-le-navigateur">Données dans le navigateur</a></li><li class="toc-h2"><a href="#application-mobile">Application mobile</a></li><li class="toc-h3"><a href="#stockage-securise">Stockage sécurisé</a></li><li class="toc-h3"><a href="#connexion-google-et-apple">Connexion Google et Apple</a></li><li class="toc-h3"><a href="#photos-de-la-piece-d-identite">Photos de la pièce d&#39;identité</a></li><li class="toc-h3"><a href="#configuration">Configuration</a></li><li class="toc-h3"><a href="#ce-qui-n-est-pas-en-place">Ce qui n&#39;est pas en place</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

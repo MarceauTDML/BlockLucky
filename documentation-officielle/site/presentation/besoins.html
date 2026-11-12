@@ -63,13 +63,13 @@
 <tbody><tr>
 <td>Un événement mémorable</td>
 <td>Un temps fort collectif, vécu en direct</td>
-<td>Salle d&#39;attente ouverte 10 minutes avant la fin du tour, chat en direct avec réactions, annonce du gagnant diffusée à tous les clients, badge POAP conservé sur la blockchain</td>
+<td>Salle d&#39;attente ouverte à la fermeture des achats, révélation du gagnant après un délai commun (<code>DRAW_REVEAL_DELAY_SECONDS</code>, 10 minutes par défaut), roue animée sur mobile, chat en direct, annonce du gagnant diffusée à tous les clients, badge POAP conservé sur la blockchain</td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/socket/events/live-draw.events.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/socket/events/live-draw.events.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/socket/events/chat.events.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/socket/events/chat.events.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/smart-contract/contracts/BlockLuckyPOAP.sol" class="external" target="_blank" rel="noopener noreferrer"><code>smart-contract/contracts/BlockLuckyPOAP.sol</code></a></td>
 </tr>
 <tr>
 <td>Un succès auprès de la communauté</td>
 <td>Atteindre 10 000 participants distincts</td>
-<td>Inscription sans mot de passe, ticket offert à un proche par email, parrainage, quêtes, classement des ambassadeurs, EtherPoints échangeables chez les commerçants</td>
+<td>Inscription en quelques champs (code email sur le web, mot de passe et code email sur mobile), ticket offert à un proche par email, parrainage, quêtes, classement des ambassadeurs, EtherPoints échangeables chez les commerçants</td>
 <td>Routes <code>gift</code> et <code>leaderboard</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.routes.ts</code></a>, <code>referrals</code> et <code>quests</code> de <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/user/user.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/user/user.routes.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/marketplace/marketplace.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/marketplace/marketplace.routes.ts</code></a></td>
 </tr>
 <tr>
@@ -93,9 +93,9 @@
 </tbody></table></div>
 <h3 id="ce-qui-reste-a-faire-pour-la-maire"><a class="anchor" href="#ce-qui-reste-a-faire-pour-la-maire" aria-hidden="true" tabindex="-1">#</a>Ce qui reste à faire pour la Maire</h3>
 <ul>
-<li>Les paliers communautaires affichés par la jauge (bonus de cagnotte, double tirage) sont des textes codés en dur dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.services.ts</code></a> : aucune logique ne les applique.</li>
+<li>Les paliers communautaires affichés par la jauge (coulisses dévoilées, offre spéciale, jeu bonus) sont des textes codés en dur dans <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/lottery/lottery.services.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/lottery/lottery.services.ts</code></a> : aucune logique ne les applique.</li>
 <li>Les quêtes sociales (suivre la Mairie sur X, rejoindre Discord) sont validées sur simple déclaration, sans contrôle.</li>
-<li>La mesure de l&#39;objectif de 10 000 participants doit être définie avec la Mairie : la jauge actuelle compare des tickets, pas des personnes (voir <a href="objectifs-indicateurs.html#engagement">Objectifs et indicateurs</a>).</li>
+<li>La mesure de l&#39;objectif de 10 000 participants doit être définie avec la Mairie : la jauge actuelle compare des portefeuilles, un par ticket, pas des personnes (voir <a href="objectifs-indicateurs.html#engagement">Objectifs et indicateurs</a>).</li>
 </ul>
 <h2 id="le-responsable-evenementiel"><a class="anchor" href="#le-responsable-evenementiel" aria-hidden="true" tabindex="-1">#</a>Le responsable événementiel</h2>
 <p>Il organise et anime l&#39;événement. Il veut un système qu&#39;il peut piloter sans compétence blockchain et qui ne bloque pas les participants.</p>
@@ -111,13 +111,13 @@
 <tbody><tr>
 <td>Aspect pratique de l&#39;événement</td>
 <td>Piloter le jeu depuis un écran, sans outil blockchain</td>
-<td>Dashboard Mairie : indicateurs, état du tour, tirage manuel, annulation avec remboursement, disjoncteur, reversement de la commission, gestion des partenaires, journal d&#39;audit, exports</td>
+<td>Dashboard Mairie : indicateurs, état du tour, tirage manuel, annulation avec remboursement, disjoncteur, reversement de la commission, gestion des partenaires, vérification des pièces d&#39;identité, journal d&#39;audit, exports</td>
 <td>Dossier <code>frontend-web/src/app/mairie/</code>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/api/admin/admin.routes.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/api/admin/admin.routes.ts</code></a></td>
 </tr>
 <tr>
 <td>Facilité d&#39;utilisation</td>
 <td>Acheter un ticket en un geste</td>
-<td>Achat en un clic signé par le portefeuille intégré du citoyen, quantité choisie avant confirmation, plafond personnel de jeu responsable</td>
+<td>Achat en un clic signé par le portefeuille intégré du citoyen, un seul ticket par participant et par grand tirage, numéro de ticket à cinq chiffres</td>
 <td><code>POST /api/v1/lottery/buy</code>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/blockchain/lottery.gateway.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/blockchain/lottery.gateway.ts</code></a></td>
 </tr>
 <tr>
@@ -129,7 +129,7 @@
 <tr>
 <td>Pic d&#39;affluence au moment du tirage</td>
 <td>Tenir la charge sans doublon</td>
-<td>Files BullMQ, en-tête <code>Idempotency-Key</code> sur l&#39;achat, le cadeau et l&#39;échange de récompense, limitation de débit partagée dans Redis, scénarios k6 dont un profil de pic</td>
+<td>Files BullMQ, en-tête <code>Idempotency-Key</code> sur l&#39;achat, le cadeau, l&#39;échange de récompense et le ticket à gratter, limitation de débit partagée dans Redis, scénarios k6 dont un profil de pic</td>
 <td><a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/middlewares/idempotency.middleware.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/middlewares/idempotency.middleware.ts</code></a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/load-tests/load.js" class="external" target="_blank" rel="noopener noreferrer"><code>load-tests/load.js</code></a></td>
 </tr>
 <tr>
@@ -158,7 +158,7 @@
 <tbody><tr>
 <td>Sécurité</td>
 <td>Contrat et plateforme résistants aux attaques connues</td>
-<td>Contrat : <code>ReentrancyGuard</code>, retraits en mode pull, rôles séparés, pause, erreurs typées, analyse Slither bloquante. Plateforme : clés chiffrées en AES-256-GCM, connexion par code email, 2FA TOTP obligatoire pour les administrateurs, sessions révocables, CSP, limitation de débit, signature HMAC du webhook, gitleaks et CodeQL en CI</td>
+<td>Contrat : <code>ReentrancyGuard</code>, retraits en mode pull, rôles séparés, pause, erreurs typées, analyse Slither bloquante. Plateforme : clés et pièces d&#39;identité chiffrées en AES-256-GCM, connexion par code email ou mot de passe haché par bcrypt, 2FA TOTP obligatoire pour les administrateurs, sessions révocables, CSP, limitation de débit, signature HMAC du webhook, gitleaks et CodeQL en CI</td>
 <td><a href="../smart-contracts/securite.html">Sécurité du contrat</a>, <a href="../securite/menaces.html">Modèle de menaces</a>, <a href="https://github.com/MarceauTDML/BlockLucky/blob/main/backend/src/utils/crypto.util.ts" class="external" target="_blank" rel="noopener noreferrer"><code>backend/src/utils/crypto.util.ts</code></a></td>
 </tr>
 <tr>
@@ -182,7 +182,7 @@
 <tr>
 <td>Données maîtrisées</td>
 <td>Savoir quelles données sont traitées et où</td>
-<td>Registre des traitements, export et anonymisation RGPD, effacement de la clé du portefeuille à la suppression, aucune donnée personnelle sur la chaîne</td>
+<td>Registre des traitements, export et anonymisation RGPD, effacement de la clé du portefeuille et de la pièce d&#39;identité à la suppression, images d&#39;identité effacées dès la décision de la Mairie, aucune donnée personnelle sur la chaîne</td>
 <td><a href="../juridique/registre-traitements.html">Registre des traitements</a>, <a href="../juridique/blockchain-donnees.html">Blockchain et données personnelles</a></td>
 </tr>
 </tbody></table></div>
@@ -228,11 +228,11 @@
 </tr>
 <tr>
 <td>Les mineurs ne doivent pas jouer</td>
-<td>Case « 18 ans et plus » obligatoire, refusée côté serveur si absente ; tranche d&#39;âge déclarative</td>
+<td>Pièce d&#39;identité examinée par un agent de la Mairie avant tout achat, cadeau ou échange (<code>AGE_VERIFICATION_REQUIRED</code>, obligatoire en production), envoyée depuis le web ou le mobile ; sur le web, la case « 18 ans et plus » reste exigée à la connexion</td>
 </tr>
 <tr>
 <td>Le jeu doit rester responsable</td>
-<td>Plafond personnel de tickets par tour (50 par défaut, réglable), plafond du contrat (<code>maxTicketsPerPlayer</code>, 100 par défaut)</td>
+<td>Un seul ticket par participant et par grand tirage (<code>maxTicketsPerPlayer</code> à 1 par défaut, contrôle répété par le backend) ; la billetterie web n&#39;achète qu&#39;un ticket ; le plafond personnel de jeu responsable existe toujours mais n&#39;a plus d&#39;effet</td>
 </tr>
 <tr>
 <td>Les données personnelles sont protégées</td>

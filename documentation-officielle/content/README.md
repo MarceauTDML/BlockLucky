@@ -11,8 +11,8 @@ Le cœur du projet est le contrat [`smart-contract/contracts/BlockLucky.sol`](sr
 Autour du contrat, le dépôt contient une plateforme complète :
 
 - un backend Express 5 en TypeScript ([`backend/src/app.ts`](src:backend/src/app.ts)) avec PostgreSQL, Redis, BullMQ et Socket.IO. Il crée pour chaque citoyen un portefeuille Ethereum intégré, chiffré en AES-256-GCM, lui verse une dotation de bienvenue en ethers fictifs, signe ses achats avec sa clé et projette les événements du contrat en base ;
-- un frontend web Next.js 16 avec trois espaces : citoyen, commerçant partenaire et dashboard de la Mairie ;
-- une application mobile Expo pour les citoyens ;
+- un frontend web Next.js 16 avec trois espaces : citoyen, commerçant partenaire et dashboard de la Mairie, qui examine aussi les pièces d'identité envoyées pour la vérification d'âge ;
+- une application mobile Expo pour les citoyens, avec compte par mot de passe ou Google et Apple, vérification d'âge, salle d'attente et roue du tirage ;
 - un site vitrine statique de l'Office de Tourisme, livré en bonus ;
 - une blockchain locale en conteneur (nœud Hardhat, contrats déployés à des adresses fixes, oracle VRF simulé), une CI GitHub Actions et des scénarios de charge k6.
 
@@ -57,9 +57,10 @@ Le tableau suivant propose un parcours de lecture par profil. Chaque ligne liste
 | Faut-il MetaMask ou acheter de la crypto ? | Non. Le backend crée le portefeuille et la Mairie le dote en ethers fictifs. | [Portefeuilles intégrés](integration-blockchain/portefeuilles.md) |
 | Qui choisit le gagnant ? | Chainlink VRF. Ni la Mairie ni le backend ne peuvent influencer le tirage. | [Tirage Chainlink VRF](smart-contracts/chainlink-vrf.md) |
 | Que se passe-t-il si un tour est annulé ? | Chaque mise est remboursable sur le contrat et le backend réclame le remboursement pour le citoyen. | [Annulation et remboursement](architecture/flux/annulation.md) |
-| Comment se connecter en local ? | Par un code à 6 chiffres reçu dans Mailpit, sans mot de passe. | [Comptes de démonstration et connexion](demarrage/comptes-et-connexion.md) |
+| Comment se connecter en local ? | Sur le web, par un code à 6 chiffres reçu dans Mailpit ; sur mobile, avec le mot de passe `EtherBay2026demo` des comptes de démonstration. | [Comptes de démonstration et connexion](demarrage/comptes-et-connexion.md) |
 | La blockchain locale a redémarré, plus rien ne marche | La chaîne a perdu son état : il faut réinitialiser la base. | [Dépannage](demarrage/depannage.md) |
-| Qu'est-ce qui est encore fictif ? | Notifications push, Sentry, libellé multi-signatures, paliers de la jauge, notamment. | [Réel, simulé ou à venir](presentation/reel-ou-simule.md) |
+| Qu'est-ce qui est encore fictif ? | Notifications push, Sentry, libellé multi-signatures, paliers de la jauge, solde ETH en mode simulé, notamment. |
+| Pourquoi l'achat répond-il 403 ? | L'âge du compte n'est pas encore vérifié par la Mairie (`AGE_VERIFICATION_REQUIRED`). | [FAQ](annexes/faq.md) | [Réel, simulé ou à venir](presentation/reel-ou-simule.md) |
 
 ## Adresses locales utiles
 

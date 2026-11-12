@@ -75,8 +75,13 @@
 </thead>
 <tbody><tr>
 <td>Identification</td>
-<td>Email, identifiant de compte</td>
+<td>Email, identifiant de compte, empreinte du mot de passe</td>
 <td>Table <code>User</code></td>
+</tr>
+<tr>
+<td>Vérification d&#39;âge</td>
+<td>Photos du recto et du verso de la pièce d&#39;identité, statut, dates d&#39;envoi et de décision, motif d&#39;un refus, agent qui a statué</td>
+<td>Tables <code>IdentityDocument</code> (images chiffrées) et <code>User</code></td>
 </tr>
 <tr>
 <td>Portefeuille</td>
@@ -105,7 +110,7 @@
 </tr>
 <tr>
 <td>Déclaratif</td>
-<td>Confirmation de majorité, tranche d&#39;âge (<code>18-25</code>, <code>26-35</code>, <code>36-50</code>, <code>50+</code>)</td>
+<td>Confirmation de majorité et tranche d&#39;âge (<code>18-25</code>, <code>26-35</code>, <code>36-50</code>, <code>50+</code>), demandées par la connexion web seulement</td>
 <td>Métadonnées de l&#39;événement analytique <code>USER_SIGNUP</code></td>
 </tr>
 <tr>
@@ -119,7 +124,7 @@
 <td>Table <code>Analytics</code></td>
 </tr>
 </tbody></table></div>
-<p>Aucune donnée bancaire, aucun nom, aucune adresse postale ni aucun document d&#39;identité n&#39;est collecté. Le modèle complet est décrit dans <a href="../base-de-donnees/modele.html">Modèle de données</a>.</p>
+<p>Aucune donnée bancaire n&#39;est collectée. Le nom, la date de naissance, le numéro du document et, le cas échéant, l&#39;adresse ne sont pas saisis, mais ils figurent sur les photos de la pièce d&#39;identité jusqu&#39;à la décision de la Mairie : ce sont alors des données d&#39;identité civile, à protéger en conséquence. Le nom transmis par Apple à la première connexion est ignoré. Le modèle complet est décrit dans <a href="../base-de-donnees/modele.html">Modèle de données</a>.</p>
 <h2 id="bases-legales"><a class="anchor" href="#bases-legales" aria-hidden="true" tabindex="-1">#</a>Bases légales</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -140,7 +145,12 @@
 <td></td>
 </tr>
 <tr>
-<td>Sécurité des comptes (2FA, limites, révocation)</td>
+<td>Vérification d&#39;âge par pièce d&#39;identité</td>
+<td>Obligation légale (exclusion des mineurs des jeux d&#39;argent), à confirmer</td>
+<td>Voir <a href="#mineurs">Mineurs</a></td>
+</tr>
+<tr>
+<td>Sécurité des comptes (mot de passe, 2FA, limites, révocation)</td>
 <td>Intérêt légitime</td>
 <td></td>
 </tr>
@@ -171,9 +181,19 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>Code de connexion email</td>
+<td>Code de connexion, d&#39;inscription ou de réinitialisation</td>
 <td>10 minutes</td>
 <td>Fait : TTL Redis</td>
+</tr>
+<tr>
+<td>Photos de la pièce d&#39;identité</td>
+<td>Jusqu&#39;à la décision de la Mairie</td>
+<td>Fait : effacées dans la transaction de la décision ; <strong>aucune limite</strong> pour une demande jamais traitée</td>
+</tr>
+<tr>
+<td>Décision sur l&#39;âge (statut, date, motif d&#39;un refus)</td>
+<td>Durée du compte</td>
+<td>Conservée sur <code>User</code> et dans le journal d&#39;administration (<code>IDENTITY_VERIFICATION_DECISION</code>, avec le motif)</td>
 </tr>
 <tr>
 <td>Compteur d&#39;échecs</td>
@@ -240,7 +260,7 @@
 </tr>
 <tr>
 <td><code>personalData</code></td>
-<td>Identifiant, adresse du portefeuille, email, rôle, solde de points, code de parrainage, état de la 2FA, dates de création et de mise à jour</td>
+<td>Identifiant, adresse du portefeuille, email, rôle, solde de points, code de parrainage, état de la 2FA, statut et date de la vérification d&#39;âge, dates de création et de mise à jour</td>
 </tr>
 <tr>
 <td><code>ticketsHistory</code></td>
@@ -259,7 +279,7 @@
 <td>Événements analytiques rattachés au compte</td>
 </tr>
 </tbody></table></div>
-<p>L&#39;export ne contient ni la clé privée chiffrée, ni le secret TOTP, ni les empreintes des codes de secours. Il omet aussi des données qui devraient y figurer : préférences, limite de jeu responsable et quêtes stockées dans Redis, parrain et liste des filleuls.</p>
+<p>L&#39;export ne contient ni la clé privée chiffrée, ni l&#39;empreinte du mot de passe, ni le secret TOTP, ni les empreintes des codes de secours. Il omet aussi des données qui devraient y figurer : préférences, limite de jeu responsable et quêtes stockées dans Redis, parrain et liste des filleuls, motif d&#39;un refus de la pièce d&#39;identité et dates de la demande. Les photos de la pièce n&#39;y figurent pas ; elles sont de toute façon effacées dès la décision.</p>
 <h3 id="effacement"><a class="anchor" href="#effacement" aria-hidden="true" tabindex="-1">#</a>Effacement</h3>
 <div class="diagram"><pre class="mermaid">sequenceDiagram
     participant C as Citoyen
@@ -299,6 +319,14 @@
 <td><code>null</code></td>
 </tr>
 <tr>
+<td><code>passwordHash</code></td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td><code>ageVerificationNote</code></td>
+<td><code>null</code> ; le statut et la date de vérification sont conservés</td>
+</tr>
+<tr>
 <td><code>twoFactorSecret</code>, <code>twoFactorMethod</code>, <code>twoFactorBackupCodes</code>, <code>isTwoFactorEnabled</code></td>
 <td>Effacés</td>
 </tr>
@@ -307,6 +335,7 @@
 <td>Date de la suppression</td>
 </tr>
 </tbody></table></div>
+<p>La même transaction supprime la ligne <code>IdentityDocument</code> du compte, avec ses photos si la demande était encore en attente.</p>
 <p>Ce qui <strong>n&#39;est pas</strong> effacé :</p>
 <div class="table-wrap"><table>
 <thead>
@@ -329,7 +358,7 @@
 </tr>
 <tr>
 <td>Événements analytiques</td>
-<td>Conservés avec <code>userId</code> et leurs métadonnées</td>
+<td>Conservés avec <code>userId</code> et leurs métadonnées, y compris le motif d&#39;un refus de pièce d&#39;identité dans le journal d&#39;administration</td>
 </tr>
 <tr>
 <td>Données Redis</td>
@@ -355,9 +384,37 @@
 <h3 id="delai-de-reponse"><a class="anchor" href="#delai-de-reponse" aria-hidden="true" tabindex="-1">#</a>Délai de réponse</h3>
 <p>Les droits d&#39;accès, de portabilité et d&#39;effacement sont en libre-service et immédiats. Les autres demandes sont traitées par le DPO dans le délai d&#39;un mois prévu par le RGPD.</p>
 <h2 id="mineurs"><a class="anchor" href="#mineurs" aria-hidden="true" tabindex="-1">#</a>Mineurs</h2>
-<p>La participation est réservée aux majeurs. Le schéma de connexion exige <code>isAdultConfirmed: true</code>, et les conditions de participation le rappellent. C&#39;est une déclaration, sans vérification.</p>
+<p>La participation est réservée aux majeurs. Deux mécanismes coexistent :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mécanisme</th>
+<th>Où</th>
+<th>Portée</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Déclaration de majorité (<code>isAdultConfirmed: true</code>)</td>
+<td>Connexion web <code>POST /api/auth/login</code></td>
+<td>Déclarative ; l&#39;inscription mobile par mot de passe, Google ou Apple ne la demande pas</td>
+</tr>
+<tr>
+<td>Vérification d&#39;âge par pièce d&#39;identité</td>
+<td><code>POST /api/user/identity</code>, décision d&#39;un agent de la Mairie</td>
+<td>Exigée pour acheter ou offrir un ticket, échanger une récompense et acheter un ticket à gratter (<code>AGE_VERIFICATION_REQUIRED</code>, obligatoire en production)</td>
+</tr>
+</tbody></table></div>
+<p>Le citoyen envoie depuis <code>/profil/identite</code> sur le web, ou depuis l&#39;application mobile, une photo du recto et du verso, après avoir coché sur le web une case de consentement à la consultation par la Mairie. Les images sont chiffrées à la réception, consultées par un agent sur la page Identités de l&#39;espace Mairie, puis effacées à la décision ; le citoyen reçoit la décision par email, avec le motif en cas de refus, et peut envoyer une nouvelle pièce. Chaque consultation et chaque décision sont journalisées. Le détail technique est dans <a href="../securite/autorisations.html#verification-d-age">Autorisations</a>.</p>
+<p>Le contrôle a des limites à faire connaître :</p>
+<ul>
+<li>l&#39;agent juge sur photo : aucun contrôle ne vérifie que la pièce est authentique ni qu&#39;elle appartient à la personne qui joue ;</li>
+<li>l&#39;API ne connaît pas la date de naissance : la décision est entièrement humaine et n&#39;est pas réexaminée ;</li>
+<li>un achat direct sur le contrat, sans passer par BlockLucky, échappe au contrôle ;</li>
+<li>le web n&#39;offre pas l&#39;envoi de la pièce : un citoyen sans l&#39;application mobile ne peut pas faire vérifier son âge.</li>
+</ul>
+<p>La collecte d&#39;une copie de pièce d&#39;identité est un traitement sensible pour la CNIL, qui recommande de la limiter au strict nécessaire et de privilégier des solutions de vérification d&#39;âge qui ne transmettent pas l&#39;identité au service. La proportionnalité de ce choix et la nécessité d&#39;une analyse d&#39;impact sont à valider (voir <a href="points-a-valider.html">Points à valider</a>).</p>
 <div class="hint hint-important"><p class="hint-title">Important</p>
-<p>Le cadeau d&#39;un ticket (<code>POST /api/lottery/gift</code>) crée un compte pour l&#39;email du bénéficiaire s&#39;il n&#39;en a pas, avec un portefeuille, sans que ce bénéficiaire ait confirmé sa majorité ni accepté les conditions, et en le rattachant à l&#39;expéditeur comme filleul. C&#39;est un traitement de données d&#39;un tiers sans démarche de sa part. La base légale de ce traitement et l&#39;information du bénéficiaire sont à valider (voir <a href="points-a-valider.html">Points à valider</a>).</p>
+<p>Le cadeau d&#39;un ticket (<code>POST /api/lottery/gift</code>) crée un compte pour l&#39;email du bénéficiaire s&#39;il n&#39;en a pas, avec un portefeuille, sans que ce bénéficiaire ait vérifié sa majorité ni accepté les conditions, et en le rattachant à l&#39;expéditeur comme filleul. Le contrôle d&#39;âge ne porte que sur l&#39;expéditeur : le bénéficiaire détient un ticket sans avoir fait vérifier son âge. C&#39;est un traitement de données d&#39;un tiers sans démarche de sa part. La base légale de ce traitement et l&#39;information du bénéficiaire sont à valider (voir <a href="points-a-valider.html">Points à valider</a>).</p>
 </div>
 <h2 id="sous-traitants-et-transferts"><a class="anchor" href="#sous-traitants-et-transferts" aria-hidden="true" tabindex="-1">#</a>Sous-traitants et transferts</h2>
 <div class="table-wrap"><table>
@@ -428,8 +485,16 @@
 <td>À ajouter</td>
 </tr>
 <tr>
+<td>Délai maximal pour une pièce d&#39;identité jamais traitée</td>
+<td>À fixer et à implémenter</td>
+</tr>
+<tr>
+<td>Information sur la vérification d&#39;âge dans la politique de confidentialité</td>
+<td>À rédiger</td>
+</tr>
+<tr>
 <td>Analyse d&#39;impact (AIPD)</td>
-<td>Non réalisée ; sa nécessité est à apprécier par le DPO</td>
+<td>Non réalisée ; fortement recommandée depuis la collecte des pièces d&#39;identité, à apprécier par le DPO</td>
 </tr>
 <tr>
 <td>Contrats de sous-traitance</td>

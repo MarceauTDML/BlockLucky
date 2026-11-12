@@ -52,15 +52,15 @@
 </tr>
 <tr>
 <td>Dernier commit</td>
-<td>11 novembre 2026, 21 h 21</td>
+<td>11 novembre 2026, 23 h 39</td>
 </tr>
 <tr>
 <td>Commits sur la branche <code>marceau</code></td>
-<td>331, dont 181 hors fusions</td>
+<td>381, dont 204 hors fusions</td>
 </tr>
 <tr>
 <td>Pull requests fusionnées</td>
-<td>150, numérotées jusqu&#39;à la n° 163</td>
+<td>177, numérotées jusqu&#39;à la n° 193</td>
 </tr>
 <tr>
 <td>Jours actifs</td>
@@ -72,7 +72,8 @@
     A[&quot;2 nov : backend&quot;] --&gt; B[&quot;3 nov : mobile&quot;]
     B --&gt; C[&quot;9 nov : web et Office de Tourisme&quot;]
     C --&gt; D[&quot;10 nov : industrialisation et sécurité&quot;]
-    D --&gt; E[&quot;11 nov : smart contracts et intégration on-chain&quot;]</pre></div>
+    D --&gt; E[&quot;11 nov : smart contracts et intégration on-chain&quot;]
+    E --&gt; F[&quot;12 nov : comptes, vérification d&#39;âge et refonte mobile&quot;]</pre></div>
 <h2 id="les-etapes"><a class="anchor" href="#les-etapes" aria-hidden="true" tabindex="-1">#</a>Les étapes</h2>
 <h3 id="2-novembre-le-backend-en-une-soiree"><a class="anchor" href="#2-novembre-le-backend-en-une-soiree" aria-hidden="true" tabindex="-1">#</a>2 novembre : le backend en une soirée</h3>
 <p>La première soirée pose l&#39;infrastructure locale (PostgreSQL, Redis puis Mailpit en Docker), Prisma 7 et la première migration, puis le serveur Express 5 en TypeScript. Tous les modules métier arrivent ensuite en deux heures : authentification avec vérification de majorité et 2FA, loterie, boutique et carte à gratter, partenaires, utilisateur et RGPD, analytique, administration Mairie, webhooks. Les files BullMQ, Socket.IO (salle d&#39;attente et chat), les templates d&#39;email, le seed et une première série de tests complètent le socle.</p>
@@ -129,6 +130,16 @@
 <li>côté backend : configuration blockchain et schéma on-chain, portefeuille intégré par citoyen, indexeur, keeper et file d&#39;actions, loterie branchée sur le contrat, disjoncteur et commission on-chain, tests sur une vraie chaîne.</li>
 </ol>
 <p>Le soir, l&#39;intégration se termine : effacement de la clé du portefeuille à la suppression RGPD, blockchain locale dans Docker Compose, portefeuille intégré et annonce du gagnant sur le web et le mobile, CI des contrats et de l&#39;intégration, puis la documentation des contrats, du backend on-chain, l&#39;ADR 0004, la veille juridique, la reformulation des besoins et le registre des risques.</p>
+<h3 id="12-novembre-comptes-verification-d-age-et-refonte-mobile"><a class="anchor" href="#12-novembre-comptes-verification-d-age-et-refonte-mobile" aria-hidden="true" tabindex="-1">#</a>12 novembre : comptes, vérification d&#39;âge et refonte mobile</h3>
+<p>La migration <code>20261112090000_password_accounts_identity_verification</code> marque l&#39;étape suivante, postérieure au dernier commit indiqué dans les repères :</p>
+<ol>
+<li>comptes avec mot de passe, réinitialisation par code et connexion Google et Apple ;</li>
+<li>vérification d&#39;âge par pièce d&#39;identité chiffrée, examinée depuis la page Mairie <code>/mairie/identites</code>, et refus des achats tant que l&#39;âge n&#39;est pas vérifié ;</li>
+<li>un seul ticket par participant et par grand tirage, numéros de ticket à cinq chiffres, phases du tour et délai de révélation géré par le keeper ;</li>
+<li>ticket à gratter acheté en EtherPoints et nouveaux paliers de la jauge ;</li>
+<li>refonte complète de l&#39;application mobile sur la maquette Figma : police Inter, nouveaux jetons de couleur, quatre onglets et douze nouveaux écrans ;</li>
+<li>alignement du frontend web sur cette charte : mêmes couleurs, police et icônes, pages restylées sur les écrans mobiles.</li>
+</ol>
 <h2 id="ce-que-l-historique-explique"><a class="anchor" href="#ce-que-l-historique-explique" aria-hidden="true" tabindex="-1">#</a>Ce que l&#39;historique explique</h2>
 <p>Le contrat est arrivé en dernier, alors que c&#39;est le livrable central du brief. Cela explique plusieurs traces visibles dans le code :</p>
 <ul>
@@ -246,7 +257,7 @@
       <span>Ville d'EtherBay, projet BlockLucky</span>
     </footer>
   </main>
-  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#reperes">Repères</a></li><li class="toc-h2"><a href="#les-etapes">Les étapes</a></li><li class="toc-h3"><a href="#2-novembre-le-backend-en-une-soiree">2 novembre : le backend en une soirée</a></li><li class="toc-h3"><a href="#3-novembre-l-application-mobile">3 novembre : l&#39;application mobile</a></li><li class="toc-h3"><a href="#4-au-8-novembre-pas-de-code">4 au 8 novembre : pas de code</a></li><li class="toc-h3"><a href="#9-novembre-le-frontend-web-et-l-office-de-tourisme">9 novembre : le frontend web et l&#39;Office de Tourisme</a></li><li class="toc-h3"><a href="#10-novembre-industrialisation-puis-securite">10 novembre : industrialisation puis sécurité</a></li><li class="toc-h3"><a href="#11-novembre-le-smart-contract-et-le-passage-au-reel">11 novembre : le smart contract et le passage au réel</a></li><li class="toc-h2"><a href="#ce-que-l-historique-explique">Ce que l&#39;historique explique</a></li><li class="toc-h2"><a href="#feuille-de-route">Feuille de route</a></li><li class="toc-h3"><a href="#avant-toute-ouverture-au-public">Avant toute ouverture au public</a></li><li class="toc-h3"><a href="#nettoyage-du-code">Nettoyage du code</a></li><li class="toc-h3"><a href="#evolutions-possibles">Évolutions possibles</a></li><li class="toc-h3"><a href="#dependances-en-attente">Dépendances en attente</a></li></ul></aside>
+  <aside class="toc" aria-label="Sommaire de la page"><p class="toc-title">Sur cette page</p><ul><li class="toc-h2"><a href="#reperes">Repères</a></li><li class="toc-h2"><a href="#les-etapes">Les étapes</a></li><li class="toc-h3"><a href="#2-novembre-le-backend-en-une-soiree">2 novembre : le backend en une soirée</a></li><li class="toc-h3"><a href="#3-novembre-l-application-mobile">3 novembre : l&#39;application mobile</a></li><li class="toc-h3"><a href="#4-au-8-novembre-pas-de-code">4 au 8 novembre : pas de code</a></li><li class="toc-h3"><a href="#9-novembre-le-frontend-web-et-l-office-de-tourisme">9 novembre : le frontend web et l&#39;Office de Tourisme</a></li><li class="toc-h3"><a href="#10-novembre-industrialisation-puis-securite">10 novembre : industrialisation puis sécurité</a></li><li class="toc-h3"><a href="#11-novembre-le-smart-contract-et-le-passage-au-reel">11 novembre : le smart contract et le passage au réel</a></li><li class="toc-h3"><a href="#12-novembre-comptes-verification-d-age-et-refonte-mobile">12 novembre : comptes, vérification d&#39;âge et refonte mobile</a></li><li class="toc-h2"><a href="#ce-que-l-historique-explique">Ce que l&#39;historique explique</a></li><li class="toc-h2"><a href="#feuille-de-route">Feuille de route</a></li><li class="toc-h3"><a href="#avant-toute-ouverture-au-public">Avant toute ouverture au public</a></li><li class="toc-h3"><a href="#nettoyage-du-code">Nettoyage du code</a></li><li class="toc-h3"><a href="#evolutions-possibles">Évolutions possibles</a></li><li class="toc-h3"><a href="#dependances-en-attente">Dépendances en attente</a></li></ul></aside>
 </div>
 <div class="backdrop" hidden></div>
 </body>

@@ -43,7 +43,7 @@ Il n'y a pas de bandeau sur le web. La mesure d'audience fonctionne par défaut,
 | `/mentions-legales` | [`frontend-web/src/app/mentions-legales/page.tsx`](src:frontend-web/src/app/mentions-legales/page.tsx) | « Conditions de participation » | Organisateur, éligibilité (majeurs uniquement), nature des unités (ethers fictifs sans valeur), jeu responsable avec le numéro de Joueurs Info Service, avantages partenaires |
 | `/confidentialite` | [`frontend-web/src/app/confidentialite/page.tsx`](src:frontend-web/src/app/confidentialite/page.tsx) | « Politique de confidentialité » | Responsable de traitement, données collectées, blockchain et minimisation, droits, mesure d'audience avec bouton d'opposition, durée de conservation |
 
-Les deux pages portent la mention « Version de travail du pilote, novembre 2026 » et sont bilingues (français, anglais). Elles sont liées depuis le pied de page public ([`frontend-web/src/components/layout/PublicShell.tsx`](src:frontend-web/src/components/layout/PublicShell.tsx)) et depuis l'écran de connexion, qui indique : « En continuant, vous acceptez les conditions de participation et la politique de confidentialité ». La majorité est confirmée par une case à cocher distincte.
+Les deux pages portent la mention « Version de travail du pilote, novembre 2026 » et sont bilingues (français, anglais). Elles sont liées depuis le pied de page public ([`frontend-web/src/components/layout/PublicShell.tsx`](src:frontend-web/src/components/layout/PublicShell.tsx)) et depuis l'écran de connexion, qui indique : « En continuant, vous acceptez les conditions de participation et la politique de confidentialité ». La majorité est confirmée par une case à cocher distincte. Cette déclaration ne suffit plus pour jouer : la vérification d'âge par pièce d'identité, envoyée depuis `/profil/identite` ou depuis l'application mobile, est exigée avant tout achat.
 
 Ce qui manque :
 
@@ -52,14 +52,14 @@ Ce qui manque :
 | Mentions légales au sens de la LCEN | La page `/mentions-legales` contient en réalité les conditions de participation. Aucune page n'identifie l'éditeur (adresse, contact), le directeur de la publication ni l'hébergeur. |
 | Règlement de jeu complet | Durée, dotation, modalités du tirage et du remboursement, résolution des litiges : à rédiger |
 | Conditions générales d'utilisation distinctes | Absentes ; les conditions de participation en tiennent lieu |
-| Exactitude de la politique de confidentialité | Elle parle d'« événements de parcours anonymisés » alors qu'ils sont rattachés au compte ; elle ne mentionne ni le cadeau de ticket, ni les données Redis, ni l'immutabilité des transactions |
+| Exactitude de la politique de confidentialité | Elle parle d'« événements de parcours anonymisés » alors qu'ils sont rattachés au compte ; elle ne mentionne ni le cadeau de ticket, ni les données Redis, ni l'immutabilité des transactions, ni la vérification d'âge par pièce d'identité, ni la connexion par Google ou Apple |
 | Déclaration d'accessibilité | Absente (voir [Accessibilité numérique](accessibilite.md)) |
 
 ## Application mobile
 
 L'application ne dépose pas de cookie et n'envoie pas d'événement de mesure d'audience. Elle conserve le jeton et le profil dans le stockage sécurisé du système (voir [Navigateur et mobile](../securite/navigateur-mobile.md#application-mobile)). Elle propose l'export et la suppression des données dans [`mobile-app/src/screens/settings/GDPRScreen.tsx`](src:mobile-app/src/screens/settings/GDPRScreen.tsx).
 
-Elle ne contient en revanche **aucun écran** de conditions de participation ni de politique de confidentialité, ni de lien vers les pages du web. Les magasins d'applications exigent une URL de politique de confidentialité et des déclarations sur les données collectées ; ces éléments sont à préparer avant publication (voir [Builds et publication](../mobile/builds-publication.md)).
+Elle ne contient en revanche **aucun écran** de conditions de participation ni de politique de confidentialité, ni de lien vers les pages du web. L'inscription par mot de passe impose pourtant de cocher « J'accepte les conditions d'utilisation et la politique de confidentialité » (`acceptTerms`, vérifié par le backend), sans que ces textes soient consultables depuis l'écran. Les connexions Google et Apple ne demandent aucune acceptation. L'écran de vérification d'âge présente un encart sur la protection des données de la pièce, et l'application demande l'accès à l'appareil photo et aux photos avec un texte d'explication déclaré dans [`mobile-app/app.json`](src:mobile-app/app.json). Les magasins d'applications exigent une URL de politique de confidentialité et des déclarations sur les données collectées ; ces éléments sont à préparer avant publication (voir [Builds et publication](../mobile/builds-publication.md)).
 
 ## Site de l'Office de Tourisme
 

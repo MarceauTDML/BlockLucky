@@ -7,7 +7,7 @@ BlockLucky utilise un vrai contrat Ethereum et de vraies transactions, mais sur 
 | Élément | Nature dans le dépôt | Valeur |
 |---|---|---|
 | Ethers de la cagnotte et des tickets | ETH du réseau Hardhat local (chaîne 31337) ou de Sepolia (chaîne 11155111) | Aucune valeur marchande ; obtenus gratuitement (comptes Hardhat, robinets Sepolia) |
-| Dotation de bienvenue | Transfert de `WELCOME_GRANT_WEI` (0,1 ETH de test par défaut) depuis le compte opérateur | Gratuite pour le citoyen |
+| Dotation de bienvenue | Transfert de `WELCOME_GRANT_WEI` (0,5 ETH de test par défaut) depuis le compte opérateur | Gratuite pour le citoyen |
 | Badge POAP | Jeton ERC-721 `BlockLuckyPOAP`, non transférable : `_update` refuse tout transfert entre deux adresses (`SoulboundToken`) | Commémoratif |
 | EtherPoints | Solde en base de données (`User.pointsBalance`, journal `PointTransaction`), **pas** un jeton sur la chaîne | Échangeables contre des offres de commerçants |
 
@@ -63,4 +63,4 @@ Ces garde-fous sont techniques : ils n'empêchent pas un opérateur de modifier 
 
 ## EtherPoints
 
-Les EtherPoints sont un programme de fidélité tenu en base de données, sans jeton sur la chaîne. Ils sont gagnés par la participation (achat, parrainage, quêtes) et échangés contre des offres de commerçants partenaires, sans intervention du hasard. Deux questions restent ouvertes et sont reprises dans [Points à valider](points-a-valider.md) : leur qualification éventuelle d'avantage en nature, et le régime des offres des commerçants (responsabilité, conditions, fiscalité).
+Les EtherPoints sont un programme de fidélité tenu en base de données, sans jeton sur la chaîne. Ils sont gagnés par la participation (achat, parrainage, quêtes) et échangés contre des offres de commerçants partenaires, soit directement, soit par un ticket à gratter de 50 ou 100 points qui tire l'offre au hasard (voir [Veille juridique](veille-juridique.md#conditions-a-maintenir)). Deux questions restent ouvertes et sont reprises dans [Points à valider](points-a-valider.md) : leur qualification éventuelle d'avantage en nature, et le régime des offres des commerçants (responsabilité, conditions, fiscalité).
