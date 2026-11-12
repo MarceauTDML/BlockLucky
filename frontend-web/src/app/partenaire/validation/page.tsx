@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { usePartnerSelection } from '@/components/partner/PartnerSelection';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import Input from '@/components/ui/Input';
 import { Alert, PageHeader } from '@/components/ui/Misc';
 import { formatDateShort } from '@/lib/date';
@@ -53,7 +54,13 @@ export default function PartnerRedeemPage() {
       />
 
       <div className="grid gap-5 md:grid-cols-[1.2fr_1fr]">
-        <form className="card p-5" onSubmit={handleSubmit} noValidate>
+        <form className="card p-5 md:p-6" onSubmit={handleSubmit} noValidate>
+          <div className="mb-4 flex items-center gap-3">
+            <span aria-hidden className="flex h-10 w-10 items-center justify-center rounded-full bg-sun-chip text-on-sun dark:text-sun">
+              <Icon name="giftTicket" size={20} />
+            </span>
+            <p className="text-subtitle font-bold">{t('Code promo', 'Promo code')}</p>
+          </div>
           <Input
             label={t('Code promo', 'Promo code')}
             value={code}
@@ -70,36 +77,48 @@ export default function PartnerRedeemPage() {
           </Button>
 
           {result ? (
-            <div className="mt-4 rounded-md border border-primary bg-surface-elevated p-4" role="status">
-              <p className="text-caption font-semibold text-primary">{t('Code valide — avantage accordé', 'Valid code — perk granted')}</p>
-              <p className="mt-1 text-body font-bold">{result.rewardTitle}</p>
-              <p className="font-mono text-caption text-fg-secondary">{result.uniqueCode}</p>
-              {foreignPartner ? (
-                <p className="mt-2 text-caption text-warning">
+            <div className="mt-4 flex items-start gap-3 rounded-[20px] bg-mint p-4" role="status">
+              <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-green">
+                <Icon name="check" size={20} />
+              </span>
+              <div className="min-w-0">
+                <p className="text-caption font-semibold text-green">{t('Code valide — avantage accordé', 'Valid code — perk granted')}</p>
+                <p className="mt-1 text-subtitle font-bold">{result.rewardTitle}</p>
+                <p className="font-mono text-caption text-fg-secondary">{result.uniqueCode}</p>
+                {foreignPartner ? (
+                  <p className="mt-2 rounded-[12px] bg-peach px-3 py-2 text-caption font-medium text-terracotta">
                   {t(
                     `Attention : ce code appartient à « ${result.partnerName} ».`,
                     `Warning: this code belongs to “${result.partnerName}”.`
                   )}
-                </p>
-              ) : null}
+                  </p>
+                ) : null}
+              </div>
             </div>
           ) : null}
         </form>
 
-        <section className="card p-5" aria-labelledby="session-title">
-          <h2 id="session-title" className="mb-2 text-body font-bold">
+        <section className="card p-5 md:p-6" aria-labelledby="session-title">
+          <h2 id="session-title" className="mb-3 text-subtitle font-bold">
             {t('Validés pendant cette session', 'Redeemed this session')}
           </h2>
           {history.length === 0 ? (
-            <p className="text-caption text-fg-muted">{t('Aucun code validé.', 'No code redeemed.')}</p>
+            <p className="rounded-[16px] bg-surface-elevated px-4 py-5 text-center text-caption text-fg-muted">
+              {t('Aucun code validé.', 'No code redeemed.')}
+            </p>
           ) : (
             <ul className="flex flex-col gap-2">
               {history.map((h) => (
-                <li key={h.uniqueCode} className="rounded-md bg-surface-elevated p-2.5">
-                  <p className="font-mono text-caption font-semibold">{h.uniqueCode}</p>
-                  <p className="text-caption text-fg-muted">
-                    {h.rewardTitle} · {formatDateShort(h.usedAt)}
-                  </p>
+                <li key={h.uniqueCode} className="flex items-center gap-3 rounded-[16px] bg-surface-elevated px-3.5 py-3">
+                  <span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mint text-green">
+                    <Icon name="check" size={16} />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate font-mono text-caption font-semibold">{h.uniqueCode}</p>
+                    <p className="text-caption text-fg-muted">
+                      {h.rewardTitle} · {formatDateShort(h.usedAt)}
+                    </p>
+                  </div>
                 </li>
               ))}
             </ul>

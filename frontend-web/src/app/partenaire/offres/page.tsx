@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { PartnerSwitcher, usePartnerSelection } from '@/components/partner/PartnerSelection';
 import Button, { LinkButton } from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import Input from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
 import { Alert, Badge, PageHeader } from '@/components/ui/Misc';
@@ -104,8 +105,11 @@ export default function PartnerOffersPage() {
 
       <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
         {partners.length === 0 ? (
-          <form className="card p-5" onSubmit={handleCreateBusiness}>
-            <h2 className="mb-1 text-subtitle font-bold">{t('Créer mon établissement', 'Create my business')}</h2>
+          <form className="card p-5 md:p-6" onSubmit={handleCreateBusiness}>
+            <span aria-hidden className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-peach text-terracotta">
+              <Icon name="bag" size={20} />
+            </span>
+            <h2 className="mb-1 text-heading font-bold">{t('Créer mon établissement', 'Create my business')}</h2>
             <p className="mb-3 text-caption text-fg-secondary">
               {t('La Mairie peut suspendre une fiche à tout moment.', 'City Hall can suspend a profile at any time.')}
             </p>
@@ -120,8 +124,13 @@ export default function PartnerOffersPage() {
             </Button>
           </form>
         ) : (
-          <form className="card p-5" onSubmit={handleCreate} noValidate>
-            <h2 className="mb-3 text-subtitle font-bold">{t('Nouvelle offre', 'New offer')}</h2>
+          <form className="card p-5 md:p-6" onSubmit={handleCreate} noValidate>
+            <div className="mb-4 flex items-center gap-3">
+              <span aria-hidden className="flex h-10 w-10 items-center justify-center rounded-full bg-sun-chip text-on-sun dark:text-sun">
+                <Icon name="gift" size={20} />
+              </span>
+              <h2 className="text-heading font-bold">{t('Nouvelle offre', 'New offer')}</h2>
+            </div>
             <Input
               label={t("Titre de l'offre", 'Offer title')}
               value={title}
@@ -164,18 +173,23 @@ export default function PartnerOffersPage() {
           </form>
         )}
 
-        <section className="card p-5" aria-labelledby="current-offers">
-          <h2 id="current-offers" className="mb-3 text-subtitle font-bold">
+        <section className="card p-5 md:p-6" aria-labelledby="current-offers">
+          <h2 id="current-offers" className="mb-4 text-heading font-bold">
             {t('Offres publiées', 'Published offers')}
           </h2>
           {!selected || selected.rewards.length === 0 ? (
-            <p className="text-caption text-fg-muted">{t('Aucune offre pour le moment.', 'No offer yet.')}</p>
+            <p className="rounded-[16px] bg-surface-elevated px-4 py-5 text-center text-caption text-fg-muted">
+              {t('Aucune offre pour le moment.', 'No offer yet.')}
+            </p>
           ) : (
             <ul className="flex flex-col gap-2">
               {selected.rewards.map((r) => (
-                <li key={r.id} className="flex items-center justify-between gap-3 rounded-md bg-surface-elevated p-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-small font-semibold">{r.title}</p>
+                <li key={r.id} className="flex items-center justify-between gap-3 rounded-[16px] bg-surface-elevated px-3.5 py-3">
+                  <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-violet">
+                    <Icon name="giftTicket" size={20} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-body font-semibold">{r.title}</p>
                     <p className="text-caption text-fg-muted tabular">
                       {t(`${r.remainingStock}/${r.totalStock} en stock`, `${r.remainingStock}/${r.totalStock} in stock`)}
                     </p>

@@ -54,7 +54,7 @@ export default function PartnerDashboardPage() {
           ) : null}
 
           <div className="grid gap-5 lg:grid-cols-[280px_1fr]">
-            <section className="card flex flex-col items-center justify-center p-5">
+            <section className="card flex flex-col items-center justify-center p-6">
               <RingMeter
                 percentage={c.summary.consumptionPercentage}
                 label={t('Codes réclamés', 'Codes claimed')}
@@ -65,20 +65,36 @@ export default function PartnerDashboardPage() {
               />
             </section>
             <section className="grid grid-cols-2 gap-3 self-start">
-              <KpiTile label={t('Codes émis', 'Codes issued')} value={String(c.summary.totalStock)} />
-              <KpiTile label={t('Stock restant', 'Remaining stock')} value={String(c.summary.remainingStock)} />
-              <KpiTile label={t('Réclamés en ligne', 'Claimed online')} value={String(c.summary.claimedCount)} tone="primary" />
+              <KpiTile
+                label={t('Codes émis', 'Codes issued')}
+                value={String(c.summary.totalStock)}
+                icon="giftTicket"
+                accent="sun"
+              />
+              <KpiTile
+                label={t('Stock restant', 'Remaining stock')}
+                value={String(c.summary.remainingStock)}
+                icon="bag"
+                accent="peach"
+              />
+              <KpiTile
+                label={t('Réclamés en ligne', 'Claimed online')}
+                value={String(c.summary.claimedCount)}
+                tone="primary"
+                icon="star"
+              />
               <KpiTile
                 label={t('Utilisés en magasin', 'Redeemed in store')}
                 value={String(c.summary.redeemedInStoreCount)}
                 tone="secondary"
+                icon="check"
               />
             </section>
           </div>
 
-          <section className="card overflow-hidden" aria-labelledby="offers-title">
-            <div className="flex items-center justify-between gap-3 p-4 pb-2">
-              <h2 id="offers-title" className="text-body font-bold">
+          <section className="card overflow-hidden p-2 md:p-3" aria-labelledby="offers-title">
+            <div className="flex items-center justify-between gap-3 px-2.5 pb-2 pt-2.5">
+              <h2 id="offers-title" className="text-subtitle font-bold">
                 {t('Détail par offre', 'Breakdown by offer')}
               </h2>
               <LinkButton href="/partenaire/offres" size="sm" fullWidth={false}>
@@ -86,24 +102,29 @@ export default function PartnerDashboardPage() {
               </LinkButton>
             </div>
             {c.offersBreakdown.length === 0 ? (
-              <p className="px-4 pb-5 text-caption text-fg-muted">{t('Aucune offre publiée.', 'No offer published.')}</p>
+              <p className="m-2.5 rounded-[16px] bg-surface-elevated px-4 py-5 text-center text-caption text-fg-muted">
+                {t('Aucune offre publiée.', 'No offer published.')}
+              </p>
             ) : (
               <ul>
                 {c.offersBreakdown.map((o) => (
-                  <li key={o.rewardId} className="flex flex-col gap-2 border-t border-line px-4 py-3">
+                  <li
+                    key={o.rewardId}
+                    className="flex flex-col gap-2 rounded-[16px] border-t border-line px-3 py-3.5 transition-colors first:border-t-0 hover:bg-surface-elevated"
+                  >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="text-body font-semibold">{o.title}</p>
                       <Badge tone="secondary">{o.costInPoints} pts</Badge>
                     </div>
                     <div
-                      className="h-2 overflow-hidden rounded-full bg-surface-elevated"
+                      className="h-2.5 overflow-hidden rounded-full bg-surface-elevated"
                       role="progressbar"
                       aria-valuemin={0}
                       aria-valuemax={100}
                       aria-valuenow={o.consumptionRatePercent}
                       aria-label={t(`Consommation de ${o.title}`, `Consumption of ${o.title}`)}
                     >
-                      <div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(2, o.consumptionRatePercent)}%` }} />
+                      <div className="h-full rounded-full bg-sun" style={{ width: `${Math.max(2, o.consumptionRatePercent)}%` }} />
                     </div>
                     <p className="text-caption text-fg-secondary tabular">
                       {t(

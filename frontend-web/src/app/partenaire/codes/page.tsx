@@ -3,6 +3,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { PartnerSwitcher, usePartnerSelection } from '@/components/partner/PartnerSelection';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import { Select, Textarea } from '@/components/ui/Input';
 import { Alert, EmptyState, PageHeader } from '@/components/ui/Misc';
 import { SegmentedTabs } from '@/components/ui/SegmentedTabs';
@@ -86,7 +87,7 @@ export default function PartnerCodesPage() {
         />
       ) : (
         <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
-          <section className="card p-5">
+          <section className="card p-5 md:p-6">
             <Select label={t('Offre concernée', 'Target offer')} value={currentRewardId} onChange={(e) => setRewardId(e.target.value)}>
               {offers.map((o) => (
                 <option key={o.id} value={o.id}>
@@ -99,6 +100,7 @@ export default function PartnerCodesPage() {
               ariaLabel={t('Source des codes', 'Code source')}
               value={source}
               onChange={setSource}
+              className="mb-4"
               options={[
                 { value: 'CSV', label: t('Fichier CSV', 'CSV file') },
                 { value: 'MANUAL', label: t('Saisie manuelle', 'Manual entry') },
@@ -109,13 +111,16 @@ export default function PartnerCodesPage() {
               <div className="mb-3">
                 <label
                   htmlFor="csv-file"
-                  className="flex cursor-pointer flex-col items-center gap-1 rounded-md border border-dashed border-line bg-surface-elevated px-4 py-8 text-center hover:border-fg-muted"
+                  className="flex cursor-pointer flex-col items-center gap-1.5 rounded-[20px] border-2 border-dashed border-line bg-surface-elevated px-4 py-8 text-center transition-colors hover:border-sun hover:bg-sun-chip"
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
                     e.preventDefault();
                     void onFile(e.dataTransfer.files?.[0]);
                   }}
                 >
+                  <span aria-hidden className="mb-1 flex h-12 w-12 items-center justify-center rounded-full bg-sun text-on-sun">
+                    <Icon name="document" size={22} />
+                  </span>
                   <span className="text-body font-semibold">
                     {fileName || t('Déposez un fichier CSV ou cliquez', 'Drop a CSV file or click')}
                   </span>
@@ -153,8 +158,8 @@ export default function PartnerCodesPage() {
             ) : null}
           </section>
 
-          <aside className="card p-5" aria-labelledby="preview-title">
-            <h2 id="preview-title" className="mb-2 text-body font-bold">
+          <aside className="card p-5 md:p-6" aria-labelledby="preview-title">
+            <h2 id="preview-title" className="mb-3 text-subtitle font-bold">
               {t('Contrôle avant envoi', 'Pre-upload check')}
             </h2>
             <dl className="mb-3 grid grid-cols-3 gap-2 text-center">
@@ -162,17 +167,20 @@ export default function PartnerCodesPage() {
                 [t('Valides', 'Valid'), parsed.valid.length],
                 [t('Doublons', 'Duplicates'), parsed.duplicates],
                 [t('Rejetés', 'Rejected'), parsed.invalid.length],
-              ].map(([label, value]) => (
-                <div key={String(label)} className="rounded-md bg-surface-elevated py-2">
-                  <dt className="text-caption text-fg-muted">{label}</dt>
-                  <dd className="text-subtitle font-bold tabular">{value}</dd>
+              ].map(([label, value], index) => (
+                <div
+                  key={String(label)}
+                  className={`flex flex-col-reverse rounded-[16px] px-2 py-3 ${['bg-mint', 'bg-sun-chip', 'bg-peach'][index]}`}
+                >
+                  <dt className="text-caption font-medium text-fg-secondary">{label}</dt>
+                  <dd className="text-heading font-bold tabular">{value}</dd>
                 </div>
               ))}
             </dl>
             {parsed.valid.length > 0 ? (
-              <ul className="max-h-60 overflow-auto rounded-md border border-line font-mono text-caption">
+              <ul className="max-h-60 overflow-auto rounded-[16px] bg-surface-elevated p-1.5 font-mono text-caption">
                 {parsed.valid.slice(0, 50).map((code) => (
-                  <li key={code} className="border-b border-line px-3 py-1.5 last:border-0">
+                  <li key={code} className="rounded-[10px] px-3 py-1.5 hover:bg-surface">
                     {code}
                   </li>
                 ))}
@@ -181,10 +189,12 @@ export default function PartnerCodesPage() {
                 ) : null}
               </ul>
             ) : (
-              <p className="text-caption text-fg-muted">{t('Aucun code détecté.', 'No code detected.')}</p>
+              <p className="rounded-[16px] bg-surface-elevated px-4 py-5 text-center text-caption text-fg-muted">
+                {t('Aucun code détecté.', 'No code detected.')}
+              </p>
             )}
             {parsed.invalid.length > 0 ? (
-              <p className="mt-2 text-caption text-warning">
+              <p className="mt-3 rounded-[12px] bg-peach px-3 py-2 text-caption font-medium text-terracotta">
                 {t('Rejetés (3 à 64 caractères alphanumériques, - ou _) : ', 'Rejected (3–64 alphanumeric, - or _): ')}
                 {parsed.invalid.slice(0, 5).join(', ')}
                 {parsed.invalid.length > 5 ? '…' : ''}

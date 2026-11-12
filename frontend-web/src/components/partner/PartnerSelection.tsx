@@ -76,7 +76,7 @@ export const PartnerSwitcher: React.FC = () => {
   const { partners, selectedId, setSelectedId } = usePartnerSelection();
   if (partners.length <= 1) return null;
   return (
-    <div className="w-full md:w-72">
+    <div className="w-full rounded-[20px] bg-surface px-3.5 pt-3 shadow-[var(--card-shadow)] md:w-72">
       <Select
         label={t('Établissement', 'Business')}
         value={selectedId ?? ''}

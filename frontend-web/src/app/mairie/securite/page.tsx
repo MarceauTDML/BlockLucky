@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import AdminQueryError from '@/components/admin/AdminQueryError';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import Input, { Textarea } from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
 import { Alert, Badge, PageHeader, StatusDot } from '@/components/ui/Misc';
@@ -24,7 +26,7 @@ const CONFIRM_WORD = 'PAUSE';
 
 export default function SecurityAdminPage() {
   const { t } = useAppTheme();
-  const { data, isLoading } = useGetAdminDashboardQuery();
+  const { data, isLoading, isError, error } = useGetAdminDashboardQuery();
   const { data: statusRes } = useGetLotteryStatusQuery();
   const [toggleBreaker, { isLoading: toggling }] = useToggleCircuitBreakerMutation();
   const [withdraw, { isLoading: withdrawing }] = useWithdrawTreasuryMutation();
@@ -160,16 +162,29 @@ export default function SecurityAdminPage() {
         )}
       />
 
+      {isError ? (
+        <AdminQueryError
+          className="mb-4"
+          error={error}
+          fallback={t('État du contrat indisponible.', 'Contract status unavailable.')}
+        />
+      ) : null}
+
       <div className="grid gap-5 lg:grid-cols-2">
         {}
         <section
-          className={`flex flex-col gap-3 rounded-lg border bg-surface p-5 ${isPaused ? 'border-error' : 'border-line'}`}
+          className={`flex flex-col gap-3 rounded-[24px] bg-peach p-5 md:p-6 ${isPaused ? 'ring-2 ring-error' : ''}`}
           aria-labelledby="breaker-title"
         >
           <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-caption font-semibold text-error">{t("Interrupteur d'urgence", 'Emergency switch')}</p>
-              <h2 id="breaker-title" className="text-subtitle font-bold">Circuit Breaker</h2>
+            <div className="flex items-start gap-3">
+              <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-error">
+                <Icon name="alert" size={20} />
+              </span>
+              <div>
+                <p className="text-caption font-semibold text-error">{t("Interrupteur d'urgence", 'Emergency switch')}</p>
+                <h2 id="breaker-title" className="text-heading font-bold">Circuit Breaker</h2>
+              </div>
             </div>
             <Badge tone={isPaused ? 'danger' : 'primary'}>
               <StatusDot tone={isPaused ? 'error' : 'success'} className="mr-1.5" />
@@ -182,7 +197,7 @@ export default function SecurityAdminPage() {
               'In case of attack or incident, pausing immediately blocks any new ticket purchase. Funds remain protected and refundable.'
             )}
           </p>
-          <p className="break-all font-mono text-caption text-fg-muted">
+          <p className="break-all rounded-[16px] bg-surface/70 px-3.5 py-2.5 font-mono text-caption text-fg-secondary">
             {t('Contrat : ', 'Contract: ')}
             {network?.contractAddress || '—'}
           </p>
@@ -193,14 +208,19 @@ export default function SecurityAdminPage() {
         </section>
 
         {}
-        <section className="card flex flex-col gap-3 p-5" aria-labelledby="draw-title">
-          <div>
-            <p className="text-caption font-semibold text-secondary">Chainlink VRF</p>
-            <h2 id="draw-title" className="text-subtitle font-bold">
-              {t('Tirage en cours', 'Current draw')} {round ? `#${round.contractRoundId}` : ''}
-            </h2>
+        <section className="flex flex-col gap-3 rounded-[24px] bg-sun p-5 text-on-sun md:p-6" aria-labelledby="draw-title">
+          <div className="flex items-start gap-3">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/60 text-on-sun">
+              <Icon name="wheel" size={20} />
+            </span>
+            <div>
+              <p className="inline-flex rounded-full bg-white/60 px-2.5 py-0.5 text-caption font-semibold text-on-sun">Chainlink VRF</p>
+              <h2 id="draw-title" className="mt-1 text-heading font-bold">
+                {t('Tirage en cours', 'Current draw')} {round ? `#${round.contractRoundId}` : ''}
+              </h2>
+            </div>
           </div>
-          <p className="text-caption text-fg-secondary">
+          <p className="text-caption text-on-sun-muted">
             {round
               ? t(
                   `Statut : ${round.status} · cagnotte ${round.prizePool.toFixed(2)} ETH fictifs · ${statusRes?.data?.progression.ticketsSold ?? 0} tickets.`,
@@ -239,7 +259,7 @@ export default function SecurityAdminPage() {
                     href={drawRequest.etherscanUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 block font-medium text-primary underline-offset-2 hover:underline"
+                    className="mt-1 block font-semibold underline underline-offset-2 hover:opacity-80"
                   >
                     {t('Voir la demande sur Etherscan →', 'View the request on Etherscan →')}
                   </a>
@@ -248,7 +268,12 @@ export default function SecurityAdminPage() {
             )
           ) : null}
           <div className="grid gap-2.5 sm:grid-cols-2">
-            <Button onClick={() => setDrawAction('draw')} loading={drawing} disabled={!round || round.status !== 'OPEN'}>
+            <Button
+              variant="secondary"
+              onClick={() => setDrawAction('draw')}
+              loading={drawing}
+              disabled={!round || round.status !== 'OPEN'}
+            >
               {simulatedMode ? t('Lancer le tirage de démonstration', 'Run demo draw') : t('Lancer le tirage VRF', 'Run VRF draw')}
             </Button>
             <Button
@@ -263,11 +288,18 @@ export default function SecurityAdminPage() {
         </section>
 
         {}
-        <section className="card flex flex-col gap-1 p-5 lg:col-span-2" aria-labelledby="treasury-title">
-          <p className="text-caption font-semibold text-secondary">{t('Trésorerie', 'Treasury')}</p>
-          <h2 id="treasury-title" className="text-subtitle font-bold">
-            {t('Retrait vers le portefeuille multi-signatures', 'Withdraw to multisig wallet')}
-          </h2>
+        <section className="card flex flex-col gap-1 p-5 md:p-6 lg:col-span-2" aria-labelledby="treasury-title">
+          <div className="mb-1 flex items-start gap-3">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lavender text-violet">
+              <Icon name="lock" size={20} />
+            </span>
+            <div>
+              <p className="text-caption font-semibold text-violet">{t('Trésorerie', 'Treasury')}</p>
+              <h2 id="treasury-title" className="text-heading font-bold">
+                {t('Retrait vers le portefeuille multi-signatures', 'Withdraw to multisig wallet')}
+              </h2>
+            </div>
+          </div>
           <p className="mb-3 text-caption text-fg-secondary">
             {t(
               `Part Mairie disponible : ${revenue.toFixed(4)} ETH fictifs. Le retrait exige les signatures du multisig municipal.`,
@@ -374,7 +406,7 @@ export default function SecurityAdminPage() {
         onClose={() => setWithdrawConfirm(false)}
       >
         <div className="flex flex-col gap-3 pb-2">
-          <dl className="flex flex-col gap-1.5 rounded-md bg-surface-elevated p-3 text-small">
+          <dl className="flex flex-col gap-2 rounded-[16px] bg-surface-elevated p-4 text-small">
             <div className="flex justify-between gap-3">
               <dt className="text-fg-secondary">{t('Montant', 'Amount')}</dt>
               <dd className="font-semibold tabular">{amount} ETH</dd>

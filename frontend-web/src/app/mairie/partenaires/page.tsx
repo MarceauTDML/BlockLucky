@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import AdminQueryError from '@/components/admin/AdminQueryError';
 import Button from '@/components/ui/Button';
 import { Loader } from '@/components/ui/Loader';
 import { Alert, Badge, EmptyState, PageHeader } from '@/components/ui/Misc';
@@ -14,7 +15,7 @@ import { PartnerWithRewards } from '@/types/partner.types';
 
 export default function AdminPartnersPage() {
   const { t } = useAppTheme();
-  const { data, isLoading, isError } = useGetPartnersQuery();
+  const { data, isLoading, isError, error } = useGetPartnersQuery();
   const [setStatus, { isLoading: saving }] = useSetPartnerStatusMutation();
   const [target, setTarget] = useState<PartnerWithRewards | null>(null);
   const [feedback, setFeedback] = useState<{ tone: 'success' | 'error'; text: string } | null>(null);
@@ -56,7 +57,7 @@ export default function AdminPartnersPage() {
       {isLoading ? (
         <Loader skeletonRows={3} />
       ) : isError ? (
-        <Alert tone="error">{t('Liste des partenaires indisponible.', 'Partner list unavailable.')}</Alert>
+        <AdminQueryError error={error} fallback={t('Liste des partenaires indisponible.', 'Partner list unavailable.')} />
       ) : partners.length === 0 ? (
         <EmptyState title={t('Aucun partenaire', 'No partners')} />
       ) : (
@@ -65,13 +66,13 @@ export default function AdminPartnersPage() {
             const claimed = p.rewards.reduce((s, r) => s + (r._count?.claimedRewards ?? 0), 0);
             const stock = p.rewards.reduce((s, r) => s + r.remainingStock, 0);
             return (
-              <li key={p.id} className="card flex flex-col gap-3 p-4">
+              <li key={p.id} className="card flex flex-col gap-4 p-[18px]">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-surface-elevated text-caption font-bold text-primary">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-sun-chip text-small font-bold text-on-sun dark:text-sun">
                     {p.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-body font-bold">{p.name}</h2>
+                    <h2 className="text-subtitle font-bold">{p.name}</h2>
                     <p className="text-caption text-fg-muted">
                       {t('Inscrit le', 'Joined')} {formatDateShort(p.createdAt)}
                     </p>
@@ -86,9 +87,9 @@ export default function AdminPartnersPage() {
                     [t('Réclamées', 'Claimed'), claimed],
                     [t('Stock', 'Stock'), stock],
                   ].map(([label, value]) => (
-                    <div key={String(label)} className="rounded-md bg-surface-elevated py-2">
-                      <dt className="text-caption text-fg-muted">{label}</dt>
-                      <dd className="text-body font-bold tabular">{value}</dd>
+                    <div key={String(label)} className="flex flex-col-reverse rounded-[16px] bg-surface-elevated px-2 py-3">
+                      <dt className="text-caption font-medium text-fg-muted">{label}</dt>
+                      <dd className="text-heading font-bold tabular">{value}</dd>
                     </div>
                   ))}
                 </dl>
