@@ -7,31 +7,37 @@ datasource db {
 }
 
 model User {
-  id                   String             @id @default(uuid(7))
-  walletAddress        String             @unique
-  walletEncryptedKey   String?
-  welcomeGrantTxHash   String?
-  email                String?            @unique
-  role                 Role               @default(USER)
-  isTwoFactorEnabled   Boolean            @default(false)
-  twoFactorMethod      TwoFactorMethod?
-  twoFactorSecret      String?
-  twoFactorBackupCodes String[]           @default([])
-  isEmailVerified      Boolean            @default(false)
-  pointsBalance        Int                @default(0)
-  referralCode         String             @unique @default(uuid())
-  referredById         String?
-  referredBy           User?              @relation("Referrals", fields: [referredById], references: [id])
-  referrals            User[]             @relation("Referrals")
-  tickets              Ticket[]
-  pointLedger          PointTransaction[]
-  claimedRewards       ClaimedReward[]
-  tokens               Token[]
-  analytics            Analytics[]
-  ownedPartners        Partner[]          @relation("PartnerOwner")
-  createdAt            DateTime           @default(now()) @db.Timestamptz(3)
-  updatedAt            DateTime           @updatedAt @db.Timestamptz(3)
-  deletedAt            DateTime?          @db.Timestamptz(3)
+  id                    String                @id @default(uuid(7))
+  walletAddress         String                @unique
+  walletEncryptedKey    String?
+  welcomeGrantTxHash    String?
+  email                 String?               @unique
+  passwordHash          String?
+  role                  Role                  @default(USER)
+  isTwoFactorEnabled    Boolean               @default(false)
+  twoFactorMethod       TwoFactorMethod?
+  twoFactorSecret       String?
+  twoFactorBackupCodes  String[]              @default([])
+  isEmailVerified       Boolean               @default(false)
+  ageVerificationStatus AgeVerificationStatus @default(NONE)
+  ageVerifiedAt         DateTime?             @db.Timestamptz(3)
+  ageVerificationNote   String?
+  pointsBalance         Int                   @default(0)
+  referralCode          String                @unique @default(uuid())
+  referredById          String?
+  referredBy            User?                 @relation("Referrals", fields: [referredById], references: [id])
+  referrals             User[]                @relation("Referrals")
+  tickets               Ticket[]
+  pointLedger           PointTransaction[]
+  claimedRewards        ClaimedReward[]
+  tokens                Token[]
+  analytics             Analytics[]
+  ownedPartners         Partner[]             @relation("PartnerOwner")
+  identityDocument      IdentityDocument?     @relation("IdentityOwner")
+  reviewedIdentities    IdentityDocument[]    @relation("IdentityReviewer")
+  createdAt             DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime              @updatedAt @db.Timestamptz(3)
+  deletedAt             DateTime?             @db.Timestamptz(3)
 
   @@index([referredById])
 }
@@ -45,6 +51,30 @@ enum Role {
 enum TwoFactorMethod {
   APP
   EMAIL
+}
+
+enum AgeVerificationStatus {
+  NONE
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model IdentityDocument {
+  id             String                @id @default(uuid(7))
+  userId         String                @unique
+  user           User                  @relation("IdentityOwner", fields: [userId], references: [id], onDelete: Cascade)
+  status         AgeVerificationStatus @default(PENDING)
+  frontEncrypted Bytes?
+  backEncrypted  Bytes?
+  mimeType       String
+  submittedAt    DateTime              @default(now()) @db.Timestamptz(3)
+  reviewedAt     DateTime?             @db.Timestamptz(3)
+  reviewerId     String?
+  reviewer       User?                 @relation("IdentityReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([status, submittedAt])
+  @@index([reviewerId])
 }
 
 model Token {

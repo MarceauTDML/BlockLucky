@@ -1,19 +1,23 @@
 {
   "modeles": {
     "User": {
-      "description": "Compte d'un citoyen, d'un commerçant partenaire ou d'un agent de la Mairie. Porte le portefeuille Ethereum intégré, le solde d'EtherPoints, la double authentification et le parrainage. Un compte peut aussi être créé sans email par l'indexeur pour une adresse inconnue qui a acheté sur le contrat. La suppression RGPD anonymise la ligne au lieu de la supprimer.",
+      "description": "Compte d'un citoyen, d'un commerçant partenaire ou d'un agent de la Mairie. Porte le portefeuille Ethereum intégré, le mot de passe facultatif, le statut de vérification d'âge, le solde d'EtherPoints, la double authentification et le parrainage. Un compte peut aussi être créé sans email par l'indexeur pour une adresse inconnue qui a acheté sur le contrat. La suppression RGPD anonymise la ligne au lieu de la supprimer.",
       "champs": {
         "id": "Identifiant interne UUID v7, ordonné dans le temps.",
         "walletAddress": "Adresse Ethereum du compte, en minuscules. Adresse du portefeuille intégré pour un compte custodial ; valeur `0xdeleted_gdpr_…` après effacement RGPD ; adresses non valides pour les comptes du seed.",
         "walletEncryptedKey": "Clé privée du portefeuille intégré chiffrée en AES-256-GCM au format `v2:iv:étiquette:données`. `NULL` pour un compte sans portefeuille intégré ou effacé.",
         "welcomeGrantTxHash": "Hachage de la transaction de dotation de bienvenue en ethers fictifs. `NULL` tant que la dotation n'est pas versée ; sert de garde contre une seconde dotation.",
         "email": "Adresse email en minuscules, identifiant de connexion. `NULL` pour un compte créé par l'indexeur ou effacé.",
+        "passwordHash": "Empreinte bcrypt (coût 12) du mot de passe. `NULL` pour un compte sans mot de passe (connexion par code email, Google ou Apple) et après effacement RGPD.",
         "role": "Rôle d'autorisation : citoyen, commerçant partenaire ou administrateur de la Mairie.",
         "isTwoFactorEnabled": "Vrai quand la double authentification est activée et vérifiée.",
         "twoFactorMethod": "Méthode de double authentification choisie : application TOTP ou code par email.",
         "twoFactorSecret": "Secret TOTP chiffré par `encryptText`. `NULL` sans méthode TOTP.",
         "twoFactorBackupCodes": "Empreintes SHA-256 des codes de secours de la double authentification. Un code utilisé est retiré du tableau.",
         "isEmailVerified": "Vrai quand l'adresse email a été confirmée par un code reçu.",
+        "ageVerificationStatus": "Statut de la vérification d'âge par la Mairie. Seul `VERIFIED` ouvre l'achat et le cadeau de tickets et l'échange de récompenses quand `AGE_VERIFICATION_REQUIRED` est actif.",
+        "ageVerifiedAt": "Date de la validation de la pièce d'identité. `NULL` tant que l'âge n'est pas vérifié, et remis à `NULL` à chaque nouvel envoi ou refus.",
+        "ageVerificationNote": "Motif du dernier refus, envoyé au citoyen par email. `NULL` sans refus, après une validation et après effacement RGPD.",
         "pointsBalance": "Solde courant d'EtherPoints, tenu à jour avec chaque ligne de `PointTransaction`. Ne peut pas devenir négatif (contrainte CHECK).",
         "referralCode": "Code de parrainage unique du compte, partagé dans le lien d'invitation.",
         "referredById": "Identifiant du parrain, `NULL` sans parrain.",
@@ -25,9 +29,27 @@
         "tokens": "Jetons à usage unique émis pour ce compte (suppression de compte).",
         "analytics": "Événements d'analytique et entrées du journal d'audit de ce compte.",
         "ownedPartners": "Commerces partenaires gérés par ce compte.",
+        "identityDocument": "Pièce d'identité envoyée par ce compte (une au plus, relation `IdentityOwner`).",
+        "reviewedIdentities": "Pièces d'identité sur lesquelles ce compte, agent de la Mairie, a statué (relation `IdentityReviewer`).",
         "createdAt": "Date de création du compte.",
         "updatedAt": "Date de dernière modification, mise à jour par Prisma.",
         "deletedAt": "Date d'anonymisation RGPD. `NULL` pour un compte actif ; les statistiques ne comptent que les comptes où elle est `NULL`."
+      }
+    },
+    "IdentityDocument": {
+      "description": "Pièce d'identité envoyée par un citoyen pour la vérification d'âge. Une seule ligne par compte : un nouvel envoi remplace le précédent. Le recto et le verso sont chiffrés en AES-256-GCM et effacés dès que la Mairie statue ; la ligne est supprimée avec l'anonymisation RGPD du compte.",
+      "champs": {
+        "id": "Identifiant interne UUID v7 de la demande.",
+        "userId": "Compte qui a envoyé la pièce. Unique : un compte n'a qu'une demande.",
+        "user": "Relation vers le compte ; la demande est supprimée avec lui (`ON DELETE CASCADE`).",
+        "status": "État de la demande : `PENDING` à l'envoi, puis `VERIFIED` ou `REJECTED` après la décision. La valeur `NONE` de l'énumération n'est pas utilisée ici.",
+        "frontEncrypted": "Recto chiffré par `encryptBuffer` : vecteur d'initialisation de 12 octets, étiquette de 16 octets puis données. `NULL` après la décision.",
+        "backEncrypted": "Verso chiffré de la même façon. `NULL` après la décision.",
+        "mimeType": "Type de l'image détecté à partir des premiers octets du recto (`image/jpeg` ou `image/png`).",
+        "submittedAt": "Date du dernier envoi ; la file de la Mairie est triée par cette date, la plus ancienne en premier.",
+        "reviewedAt": "Date de la décision. `NULL` tant que la demande est en attente.",
+        "reviewerId": "Agent de la Mairie qui a statué. `NULL` en attente, ou si le compte de l'agent est supprimé (`SET NULL`).",
+        "reviewer": "Relation vers l'agent qui a statué."
       }
     },
     "Token": {
@@ -167,12 +189,21 @@
         "EMAIL": "Code à usage unique envoyé par email."
       }
     },
+    "AgeVerificationStatus": {
+      "description": "Statut de la vérification d'âge, porté par `User.ageVerificationStatus` et `IdentityDocument.status`.",
+      "valeurs": {
+        "NONE": "Aucune pièce envoyée : valeur par défaut d'un compte.",
+        "PENDING": "Pièce envoyée, en attente de la décision de la Mairie.",
+        "VERIFIED": "Majorité vérifiée par un agent de la Mairie.",
+        "REJECTED": "Pièce refusée avec un motif ; le citoyen peut en envoyer une nouvelle."
+      }
+    },
     "TokenType": {
       "description": "Usage d'un jeton à usage unique de la table `Token`.",
       "valeurs": {
         "EMAIL_VERIFICATION": "Vérification d'adresse email. Déclaré mais non utilisé par le code actuel : la vérification passe par un code stocké dans Redis.",
         "ACCOUNT_DELETION": "Confirmation d'une demande de suppression de compte RGPD, valable 24 h.",
-        "PASSWORD_RESET": "Réinitialisation de mot de passe. Déclaré mais non utilisé : la connexion est sans mot de passe."
+        "PASSWORD_RESET": "Réinitialisation de mot de passe. Déclaré mais non utilisé : le code de réinitialisation est un code à 6 chiffres stocké dans Redis."
       }
     },
     "Status": {
