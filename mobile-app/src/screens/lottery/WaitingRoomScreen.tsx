@@ -4,7 +4,7 @@ import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import CrossFade from '../../components/draw/CrossFade';
 import PulseDots from '../../components/draw/PulseDots';
 import RollingValue from '../../components/draw/RollingValue';
-import RoomChat from '../../components/draw/RoomChat';
+import RoomChat, { RoomChatInput } from '../../components/draw/RoomChat';
 import WaitingRoomClosed from '../../components/draw/WaitingRoomClosed';
 import {
   WAITING_ROOM_SECONDS,
@@ -224,7 +224,7 @@ const WaitingRoomScreen: React.FC = () => {
   }
 
   return (
-    <Screen showSecurityFooter>
+    <Screen footer={<RoomChatInput inFooter onSend={(message) => sendChatMessage(message)} />}>
       <ScreenHeader
         title={t('Salle d’attente', 'Waiting room')}
         subtitle={subtitle}
@@ -342,6 +342,7 @@ const WaitingRoomScreen: React.FC = () => {
         myAnonymizedWallet={myWallet}
         onlineCount={onlineWaitingUsers}
         onSend={(message) => sendChatMessage(message)}
+        showInput={false}
       />
     </Screen>
   );

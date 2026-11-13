@@ -61,7 +61,7 @@ export const Screen: React.FC<ScreenProps> = ({
     >
       <KeyboardAvoidingView
         style={styles.fill}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         {body}
         {footer ? (

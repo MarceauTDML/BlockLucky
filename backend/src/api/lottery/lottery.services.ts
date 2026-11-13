@@ -465,9 +465,23 @@ export class LotteryService {
     });
   }
 
+  private async previousRoundSummary(contractRoundId: number, endedAt: Date) {
+    if (contractRoundId <= 1) return null;
+    const previous = await lotteryRepository.findRoundByContractId(contractRoundId - 1);
+    if (!previous) return null;
+    return {
+      contractRoundId: previous.contractRoundId,
+      status: previous.status,
+      participants: await lotteryRepository.countTicketsInRound(previous.id),
+      winnerWallet: previous.winnerWallet,
+      endedAt: endedAt.toISOString(),
+    };
+  }
+
   private async getOnchainLotteryStatus() {
     const [onchain, paused] = await Promise.all([lotteryGateway.readCurrentRound(), lotteryGateway.isPaused()]);
     const round = await this.syncRound(onchain);
+    const previousRound = await this.previousRoundSummary(onchain.contractRoundId, onchain.startTime);
     const distinctParticipants = await lotteryRepository.countDistinctParticipants(round.id);
     const networkStatus = await blockchainService.getNetworkStatus();
     const now = Date.now();
@@ -503,6 +517,7 @@ export class LotteryService {
         participants: onePerPlayer ? ticketsSold : distinctParticipants,
         maxParticipants: onchain.maxTickets,
       },
+      previousRound,
       progression: {
         ticketsSold,
         distinctParticipants,

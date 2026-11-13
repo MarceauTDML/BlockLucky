@@ -16,6 +16,12 @@ export interface RoomChatProps {
   onlineCount: number;
   onSend: (message: string) => boolean;
   maxVisible?: number;
+  showInput?: boolean;
+}
+
+export interface RoomChatInputProps {
+  onSend: (message: string) => boolean;
+  inFooter?: boolean;
 }
 
 const MAX_LENGTH = 280;
@@ -26,29 +32,10 @@ export const RoomChat: React.FC<RoomChatProps> = ({
   onlineCount,
   onSend,
   maxVisible = 30,
+  showInput = true,
 }) => {
-  const { colors, t, typography } = useAppTheme();
-  const [draft, setDraft] = useState('');
-  const [sendError, setSendError] = useState<string | null>(null);
+  const { colors, t } = useAppTheme();
   const visible = messages.slice(-maxVisible);
-  const canSend = draft.trim().length > 0;
-
-  const handleSend = () => {
-    const text = draft.trim();
-    if (!text) return;
-    const sent = onSend(text);
-    if (sent) {
-      setDraft('');
-      setSendError(null);
-    } else {
-      setSendError(
-        t(
-          'Connexion à la salle en cours. Réessayez dans un instant.',
-          'Connecting to the room. Please try again in a moment.',
-        ),
-      );
-    }
-  };
 
   return (
     <View>
@@ -114,7 +101,43 @@ export const RoomChat: React.FC<RoomChatProps> = ({
         );
       })}
 
-      <View style={[styles.inputRow, { backgroundColor: colors.surface }]}>
+      {showInput ? <RoomChatInput onSend={onSend} /> : null}
+    </View>
+  );
+};
+
+export const RoomChatInput: React.FC<RoomChatInputProps> = ({ onSend, inFooter = false }) => {
+  const { colors, t, typography } = useAppTheme();
+  const [draft, setDraft] = useState('');
+  const [sendError, setSendError] = useState<string | null>(null);
+  const canSend = draft.trim().length > 0;
+
+  const handleSend = () => {
+    const text = draft.trim();
+    if (!text) return;
+    const sent = onSend(text);
+    if (sent) {
+      setDraft('');
+      setSendError(null);
+    } else {
+      setSendError(
+        t(
+          'Connexion à la salle en cours. Réessayez dans un instant.',
+          'Connecting to the room. Please try again in a moment.',
+        ),
+      );
+    }
+  };
+
+  return (
+    <View style={inFooter ? styles.footerWrap : undefined}>
+      <View
+        style={[
+          styles.inputRow,
+          inFooter && styles.inputRowFooter,
+          { backgroundColor: inFooter ? colors.background : colors.surface },
+        ]}
+      >
         <TextInput
           value={draft}
           onChangeText={(value) => {
@@ -219,6 +242,12 @@ const styles = StyleSheet.create({
   },
   caption: {
     marginTop: 8,
+  },
+  footerWrap: {
+    paddingBottom: 10,
+  },
+  inputRowFooter: {
+    marginTop: 0,
   },
 });
 
