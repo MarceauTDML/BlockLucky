@@ -85,6 +85,18 @@ describe('Keeper du tirage : salle d’attente', () => {
     expect(mockProvider.send).toHaveBeenCalledWith('evm_mine', []);
   });
 
+  it('avance aussi l’horloge de la blockchain locale quand le serveur tourne en production', async () => {
+    const initialNodeEnv = env.NODE_ENV;
+    env.NODE_ENV = 'production';
+    try {
+      mockProvider.getBlock.mockResolvedValueOnce({ timestamp: Math.floor(Date.now() / 1000) - 600 });
+      expect(await syncLocalChainClock()).toBe(true);
+      expect(mockProvider.send).toHaveBeenCalledWith('evm_mine', []);
+    } finally {
+      env.NODE_ENV = initialNodeEnv;
+    }
+  });
+
   it('ne mine rien quand l’horloge de la blockchain locale est à jour', async () => {
     expect(await syncLocalChainClock()).toBe(false);
     expect(mockProvider.send).not.toHaveBeenCalled();

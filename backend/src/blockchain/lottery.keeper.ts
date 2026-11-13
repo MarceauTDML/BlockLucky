@@ -11,7 +11,7 @@ const LOCAL_CHAIN_ID = 31337;
 const LOCAL_CLOCK_TOLERANCE_SECONDS = 5;
 
 export const syncLocalChainClock = async (): Promise<boolean> => {
-  if (env.CHAIN_ID !== LOCAL_CHAIN_ID || env.NODE_ENV === 'production' || chainClient.isUsingFallback) return false;
+  if (env.CHAIN_ID !== LOCAL_CHAIN_ID || chainClient.isUsingFallback) return false;
   try {
     const latest = await chainClient.provider.getBlock('latest');
     if (!latest) return false;
