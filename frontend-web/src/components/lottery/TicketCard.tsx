@@ -59,11 +59,13 @@ export const TicketCard: React.FC<{ ticket: TicketItem }> = ({ ticket }) => {
 
 export const POAPBadgeCard: React.FC<{ badge: PoapBadge }> = ({ badge }) => {
   const { t } = useAppTheme();
+  const [imageFailed, setImageFailed] = React.useState(false);
   return (
     <article className="card flex items-start gap-3.5 p-4">
-      {badge.imageUrl ? (
+      {badge.imageUrl && !imageFailed ? (
         <img
           src={badge.imageUrl}
+          onError={() => setImageFailed(true)}
           alt={t(`Visuel du badge POAP ${badge.title}`, `POAP badge artwork ${badge.title}`)}
           width={48}
           height={48}

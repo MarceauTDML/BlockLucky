@@ -115,6 +115,7 @@ export class LotteryController {
       const jsonRound = parsePoapFile(file, 'json');
       const svgRound = jsonRound ? null : parsePoapFile(file, 'svg');
       res.setHeader('Cache-Control', 'public, max-age=86400, immutable');
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
       if (jsonRound) {
         const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/poap`;
         res.json(poapMetadata(jsonRound, baseUrl));
