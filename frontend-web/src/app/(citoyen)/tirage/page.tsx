@@ -1,15 +1,17 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 import ChatBox from '@/components/lottery/ChatBox';
 import DemoModeBadge from '@/components/lottery/DemoModeBadge';
 import RouletteAnimation from '@/components/lottery/RouletteAnimation';
 import SoundToggle from '@/components/lottery/SoundToggle';
 import WinnerClaimCard from '@/components/lottery/WinnerClaimCard';
-import Button from '@/components/ui/Button';
+import Button, { buttonClasses } from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Icon from '@/components/ui/Icon';
 import { PageHeader } from '@/components/ui/Misc';
+import Sheet from '@/components/ui/Sheet';
 import useSocket from '@/hooks/useSocket';
 import { trackEvent } from '@/lib/analytics';
 import { useAppDispatch, useAppSelector } from '@/store';
@@ -17,12 +19,22 @@ import { useGetLotteryStatusQuery } from '@/store/api/lotteryApi';
 import { setRouletteSpinning } from '@/store/slices/lotterySlice';
 import { useAppTheme } from '@/theme/ThemeProvider';
 
+const CANCEL_NOTICE_MS = 3 * 60 * 1000;
+
 export default function LiveDrawPage() {
   const { t } = useAppTheme();
   const dispatch = useAppDispatch();
-  const { data: statusRes } = useGetLotteryStatusQuery(undefined, { pollingInterval: 15000 });
+  const { data: statusRes, fulfilledTimeStamp } = useGetLotteryStatusQuery(undefined, { pollingInterval: 5000 });
   const status = statusRes?.data;
   const round = status?.round;
+  const previousRound = status?.previousRound;
+  const [dismissedCancel, setDismissedCancel] = useState<number | null>(null);
+  const cancelledRecently =
+    previousRound?.status === 'CANCELLED' &&
+    fulfilledTimeStamp !== undefined &&
+    fulfilledTimeStamp - new Date(previousRound.endedAt).getTime() < CANCEL_NOTICE_MS;
+  const cancelNoticeOpen = Boolean(cancelledRecently && previousRound && dismissedCancel !== previousRound.contractRoundId);
+  const closeCancelNotice = () => setDismissedCancel(previousRound?.contractRoundId ?? null);
   const guarantees = status?.guarantees;
   const simulated = Boolean(guarantees?.simulated);
   const certified = !guarantees || (guarantees.vrfCertified && !guarantees.simulated);
@@ -161,6 +173,38 @@ export default function LiveDrawPage() {
           className="lg:sticky lg:top-24 lg:h-[calc(100dvh-8rem)]"
         />
       </div>
+
+      <Sheet
+        open={cancelNoticeOpen}
+        onClose={closeCancelNotice}
+        eyebrow={t(`Tirage #${previousRound?.contractRoundId ?? ''}`, `Draw #${previousRound?.contractRoundId ?? ''}`)}
+        title={t('Le tirage est annulé', 'The draw is cancelled')}
+      >
+        <div className="flex flex-col gap-3">
+          <p className="text-body text-fg-secondary">
+            {previousRound?.participants === 0
+              ? t('Personne ne s’est inscrit à ce tirage.', 'Nobody entered this draw.')
+              : t(
+                  'Ce tirage n’a pas réuni assez de participants : il en faut au moins 2.',
+                  'This draw did not reach enough participants: at least 2 are needed.'
+                )}
+          </p>
+          <p className="text-caption text-fg-muted">
+            {t(
+              'Les tickets achetés sont remboursés automatiquement. Un nouveau tirage est déjà ouvert.',
+              'Purchased tickets are refunded automatically. A new draw is already open.'
+            )}
+          </p>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+            <Link href="/billetterie" onClick={closeCancelNotice} className={buttonClasses('primary', 'md', false, true)}>
+              {t('Participer au prochain tirage', 'Join the next draw')}
+            </Link>
+            <Button variant="outline" onClick={closeCancelNotice}>
+              {t('Fermer', 'Close')}
+            </Button>
+          </div>
+        </div>
+      </Sheet>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import AppText from '../../components/ui/AppText';
 import Card from '../../components/ui/Card';
 import Loader from '../../components/ui/Loader';
 import Pill from '../../components/ui/Pill';
+import ResultDialog from '../../components/ui/ResultDialog';
 import Screen from '../../components/ui/Screen';
 import ScreenHeader from '../../components/ui/ScreenHeader';
 import useAppTheme from '../../hooks/useAppTheme';
@@ -96,23 +97,37 @@ export const LiveDrawScreen: React.FC = () => {
     statusPhase === 'COMPLETED' ||
     statusPhase === 'CANCELLED';
 
+  const previousRound = status.data?.data?.previousRound ?? null;
+  const previousCancelled = previousRound?.status === 'CANCELLED' ? previousRound : null;
+
   const pastTicket: TicketItem | undefined = useMemo(
     () => (liveRound ? undefined : tickets.find((ticket) => ticket.roundStatus === 'COMPLETED')),
     [liveRound, tickets],
   );
+  const showPreviousCancelled =
+    !tracking &&
+    !liveRound &&
+    previousCancelled !== null &&
+    (pastTicket?.contractRoundId ?? 0) < previousCancelled.contractRoundId;
 
   const contractRoundId = tracking
     ? watchedRound
     : liveRound
       ? statusRound?.contractRoundId
-      : pastTicket?.contractRoundId;
-  const myTicket = liveRound ? findTicketForRound(tickets, contractRoundId) : pastTicket;
+      : showPreviousCancelled
+        ? previousCancelled?.contractRoundId
+        : pastTicket?.contractRoundId;
+  const myTicket =
+    liveRound || showPreviousCancelled ? findTicketForRound(tickets, contractRoundId) : pastTicket;
   const announcementForRound =
     announcement && announcement.contractRoundId === contractRoundId ? announcement : null;
+  const watchedWasCancelled =
+    tracking && previousCancelled !== null && previousCancelled.contractRoundId === watchedRound;
   const trackedPhase = (): LotteryPhase | null => {
     if (statusIsWatched && (statusPhase === 'COMPLETED' || statusPhase === 'CANCELLED')) {
       return statusPhase;
     }
+    if (watchedWasCancelled) return 'CANCELLED';
     if (announcementForRound) return 'COMPLETED';
     if (myTicket?.roundStatus === 'COMPLETED') return 'COMPLETED';
     if (myTicket?.roundStatus === 'CANCELLED') return 'CANCELLED';
@@ -122,9 +137,11 @@ export const LiveDrawScreen: React.FC = () => {
     ? trackedPhase()
     : liveRound
       ? statusPhase
-      : pastTicket
-        ? 'COMPLETED'
-        : statusPhase;
+      : showPreviousCancelled
+        ? 'CANCELLED'
+        : pastTicket
+          ? 'COMPLETED'
+          : statusPhase;
   const roundLabel = formatRoundLabel(contractRoundId);
 
   useSocket(liveRound ? statusRound?.id : undefined);
@@ -158,11 +175,13 @@ export const LiveDrawScreen: React.FC = () => {
     hasResult && (winningNumber !== null || !myTicket || isFinishedStatus(myTicket.roundStatus));
 
   const snapshot = tracking && !statusIsWatched ? route.params : undefined;
-  const participants = snapshot
-    ? (snapshot.participants ?? null)
-    : liveRound
-      ? (statusRound?.participants ?? progression?.distinctParticipants ?? null)
-      : null;
+  const participants = showPreviousCancelled
+    ? (previousCancelled?.participants ?? null)
+    : snapshot
+      ? (snapshot.participants ?? null)
+      : liveRound
+        ? (statusRound?.participants ?? progression?.distinctParticipants ?? null)
+        : null;
   const maxParticipants = snapshot
     ? (snapshot.maxParticipants ?? null)
     : liveRound
@@ -189,6 +208,11 @@ export const LiveDrawScreen: React.FC = () => {
       setRevealed(false);
     }
   }, [contractRoundId]);
+
+  const [dismissedCancel, setDismissedCancel] = useState<number | undefined>(undefined);
+  const cancelDialogVisible =
+    isCancelled && contractRoundId !== undefined && dismissedCancel !== contractRoundId;
+  const closeCancelDialog = () => setDismissedCancel(contractRoundId);
 
   const [claimMessage, setClaimMessage] = useState<{ text: string; error: boolean } | null>(null);
   const handleClaim = async () => {
@@ -242,7 +266,7 @@ export const LiveDrawScreen: React.FC = () => {
     );
   }
 
-  if (!statusRound && !pastTicket) {
+  if (!statusRound && !pastTicket && !showPreviousCancelled) {
     return (
       <Screen showSecurityFooter>
         <ScreenHeader title={t('Le grand tirage', 'The grand draw')} onBack={goBack} />
@@ -270,7 +294,7 @@ export const LiveDrawScreen: React.FC = () => {
     );
   }
 
-  if (!liveRound && !pastTicket) {
+  if (!liveRound && !pastTicket && !showPreviousCancelled) {
     return (
       <Screen showSecurityFooter>
         <ScreenHeader
@@ -544,6 +568,34 @@ export const LiveDrawScreen: React.FC = () => {
           />
         </View>
       ) : null}
+
+      <ResultDialog
+        visible={cancelDialogVisible}
+        status="info"
+        title={t('Le tirage est annulé', 'The draw is cancelled')}
+        message={
+          participants === 0
+            ? t(
+                `Personne ne s’est inscrit au tirage #${roundLabel ?? ''}.`,
+                `Nobody entered draw #${roundLabel ?? ''}.`,
+              )
+            : t(
+                `Le tirage #${roundLabel ?? ''} n’a pas réuni assez de participants : il en faut au moins 2.`,
+                `Draw #${roundLabel ?? ''} did not reach enough participants: at least 2 are needed.`,
+              )
+        }
+        note={t(
+          'Les tickets achetés sont remboursés automatiquement. Un nouveau tirage est déjà ouvert.',
+          'Purchased tickets are refunded automatically. A new draw is already open.',
+        )}
+        primaryLabel={t('Participer au prochain tirage', 'Join the next draw')}
+        onPrimary={() => {
+          closeCancelDialog();
+          navigation.navigate('BuyTicket');
+        }}
+        secondaryLabel={t('Fermer', 'Close')}
+        onSecondary={closeCancelDialog}
+      />
     </Screen>
   );
 };

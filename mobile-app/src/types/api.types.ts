@@ -131,8 +131,17 @@ export interface BlockchainInfo {
   lotteryExplorerUrl: string | null;
 }
 
+export interface PreviousRoundSummary {
+  contractRoundId: number;
+  status: 'OPEN' | 'LOCKED' | 'COMPLETED' | 'CANCELLED';
+  participants: number;
+  winnerWallet: string | null;
+  endedAt: string;
+}
+
 export interface LotteryStatusResponse {
   round: LotteryRoundInfo;
+  previousRound?: PreviousRoundSummary | null;
   progression: {
     ticketsSold: number;
     distinctParticipants: number;
