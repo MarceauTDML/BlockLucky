@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^4.0.0",
-    "@nomicfoundation/hardhat-verify": "^3.1.4",
+    "@nomicfoundation/hardhat-verify": "^3.1.5",
     "@types/chai": "^5.2.3",
     "@types/chai-as-promised": "^8.0.2",
     "@types/mocha": "^10.0.10",
@@ -39,7 +39,7 @@
     "chai": "^6.3.0",
     "ethers": "^6.17.0",
     "forge-std": "https://github.com/foundry-rs/forge-std/archive/refs/tags/v1.17.0.tar.gz",
-    "hardhat": "^3.21.2",
+    "hardhat": "^3.22.0",
     "mocha": "^12.0.3",
     "solhint": "^6.2.5",
     "typescript": "~6.0.3"
